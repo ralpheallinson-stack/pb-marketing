@@ -81,19 +81,34 @@ function isMarketOpen() {
   return mins >= 570 && mins < 960 // 9:30 - 16:00
 }
 
-/* ── conds badges ── */
-function condBadges(t: Trade): { label: string; color: string }[] {
-  const badges: { label: string; color: string }[] = []
-  if ((t.vol_oi ?? 0) >= 5) badges.push({ label: (t.vol_oi ?? 0) >= 20 ? "UNUSUAL" : "HIGH V/OI", color: "#a855f7" })
-  if (t.accum_hits >= 3) badges.push({ label: `ACCUM ${t.accum_hits}x`, color: "#3b82f6" })
-  if (t.whale) badges.push({ label: "WHALE", color: "#f97316" })
-  if (t.position_action === "OPENING") badges.push({ label: "OPENING", color: "#22c55e" })
-  else if (t.position_action === "ADJUSTING") badges.push({ label: "ADJUSTING", color: "#eab308" })
-  if (t.mm_suspected) badges.push({ label: "MM", color: "#ef4444" })
+/* ── conds badge color map ── */
+const COND_CLS: Record<string, string> = {
+  OPENING:   "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
+  ADJUSTING: "bg-[#1E2A3A] text-[#60A5FA] border border-[#60A5FA]/20",
+  CLOSING:   "bg-[#3A1E1E] text-[#EF4444] border border-[#EF4444]/20",
+  UNUSUAL:   "bg-[#2D1E3A] text-[#A855F7] border border-[#A855F7]/20",
+  "HIGH V/OI": "bg-[#2D1E3A] text-[#A855F7] border border-[#A855F7]/20",
+  WHALE:     "bg-[#3A2A0F] text-[#F5820A] border border-[#F5820A]/40",
+  EARNINGS:  "bg-[#3A2A0F] text-[#F5820A] border border-[#F5820A]/20",
+  EXTREME:   "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
+  OUTSIZED:  "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
+  MM:        "bg-[#1E2530] text-[#4A5A72] border border-[#2E3A4D]",
+}
+const COND_DEFAULT = "bg-[#1E2530] text-[#7A8BA8] border border-[#2E3A4D]"
+
+function condBadges(t: Trade): { label: string; cls: string }[] {
+  const badges: { label: string; cls: string }[] = []
+  const c = (label: string, key?: string) => ({ label, cls: COND_CLS[key ?? label] ?? COND_DEFAULT })
+  if ((t.vol_oi ?? 0) >= 5) badges.push(c((t.vol_oi ?? 0) >= 20 ? "UNUSUAL" : "HIGH V/OI"))
+  if (t.accum_hits >= 3) badges.push({ label: `ACCUM ${t.accum_hits}x`, cls: "bg-[#2A1E0F] text-[#F5820A] border border-[#F5820A]/20" })
+  if (t.whale) badges.push(c("WHALE"))
+  if (t.position_action === "OPENING") badges.push(c("OPENING"))
+  else if (t.position_action === "ADJUSTING") badges.push(c("ADJUSTING"))
+  if (t.mm_suspected) badges.push(c("MM"))
   if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5)
-    badges.push({ label: t.structure.replace("_", " "), color: "#64748b" })
-  if (t.is_event_driven) badges.push({ label: "EARNINGS", color: "#f97316" })
-  if (t.adv_multiple && t.adv_multiple >= 5) badges.push({ label: t.adv_multiple >= 10 ? "EXTREME" : "OUTSIZED", color: "#22c55e" })
+    badges.push({ label: t.structure.replace("_", " "), cls: COND_DEFAULT })
+  if (t.is_event_driven) badges.push(c("EARNINGS"))
+  if (t.adv_multiple && t.adv_multiple >= 5) badges.push(c(t.adv_multiple >= 10 ? "EXTREME" : "OUTSIZED"))
   return badges.slice(0, 4)
 }
 
@@ -116,12 +131,11 @@ function aggrLabel(a: string | null | undefined) {
   return map[a] || a
 }
 
-/* ── tabs ── */
-const TABS = [
-  { key: "live", label: "Live Flow" },
+/* ── time ranges (moved to filter panel) ── */
+const TIME_RANGES = [
   { key: "today", label: "Today" },
-  { key: "week", label: "Week" },
-  { key: "last_week", label: "Last Wk" },
+  { key: "week", label: "This Week" },
+  { key: "last_week", label: "Last Week" },
   { key: "month", label: "Month" },
 ] as const
 
@@ -148,7 +162,8 @@ export default function ScannerPage() {
   const router = useRouter()
   const [trades, setTrades] = useState<Trade[]>([])
   const [stats, setStats] = useState<Stats>({ count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
-  const [activeTab, setActiveTab] = useState("live")
+  const [timeRange, setTimeRange] = useState("today")
+  const [page, setPage] = useState(0)
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
   const [live, setLive] = useState(isMarketOpen())
@@ -166,6 +181,7 @@ export default function ScannerPage() {
   const [filterSide, setFilterSide] = useState("")
   const [filterUnusualOnly, setFilterUnusualOnly] = useState(false)
   const [filterExcludeMM, setFilterExcludeMM] = useState(false)
+  const [filterNoIndex, setFilterNoIndex] = useState(false)
   const [activeFilterCount, setActiveFilterCount] = useState(0)
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
   const [focusStrike, setFocusStrike] = useState<string | null>(null)
@@ -180,62 +196,68 @@ export default function ScannerPage() {
     try {
       if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
       const ctx = audioCtxRef.current
-      const o = ctx.createOscillator()
-      const g = ctx.createGain()
-      o.connect(g)
-      g.connect(ctx.destination)
-      o.frequency.setValueAtTime(1200, ctx.currentTime)
-      g.gain.setValueAtTime(0.3, ctx.currentTime)
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
-      o.start()
-      o.stop(ctx.currentTime + 0.12)
-    } catch { /* audio not available */ }
+      if (ctx.state === "suspended") ctx.resume()
+      const play = (freq: number, t: number, dur: number, vol: number) => {
+        const o = ctx.createOscillator()
+        const g = ctx.createGain()
+        o.connect(g); g.connect(ctx.destination)
+        o.type = "sine"
+        o.frequency.value = freq
+        g.gain.setValueAtTime(0, t)
+        g.gain.linearRampToValueAtTime(vol, t + 0.005)
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur)
+        o.start(t); o.stop(t + dur)
+      }
+      const now = ctx.currentTime
+      play(523, now, 1.8, 0.18)
+      play(1047, now, 1.4, 0.09)
+      play(1318, now, 1.0, 0.05)
+      play(1568, now, 0.7, 0.03)
+    } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
-  const buildUrl = useCallback((tab: string, opts?: { sinceId?: number }) => {
-    const apiTab = tab === "live" ? "today" : tab
+  const buildUrl = useCallback((opts?: { sinceId?: number; pageNum?: number }) => {
     const p = new URLSearchParams()
-    if (apiTab !== "today") p.set("range", apiTab)
+    if (timeRange !== "today") p.set("range", timeRange)
     if (filterMinPremium > 0) p.set("min_premium", filterMinPremium.toString())
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
     else if (filterDte === "8-30") p.set("max_dte", "30")
     p.set("slim", "true")
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
-    const qs = p.toString()
-    return `/api/scanner/live-flow?${qs}`
-  }, [filterMinPremium, filterDte])
+    const pg = opts?.pageNum ?? 0
+    if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
+    return `/api/scanner/live-flow?${p.toString()}`
+  }, [timeRange, filterMinPremium, filterDte])
 
-  const fetchData = useCallback(async (tab?: string, initial = false) => {
-    const t = tab ?? activeTab
-    if (initial) setLoading(true)
+  const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number }) => {
+    const pg = opts?.pageNum ?? page
+    if (opts?.initial) setLoading(true)
     try {
-      // Incremental polling — only fetch new trades after first load on live tab
-      if (t === "live" && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
-        const res = await fetch(buildUrl(t, { sinceId: lastTradeIdRef.current }))
+      // Incremental polling — only on page 0 (live) after first load
+      if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
+        const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }))
         if (res.status === 401 || res.status === 403) { router.push("/login"); return }
         const data: ApiResponse = await res.json()
         if (data.trades?.length > 0) {
           const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
           lastTradeIdRef.current = newMaxId
-          setTrades(prev => [...data.trades, ...prev].slice(0, 2000))
+          setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
           playBlip()
           const brandNew = new Set(data.trades.map((tr: Trade) => tr.id))
           setNewTradeIds(brandNew)
           setTimeout(() => setNewTradeIds(new Set()), 2000)
         }
-        // Don't update stats on incremental — only on full reload
         return
       }
 
-      // Full load (first time, tab switch, or non-live tabs)
-      const res = await fetch(buildUrl(t))
+      // Full load (first time, page change, filter change)
+      const res = await fetch(buildUrl({ pageNum: pg }))
       if (res.status === 401 || res.status === 403) { router.push("/login"); return }
       const data: ApiResponse = await res.json()
       if (data.error) return
       const incoming = data.trades || []
-      // blip on new trades (for non-live tabs or first load)
-      if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id))) {
+      if (pg === 0 && prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id))) {
         playBlip()
       }
       prevTradeIdsRef.current = new Set(incoming.map(tr => tr.id))
@@ -247,31 +269,32 @@ export default function ScannerPage() {
       setStats(data.stats || { count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
     } catch { /* network error */ }
     setLoading(false)
-  }, [activeTab, buildUrl, router, playBlip])
+  }, [page, buildUrl, router, playBlip])
 
-  // initial load + tab change — reset incremental state
+  // initial load + page/range change — reset incremental state
   useEffect(() => {
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
     setTrades([])
-    fetchData(activeTab, true)
-  }, [activeTab, fetchData])
+    fetchData({ initial: true, pageNum: page })
+  }, [page, timeRange, fetchData])
 
-  // auto-refresh every 5s only on "live" tab
+  // auto-refresh every 5s only on page 0 (live)
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current)
-    if (activeTab === "live") {
+    if (page === 0) {
       intervalRef.current = setInterval(() => {
         setLive(isMarketOpen())
-        fetchData("live")
+        fetchData({ pageNum: 0 })
       }, 5000)
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [activeTab, fetchData])
+  }, [page, fetchData])
 
   // active filter count
   useEffect(() => {
     let c = 0
+    if (timeRange !== "today") c++
     if (filterGrade) c++
     if (filterType) c++
     if (filterOptType) c++
@@ -280,8 +303,9 @@ export default function ScannerPage() {
     if (filterSide) c++
     if (filterUnusualOnly) c++
     if (filterExcludeMM) c++
+    if (filterNoIndex) c++
     setActiveFilterCount(c)
-  }, [filterGrade, filterType, filterOptType, filterMinPremium, filterDte, filterSide, filterUnusualOnly, filterExcludeMM])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterDte, filterSide, filterUnusualOnly, filterExcludeMM, filterNoIndex])
 
   const filtered = useMemo(() => trades.filter(t => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
@@ -294,12 +318,13 @@ export default function ScannerPage() {
     if (filterSide && t.aggression !== filterSide) return false
     if (filterUnusualOnly && (t.vol_oi ?? 0) < 5) return false
     if (filterExcludeMM && t.mm_suspected) return false
+    if (filterNoIndex && (t.sector === "INDEX" || t.sector === "ETF")) return false
     if (filterDte === "0dte" && (t.dte ?? -1) !== 0) return false
     if (filterDte === "1-7" && ((t.dte ?? -1) < 1 || (t.dte ?? -1) > 7)) return false
     if (filterDte === "8-30" && ((t.dte ?? -1) < 8 || (t.dte ?? -1) > 30)) return false
     if (filterDte === "30+" && (t.dte ?? -1) < 30) return false
     return true
-  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterExcludeMM, filterDte])
+  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterExcludeMM, filterNoIndex, filterDte])
 
   const calls = filtered.filter(t => t.opt_type === "C")
   const puts = filtered.filter(t => t.opt_type === "P")
@@ -318,7 +343,7 @@ export default function ScannerPage() {
     rowVirtualizer.measure()
   }, [filtered, rowVirtualizer])
 
-  const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterExcludeMM || filterDte)
+  const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterExcludeMM || filterNoIndex || filterDte)
   const displayStats = hasLocalFilter ? (() => {
     const bull = filtered.filter(t => t.bullish).reduce((s, t) => s + t.premium, 0)
     const bear = filtered.filter(t => !t.bullish).reduce((s, t) => s + t.premium, 0)
@@ -330,48 +355,41 @@ export default function ScannerPage() {
     }
   })() : stats
 
-  /* ── sidebar nav item ── */
-  const SideItem = ({ icon, label, active, onClick, href }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void; href?: string }) => {
-    const cls = `w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer transition-colors relative group ${active ? "bg-[#F5820A]/10 text-[#F0F2F5] border-l-2 border-l-[#F5820A]" : "text-[#3D4D63] hover:bg-[#1E2530] hover:text-[#7A8BA8]"}`
-    const tooltip = <div className="absolute left-[46px] bg-[#1E2530] border border-[#252E3D] text-[#E8EDF5] text-xs px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">{label}</div>
-    if (href) return <a href={href} className={cls}>{icon}{tooltip}</a>
-    return <button onClick={onClick} className={cls}>{icon}{tooltip}</button>
-  }
-
   const iconCls = "w-[18px] h-[18px]"
+  const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
 
   return (
     <div className="h-screen flex bg-[#0E1117] text-[#E8EDF5] overflow-hidden">
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[52px] bg-[#161B24] border-r border-[#252E3D] flex flex-col items-center py-3 z-40">
-        <a href="/" className="mb-3 flex-shrink-0" aria-label="Home">
-  <svg width="28" height="28" viewBox="0 0 24 28" fill="#F0F2F5" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 0h4v28H0z"/>
-    <path d="M4 0h8a8 8 0 010 16H4z"/>
-    <path d="M4 14h9a7 7 0 010 14H4z"/>
-  </svg>
-</a>
-        <div className="flex flex-col items-center gap-1">
-          <SideItem label="Flow Scanner" active={activePage === "scanner"} onClick={() => setActivePage("scanner")}
-            icon={<svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>} />
-          <SideItem label="GEX Heatmap" active={activePage === "heatmap"} onClick={() => setActivePage("heatmap")}
-            icon={<svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><rect x="3" y="3" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round" /><rect x="14" y="3" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round" /><rect x="3" y="14" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round" /><rect x="14" y="14" width="7" height="7" rx="1" strokeLinecap="round" strokeLinejoin="round" /></svg>} />
-          <SideItem label="Watchlist" active={activePage === "watchlist"} onClick={() => setActivePage("watchlist")}
-            icon={<svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>} />
-          <div className="w-6 h-px bg-white/[0.08] my-1" />
-          <SideItem label="Export" onClick={() => {}}
-            icon={<svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>} />
-        </div>
+      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#0B0F1A", borderRight: "1px solid #131B27" }}>
+        <a href="/" className="mb-4 flex items-center justify-center w-full" aria-label="Home">
+          <svg width="22" height="22" viewBox="0 0 100 100" fill="none"><path d="M20 20h25v25H20zM55 20h25v25H55zM20 55h25v25H20zM55 55h25v25H55z" fill="white"/></svg>
+        </a>
+        <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")}>
+          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
+        </button>
+        <button onClick={() => setActivePage("heatmap")} className={sideBtn(activePage === "heatmap")}>
+          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+        </button>
+        <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")}>
+          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
+        </button>
+        <div className="w-5 h-px bg-white/[0.06] my-1" />
+        <button onClick={() => {}} className={sideBtn(false)}>
+          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+        </button>
         <div className="mt-auto flex flex-col items-center gap-1">
-          <SideItem label={soundEnabled ? "Sound on" : "Sound off"} active={soundEnabled} onClick={() => setSoundEnabled(!soundEnabled)}
-            icon={soundEnabled ? (
-              <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+          <button onClick={() => setSoundEnabled(!soundEnabled)} className={sideBtn(soundEnabled)}>
+            {soundEnabled ? (
+              <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             ) : (
-              <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
-            )} />
-          <SideItem label="Account" href="/account"
-            icon={<svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>} />
+              <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+            )}
+          </button>
+          <a href="/account" className={sideBtn(false)}>
+            <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          </a>
         </div>
       </nav>
 
@@ -385,46 +403,34 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-12 bg-[#161B24] border-b border-[#252E3D] flex items-center px-4 flex-shrink-0">
+      <header className="h-11 bg-[#161B24] border-b border-[#252E3D] flex items-center px-4 gap-3 flex-shrink-0">
         <div className="flex-1 flex justify-center">
           <input
             type="text"
             placeholder="Search symbol..."
             value={search}
             onChange={e => setSearch(e.target.value.toUpperCase())}
-            className="w-72 bg-[#1E2530] border border-[#252E3D] rounded-lg px-3 py-1.5 text-sm text-[#E8EDF5] placeholder-[#3D4D63] focus:outline-none focus:border-[#60a5fa]/50"
+            className="w-64 bg-[#1E2530] border border-[#252E3D] rounded-lg px-3 py-1 text-sm text-[#E8EDF5] placeholder-[#3D4D63] focus:outline-none focus:border-[#F5820A]/50 focus:ring-1 focus:ring-[#F5820A]/20"
           />
         </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className={`flex items-center gap-1.5 border rounded-full px-3 py-1 text-xs ${live ? "bg-[#22c55e]/10 border-[#22c55e]/30 text-[#22c55e]" : "bg-[#1E2530] border-[#2E3A4D] text-[#7A8BA8]"}`}>
-            {live && <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />}
-            {live ? "LIVE" : "CLOSED"}
-          </div>
-          <a href="/logout" className="text-[#3D4D63] text-xs hover:text-[#E8EDF5]">Logout</a>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {live ? (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E] text-[11px] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />LIVE
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#3D4D63] bg-[#161B24] text-[#4A5A72] text-[11px] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4A5A72]" />CLOSED
+            </div>
+          )}
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium border border-[#2E3A4D] bg-[#161B24] hover:bg-[#1E2530] text-[#E8EDF5] transition-colors">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            Filters
+            {activeFilterCount > 0 && <span className="bg-[#F5820A] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
+          </button>
+          <a href="/logout" className="text-[#3D4D63] text-[11px] hover:text-[#E8EDF5]">Logout</a>
         </div>
       </header>
-
-      {/* ── TIME TABS ── */}
-      <div className="bg-[#161B24] border-b border-[#252E3D] px-4 h-10 flex items-center gap-1 flex-shrink-0 overflow-x-auto">
-        {TABS.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`px-3 py-2 text-sm whitespace-nowrap transition-colors ${
-              activeTab === tab.key
-                ? "text-[#E8EDF5] border-b-2 border-[#60a5fa] font-medium"
-                : "text-[#3D4D63] hover:text-[#7A8BA8]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <button onClick={() => setShowFilters(true)} className="ml-auto flex items-center gap-2 bg-[#1E2530] hover:bg-[#252E3D] border border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5] rounded-lg px-3 py-1.5 text-xs transition-colors">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M7 8h10M10 12h4" /></svg>
-          Filters
-          {activeFilterCount > 0 && <span className="bg-[#60a5fa] text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">{activeFilterCount}</span>}
-        </button>
-      </div>
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
@@ -459,69 +465,69 @@ export default function ScannerPage() {
         const isBull = displayStats.lean === "BULL"
         const circ = 2 * Math.PI * 20
         const pcDash = (Math.min(displayStats.pc_ratio / 2, 1) * circ)
-        const callDash = (callPct / 100) * circ
-        const putDash = (putPct / 100) * circ
         return (
-          <div className="grid grid-cols-4 divide-x divide-[#252E3D] border-b border-[#252E3D] bg-[#0E1117] flex-shrink-0">
+          <div className="grid border-b border-[#131B27] flex-shrink-0" style={{ gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr", background: "#0B0F1A" }}>
             {/* Sentiment */}
-            <div className="p-4">
-              <div className="text-xs text-white/35 mb-2">Flow sentiment</div>
-              <div className="flex items-center gap-4">
-                <span className={`text-2xl font-bold ${isBull ? "text-[#22c55e]" : displayStats.lean === "BEAR" ? "text-[#ef4444]" : "text-white/60"}`}>
+            <div className="px-4 py-4 flex flex-col justify-center">
+              <div className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase mb-1.5">Flow sentiment</div>
+              <div className="flex items-center gap-3">
+                <span className={`text-2xl font-bold ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#EF4444]" : "text-white/50"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
-                <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${isBull ? bullPct : 100 - bullPct}%`, background: isBull ? "#22c55e" : "#ef4444" }} />
+                <div className="flex-1 h-1 bg-[#1A2535] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${isBull ? bullPct : 100 - bullPct}%`, background: isBull ? "#22C55E" : "#EF4444" }} />
                 </div>
               </div>
-              <div className="text-xs text-white/30 mt-1">{displayStats.count.toLocaleString()} signals</div>
             </div>
+            <div className="bg-[#131B27]" />
             {/* P/C Ratio */}
-            <div className="p-4">
-              <div className="text-xs text-white/35 mb-2">Put to call</div>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl font-bold text-white">{displayStats.pc_ratio.toFixed(3)}</span>
-                <svg width="48" height="48" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#60a5fa" strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={`${pcDash} ${circ}`} strokeDashoffset={circ / 4}
-                    style={{ transition: "stroke-dasharray 0.5s" }} />
-                </svg>
+            <div className="px-4 py-4 flex items-center gap-3">
+              <div>
+                <div className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase mb-1.5">Put to call</div>
+                <div className="text-2xl font-bold text-white leading-none">{displayStats.pc_ratio.toFixed(2)}</div>
               </div>
+              <svg width="48" height="48" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${pcDash} ${circ}`} strokeDashoffset={circ / 4}
+                  style={{ transition: "stroke-dasharray 0.5s" }} />
+              </svg>
             </div>
+            <div className="bg-[#131B27]" />
             {/* Call flow */}
-            <div className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-white/35">Call flow</span>
-                <span className="text-[#22c55e] text-sm font-bold">{fmtPrem(callPrem)}</span>
+            <div className="px-4 py-4 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase">Call flow</span>
+                  <span className="text-[11px] font-bold text-[#22C55E]">{fmtPrem(callPrem)}</span>
+                </div>
+                <div className="text-2xl font-bold text-white leading-none mt-1">{calls.length.toLocaleString()}</div>
               </div>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-2xl font-bold text-white">{calls.length.toLocaleString()}</span>
-                <svg width="48" height="48" viewBox="0 0 48 48" className="flex-shrink-0">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#22c55e" strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={`${callDash} ${circ}`} strokeDashoffset={circ / 4}
-                    style={{ transition: "stroke-dasharray 0.5s" }} />
-                  <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{callPct}%</text>
-                </svg>
-              </div>
+              <svg width="48" height="48" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${(callPct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
+                  style={{ transition: "stroke-dasharray 0.5s" }} />
+                <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{callPct}%</text>
+              </svg>
             </div>
+            <div className="bg-[#131B27]" />
             {/* Put flow */}
-            <div className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-white/35">Put flow</span>
-                <span className="text-[#ef4444] text-sm font-bold">{fmtPrem(putPrem)}</span>
+            <div className="px-4 py-4 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase">Put flow</span>
+                  <span className="text-[11px] font-bold text-[#EF4444]">{fmtPrem(putPrem)}</span>
+                </div>
+                <div className="text-2xl font-bold text-white leading-none mt-1">{puts.length.toLocaleString()}</div>
               </div>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-2xl font-bold text-white">{puts.length.toLocaleString()}</span>
-                <svg width="48" height="48" viewBox="0 0 48 48" className="flex-shrink-0">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={`${putDash} ${circ}`} strokeDashoffset={circ / 4}
-                    style={{ transition: "stroke-dasharray 0.5s" }} />
-                  <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{putPct}%</text>
-                </svg>
-              </div>
+              <svg width="48" height="48" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
+                <circle cx="24" cy="24" r="20" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${(putPct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
+                  style={{ transition: "stroke-dasharray 0.5s" }} />
+                <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{putPct}%</text>
+              </svg>
             </div>
           </div>
         )
@@ -638,10 +644,10 @@ export default function ScannerPage() {
                     <td className="px-2 py-2 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
                     <td className="px-2 py-2 text-center">
-                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
-                        t.flow_type === "SWEEP" ? "bg-purple-500/20 text-purple-300" :
-                        t.flow_type === "BLOCK" ? "bg-blue-500/20 text-blue-300" :
-                        "bg-white/10 text-white/50"
+                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${
+                        t.flow_type === "SWEEP" ? "bg-[#312560] text-[#A78BFA] border-[#A78BFA]/30" :
+                        t.flow_type === "BLOCK" ? "bg-[#1A2D4A] text-[#60A5FA] border-[#60A5FA]/30" :
+                        "bg-[#1E2530] text-[#7A8BA8] border-[#2E3A4D]"
                       }`}>
                         {t.flow_type || "—"}
                       </span>
@@ -663,11 +669,7 @@ export default function ScannerPage() {
                     <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">
                         {badges.map((b, i) => (
-                          <span
-                            key={i}
-                            className="text-[9px] font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
-                            style={{ background: `${b.color}20`, color: b.color }}
-                          >
+                          <span key={i} className={`text-[9px] font-medium px-1.5 py-0.5 rounded whitespace-nowrap ${b.cls}`}>
                             {b.label}
                           </span>
                         ))}
@@ -681,6 +683,27 @@ export default function ScannerPage() {
         )}
       </div>
 
+      {/* ── PAGINATION BAR ── */}
+      <div className="flex items-center justify-between px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
+        <button
+          onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+          disabled={page === 0}
+          className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          ← Newer
+        </button>
+        <span className="text-[11px] text-[#4A5A72]">
+          {page === 0 ? `Live · ${filtered.length.toLocaleString()} signals` : `Page ${page + 1} · earlier ${timeRange === "today" ? "today" : timeRange.replace("_", " ")}`}
+        </span>
+        <button
+          onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
+          disabled={trades.length < 2000 && page > 0}
+          className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          Older →
+        </button>
+      </div>
+
       {/* ── FILTER PANEL ── */}
       {showFilters && (
         <>
@@ -689,11 +712,23 @@ export default function ScannerPage() {
             <div className="flex items-center justify-between p-4 border-b border-[#252E3D]">
               <span className="text-white font-semibold text-sm">Filters</span>
               <div className="flex items-center gap-3">
-                <button onClick={() => { setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterExcludeMM(false) }} className="text-white/40 hover:text-white text-xs">Reset all</button>
+                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterExcludeMM(false); setFilterNoIndex(false) }} className="text-white/40 hover:text-white text-xs">Reset all</button>
                 <button onClick={() => setShowFilters(false)} className="text-white/40 hover:text-white text-lg leading-none">&times;</button>
               </div>
             </div>
             <div className="flex-1 p-4 space-y-6">
+              {/* 0. Time Range */}
+              <div>
+                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Time Range</div>
+                <div className="flex gap-2 flex-wrap">
+                  {TIME_RANGES.map(r => (
+                    <button key={r.key} onClick={() => { setTimeRange(r.key); setPage(0) }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${timeRange === r.key ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {/* 1. Grade */}
               <div>
                 <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Grade</div>
@@ -788,9 +823,20 @@ export default function ScannerPage() {
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterExcludeMM ? "left-5" : "left-1"}`} />
                 </button>
               </div>
+              {/* 9. No Index */}
+              <div className="flex items-center justify-between py-2 border-t border-[#252E3D]">
+                <div>
+                  <div className="text-white text-sm font-medium">No Index</div>
+                  <div className="text-white/35 text-xs">Hide SPX, NDX, index &amp; ETF flow</div>
+                </div>
+                <button onClick={() => setFilterNoIndex(!filterNoIndex)}
+                  className={`w-10 h-6 rounded-full transition-colors relative ${filterNoIndex ? "bg-[#F5820A]" : "bg-[#252E3D]"}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterNoIndex ? "left-5" : "left-1"}`} />
+                </button>
+              </div>
             </div>
             <div className="p-4 border-t border-[#252E3D]">
-              <button onClick={() => { fetchData(); setShowFilters(false) }}
+              <button onClick={() => { setPage(0); setShowFilters(false) }}
                 className="w-full bg-[#60a5fa] hover:bg-[#3b82f6] text-black font-bold py-3 rounded-xl text-sm transition-colors">
                 Apply Filters
               </button>
