@@ -72,6 +72,15 @@ function fmtPrem(v: number) {
   return `$${v}`
 }
 
+function fmtGex(v: number) {
+  const abs = Math.abs(v)
+  const sign = v < 0 ? "-" : ""
+  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(1)}B`
+  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`
+  if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(0)}K`
+  return `${sign}$${abs.toFixed(0)}`
+}
+
 function isMarketOpen() {
   const now = new Date()
   const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }))
@@ -169,6 +178,17 @@ export default function ScannerPage() {
   const [live, setLive] = useState(isMarketOpen())
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [activePage, setActivePage] = useState<"scanner" | "heatmap" | "watchlist">("scanner")
+  const [canAccessGamma, setCanAccessGamma] = useState(false)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [gexSymbol, setGexSymbol] = useState("SPY")
+  const [gexData, setGexData] = useState<{ symbol: string; spot: number; spot_fmt: string; expirations: string[]; strikes: number[]; matrix: Record<string, Record<string, { net_gex: number; call_oi: number; put_oi: number; has_greeks?: boolean }>>; max_abs_gex: number; zero_gamma_strike: number | null; top_cells: { strike: number; expiry: string; net_gex: number }[] } | null>(null)
+  const [gexLoading, setGexLoading] = useState(false)
+  const [gexError, setGexError] = useState("")
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    if (typeof window === "undefined") return []
+    try { return JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch { return [] }
+  })
+  const [wlInput, setWlInput] = useState("")
   const [soundEnabled, setSoundEnabled] = useState(true)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const prevTradeIdsRef = useRef<Set<number>>(new Set())
@@ -190,6 +210,36 @@ export default function ScannerPage() {
   const isFirstLoadRef = useRef<boolean>(true)
   const [newTradeIds, setNewTradeIds] = useState<Set<number>>(new Set())
   const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
+      if (d) setCanAccessGamma(d.gamma_wall)
+    }).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (activePage !== "heatmap" || !canAccessGamma) return
+    setGexLoading(true); setGexError("")
+    fetch(`/api/scanner/gex-heatmap?symbol=${gexSymbol}`)
+      .then(r => r.json())
+      .then(d => { if (d.error) { setGexError(d.error); setGexData(null) } else setGexData(d) })
+      .catch(() => setGexError("Failed to load"))
+      .finally(() => setGexLoading(false))
+  }, [activePage, canAccessGamma, gexSymbol])
+
+  const addToWatchlist = useCallback((sym: string) => {
+    const s = sym.toUpperCase().trim()
+    if (!s || watchlist.includes(s)) return
+    const updated = [...watchlist, s]
+    setWatchlist(updated)
+    localStorage.setItem("pb_watchlist", JSON.stringify(updated))
+  }, [watchlist])
+
+  const removeFromWatchlist = useCallback((sym: string) => {
+    const updated = watchlist.filter(s => s !== sym)
+    setWatchlist(updated)
+    localStorage.setItem("pb_watchlist", JSON.stringify(updated))
+  }, [watchlist])
 
   const playBlip = useCallback(() => {
     if (!soundEnabled) return
@@ -369,8 +419,13 @@ export default function ScannerPage() {
         <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")}>
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
         </button>
-        <button onClick={() => setActivePage("heatmap")} className={sideBtn(activePage === "heatmap")}>
+        <button
+          onClick={() => canAccessGamma ? setActivePage("heatmap") : setShowUpgradeModal(true)}
+          className={`${sideBtn(activePage === "heatmap")} relative`}
+          title={canAccessGamma ? "GEX Heatmap" : "Upgrade to Pro for Gamma Wall"}
+        >
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+          {!canAccessGamma && <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-[#F5820A]" />}
         </button>
         <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")}>
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
@@ -396,10 +451,204 @@ export default function ScannerPage() {
       {/* ── MAIN CONTENT ── */}
       <div className="ml-[52px] flex flex-col h-screen overflow-hidden flex-1">
 
-      {activePage === "heatmap" ? (
-        <div className="flex-1 flex items-center justify-center text-[#3D4D63] text-sm">GEX Heatmap — coming soon</div>
-      ) : activePage === "watchlist" ? (
-        <div className="flex-1 flex items-center justify-center text-[#3D4D63] text-sm">Watchlist — coming soon</div>
+      {activePage === "heatmap" ? ((() => {
+        const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
+        const netGex = gexData ? gexData.strikes.reduce((sum, strike) => {
+          const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
+          const row = gexData.matrix[sk] || {}
+          return sum + Object.values(row).reduce((rs, c) => rs + c.net_gex, 0)
+        }, 0) : 0
+        const todayStr = new Date().toISOString().slice(0, 10)
+        const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
+        return (
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F1A" }}>
+          {/* Metrics header */}
+          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#131B27] flex-shrink-0">
+            <div className="flex items-center gap-4">
+              <div>
+                <div className="text-[9px] font-bold text-[#3D4D63] tracking-[0.15em] uppercase">GEX Heatmap</div>
+                <div className="text-[10px] text-[#4A5A72]">Gamma Exposure by Strike</div>
+              </div>
+              <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
+                className="bg-[#161B24] border border-[#1E2A3A] text-white text-sm rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#F5820A]/50">
+                {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            {gexData && (
+              <div className="flex items-center gap-6 ml-4">
+                <div>
+                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Spot</div>
+                  <div className="text-sm font-bold text-white">${gexData.spot.toFixed(2)}</div>
+                </div>
+                {gexData.zero_gamma_strike != null && (
+                  <div>
+                    <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Zero Gamma</div>
+                    <div className="text-sm font-bold text-[#F5820A]">${gexData.zero_gamma_strike.toFixed(2)}</div>
+                  </div>
+                )}
+                <div>
+                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Net GEX</div>
+                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                    {netGex >= 0 ? "+" : ""}{fmtGex(netGex)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Dominant</div>
+                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                    {netGex >= 0 ? "CALL GEX" : "PUT GEX"}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="ml-auto flex items-center gap-4 text-[9px] text-[#4A5A72]">
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#22C55E]/50 border border-[#22C55E]/30" /> Call</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#EF4444]/50 border border-[#EF4444]/30" /> Put</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#60A5FA]" /> Spot</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-t border-dashed border-[#F5820A]" /> ZG</div>
+            </div>
+          </div>
+          {/* OI fallback banner */}
+          {gexData && Object.values(gexData.matrix).some(row => Object.values(row).some(c => c.has_greeks === false)) && (
+            <div className="flex items-center gap-2 px-5 py-1.5 flex-shrink-0" style={{ background: "rgba(245,158,11,0.06)", borderBottom: "1px solid rgba(245,158,11,0.15)" }}>
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/></svg>
+              <span className="text-[10px] text-amber-400/80 font-medium">Greeks unavailable after market hours — GEX estimated from open interest. Live gamma data available 9:30–4:00 PM ET.</span>
+            </div>
+          )}
+          {/* GEX table */}
+          <div className="flex-1 overflow-auto">
+            {gexLoading ? (
+              <div className="flex items-center justify-center h-full text-[#3D4D63] text-sm">Loading heatmap...</div>
+            ) : gexError ? (
+              <div className="flex items-center justify-center h-full text-[#EF4444] text-sm">{gexError}</div>
+            ) : gexData ? (
+              <div style={{ display: "grid", gridTemplateColumns: `64px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
+                {/* Column headers */}
+                <div className="sticky top-0 z-10 px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>Strike</div>
+                {gexData.expirations.map(exp => {
+                  const isToday = exp === todayStr
+                  return (
+                    <div key={exp} className={`sticky top-0 z-10 px-2 py-2 text-center border-r border-b border-[#131B27] ${isToday ? "bg-[#F5820A]/[0.08]" : ""}`} style={{ background: isToday ? undefined : "#0B0F1A" }}>
+                      <div className={`text-[9px] font-bold tracking-[0.08em] uppercase ${isToday ? "text-[#F5820A]" : "text-[#4A5A72]"}`}>
+                        {isToday ? "TODAY" : fmtExp(exp)}
+                      </div>
+                    </div>
+                  )
+                })}
+                <div className="sticky top-0 z-10 px-3 py-2 text-right text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase border-b border-[#131B27]" style={{ background: "#0B0F1A", borderLeft: "1px solid #1E2A3A" }}>Net Total</div>
+                {/* Data rows */}
+                {gexData.strikes.map(strike => {
+                  const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
+                  const row = gexData.matrix[sk] || {}
+                  const rowTotal = Object.values(row).reduce((s, c) => s + c.net_gex, 0)
+                  const isAtm = Math.abs(strike - gexData.spot) <= (gexData.spot * 0.002)
+                  const isZg = gexData.zero_gamma_strike != null && Math.abs(strike - gexData.zero_gamma_strike) <= (gexData.spot * 0.002)
+                  return [
+                    <div key={`s-${strike}`} className="px-3 flex items-center gap-1.5 border-r border-b border-[#0D1219]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }}>
+                      {isAtm && <div className="w-1.5 h-1.5 rounded-full bg-[#60A5FA] flex-shrink-0" />}
+                      {isZg && <span className="text-[8px] font-bold text-[#F5820A]">ZG</span>}
+                      <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : "text-[#C4CDD9]"}`}>{strike}</span>
+                    </div>,
+                    ...gexData.expirations.map(exp => {
+                      const cell = row[exp]
+                      const gex = cell?.net_gex ?? 0
+                      const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
+                      const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
+                      return (
+                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#0D1219] flex items-center justify-center" style={{ background: bg, minHeight: 24, ...(isAtm ? { background: gex === 0 ? "rgba(255,255,255,0.04)" : bg } : {}), ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
+                          {gex !== 0 && (
+                            <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                              {fmtGex(gex)}
+                            </span>
+                          )}
+                        </div>
+                      )
+                    }),
+                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#0D1219]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }}>
+                      <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                        {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
+                      </span>
+                    </div>,
+                  ]
+                })}
+              </div>
+            ) : null}
+          </div>
+        </div>
+        )
+      })()) : activePage === "watchlist" ? (
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F1A" }}>
+          {/* Watchlist header */}
+          <div className="px-5 py-3 border-b border-[#131B27] flex items-center gap-3 flex-shrink-0">
+            <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
+            <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
+            <div className="ml-auto">
+              <input
+                placeholder="Add symbol..."
+                value={wlInput}
+                onChange={e => setWlInput(e.target.value.toUpperCase())}
+                onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
+                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-sm text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#F5820A]/50 w-36"
+              />
+            </div>
+          </div>
+          {/* Watchlist body */}
+          <div className="flex-1 overflow-y-auto">
+            {watchlist.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-40 text-[#3D4D63]">
+                <div className="text-sm">No symbols added</div>
+                <div className="text-[11px] mt-1">Type a symbol above and press Enter</div>
+              </div>
+            ) : (
+              <div>
+                {/* Column headers */}
+                <div className="grid sticky top-0 z-10 border-b border-[#131B27] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#0B0F1A" }}>
+                  <div className="px-5 py-2">Symbol</div>
+                  <div className="px-3 py-2 text-right">Call Flow</div>
+                  <div className="px-3 py-2 text-right">Put Flow</div>
+                  <div className="px-3 py-2 text-center">Signals</div>
+                  <div />
+                </div>
+                {watchlist.map(sym => {
+                  const symTrades = trades.filter(t => t.symbol === sym)
+                  const callPrem = symTrades.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
+                  const putPrem = symTrades.filter(t => t.opt_type === "P").reduce((s, t) => s + t.premium, 0)
+                  const count = symTrades.length
+                  const isBull = callPrem > putPrem * 1.3
+                  const isBear = putPrem > callPrem * 1.3
+                  return (
+                    <div key={sym} className="grid border-b border-[#0D1219] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
+                      onClick={() => { setSearch(sym); setActivePage("scanner") }}>
+                      <div className="px-5 flex items-center gap-2">
+                        <span className="text-sm font-bold text-white">{sym}</span>
+                        {count > 0 && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${isBull ? "bg-[#22C55E]/15 text-[#22C55E]" : isBear ? "bg-[#EF4444]/15 text-[#EF4444]" : "bg-white/5 text-[#4A5A72]"}`}>
+                            {isBull ? "BULL" : isBear ? "BEAR" : "MIXED"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="px-3 flex items-center justify-end">
+                        <span className={`text-[11px] font-mono font-semibold ${callPrem > 0 ? "text-[#22C55E]" : "text-[#3D4D63]"}`}>
+                          {callPrem > 0 ? fmtPrem(callPrem) : "—"}
+                        </span>
+                      </div>
+                      <div className="px-3 flex items-center justify-end">
+                        <span className={`text-[11px] font-mono font-semibold ${putPrem > 0 ? "text-[#EF4444]" : "text-[#3D4D63]"}`}>
+                          {putPrem > 0 ? fmtPrem(putPrem) : "—"}
+                        </span>
+                      </div>
+                      <div className="px-3 flex items-center justify-center">
+                        <span className="text-[11px] text-[#7A8BA8] font-mono">{count || "—"}</span>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }} className="text-[#3D4D63] hover:text-[#EF4444] transition-colors text-xs">×</button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
       ) : (<>
 
       {/* ── HEADER ── */}
@@ -846,6 +1095,26 @@ export default function ScannerPage() {
       )}
 
       </>)}
+
+      {/* ── UPGRADE MODAL ── */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setShowUpgradeModal(false)}>
+          <div className="border border-[#1E2A3A] rounded-xl p-8 max-w-sm w-full mx-4" style={{ background: "#0F1520" }} onClick={e => e.stopPropagation()}>
+            <div className="text-[#F5820A] text-[10px] font-bold tracking-[0.15em] uppercase mb-3">Pro Feature</div>
+            <div className="text-xl font-bold text-white mb-2">Gamma Wall Scanner</div>
+            <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
+              Real-time GEX heatmaps, gamma wall detection, and squeeze identification are available on the Pro plan.
+            </div>
+            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#F5820A] text-black font-bold text-sm hover:bg-[#e57309] transition-colors">
+              Upgrade to Pro
+            </a>
+            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-sm hover:text-[#7A8BA8] transition-colors">
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   )

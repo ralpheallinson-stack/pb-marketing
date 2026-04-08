@@ -16,6 +16,7 @@ export default function Nav() {
           <a href="/results" className="text-white/50 hover:text-white transition-colors">Results</a>
           <a href="/#pricing" className="text-white/50 hover:text-white transition-colors">Pricing</a>
           <a href="/community" className="text-white/50 hover:text-white transition-colors">Community</a>
+          <a href="/blog" className="text-white/50 hover:text-white transition-colors">Blog</a>
           <a href="/free-scanner" className="text-white/50 hover:text-white transition-colors font-semibold">Free Scanner</a>
           <a href="/login" className="text-white/50 hover:text-white transition-colors">Login</a>
         </div>

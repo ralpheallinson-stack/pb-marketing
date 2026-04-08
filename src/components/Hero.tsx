@@ -2,6 +2,9 @@
 
 import Image from "next/image"
 import { DotPattern } from "@/components/magicui/dot-pattern"
+import { ShimmerButton } from "@/components/magicui/ShimmerButton"
+import { BorderBeam } from "@/components/magicui/BorderBeam"
+import { BlurFade } from "@/components/magicui/BlurFade"
 
 export default function Hero() {
   return (
@@ -72,16 +75,14 @@ export default function Hero() {
 
         {/* Single CTA */}
         <div className="flex flex-col items-center gap-3 mb-6">
-          <a
-            href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
-            className="bg-[#f97316] hover:bg-[#ea6b0e] text-white font-semibold px-10 py-4 rounded-full text-base transition-colors"
-          >
+          <ShimmerButton href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07" className="rounded-full text-base text-white">
             Start Free 7 Day Trial
-          </a>
+          </ShimmerButton>
           <p className="text-white/40 text-xs">Free 7-day trial · Then $99/mo · Cancel anytime</p>
         </div>
 
         {/* Social proof — stacked avatars + stars */}
+        <BlurFade delay={0.3}>
         <div className="flex items-center justify-center gap-3 mb-16">
           {/* Stacked avatars */}
           <div className="flex -space-x-2">
@@ -107,9 +108,10 @@ export default function Hero() {
             </span>
           </div>
         </div>
+        </BlurFade>
 
         {/* Scanner mockup — responsive */}
-        <div className="w-full mt-12 px-4 md:px-0">
+        <BorderBeam className="w-full mt-12 mx-4 md:mx-0">
           {/* Mobile — show cropped left portion of scanner */}
           <div className="block md:hidden overflow-hidden rounded-xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
             <div style={{position: 'relative', paddingBottom: '75%', overflow: 'hidden'}}>
@@ -133,7 +135,7 @@ export default function Hero() {
               className="w-full h-auto"
             />
           </div>
-        </div>
+        </BorderBeam>
 
       </div>
     </section>
