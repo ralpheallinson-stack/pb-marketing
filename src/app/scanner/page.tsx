@@ -90,27 +90,53 @@ function isMarketOpen() {
   return mins >= 570 && mins < 960 // 9:30 - 16:00
 }
 
-/* ── pill base: text-[10px] font-semibold tracking-wide uppercase border rounded-sm px-1.5 py-0.5 ── */
+/* ── pill base ── */
 const PILL = "inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide uppercase border"
+
+/* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
+function getRowStyle(t: Trade): React.CSSProperties {
+  if (t.whale) return { backgroundColor: "rgba(245,158,11,0.10)", borderLeft: "3px solid #f59e0b" }
+  if (t.flow_type === "BLOCK" && t.premium >= 1000000) return { backgroundColor: "rgba(96,165,250,0.08)", borderLeft: "3px solid #60a5fa" }
+  if ((t.vol_oi ?? 0) >= 2.0 && t.accum_hits > 0) return { backgroundColor: "rgba(168,85,247,0.08)", borderLeft: "2px solid rgba(168,85,247,0.6)" }
+  if ((t.vol_oi ?? 0) >= 1.0 && t.flow_type === "SWEEP") return { backgroundColor: "rgba(234,179,8,0.07)", borderLeft: "2px solid rgba(234,179,8,0.55)" }
+  if ((t.dte ?? 99) <= 7 && t.flow_type === "SWEEP" && t.position_action === "OPENING" && (t.aggression === "ABOVE_ASK" || t.aggression === "AT_ASK")) return { backgroundColor: "rgba(234,179,8,0.04)", borderLeft: "2px solid rgba(234,179,8,0.4)" }
+  if (t.accum_hits >= 2) return { borderLeft: "2px solid rgba(96,165,250,0.3)" }
+  if (t.grade === "A") return { borderLeft: "1px solid rgba(249,115,22,0.4)" }
+  if (t.flow_type === "SWEEP") return { borderLeft: "1px solid rgba(234,179,8,0.15)" }
+  return {}
+}
+
+/* ── BBS-style alert type ── */
+function getAlertType(t: Trade): { label: string; color: string } | null {
+  if ((t.dte ?? 99) <= 7 && t.flow_type === "SWEEP" && t.position_action === "OPENING" && (t.aggression === "ABOVE_ASK" || t.aggression === "AT_ASK")) return { label: "ROULETTE", color: "#ef4444" }
+  if (t.accum_hits >= 5 && t.position_action === "OPENING") return { label: "SWIFT", color: "#f97316" }
+  if (t.accum_hits >= 3 && t.position_action === "OPENING") return { label: "STEADY", color: "#f97316" }
+  if (t.accum_hits >= 2) return { label: "RAPID", color: "#a855f7" }
+  if ((t.vol_oi ?? 0) >= 1.0 && (t.aggression === "AT_ASK" || t.aggression === "ABOVE_ASK")) return { label: "LARGE", color: "#eab308" }
+  if (t.accum_hits === 1) return { label: "REPEAT", color: "#60a5fa" }
+  return null
+}
 
 function condBadges(t: Trade): { label: string; cls: string }[] {
   const pills: { label: string; cls: string }[] = []
 
-  // PILL 1 — Flow type (always)
+  // PILL 1 — Alert type (BBS-style) OR flow type
+  const alert = getAlertType(t)
+  if (alert) {
+    pills.push({ label: alert.label, cls: PILL })  // styled via inline style in render
+  }
+
+  // PILL 2 — Flow type
   if (t.flow_type === "SWEEP") pills.push({ label: "SWEEP", cls: `${PILL} bg-[#eab308]/15 text-[#eab308] border-[#eab308]/40` })
   else if (t.premium >= 1000000 && t.flow_type === "BLOCK") pills.push({ label: "BLOCK 1M+", cls: `${PILL} bg-[#60a5fa]/25 text-[#60a5fa] border-[#60a5fa]/60 font-bold` })
   else if (t.flow_type === "BLOCK") pills.push({ label: "BLOCK", cls: `${PILL} bg-[#60a5fa]/15 text-[#60a5fa] border-[#60a5fa]/40` })
 
-  // PILL 2 — Signal flag (highest priority one)
-  if (t.whale) pills.push({ label: "WHALE", cls: `${PILL} bg-[#f59e0b]/15 text-[#f59e0b] border-[#f59e0b]/40` })
-  else if (t.mm_suspected) pills.push({ label: "MM FILTER", cls: `${PILL} bg-white/[0.08] text-white/40 border-white/15` })
-  else if (t.high_conviction) pills.push({ label: "HIGH CONV", cls: `${PILL} bg-[#f97316]/15 text-[#f97316] border-[#f97316]/40` })
+  // PILL 3 — Signal context (one of: EVENT, WHALE, MM, ACCUM, structure, position)
+  if (t.is_event_driven) pills.push({ label: "EVENT", cls: `${PILL} bg-[#f97316]/[0.18] text-[#f97316] border-[#f97316]/40` })
+  else if (t.whale) pills.push({ label: "WHALE", cls: `${PILL} bg-[#f59e0b]/15 text-[#f59e0b] border-[#f59e0b]/40` })
   else if (t.accum_hits > 0) pills.push({ label: `ACCUM ${t.accum_hits}x`, cls: `${PILL} bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/40` })
   else if ((t.vol_oi ?? 0) >= 2.0) pills.push({ label: "HIGH V/OI", cls: `${PILL} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40` })
-  else if ((t.adv_multiple ?? 0) >= 1.0) pills.push({ label: `VOL ${(t.adv_multiple ?? 0).toFixed(1)}x`, cls: `${PILL} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40` })
-
-  // PILL 3 — Position / structure
-  if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5) {
+  else if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5) {
     const label = t.structure.replace(/_/g, " ").replace("VERTICAL SPREAD", "SPREAD").replace("CALENDAR SPREAD", "CALENDAR").replace("DIAGONAL SPREAD", "DIAGONAL")
     pills.push({ label, cls: `${PILL} bg-white/[0.08] text-white/50 border-white/15` })
   } else if (t.position_action === "OPENING") pills.push({ label: "OPENING", cls: `${PILL} bg-white/[0.05] text-white/35 border-transparent` })
@@ -126,16 +152,28 @@ function fmtExpiry(exp: string) {
 }
 
 function aggrColor(a: string | null | undefined) {
-  if (!a) return "text-white/50"
+  if (!a || a === "NEUTRAL") return "text-white/30"
   if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#22c55e]"
   if (a === "BELOW_BID" || a === "AT_BID") return "text-[#ef4444]"
   return "text-white/50"
 }
 
 function aggrLabel(a: string | null | undefined) {
-  if (!a) return "—"
-  const map: Record<string, string> = { ABOVE_ASK: "Above", AT_ASK: "Ask", AT_BID: "Bid", BELOW_BID: "Below", NEUTRAL: "Mid" }
+  if (!a || a === "NEUTRAL") return "—"
+  const map: Record<string, string> = { ABOVE_ASK: "Above", AT_ASK: "Ask", AT_BID: "Bid", BELOW_BID: "Below" }
   return map[a] || a
+}
+
+function bsColor(d: string | null | undefined) {
+  if (!d || d === "NEUTRAL") return "text-white/30"
+  if (d === "BUY") return "text-[#22c55e]"
+  if (d === "SELL") return "text-[#ef4444]"
+  return "text-white/50"
+}
+
+function bsLabel(d: string | null | undefined) {
+  if (!d || d === "NEUTRAL") return "—"
+  return d
 }
 
 /* ── time ranges (moved to filter panel) ── */
@@ -198,7 +236,6 @@ export default function ScannerPage() {
   const [filterDte, setFilterDte] = useState("")
   const [filterSide, setFilterSide] = useState("")
   const [filterUnusualOnly, setFilterUnusualOnly] = useState(false)
-  const [filterExcludeMM, setFilterExcludeMM] = useState(false)
   const [filterNoIndex, setFilterNoIndex] = useState(false)
   const [activeFilterCount, setActiveFilterCount] = useState(0)
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
@@ -350,10 +387,9 @@ export default function ScannerPage() {
     if (filterDte) c++
     if (filterSide) c++
     if (filterUnusualOnly) c++
-    if (filterExcludeMM) c++
     if (filterNoIndex) c++
     setActiveFilterCount(c)
-  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterDte, filterSide, filterUnusualOnly, filterExcludeMM, filterNoIndex])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterDte, filterSide, filterUnusualOnly, filterNoIndex])
 
   const filtered = useMemo(() => trades.filter(t => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
@@ -365,14 +401,13 @@ export default function ScannerPage() {
     if (filterOptType && t.opt_type !== filterOptType) return false
     if (filterSide && t.aggression !== filterSide) return false
     if (filterUnusualOnly && (t.vol_oi ?? 0) < 5) return false
-    if (filterExcludeMM && t.mm_suspected) return false
-    if (filterNoIndex && (t.sector === "INDEX" || t.sector === "ETF")) return false
+    if (filterNoIndex && ["SPX","SPXW","NDXP","NDX","RUT","RUTW"].includes(t.symbol)) return false
     if (filterDte === "0dte" && (t.dte ?? -1) !== 0) return false
     if (filterDte === "1-7" && ((t.dte ?? -1) < 1 || (t.dte ?? -1) > 7)) return false
     if (filterDte === "8-30" && ((t.dte ?? -1) < 8 || (t.dte ?? -1) > 30)) return false
     if (filterDte === "30+" && (t.dte ?? -1) < 30) return false
     return true
-  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterExcludeMM, filterNoIndex, filterDte])
+  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte])
 
   const calls = filtered.filter(t => t.opt_type === "C")
   const puts = filtered.filter(t => t.opt_type === "P")
@@ -391,7 +426,7 @@ export default function ScannerPage() {
     rowVirtualizer.measure()
   }, [filtered, rowVirtualizer])
 
-  const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterExcludeMM || filterNoIndex || filterDte)
+  const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterNoIndex || filterDte)
   const displayStats = hasLocalFilter ? (() => {
     const bull = filtered.filter(t => t.bullish).reduce((s, t) => s + t.premium, 0)
     const bear = filtered.filter(t => !t.bullish).reduce((s, t) => s + t.premium, 0)
@@ -828,24 +863,17 @@ export default function ScannerPage() {
             }}>
               {rowVirtualizer.getVirtualItems().map(vRow => {
                 const t = filtered[vRow.index]
-                if (!t) return null
+                if (!t || t.mm_suspected) return null
                 const badges = condBadges(t)
                 const isNew = newTradeIds.has(t.id)
-                const isBlock1M = t.flow_type === "BLOCK" && t.premium >= 1000000
-                const isWhale = t.whale
-                const isSweep = t.flow_type === "SWEEP"
-                // Row bg: ONLY block1M (blue) or whale (amber) get tint. Everything else = plain dark.
-                const rowCls = isNew ? "bg-[#60a5fa]/10"
-                  : isBlock1M ? "bg-[#60a5fa]/[0.08]" : isWhale ? "bg-[#f59e0b]/[0.08]" : ""
-                const borderCls = isBlock1M ? "border-l-[3px] border-l-[#60a5fa]"
-                  : isWhale ? "border-l-[3px] border-l-[#f59e0b]"
-                  : isSweep ? "border-l-2 border-l-[#eab308]/50" : ""
+                const rowStyle = isNew ? { backgroundColor: "rgba(96,165,250,0.10)" } : getRowStyle(t)
                 return (
                   <tr
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-[#1E2A3A] hover:bg-white/[0.04] transition-colors ${rowCls} ${borderCls} ${t.mm_suspected ? "opacity-50" : ""}`}
+                    className={`border-b border-[#1E2A3A] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.04]'}`}
+                    style={rowStyle}
                   >
                     <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
@@ -873,10 +901,8 @@ export default function ScannerPage() {
                     <td className={`px-2 py-2 text-center text-xs ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-2 text-center text-xs font-medium ${
-                      t.trade_direction === "BUY" ? "text-[#22c55e]" : t.trade_direction === "SELL" ? "text-[#ef4444]" : "text-white/40"
-                    }`}>
-                      {t.trade_direction || "—"}
+                    <td className={`px-2 py-2 text-center text-xs font-medium ${bsColor(t.trade_direction)}`}>
+                      {bsLabel(t.trade_direction)}
                     </td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
@@ -899,9 +925,14 @@ export default function ScannerPage() {
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">
-                        {badges.map((b, i) => (
-                          <span key={i} className={`whitespace-nowrap ${b.cls}`}>{b.label}</span>
-                        ))}
+                        {badges.map((b, i) => {
+                          const alert = i === 0 ? getAlertType(t) : null
+                          return alert && b.label === alert.label ? (
+                            <span key={i} className={`whitespace-nowrap ${PILL} font-bold`} style={{ color: alert.color, borderColor: alert.color + "40", backgroundColor: alert.color + "18" }}>{alert.label}</span>
+                          ) : (
+                            <span key={i} className={`whitespace-nowrap ${b.cls}`}>{b.label}</span>
+                          )
+                        })}
                       </div>
                     </td>
                   </tr>
@@ -941,7 +972,7 @@ export default function ScannerPage() {
             <div className="flex items-center justify-between p-4 border-b border-[#252E3D]">
               <span className="text-white font-semibold text-sm">Filters</span>
               <div className="flex items-center gap-3">
-                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterExcludeMM(false); setFilterNoIndex(false) }} className="text-white/40 hover:text-white text-xs">Reset all</button>
+                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/40 hover:text-white text-xs">Reset all</button>
                 <button onClick={() => setShowFilters(false)} className="text-white/40 hover:text-white text-lg leading-none">&times;</button>
               </div>
             </div>
@@ -1041,22 +1072,11 @@ export default function ScannerPage() {
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterUnusualOnly ? "left-5" : "left-1"}`} />
                 </button>
               </div>
-              {/* 8. Exclude MM */}
-              <div className="flex items-center justify-between py-2 border-t border-[#252E3D]">
-                <div>
-                  <div className="text-white text-sm font-medium">Exclude MM</div>
-                  <div className="text-white/35 text-xs">Hide market maker activity</div>
-                </div>
-                <button onClick={() => setFilterExcludeMM(!filterExcludeMM)}
-                  className={`w-10 h-6 rounded-full transition-colors relative ${filterExcludeMM ? "bg-[#60a5fa]" : "bg-[#252E3D]"}`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterExcludeMM ? "left-5" : "left-1"}`} />
-                </button>
-              </div>
               {/* 9. No Index */}
               <div className="flex items-center justify-between py-2 border-t border-[#252E3D]">
                 <div>
                   <div className="text-white text-sm font-medium">No Index</div>
-                  <div className="text-white/35 text-xs">Hide SPX, NDX, index &amp; ETF flow</div>
+                  <div className="text-white/35 text-xs">Hide SPX, SPXW, NDX, NDXP, RUT, RUTW</div>
                 </div>
                 <button onClick={() => setFilterNoIndex(!filterNoIndex)}
                   className={`w-10 h-6 rounded-full transition-colors relative ${filterNoIndex ? "bg-[#F5820A]" : "bg-[#252E3D]"}`}>

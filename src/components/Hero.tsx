@@ -3,7 +3,6 @@
 import Image from "next/image"
 import { DotPattern } from "@/components/magicui/dot-pattern"
 import { ShimmerButton } from "@/components/magicui/ShimmerButton"
-import { BorderBeam } from "@/components/magicui/BorderBeam"
 import { BlurFade } from "@/components/magicui/BlurFade"
 
 export default function Hero() {
@@ -111,7 +110,7 @@ export default function Hero() {
         </BlurFade>
 
         {/* Scanner mockup — responsive */}
-        <BorderBeam className="mt-12 mx-auto">
+        <div className="mt-12 mx-auto">
           {/* Mobile — show cropped left portion of scanner */}
           <div className="block md:hidden overflow-hidden rounded-xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
             <div style={{position: 'relative', paddingBottom: '75%', overflow: 'hidden'}}>
@@ -135,7 +134,7 @@ export default function Hero() {
               className="w-full h-auto"
             />
           </div>
-        </BorderBeam>
+        </div>
 
       </div>
     </section>
