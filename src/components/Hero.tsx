@@ -4,6 +4,7 @@ import Image from "next/image"
 import { DotPattern } from "@/components/magicui/dot-pattern"
 import { ShimmerButton } from "@/components/magicui/ShimmerButton"
 import { BlurFade } from "@/components/magicui/BlurFade"
+import { AvatarCircles } from "@/components/magicui/AvatarCircles"
 
 export default function Hero() {
   return (
@@ -83,19 +84,13 @@ export default function Hero() {
         {/* Social proof — stacked avatars + stars */}
         <BlurFade delay={0.3}>
         <div className="flex items-center justify-center gap-3 mb-16">
-          {/* Stacked avatars */}
-          <div className="flex -space-x-2">
-            {['#3b82f6','#8b5cf6','#f97316','#10b981','#ef4444'].map((color, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full border-2 border-[#0E1117] flex items-center justify-center text-xs font-bold text-white"
-                style={{ background: color, zIndex: 5 - i }}
-              >
-                {['J','R','M','S','K'][i]}
-              </div>
-            ))}
-          </div>
-          {/* Stars */}
+          <AvatarCircles avatarUrls={[
+            "https://i.pravatar.cc/150?img=1",
+            "https://i.pravatar.cc/150?img=2",
+            "https://i.pravatar.cc/150?img=3",
+            "https://i.pravatar.cc/150?img=4",
+            "https://i.pravatar.cc/150?img=5",
+          ]} />
           <div className="flex items-center gap-1.5">
             <div className="flex">
               {[1,2,3,4,5].map(s => (
@@ -103,7 +98,7 @@ export default function Hero() {
               ))}
             </div>
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
-              Used by 3,000+ traders
+              39.7% Grade A win rate · 174K+ signals
             </span>
           </div>
         </div>
