@@ -90,35 +90,33 @@ function isMarketOpen() {
   return mins >= 570 && mins < 960 // 9:30 - 16:00
 }
 
-/* ── conds badge color map ── */
-const COND_CLS: Record<string, string> = {
-  OPENING:   "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
-  ADJUSTING: "bg-[#1E2A3A] text-[#60A5FA] border border-[#60A5FA]/20",
-  CLOSING:   "bg-[#3A1E1E] text-[#EF4444] border border-[#EF4444]/20",
-  UNUSUAL:   "bg-[#2D1E3A] text-[#A855F7] border border-[#A855F7]/20",
-  "HIGH V/OI": "bg-[#2D1E3A] text-[#A855F7] border border-[#A855F7]/20",
-  WHALE:     "bg-[#3A2A0F] text-[#F5820A] border border-[#F5820A]/40",
-  EARNINGS:  "bg-[#3A2A0F] text-[#F5820A] border border-[#F5820A]/20",
-  EXTREME:   "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
-  OUTSIZED:  "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
-  MM:        "bg-[#1E2530] text-[#4A5A72] border border-[#2E3A4D]",
-}
-const COND_DEFAULT = "bg-[#1E2530] text-[#7A8BA8] border border-[#2E3A4D]"
+/* ── pill base: text-[10px] font-semibold tracking-wide uppercase border rounded-sm px-1.5 py-0.5 ── */
+const PILL = "inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide uppercase border"
 
 function condBadges(t: Trade): { label: string; cls: string }[] {
-  const badges: { label: string; cls: string }[] = []
-  const c = (label: string, key?: string) => ({ label, cls: COND_CLS[key ?? label] ?? COND_DEFAULT })
-  if ((t.vol_oi ?? 0) >= 5) badges.push(c((t.vol_oi ?? 0) >= 20 ? "UNUSUAL" : "HIGH V/OI"))
-  if (t.accum_hits >= 3) badges.push({ label: `ACCUM ${t.accum_hits}x`, cls: "bg-[#2A1E0F] text-[#F5820A] border border-[#F5820A]/20" })
-  if (t.whale) badges.push(c("WHALE"))
-  if (t.position_action === "OPENING") badges.push(c("OPENING"))
-  else if (t.position_action === "ADJUSTING") badges.push(c("ADJUSTING"))
-  if (t.mm_suspected) badges.push(c("MM"))
-  if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5)
-    badges.push({ label: t.structure.replace("_", " "), cls: COND_DEFAULT })
-  if (t.is_event_driven) badges.push(c("EARNINGS"))
-  if (t.adv_multiple && t.adv_multiple >= 5) badges.push(c(t.adv_multiple >= 10 ? "EXTREME" : "OUTSIZED"))
-  return badges.slice(0, 4)
+  const pills: { label: string; cls: string }[] = []
+
+  // PILL 1 — Flow type (always)
+  if (t.flow_type === "SWEEP") pills.push({ label: "SWEEP", cls: `${PILL} bg-[#eab308]/15 text-[#eab308] border-[#eab308]/40` })
+  else if (t.premium >= 1000000 && t.flow_type === "BLOCK") pills.push({ label: "BLOCK 1M+", cls: `${PILL} bg-[#60a5fa]/25 text-[#60a5fa] border-[#60a5fa]/60 font-bold` })
+  else if (t.flow_type === "BLOCK") pills.push({ label: "BLOCK", cls: `${PILL} bg-[#60a5fa]/15 text-[#60a5fa] border-[#60a5fa]/40` })
+
+  // PILL 2 — Signal flag (highest priority one)
+  if (t.whale) pills.push({ label: "WHALE", cls: `${PILL} bg-[#f59e0b]/15 text-[#f59e0b] border-[#f59e0b]/40` })
+  else if (t.mm_suspected) pills.push({ label: "MM FILTER", cls: `${PILL} bg-white/[0.08] text-white/40 border-white/15` })
+  else if (t.high_conviction) pills.push({ label: "HIGH CONV", cls: `${PILL} bg-[#f97316]/15 text-[#f97316] border-[#f97316]/40` })
+  else if (t.accum_hits > 0) pills.push({ label: `ACCUM ${t.accum_hits}x`, cls: `${PILL} bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/40` })
+  else if ((t.vol_oi ?? 0) >= 2.0) pills.push({ label: "HIGH V/OI", cls: `${PILL} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40` })
+  else if ((t.adv_multiple ?? 0) >= 1.0) pills.push({ label: `VOL ${(t.adv_multiple ?? 0).toFixed(1)}x`, cls: `${PILL} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40` })
+
+  // PILL 3 — Position / structure
+  if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5) {
+    const label = t.structure.replace(/_/g, " ").replace("VERTICAL SPREAD", "SPREAD").replace("CALENDAR SPREAD", "CALENDAR").replace("DIAGONAL SPREAD", "DIAGONAL")
+    pills.push({ label, cls: `${PILL} bg-white/[0.08] text-white/50 border-white/15` })
+  } else if (t.position_action === "OPENING") pills.push({ label: "OPENING", cls: `${PILL} bg-white/[0.05] text-white/35 border-transparent` })
+  else if (t.position_action === "ADJUSTING") pills.push({ label: "ADJUSTING", cls: `${PILL} bg-white/[0.05] text-white/35 border-transparent` })
+
+  return pills.slice(0, 3)
 }
 
 function fmtExpiry(exp: string) {
@@ -832,27 +830,28 @@ export default function ScannerPage() {
                 const t = filtered[vRow.index]
                 if (!t) return null
                 const badges = condBadges(t)
-                const isWhaleRow = t.whale
-                const isUnusual = (t.vol_oi ?? 0) >= 20 || t.premium >= 5000000
-                const isMM = t.mm_suspected
                 const isNew = newTradeIds.has(t.id)
+                const isBlock1M = t.flow_type === "BLOCK" && t.premium >= 1000000
+                const isWhale = t.whale
+                const isSweep = t.flow_type === "SWEEP"
+                // Row bg: ONLY block1M (blue) or whale (amber) get tint. Everything else = plain dark.
+                const rowCls = isNew ? "bg-[#60a5fa]/10"
+                  : isBlock1M ? "bg-[#60a5fa]/[0.08]" : isWhale ? "bg-[#f59e0b]/[0.08]" : ""
+                const borderCls = isBlock1M ? "border-l-[3px] border-l-[#60a5fa]"
+                  : isWhale ? "border-l-[3px] border-l-[#f59e0b]"
+                  : isSweep ? "border-l-2 border-l-[#eab308]/50" : ""
                 return (
                   <tr
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-[#252E3D] hover:bg-white/[0.03] transition-colors ${
-                      isNew ? "bg-[#60a5fa]/10" :
-                      isWhaleRow ? "bg-[#F5820A1A] border-l-2 border-l-[#F5820A]" :
-                      isUnusual ? "bg-[#9333EA1A] border-l-2 border-l-[#9333EA]" :
-                      vRow.index % 2 !== 0 ? "bg-white/[0.015]" : ""
-                    } ${isMM ? "opacity-50" : ""} ${t.high_conviction ? "border-l-2 border-l-[#F5820A]" : ""}`}
+                    className={`border-b border-[#1E2A3A] hover:bg-white/[0.04] transition-colors ${rowCls} ${borderCls} ${t.mm_suspected ? "opacity-50" : ""}`}
                   >
                     <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-sm text-white group-hover:text-[#60a5fa] transition-colors">{t.symbol}</div>
+                        <div className={`font-bold text-sm group-hover:text-[#60a5fa] transition-colors ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{t.symbol}</div>
                         {t.sector && <div className="text-white/30 text-[10px]">{t.sector}</div>}
                       </button>
                     </td>
@@ -881,21 +880,15 @@ export default function ScannerPage() {
                     </td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-2 text-center">
-                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${
-                        t.flow_type === "SWEEP" ? "bg-[#312560] text-[#A78BFA] border-[#A78BFA]/30" :
-                        t.flow_type === "BLOCK" ? "bg-[#1A2D4A] text-[#60A5FA] border-[#60A5FA]/30" :
-                        "bg-[#1E2530] text-[#7A8BA8] border-[#2E3A4D]"
-                      }`}>
-                        {t.flow_type || "—"}
-                      </span>
-                    </td>
-                    <td className={`px-2 py-2 text-right text-xs ${
-                      t.premium >= 1000000 ? "text-orange-400 font-bold" : t.premium >= 500000 ? "text-yellow-400 font-bold" : t.premium >= 100000 ? "text-white font-semibold" : "text-white/60"
+                    <td className={`px-2 py-2 text-center text-xs font-medium ${
+                      t.flow_type === "SWEEP" ? "text-[#eab308]" : t.flow_type === "BLOCK" ? "text-[#60a5fa]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/50"
                     }`}>
+                      {t.premium >= 1000000 && t.flow_type === "BLOCK" ? "BLOCK 1M+" : t.flow_type || "—"}
+                    </td>
+                    <td className={`px-2 py-2 text-right text-xs font-bold ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
                       {t.premium_fmt}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">
+                    <td className={`px-2 py-2 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
                     <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">
@@ -907,9 +900,7 @@ export default function ScannerPage() {
                     <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">
                         {badges.map((b, i) => (
-                          <span key={i} className={`text-[9px] font-medium px-1.5 py-0.5 rounded whitespace-nowrap ${b.cls}`}>
-                            {b.label}
-                          </span>
+                          <span key={i} className={`whitespace-nowrap ${b.cls}`}>{b.label}</span>
                         ))}
                       </div>
                     </td>
