@@ -46,6 +46,15 @@ export default function BlogPage() {
   // Individual post view
   if (slug && post) return (
     <div className="min-h-screen" style={{ background: "#0B0F1A" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post.title,
+        "datePublished": post.date,
+        "author": { "@type": "Organization", "name": "Profit Builders" },
+        "publisher": { "@type": "Organization", "name": "Profit Builders", "logo": { "@type": "ImageObject", "url": "https://profitbuilders.org/images/og-default.png" } },
+        "url": `https://profitbuilders.org/blog/${slug}`
+      }) }} />
       <Nav />
       <article className="max-w-2xl mx-auto px-6 pt-24 pb-24">
         <a href="/blog" className="text-[10px] text-[#4A5A72] hover:text-[#7A8BA8] transition-colors uppercase tracking-widest">&larr; All Articles</a>

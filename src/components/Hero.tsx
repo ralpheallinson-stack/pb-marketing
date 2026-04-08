@@ -27,7 +27,7 @@ export default function Hero() {
         {/* Animated brand text */}
         <div className="flex justify-center mb-6">
           <span
-            className="pb-brand-title"
+            className="pb-brand-title text-center"
             style={{
               fontFamily: "var(--font-teko), 'Impact', sans-serif",
               fontWeight: 700,
@@ -111,7 +111,7 @@ export default function Hero() {
         </BlurFade>
 
         {/* Scanner mockup — responsive */}
-        <BorderBeam className="w-full mt-12 mx-4 md:mx-0">
+        <BorderBeam className="mt-12 mx-auto">
           {/* Mobile — show cropped left portion of scanner */}
           <div className="block md:hidden overflow-hidden rounded-xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
             <div style={{position: 'relative', paddingBottom: '75%', overflow: 'hidden'}}>

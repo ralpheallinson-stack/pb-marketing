@@ -10,20 +10,40 @@ const teko = Teko({
 })
 
 export const metadata: Metadata = {
-  title: "Options Flow Scanner — Real-Time Institutional Sweeps & Blocks | Profit Builders",
-  description: "Real-time institutional options flow scanner with Greeks, IV, spread detection, and regime-aware conviction grading. 161,000+ signals tracked publicly.",
+  title: {
+    default: "Options Flow Scanner | Profit Builders",
+    template: "%s | Profit Builders",
+  },
+  description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 174,000+ signals tracked.",
   metadataBase: new URL("https://profitbuilders.org"),
+  alternates: { canonical: "https://profitbuilders.org" },
   openGraph: {
     title: "Options Flow Scanner | Profit Builders",
     description: "Real-time institutional options flow. Every signal tracked publicly.",
     type: "website",
+    siteName: "Profit Builders",
+    url: "https://profitbuilders.org",
+    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Scanner" }],
   },
-  twitter: { card: "summary_large_image", site: "@ProfitBldrs" },
+  twitter: { card: "summary_large_image", site: "@ProfitBldrs", images: ["/images/og-default.png"] },
+  robots: { index: true, follow: true },
 }
+
+const orgSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Profit Builders",
+  "url": "https://profitbuilders.org",
+  "logo": "https://profitbuilders.org/images/og-default.png",
+  "sameAs": ["https://x.com/ProfitBldrs"]
+})
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={teko.variable}>
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: orgSchema }} />
+      </head>
       <body>{children}</body>
     </html>
   )

@@ -6,7 +6,7 @@ export function BlurFade({ children, delay = 0, duration = 0.4, className = "" }
   children: React.ReactNode; delay?: number; duration?: number; className?: string
 }) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-40px" })
+  const isInView = useInView(ref, { once: true, margin: "0px" })
   return (
     <motion.div ref={ref} initial={{ opacity: 0, filter: "blur(6px)", y: 10 }}
       animate={isInView ? { opacity: 1, filter: "blur(0px)", y: 0 } : {}}

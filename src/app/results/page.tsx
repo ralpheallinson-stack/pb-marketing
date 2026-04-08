@@ -30,8 +30,18 @@ export default function ResultsPage() {
   const s = data?.summary
   const gradeA = data?.by_grade?.find(g => g.grade === "A")
 
+  const datasetSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "Profit Builders Signal Track Record",
+    "description": "Public log of every options flow signal issued by Profit Builders. 174K+ signals with win/loss outcomes tracked.",
+    "url": "https://profitbuilders.org/results",
+    "creator": { "@type": "Organization", "name": "Profit Builders" }
+  })
+
   return (
     <div className="min-h-screen" style={{ background: "#0B0F1A" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: datasetSchema }} />
       <Nav />
 
       {/* Hero */}
@@ -90,8 +100,8 @@ export default function ResultsPage() {
           {data.by_grade.length > 0 && (
             <div>
               <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase mb-4">Performance by Grade</div>
-              <div className="rounded-xl border border-[#1E2A3A] overflow-hidden" style={{ background: "#0F1520" }}>
-                <table className="w-full">
+              <div className="rounded-xl border border-[#1E2A3A] overflow-hidden overflow-x-auto" style={{ background: "#0F1520" }}>
+                <table className="w-full min-w-[600px]">
                   <thead className="border-b border-[#1E2A3A]">
                     <tr>
                       <th className={thCls}>Grade</th>
@@ -143,8 +153,8 @@ export default function ResultsPage() {
           {/* Monthly Results */}
           <div>
             <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase mb-4">Monthly Results</div>
-            <div className="rounded-xl border border-[#1E2A3A] overflow-hidden" style={{ background: "#0F1520" }}>
-              <table className="w-full">
+            <div className="rounded-xl border border-[#1E2A3A] overflow-hidden overflow-x-auto" style={{ background: "#0F1520" }}>
+              <table className="w-full min-w-[600px]">
                 <thead className="border-b border-[#1E2A3A]">
                   <tr>
                     <th className={thCls}>Month</th>

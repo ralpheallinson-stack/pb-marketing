@@ -128,7 +128,7 @@ export default function FreeScannerPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="grid border-b border-[#131B27]" style={{ gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr", background: "#0B0F1A" }}>
+      <div className="overflow-x-auto border-b border-[#131B27]"><div className="grid min-w-[700px]" style={{ gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr", background: "#0B0F1A" }}>
         <div className="px-4 py-4 flex flex-col justify-center">
           <div className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase mb-1.5">Sentiment</div>
           <div className="flex items-center gap-3">
@@ -184,7 +184,7 @@ export default function FreeScannerPage() {
             <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{putPct}%</text>
           </svg>
         </div>
-      </div>
+      </div></div>
 
       {/* Table */}
       <div className="flex-1 relative" style={{ fontVariantNumeric: "tabular-nums" }}>

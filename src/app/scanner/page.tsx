@@ -414,7 +414,7 @@ export default function ScannerPage() {
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#0B0F1A", borderRight: "1px solid #131B27" }}>
         <a href="/" className="mb-4 flex items-center justify-center w-full" aria-label="Home">
-          <svg width="22" height="22" viewBox="0 0 100 100" fill="none"><path d="M20 20h25v25H20zM55 20h25v25H55zM20 55h25v25H20zM55 55h25v25H55z" fill="white"/></svg>
+          <img src="/images/pb-logo.png" alt="Profit Builders" width={24} height={24} className="w-6 h-6 object-contain" />
         </a>
         <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")}>
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
@@ -503,17 +503,10 @@ export default function ScannerPage() {
             <div className="ml-auto flex items-center gap-4 text-[9px] text-[#4A5A72]">
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#22C55E]/50 border border-[#22C55E]/30" /> Call</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#EF4444]/50 border border-[#EF4444]/30" /> Put</div>
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#60A5FA]" /> Spot</div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-t border-dashed border-[#F5820A]" /> ZG</div>
+              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-white" /> Spot</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-t-2 border-[#a855f7]" /> Zero &gamma;</div>
             </div>
           </div>
-          {/* OI fallback banner */}
-          {gexData && Object.values(gexData.matrix).some(row => Object.values(row).some(c => c.has_greeks === false)) && (
-            <div className="flex items-center gap-2 px-5 py-1.5 flex-shrink-0" style={{ background: "rgba(245,158,11,0.06)", borderBottom: "1px solid rgba(245,158,11,0.15)" }}>
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/></svg>
-              <span className="text-[10px] text-amber-400/80 font-medium">Greeks unavailable after market hours — GEX estimated from open interest. Live gamma data available 9:30–4:00 PM ET.</span>
-            </div>
-          )}
           {/* GEX table */}
           <div className="flex-1 overflow-auto">
             {gexLoading ? (
@@ -521,32 +514,37 @@ export default function ScannerPage() {
             ) : gexError ? (
               <div className="flex items-center justify-center h-full text-[#EF4444] text-sm">{gexError}</div>
             ) : gexData ? (
-              <div style={{ display: "grid", gridTemplateColumns: `64px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
+              <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
                 {/* Column headers */}
-                <div className="sticky top-0 z-10 px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>Strike</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>Strike</div>
                 {gexData.expirations.map(exp => {
                   const isToday = exp === todayStr
                   return (
-                    <div key={exp} className={`sticky top-0 z-10 px-2 py-2 text-center border-r border-b border-[#131B27] ${isToday ? "bg-[#F5820A]/[0.08]" : ""}`} style={{ background: isToday ? undefined : "#0B0F1A" }}>
-                      <div className={`text-[9px] font-bold tracking-[0.08em] uppercase ${isToday ? "text-[#F5820A]" : "text-[#4A5A72]"}`}>
+                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>
+                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#F5820A]" : "text-white/50"}`}>
                         {isToday ? "TODAY" : fmtExp(exp)}
                       </div>
                     </div>
                   )
                 })}
-                <div className="sticky top-0 z-10 px-3 py-2 text-right text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase border-b border-[#131B27]" style={{ background: "#0B0F1A", borderLeft: "1px solid #1E2A3A" }}>Net Total</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#131B27]" style={{ background: "#0B0F1A", borderLeft: "1px solid #1E2A3A" }}>Total</div>
                 {/* Data rows */}
-                {gexData.strikes.map(strike => {
+                {(() => {
+                  const strikes = [...gexData.strikes].reverse()
+                  const atmStrike = strikes.reduce((best, s) => Math.abs(s - gexData.spot) < Math.abs(best - gexData.spot) ? s : best, strikes[0])
+                  const zgStrike = gexData.zero_gamma_strike != null ? strikes.reduce((best, s) => Math.abs(s - gexData.zero_gamma_strike!) < Math.abs(best - gexData.zero_gamma_strike!) ? s : best, strikes[0]) : null
+                  return strikes.map(strike => {
                   const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
                   const row = gexData.matrix[sk] || {}
                   const rowTotal = Object.values(row).reduce((s, c) => s + c.net_gex, 0)
-                  const isAtm = Math.abs(strike - gexData.spot) <= (gexData.spot * 0.002)
-                  const isZg = gexData.zero_gamma_strike != null && Math.abs(strike - gexData.zero_gamma_strike) <= (gexData.spot * 0.002)
+                  const isAtm = strike === atmStrike
+                  const isZg = strike === zgStrike
+                  const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
                   return [
-                    <div key={`s-${strike}`} className="px-3 flex items-center gap-1.5 border-r border-b border-[#0D1219]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }}>
-                      {isAtm && <div className="w-1.5 h-1.5 rounded-full bg-[#60A5FA] flex-shrink-0" />}
-                      {isZg && <span className="text-[8px] font-bold text-[#F5820A]">ZG</span>}
-                      <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : "text-[#C4CDD9]"}`}>{strike}</span>
+                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#0D1219]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
+                      {isAtm && <span className="text-[9px] font-bold text-white/70 mr-0.5">● SPOT</span>}
+                      {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
+                      <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
                     </div>,
                     ...gexData.expirations.map(exp => {
                       const cell = row[exp]
@@ -554,7 +552,7 @@ export default function ScannerPage() {
                       const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
                       const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
                       return (
-                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#0D1219] flex items-center justify-center" style={{ background: bg, minHeight: 24, ...(isAtm ? { background: gex === 0 ? "rgba(255,255,255,0.04)" : bg } : {}), ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
+                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#0D1219] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
                           {gex !== 0 && (
                             <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                               {fmtGex(gex)}
@@ -563,13 +561,13 @@ export default function ScannerPage() {
                         </div>
                       )
                     }),
-                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#0D1219]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), ...(isZg ? { borderTopColor: "rgba(245,130,10,0.5)", borderTopStyle: "dashed" as const } : {}) }}>
+                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#0D1219]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
                       <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                         {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
                       </span>
                     </div>,
                   ]
-                })}
+                })})()}
               </div>
             ) : null}
           </div>
@@ -652,31 +650,22 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-11 bg-[#161B24] border-b border-[#252E3D] flex items-center px-4 gap-3 flex-shrink-0">
-        <div className="flex-1 flex justify-center">
+      <header className="h-11 bg-[#161B24] border-b border-[#252E3D] flex items-center px-4 flex-shrink-0">
+        <div className="flex items-center gap-2">
           <input
             type="text"
             placeholder="Search symbol..."
             value={search}
             onChange={e => setSearch(e.target.value.toUpperCase())}
-            className="w-64 bg-[#1E2530] border border-[#252E3D] rounded-lg px-3 py-1 text-sm text-[#E8EDF5] placeholder-[#3D4D63] focus:outline-none focus:border-[#F5820A]/50 focus:ring-1 focus:ring-[#F5820A]/20"
+            className="w-48 bg-[#252E3D] border border-[#3D4D63]/40 rounded-lg px-3 py-1 text-sm text-white placeholder-[#7A8BA8] focus:outline-none focus:border-[#F5820A]/50 focus:ring-1 focus:ring-[#F5820A]/20"
           />
-        </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {live ? (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E] text-[11px] font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />LIVE
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#3D4D63] bg-[#161B24] text-[#4A5A72] text-[11px] font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4A5A72]" />CLOSED
-            </div>
-          )}
           <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium border border-[#2E3A4D] bg-[#161B24] hover:bg-[#1E2530] text-[#E8EDF5] transition-colors">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             Filters
             {activeFilterCount > 0 && <span className="bg-[#F5820A] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
           </button>
+        </div>
+        <div className="ml-auto flex-shrink-0">
           <a href="/logout" className="text-[#3D4D63] text-[11px] hover:text-[#E8EDF5]">Logout</a>
         </div>
       </header>

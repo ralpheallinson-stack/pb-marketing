@@ -26,7 +26,7 @@ export default function CommunityPage() {
       <Nav />
 
       {/* Hero */}
-      <section className="relative text-center pt-32 pb-16 px-4 overflow-hidden">
+      <section className="relative text-center pt-28 md:pt-32 pb-16 px-4 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-[#F5820A]/6 blur-[100px] rounded-full pointer-events-none" />
         <div className="text-[10px] font-bold text-[#4A5A72] tracking-[0.2em] uppercase mb-8">Join the Community</div>
         <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-2">Stop Guessing.</h1>

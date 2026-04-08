@@ -5,11 +5,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="mb-2">
-              <svg width="22" height="22" viewBox="0 0 24 28" fill="#F0F2F5" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0h4v28H0z"/>
-                <path d="M4 0h8a8 8 0 010 16H4z"/>
-                <path d="M4 14h9a7 7 0 010 14H4z"/>
-              </svg>
+              <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain" />
             </div>
             <p className="text-xs text-pb-dim">Every signal tracked.</p>
           </div>

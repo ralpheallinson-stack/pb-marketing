@@ -12,11 +12,7 @@ function LoginForm() {
     <div className="bg-[#161B24] border border-[#252E3D] rounded-2xl p-10 w-full max-w-md mx-auto mt-32">
       {/* Logo */}
       <div className="text-center mb-8 flex justify-center">
-        <svg width="32" height="32" viewBox="0 0 24 28" fill="#F0F2F5" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 0h4v28H0z"/>
-          <path d="M4 0h8a8 8 0 010 16H4z"/>
-          <path d="M4 14h9a7 7 0 010 14H4z"/>
-        </svg>
+        <img src="/images/pb-logo.png" alt="Profit Builders" width={40} height={40} className="w-10 h-10 object-contain" />
       </div>
 
       {/* Headline */}
@@ -45,23 +41,23 @@ function LoginForm() {
           className="w-full bg-[#1E2530] border border-[#252E3D] rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#60a5fa]/50 mb-4"
         />
         <input
-          type="text"
-          name="code"
-          placeholder="PB-XXXXXXXX"
-          className="w-full bg-[#1E2530] border border-[#252E3D] rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#60a5fa]/50 mb-4 font-mono uppercase tracking-wider"
-        />
-
-        <div className="flex items-center gap-2 my-4">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-white/30 text-xs">or use password</span>
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-
-        <input
           type="password"
           name="password"
           placeholder="Your password"
           className="w-full bg-[#1E2530] border border-[#252E3D] rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#60a5fa]/50 mb-4"
+        />
+
+        <div className="flex items-center gap-2 my-4">
+          <div className="h-px flex-1 bg-white/10" />
+          <span className="text-white/30 text-xs">or use claim code</span>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        <input
+          type="text"
+          name="code"
+          placeholder="PB-XXXXXXXX"
+          className="w-full bg-[#1E2530] border border-[#252E3D] rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#60a5fa]/50 mb-4 font-mono uppercase tracking-wider"
         />
 
         <button
