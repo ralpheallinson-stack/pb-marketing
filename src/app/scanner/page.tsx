@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
+import { badgeClass } from "@/lib/badge-styles"
 
 /* ── types ── */
 interface Trade {
@@ -47,6 +48,7 @@ interface Trade {
   trade_direction?: string | null
   is_event_driven?: boolean
   adv_multiple?: number | null
+  badges?: { label: string; tier: string }[]
 }
 
 interface Stats {
@@ -90,9 +92,6 @@ function isMarketOpen() {
   return mins >= 570 && mins < 960 // 9:30 - 16:00
 }
 
-/* ── pill base ── */
-const PILL = "inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide uppercase border"
-
 /* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
 function getRowStyle(t: Trade): React.CSSProperties {
   if (t.whale) return { backgroundColor: "rgba(245,158,11,0.10)", borderLeft: "3px solid #f59e0b" }
@@ -106,44 +105,6 @@ function getRowStyle(t: Trade): React.CSSProperties {
   return {}
 }
 
-/* ── BBS-style alert type ── */
-function getAlertType(t: Trade): { label: string; color: string } | null {
-  if ((t.dte ?? 99) <= 7 && t.flow_type === "SWEEP" && t.position_action === "OPENING" && (t.aggression === "ABOVE_ASK" || t.aggression === "AT_ASK")) return { label: "ROULETTE", color: "#ef4444" }
-  if (t.accum_hits >= 5 && t.position_action === "OPENING") return { label: "SWIFT", color: "#f97316" }
-  if (t.accum_hits >= 3 && t.position_action === "OPENING") return { label: "STEADY", color: "#f97316" }
-  if (t.accum_hits >= 2) return { label: "RAPID", color: "#a855f7" }
-  if ((t.vol_oi ?? 0) >= 1.0 && (t.aggression === "AT_ASK" || t.aggression === "ABOVE_ASK")) return { label: "LARGE", color: "#eab308" }
-  if (t.accum_hits === 1) return { label: "REPEAT", color: "#60a5fa" }
-  return null
-}
-
-function condBadges(t: Trade): { label: string; cls: string }[] {
-  const pills: { label: string; cls: string }[] = []
-
-  // PILL 1 — Alert type (BBS-style) OR flow type
-  const alert = getAlertType(t)
-  if (alert) {
-    pills.push({ label: alert.label, cls: PILL })  // styled via inline style in render
-  }
-
-  // PILL 2 — Flow type
-  if (t.flow_type === "SWEEP") pills.push({ label: "SWEEP", cls: `${PILL} bg-[#eab308]/15 text-[#eab308] border-[#eab308]/40` })
-  else if (t.premium >= 1000000 && t.flow_type === "BLOCK") pills.push({ label: "BLOCK 1M+", cls: `${PILL} bg-[#60a5fa]/25 text-[#60a5fa] border-[#60a5fa]/60 font-bold` })
-  else if (t.flow_type === "BLOCK") pills.push({ label: "BLOCK", cls: `${PILL} bg-[#60a5fa]/15 text-[#60a5fa] border-[#60a5fa]/40` })
-
-  // PILL 3 — Signal context (one of: EVENT, WHALE, MM, ACCUM, structure, position)
-  if (t.is_event_driven) pills.push({ label: "EVENT", cls: `${PILL} bg-[#f97316]/[0.18] text-[#f97316] border-[#f97316]/40` })
-  else if (t.whale) pills.push({ label: "WHALE", cls: `${PILL} bg-[#f59e0b]/15 text-[#f59e0b] border-[#f59e0b]/40` })
-  else if (t.accum_hits > 0) pills.push({ label: `ACCUM ${t.accum_hits}x`, cls: `${PILL} bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/40` })
-  else if ((t.vol_oi ?? 0) >= 2.0) pills.push({ label: "HIGH V/OI", cls: `${PILL} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40` })
-  else if (t.structure && t.structure !== "SINGLE_LEG" && (t.structure_confidence ?? 0) >= 0.5) {
-    const label = t.structure.replace(/_/g, " ").replace("VERTICAL SPREAD", "SPREAD").replace("CALENDAR SPREAD", "CALENDAR").replace("DIAGONAL SPREAD", "DIAGONAL")
-    pills.push({ label, cls: `${PILL} bg-white/[0.08] text-white/50 border-white/15` })
-  } else if (t.position_action === "OPENING") pills.push({ label: "OPENING", cls: `${PILL} bg-white/[0.05] text-white/35 border-transparent` })
-  else if (t.position_action === "ADJUSTING") pills.push({ label: "ADJUSTING", cls: `${PILL} bg-white/[0.05] text-white/35 border-transparent` })
-
-  return pills.slice(0, 3)
-}
 
 function fmtExpiry(exp: string) {
   if (!exp) return '—'
@@ -864,7 +825,6 @@ export default function ScannerPage() {
               {rowVirtualizer.getVirtualItems().map(vRow => {
                 const t = filtered[vRow.index]
                 if (!t || t.mm_suspected) return null
-                const badges = condBadges(t)
                 const isNew = newTradeIds.has(t.id)
                 const rowStyle = isNew ? { backgroundColor: "rgba(96,165,250,0.10)" } : getRowStyle(t)
                 return (
@@ -925,14 +885,9 @@ export default function ScannerPage() {
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">
-                        {badges.map((b, i) => {
-                          const alert = i === 0 ? getAlertType(t) : null
-                          return alert && b.label === alert.label ? (
-                            <span key={i} className={`whitespace-nowrap ${PILL} font-bold`} style={{ color: alert.color, borderColor: alert.color + "40", backgroundColor: alert.color + "18" }}>{alert.label}</span>
-                          ) : (
-                            <span key={i} className={`whitespace-nowrap ${b.cls}`}>{b.label}</span>
-                          )
-                        })}
+                        {t.badges?.slice(0, 4).map((b, i) => (
+                          <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
+                        ))}
                       </div>
                     </td>
                   </tr>

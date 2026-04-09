@@ -1,6 +1,26 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
+import { badgeClass } from '@/lib/badge-styles'
+
+function useCountUp(target: number, duration = 1200) {
+  const [count, setCount] = useState(0)
+  const started = useRef(false)
+  useEffect(() => {
+    if (!target || started.current) return
+    started.current = true
+    const start = Date.now()
+    const tick = () => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.round(target * eased))
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [target, duration])
+  return count
+}
 
 interface Trade {
   id: number
@@ -19,6 +39,7 @@ interface Trade {
   position_action: string
   high_conviction: boolean
   whale: boolean
+  badges: { label: string; tier: string }[]
 }
 
 interface ApiData {
@@ -26,21 +47,6 @@ interface ApiData {
   stats?: { bull_premium?: number; bear_premium?: number; put_call_ratio?: number; total?: number }
   session?: { bull_pct?: number; sentiment?: string }
 }
-
-const BASE = 'whitespace-nowrap inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-semibold tracking-wide uppercase border'
-const BADGE_MAP: Record<string, string> = {
-  BLOCK:       `${BASE} bg-[#60a5fa]/15 text-[#60a5fa] border-[#60a5fa]/40`,
-  SWEEP:       `${BASE} bg-[#eab308]/15 text-[#eab308] border-[#eab308]/40`,
-  'HIGH V/OI': `${BASE} bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40`,
-  REPEAT:      `${BASE} bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/40`,
-  LARGE:       `${BASE} bg-[#f97316]/15 text-[#f97316] border-[#f97316]/40`,
-  BLOCK_1M:    `${BASE} bg-[#60a5fa]/15 text-[#60a5fa] border-[#60a5fa]/40`,
-  OPENING:     `${BASE} bg-white/[0.05] text-white/35 border-transparent`,
-  ADJUSTING:   `${BASE} bg-white/[0.05] text-white/35 border-transparent`,
-  CLOSING:     `${BASE} bg-white/[0.05] text-white/35 border-transparent`,
-}
-const badgeCls = (label: string) =>
-  BADGE_MAP[label] ?? `${BASE} bg-white/[0.05] text-white/35 border-transparent`
 
 function fmt(n?: number) {
   if (!n) return '—'
@@ -110,8 +116,13 @@ export default function LiveFlowPreview() {
 
   const bullPct   = session?.bull_pct ?? 54
   const sentiment = session?.sentiment ?? 'Mixed'
+  const bullCount  = useCountUp(stats?.bull_premium ?? 0)
+  const bearCount  = useCountUp(stats?.bear_premium ?? 0)
+  const totalCount = useCountUp(stats?.total ?? 0)
 
   return (
+    <div className="pb-scanner-wrap overflow-x-auto rounded-xl" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div className="min-w-[640px]">
     <div
       className="relative w-full overflow-hidden rounded-xl border border-[#1E2A3A]"
       style={{ background: '#0E1117', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' }}
@@ -137,15 +148,15 @@ export default function LiveFlowPreview() {
         <div className="flex items-center gap-4 ml-auto">
           <div>
             <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Call Flow</div>
-            <div className="text-[11px] font-bold text-[#22c55e]">{fmt(stats?.bull_premium)}</div>
+            <div className="text-[11px] font-bold text-[#22c55e]">{fmt(bullCount)}</div>
           </div>
           <div>
             <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Put Flow</div>
-            <div className="text-[11px] font-bold text-[#ef4444]">{fmt(stats?.bear_premium)}</div>
+            <div className="text-[11px] font-bold text-[#ef4444]">{fmt(bearCount)}</div>
           </div>
           <div>
             <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Signals</div>
-            <div className="text-[11px] font-bold text-white/70">{stats?.total?.toLocaleString() ?? '—'}</div>
+            <div className="text-[11px] font-bold text-white/70">{totalCount ? totalCount.toLocaleString() : '—'}</div>
           </div>
         </div>
       </div>
@@ -209,15 +220,38 @@ export default function LiveFlowPreview() {
                   <div className="text-[9px] text-white/25 font-mono">{t.expiration?.slice(5)} · {t.dte}d</div>
                 </div>
                 <div className="px-3 py-2.5 flex items-center">
-                  <span className="text-[12px] font-bold" style={{ color: '#f97316' }}>{t.premium_fmt}</span>
+                  {(() => {
+                    const isLarge = (t.premium >= 500000) || t.whale
+                    return (
+                      <span
+                        className="font-bold"
+                        style={isLarge ? {
+                          background: isCall
+                            ? 'linear-gradient(135deg, #22c55e, #86efac)'
+                            : 'linear-gradient(135deg, #ef4444, #fca5a5)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                          fontWeight: 800,
+                          fontSize: '13px',
+                        } : {
+                          color: isCall ? '#22c55e' : '#ef4444',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {t.premium_fmt}
+                      </span>
+                    )
+                  })()}
                 </div>
                 <div className="px-3 py-2.5 flex items-center">
-                  <span className={badgeCls(t.flow_type)}>{t.flow_type?.replace('_1M','')}</span>
+                  <span className={badgeClass(t.flow_type === 'SWEEP' ? 'flow' : t.flow_type === 'BLOCK' ? 'info' : 'muted')}>{t.flow_type?.replace('_1M','')}</span>
                 </div>
                 <div className="px-3 py-2.5 flex items-center gap-1 flex-wrap">
-                  {t.position_action && <span className={badgeCls(t.position_action)}>{t.position_action}</span>}
-                  {t.high_conviction && <span className={badgeCls('HIGH V/OI')}>HIGH V/OI</span>}
-                  {t.whale && <span className={badgeCls('LARGE')}>LARGE</span>}
+                  {t.badges?.slice(0, 2).map((b, i) => (
+                    <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
+                  ))}
                 </div>
               </div>
             )
@@ -242,7 +276,10 @@ export default function LiveFlowPreview() {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        .pb-scanner-wrap::-webkit-scrollbar { display: none; }
       `}</style>
+    </div>
+    </div>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Nav from "@/components/Nav"
 import { BorderBeam } from "@/components/magicui/BorderBeam"
 import { ShimmerButton } from "@/components/magicui/ShimmerButton"
+import { badgeClass } from "@/lib/badge-styles"
 
 interface Trade {
   id: number
@@ -37,6 +38,7 @@ interface Trade {
   whale?: boolean
   is_event_driven?: boolean
   adv_multiple?: number | null
+  badges?: { label: string; tier: string }[]
 }
 
 interface Stats { count: number; bull: number; bear: number; lean: string; pc_ratio: number }
@@ -54,12 +56,6 @@ function fmtExpiry(exp: string) {
   return year && month && day ? `${parseInt(month)}-${day}-${year}` : exp
 }
 
-const COND_CLS: Record<string, string> = {
-  OPENING: "bg-[#1E3A2F] text-[#22C55E] border border-[#22C55E]/20",
-  ADJUSTING: "bg-[#1E2A3A] text-[#60A5FA] border border-[#60A5FA]/20",
-  UNUSUAL: "bg-[#2D1E3A] text-[#A855F7] border border-[#A855F7]/20",
-  WHALE: "bg-[#3A2A0F] text-[#F5820A] border border-[#F5820A]/40",
-}
 
 const COLS = [
   { key: "time",   label: "Time",   width: 92,  cls: "text-left px-3" },
@@ -108,13 +104,6 @@ export default function FreeScannerPage() {
   const isBull = stats.lean === "BULL"
   const circ = 2 * Math.PI * 20
 
-  const getBadge = (t: Trade) => {
-    if (t.whale) return { label: "WHALE", cls: COND_CLS.WHALE }
-    if ((t.vol_oi ?? 0) >= 5) return { label: "UNUSUAL", cls: COND_CLS.UNUSUAL }
-    if (t.position_action === "OPENING") return { label: "OPENING", cls: COND_CLS.OPENING }
-    if (t.position_action === "ADJUSTING") return { label: "ADJUSTING", cls: COND_CLS.ADJUSTING }
-    return null
-  }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0B0F1A" }}>
@@ -202,9 +191,19 @@ export default function FreeScannerPage() {
               </tr>
             </thead>
             <tbody>
+              {display.length === 0 && (
+                <tr>
+                  <td colSpan={15} className="px-6 py-16 text-center">
+                    <div className="text-white/30 text-sm font-mono mb-2">Market opens at 9:30 AM ET</div>
+                    <div className="text-white/15 text-xs font-mono mb-4">No signals yet today — check back at market open</div>
+                    <a href="/?trial=true" className="inline-flex items-center gap-2 bg-[#F97316] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-[#F97316]/90 transition-colors">
+                      Get real-time flow + alerts →
+                    </a>
+                  </td>
+                </tr>
+              )}
               {display.map((t, i) => {
                 const blurred = i >= 5
-                const badge = getBadge(t)
                 return (
                   <tr key={t.id} className={`border-b border-[#0D1219] ${blurred ? "opacity-20 blur-[2px] select-none pointer-events-none" : "hover:bg-white/[0.02]"}`}>
                     <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
@@ -227,12 +226,14 @@ export default function FreeScannerPage() {
                     <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">{(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}</td>
                     <td className="px-2 py-2 text-right text-white/50 text-xs">{t.iv ? `${t.iv}%` : "—"}</td>
                     <td className="px-2 py-2">
-                      {badge ? (
-                        <div className="flex items-center gap-1">
-                          <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded whitespace-nowrap ${badge.cls}`}>{badge.label}</span>
-                          {!blurred && <a href="/#pricing" className="text-[9px] text-[#F5820A] hover:underline">+more</a>}
-                        </div>
-                      ) : null}
+                      <div className="flex items-center gap-1">
+                        {t.badges?.slice(0, 2).map((b, i) => (
+                          <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
+                        ))}
+                        {!blurred && (t.badges?.length ?? 0) > 2 && (
+                          <a href="/#pricing" className="text-[9px] text-[#F5820A] hover:underline">+more</a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )
