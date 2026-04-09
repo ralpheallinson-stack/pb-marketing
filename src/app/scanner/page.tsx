@@ -401,7 +401,7 @@ export default function ScannerPage() {
   const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
 
   return (
-    <div className="h-screen flex bg-[#0E1117] text-[#E8EDF5] overflow-hidden">
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#070A0E' }}>
 
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#0B0F1A", borderRight: "1px solid #131B27" }}>
@@ -642,29 +642,30 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-11 bg-[#161B24] border-b border-[#252E3D] flex items-center px-4 flex-shrink-0">
+      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#0A0D12' }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
-            placeholder="Search symbol..."
+            placeholder="Search..."
             value={search}
             onChange={e => setSearch(e.target.value.toUpperCase())}
-            className="w-48 bg-[#252E3D] border border-[#3D4D63]/40 rounded-lg px-3 py-1 text-sm text-white placeholder-[#7A8BA8] focus:outline-none focus:border-[#F5820A]/50 focus:ring-1 focus:ring-[#F5820A]/20"
+            className="w-36 bg-white/[0.03] border border-white/[0.06] rounded-md px-2.5 py-1 text-[11px] text-white placeholder-white/20 focus:outline-none focus:border-white/[0.12] font-mono"
           />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium border border-[#2E3A4D] bg-[#161B24] hover:bg-[#1E2530] text-[#E8EDF5] transition-colors">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-white/50 hover:text-white/70 transition-colors">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             Filters
-            {activeFilterCount > 0 && <span className="bg-[#F5820A] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && <span className="bg-white/[0.12] text-white/70 text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">{activeFilterCount}</span>}
           </button>
         </div>
-        <div className="ml-auto flex-shrink-0">
-          <a href="/logout" className="text-[#3D4D63] text-[11px] hover:text-[#E8EDF5]">Logout</a>
+        <div className="ml-auto flex items-center gap-3">
+          <a href="/account" className="text-white/20 text-[10px] hover:text-white/40 transition-colors">Account</a>
+          <a href="/logout" className="text-white/20 text-[10px] hover:text-white/40 transition-colors">Logout</a>
         </div>
       </header>
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
-        <div className="bg-[#0E1117] border-b border-[#60a5fa]/20 px-4 py-2 flex items-center gap-2 flex-wrap flex-shrink-0">
+        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#080B10' }}>
           <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
             className="flex items-center gap-1.5 bg-[#60a5fa]/10 border border-[#60a5fa]/30 rounded-full px-3 py-1 text-[#60a5fa] text-xs font-bold hover:bg-[#60a5fa]/20">
             {focusTicker} <span className="text-[#60a5fa]/50">&times;</span>
@@ -689,109 +690,79 @@ export default function ScannerPage() {
       {(() => {
         const totalCount = calls.length + puts.length
         const callPct = totalCount > 0 ? Math.round((calls.length / totalCount) * 100) : 50
-        const putPct = 100 - callPct
         const totalPrem = displayStats.bull + displayStats.bear
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
-        const circ = 2 * Math.PI * 20
-        const pcDash = (Math.min(displayStats.pc_ratio / 2, 1) * circ)
         return (
-          <div className="grid border-b border-[#131B27] flex-shrink-0" style={{ gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr", background: "#0B0F1A" }}>
-            {/* Sentiment */}
-            <div className="px-4 py-4 flex flex-col justify-center">
-              <div className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase mb-1.5">Flow sentiment</div>
-              <div className="flex items-center gap-3">
-                <span className={`text-2xl font-bold ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#EF4444]" : "text-white/50"}`}>
-                  {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
-                </span>
-                <div className="flex-1 h-1 bg-[#1A2535] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${isBull ? bullPct : 100 - bullPct}%`, background: isBull ? "#22C55E" : "#EF4444" }} />
-                </div>
+          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#080B10' }}>
+            {/* Sentiment + bar */}
+            <div className="flex items-center gap-2 min-w-[180px]">
+              <span className={`text-[12px] font-bold ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#EF4444]" : "text-white/40"}`}>
+                {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
+              </span>
+              <div className="w-20 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #EF4444, #22C55E)` }} />
               </div>
             </div>
-            <div className="bg-[#131B27]" />
-            {/* P/C Ratio */}
-            <div className="px-4 py-4 flex items-center gap-3">
-              <div>
-                <div className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase mb-1.5">Put to call</div>
-                <div className="text-2xl font-bold text-white leading-none">{displayStats.pc_ratio.toFixed(2)}</div>
-              </div>
-              <svg width="48" height="48" viewBox="0 0 48 48">
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#60a5fa" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${pcDash} ${circ}`} strokeDashoffset={circ / 4}
-                  style={{ transition: "stroke-dasharray 0.5s" }} />
-              </svg>
+            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            {/* P/C */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">P/C</span>
+              <span className="text-[12px] font-bold text-white/60 font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
             </div>
-            <div className="bg-[#131B27]" />
-            {/* Call flow */}
-            <div className="px-4 py-4 flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase">Call flow</span>
-                  <span className="text-[11px] font-bold text-[#22C55E]">{fmtPrem(callPrem)}</span>
-                </div>
-                <div className="text-2xl font-bold text-white leading-none mt-1">{calls.length.toLocaleString()}</div>
-              </div>
-              <svg width="48" height="48" viewBox="0 0 48 48">
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${(callPct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
-                  style={{ transition: "stroke-dasharray 0.5s" }} />
-                <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{callPct}%</text>
-              </svg>
+            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            {/* Calls */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Calls</span>
+              <span className="text-[12px] font-bold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
+              <span className="text-[10px] text-white/20 font-mono">{callPct}%</span>
             </div>
-            <div className="bg-[#131B27]" />
-            {/* Put flow */}
-            <div className="px-4 py-4 flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-medium text-[#4A5A72] tracking-[0.1em] uppercase">Put flow</span>
-                  <span className="text-[11px] font-bold text-[#EF4444]">{fmtPrem(putPrem)}</span>
-                </div>
-                <div className="text-2xl font-bold text-white leading-none mt-1">{puts.length.toLocaleString()}</div>
-              </div>
-              <svg width="48" height="48" viewBox="0 0 48 48">
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#1A2535" strokeWidth="3" />
-                <circle cx="24" cy="24" r="20" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${(putPct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
-                  style={{ transition: "stroke-dasharray 0.5s" }} />
-                <text x="24" y="24" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600">{putPct}%</text>
-              </svg>
+            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            {/* Puts */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Puts</span>
+              <span className="text-[12px] font-bold text-[#EF4444] font-mono">{fmtPrem(putPrem)}</span>
+              <span className="text-[10px] text-white/20 font-mono">{100 - callPct}%</span>
+            </div>
+            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            {/* Count */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Signals</span>
+              <span className="text-[12px] font-bold text-white/50 font-mono">{totalCount.toLocaleString()}</span>
             </div>
           </div>
         )
       })()}
 
       {/* ── TABLE ── */}
-      <div ref={tableContainerRef} className="flex-1 overflow-y-auto scanner-scroll" style={{ scrollbarWidth: "thin", scrollbarColor: "#2E3A4D #0E1117", fontVariantNumeric: "tabular-nums" }}>
+      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#070A0E' }}>
         {loading ? (
           <table className="w-full text-sm">
-            <thead className="bg-[#161B24] sticky top-0 z-10">
-              <tr className="text-[11px] text-[#3D4D63] uppercase tracking-wider">
-                <th className="text-left px-3 py-2 font-medium">Time</th>
-                <th className="text-left px-2 py-2 font-medium">Tick</th>
-                <th className="text-left px-2 py-2 font-medium hidden md:table-cell">Expiry</th>
-                <th className="text-right px-2 py-2 font-medium">Strike</th>
-                <th className="text-center px-2 py-2 font-medium">C/P</th>
-                <th className="text-center px-2 py-2 font-medium hidden lg:table-cell">Side</th>
-                <th className="text-center px-2 py-2 font-medium hidden lg:table-cell">B/S</th>
-                <th className="text-right px-2 py-2 font-medium hidden md:table-cell">Spot</th>
-                <th className="text-right px-2 py-2 font-medium hidden lg:table-cell">Size</th>
-                <th className="text-center px-2 py-2 font-medium hidden lg:table-cell">Type</th>
-                <th className="text-right px-2 py-2 font-medium">Value</th>
-                <th className="text-right px-2 py-2 font-medium hidden xl:table-cell">Volume</th>
-                <th className="text-right px-2 py-2 font-medium hidden xl:table-cell">OI</th>
-                <th className="text-right px-2 py-2 font-medium hidden lg:table-cell">IV</th>
-                <th className="text-left px-2 py-2 font-medium hidden md:table-cell w-[180px] max-w-[180px]">Conds</th>
+            <thead className="sticky top-0 z-10" style={{ background: '#0A0D12' }}>
+              <tr className="text-[9px] text-white/15 uppercase tracking-[0.1em]">
+                <th className="text-left px-3 py-1.5 font-medium">Time</th>
+                <th className="text-left px-2 py-1.5 font-medium">Tick</th>
+                <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell">Expiry</th>
+                <th className="text-right px-2 py-1.5 font-medium">Strike</th>
+                <th className="text-center px-2 py-1.5 font-medium">C/P</th>
+                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">Side</th>
+                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">B/S</th>
+                <th className="text-right px-2 py-1.5 font-medium hidden md:table-cell">Spot</th>
+                <th className="text-right px-2 py-1.5 font-medium hidden lg:table-cell">Size</th>
+                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">Type</th>
+                <th className="text-right px-2 py-1.5 font-medium">Value</th>
+                <th className="text-right px-2 py-1.5 font-medium hidden xl:table-cell">Vol</th>
+                <th className="text-right px-2 py-1.5 font-medium hidden xl:table-cell">OI</th>
+                <th className="text-right px-2 py-1.5 font-medium hidden lg:table-cell">IV</th>
+                <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell w-[180px] max-w-[180px]">Conds</th>
               </tr>
             </thead>
             <tbody>
-              {Array.from({ length: 20 }).map((_, i) => (
-                <tr key={i} className="border-b border-[#252E3D]">
+              {Array.from({ length: 25 }).map((_, i) => (
+                <tr key={i} className="border-b border-white/[0.02]">
                   {Array.from({ length: 15 }).map((_, j) => (
-                    <td key={j} className="px-3 py-3">
-                      <div className="h-3 bg-[#1E2530] rounded animate-pulse" style={{ width: `${40 + Math.random() * 40}%` }} />
+                    <td key={j} className="px-2 py-1.5">
+                      <div className="h-2.5 bg-white/[0.03] rounded animate-pulse" style={{ width: `${40 + Math.random() * 40}%` }} />
                     </td>
                   ))}
                 </tr>
@@ -799,7 +770,7 @@ export default function ScannerPage() {
             </tbody>
           </table>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-white/30">
+          <div className="text-center py-20 text-white/15 text-xs">
             {search ? `No trades matching "${search}"` : "No trades found for this period."}
           </div>
         ) : (
@@ -809,10 +780,10 @@ export default function ScannerPage() {
                 <col key={col.key} style={{ width: col.width ? `${col.width}px` : undefined }} />
               ))}
             </colgroup>
-            <thead className="bg-[#161B24] sticky top-0 z-10">
-              <tr className="text-[11px] text-[#3D4D63] uppercase tracking-wider">
+            <thead className="sticky top-0 z-10" style={{ background: '#0A0D12' }}>
+              <tr className="text-[9px] text-white/15 uppercase tracking-[0.1em]">
                 {COLS.map(c => (
-                  <th key={c.key} className={`${c.cls} py-2 font-medium`}>{c.label}</th>
+                  <th key={c.key} className={`${c.cls} py-1.5 font-medium`}>{c.label}</th>
                 ))}
               </tr>
             </thead>
@@ -830,58 +801,58 @@ export default function ScannerPage() {
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-[#1E2A3A] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.04]'}`}
+                    className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.02]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
-                    <td className="px-2 py-2">
+                    <td className="px-3 py-1.5 text-white/25 text-[10px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-sm group-hover:text-[#60a5fa] transition-colors" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>{t.symbol}</div>
-                        {t.sector && <div className="text-white/30 text-[10px]">{t.sector}</div>}
+                        <div className="font-bold text-[12px] group-hover:text-[#60a5fa] transition-colors" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>{t.symbol}</div>
+                        {t.sector && <div className="text-white/15 text-[9px]">{t.sector}</div>}
                       </button>
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
                         className="text-white/60 hover:text-[#60a5fa] transition-colors text-xs font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-right">
+                    <td className="px-2 py-1.5 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
                         className="text-white/80 hover:text-[#60a5fa] transition-colors text-xs font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-center text-xs font-medium" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    <td className="px-2 py-1.5 text-center text-xs font-medium" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
-                    <td className={`px-2 py-2 text-center text-xs ${aggrColor(t.aggression)}`}>
+                    <td className={`px-2 py-1.5 text-center text-xs ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-2 text-center text-xs font-medium ${bsColor(t.trade_direction)}`}>
+                    <td className={`px-2 py-1.5 text-center text-xs font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
-                    <td className="px-2 py-2 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className={`px-2 py-2 text-center text-xs font-medium ${
+                    <td className="px-2 py-1.5 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
+                    <td className="px-2 py-1.5 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className={`px-2 py-1.5 text-center text-xs font-medium ${
                       t.flow_type === "SWEEP" ? "text-[#eab308]" : t.flow_type === "BLOCK" ? "text-[#60a5fa]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/50"
                     }`}>
                       {t.premium >= 1000000 && t.flow_type === "BLOCK" ? "BLOCK 1M+" : t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-2 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>
+                    <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">
+                    <td className="px-2 py-1.5 text-right text-white/50 text-xs font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/50 text-xs">
+                    <td className="px-2 py-1.5 text-right text-white/50 text-xs">
                       {t.iv ? `${t.iv}%` : "—"}
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-1.5">
                       <div className="flex flex-wrap gap-1">
                         {t.badges?.slice(0, 4).map((b, i) => (
                           <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
