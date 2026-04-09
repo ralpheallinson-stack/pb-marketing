@@ -39,6 +39,7 @@ interface Trade {
   is_event_driven?: boolean
   adv_multiple?: number | null
   badges?: { label: string; tier: string }[]
+  row_color?: 'buy' | 'sell' | 'neutral'
 }
 
 interface Stats { count: number; bull: number; bear: number; lean: string; pc_ratio: number }
@@ -208,12 +209,12 @@ export default function FreeScannerPage() {
                   <tr key={t.id} className={`border-b border-[#0D1219] ${blurred ? "opacity-20 blur-[2px] select-none pointer-events-none" : "hover:bg-white/[0.02]"}`}>
                     <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
-                      <div className="font-bold text-sm text-white">{t.symbol}</div>
+                      <div className="font-bold text-sm" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>{t.symbol}</div>
                       {t.sector && <div className="text-white/30 text-[10px]">{t.sector}</div>}
                     </td>
                     <td className="px-2 py-2 text-white/60 text-xs font-mono">{fmtExpiry(t.expiration)}</td>
                     <td className="px-2 py-2 text-right text-white/80 text-xs font-mono">{t.strike_fmt ?? t.strike}</td>
-                    <td className={`px-2 py-2 text-center text-xs font-medium ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{t.opt_type === "C" ? "Call" : "Put"}</td>
+                    <td className="px-2 py-2 text-center text-xs font-medium" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>{t.opt_type === "C" ? "Call" : "Put"}</td>
                     <td className="px-2 py-2 text-center text-xs text-white/50">{t.aggression === "ABOVE_ASK" || t.aggression === "AT_ASK" ? "Ask" : t.aggression === "BELOW_BID" || t.aggression === "AT_BID" ? "Bid" : "—"}</td>
                     <td className={`px-2 py-2 text-center text-xs font-medium ${t.trade_direction === "BUY" ? "text-[#22c55e]" : t.trade_direction === "SELL" ? "text-[#ef4444]" : "text-white/40"}`}>{t.trade_direction || "—"}</td>
                     <td className="px-2 py-2 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
@@ -221,7 +222,7 @@ export default function FreeScannerPage() {
                     <td className="px-2 py-2 text-center">
                       <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${t.flow_type === "SWEEP" ? "bg-[#312560] text-[#A78BFA] border-[#A78BFA]/30" : t.flow_type === "BLOCK" ? "bg-[#1A2D4A] text-[#60A5FA] border-[#60A5FA]/30" : "bg-[#1E2530] text-[#7A8BA8] border-[#2E3A4D]"}`}>{t.flow_type || "—"}</span>
                     </td>
-                    <td className={`px-2 py-2 text-right text-xs ${t.premium >= 1000000 ? "text-orange-400 font-bold" : t.premium >= 500000 ? "text-yellow-400 font-bold" : t.premium >= 100000 ? "text-white font-semibold" : "text-white/60"}`}>{t.premium_fmt}</td>
+                    <td className="px-2 py-2 text-right text-xs font-bold" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>{t.premium_fmt}</td>
                     <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">{(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}</td>
                     <td className="px-2 py-2 text-right text-white/50 text-xs font-mono">{(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}</td>
                     <td className="px-2 py-2 text-right text-white/50 text-xs">{t.iv ? `${t.iv}%` : "—"}</td>

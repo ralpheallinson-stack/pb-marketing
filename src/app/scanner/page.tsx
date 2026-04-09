@@ -49,6 +49,7 @@ interface Trade {
   is_event_driven?: boolean
   adv_multiple?: number | null
   badges?: { label: string; tier: string }[]
+  row_color?: 'buy' | 'sell' | 'neutral'
 }
 
 interface Stats {
@@ -839,7 +840,7 @@ export default function ScannerPage() {
                     <td className="px-2 py-2">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className={`font-bold text-sm group-hover:text-[#60a5fa] transition-colors ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>{t.symbol}</div>
+                        <div className="font-bold text-sm group-hover:text-[#60a5fa] transition-colors" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>{t.symbol}</div>
                         {t.sector && <div className="text-white/30 text-[10px]">{t.sector}</div>}
                       </button>
                     </td>
@@ -855,7 +856,7 @@ export default function ScannerPage() {
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className={`px-2 py-2 text-center text-xs font-medium ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+                    <td className="px-2 py-2 text-center text-xs font-medium" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
                     <td className={`px-2 py-2 text-center text-xs ${aggrColor(t.aggression)}`}>
@@ -871,7 +872,7 @@ export default function ScannerPage() {
                     }`}>
                       {t.premium >= 1000000 && t.flow_type === "BLOCK" ? "BLOCK 1M+" : t.flow_type || "—"}
                     </td>
-                    <td className={`px-2 py-2 text-right text-xs font-bold ${t.opt_type === "C" ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+                    <td className="px-2 py-2 text-right text-xs font-bold" style={{ color: t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)' }}>
                       {t.premium_fmt}
                     </td>
                     <td className={`px-2 py-2 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>

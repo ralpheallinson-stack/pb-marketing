@@ -40,6 +40,7 @@ interface Trade {
   high_conviction: boolean
   whale: boolean
   badges: { label: string; tier: string }[]
+  row_color: 'buy' | 'sell' | 'neutral'
 }
 
 interface ApiData {
@@ -182,6 +183,7 @@ export default function LiveFlowPreview() {
         ) : (
           visible.map((t, i) => {
             const isCall  = t.opt_type === 'C'
+            const dirColor = t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)'
             const isFlash = flashId === t.id
             const rowBg   = isFlash
               ? 'rgba(34,197,94,0.07)'
@@ -205,13 +207,13 @@ export default function LiveFlowPreview() {
                   {t.time?.replace(' PM','p')?.replace(' AM','a')}
                 </div>
                 <div className="px-3 py-2.5 flex flex-col justify-center">
-                  <div className="text-[13px] font-bold leading-none" style={{ color: isCall ? '#22c55e' : '#ef4444' }}>
+                  <div className="text-[13px] font-bold leading-none" style={{ color: dirColor }}>
                     {t.symbol}
                   </div>
                   <div className="text-[9px] text-white/25 mt-0.5">{t.sector}</div>
                 </div>
                 <div className="px-3 py-2.5 flex items-center">
-                  <span className="text-[11px] font-semibold" style={{ color: isCall ? '#22c55e' : '#ef4444' }}>
+                  <span className="text-[11px] font-semibold" style={{ color: dirColor }}>
                     {isCall ? 'Call' : 'Put'}
                   </span>
                 </div>
@@ -226,16 +228,18 @@ export default function LiveFlowPreview() {
                       <span
                         className="font-bold"
                         style={isLarge ? {
-                          background: isCall
+                          background: t.row_color === 'buy'
                             ? 'linear-gradient(135deg, #22c55e, #86efac)'
-                            : 'linear-gradient(135deg, #ef4444, #fca5a5)',
+                            : t.row_color === 'sell'
+                            ? 'linear-gradient(135deg, #ef4444, #fca5a5)'
+                            : 'linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.7))',
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
                           backgroundClip: 'text',
                           fontWeight: 800,
                           fontSize: '13px',
                         } : {
-                          color: isCall ? '#22c55e' : '#ef4444',
+                          color: dirColor,
                           fontSize: '12px',
                           fontWeight: 700,
                         }}
