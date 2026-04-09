@@ -41,6 +41,7 @@ interface Trade {
   whale: boolean
   badges: { label: string; tier: string }[]
   row_color: 'bullish' | 'bearish'
+  flow_highlight: 'oi_multi' | 'oi_single' | 'late' | null
 }
 
 interface ApiData {
@@ -187,10 +188,12 @@ export default function LiveFlowPreview() {
             const isFlash = flashId === t.id
             const rowBg   = isFlash
               ? 'rgba(34,197,94,0.07)'
-              : t.whale
-              ? 'rgba(168,85,247,0.06)'
-              : t.high_conviction
-              ? 'rgba(249,115,22,0.05)'
+              : t.flow_highlight === 'oi_multi'
+              ? 'rgba(168,85,247,0.07)'
+              : t.flow_highlight === 'oi_single'
+              ? 'rgba(234,179,8,0.07)'
+              : t.flow_highlight === 'late'
+              ? 'rgba(251,146,60,0.06)'
               : 'transparent'
 
             return (

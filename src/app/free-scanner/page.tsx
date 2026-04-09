@@ -40,6 +40,7 @@ interface Trade {
   adv_multiple?: number | null
   badges?: { label: string; tier: string }[]
   row_color?: 'bullish' | 'bearish'
+  flow_highlight?: 'oi_multi' | 'oi_single' | 'late' | null
 }
 
 interface Stats { count: number; bull: number; bear: number; lean: string; pc_ratio: number }
@@ -206,7 +207,7 @@ export default function FreeScannerPage() {
               {display.map((t, i) => {
                 const blurred = i >= 5
                 return (
-                  <tr key={t.id} className={`border-b border-[#0D1219] ${blurred ? "opacity-20 blur-[2px] select-none pointer-events-none" : "hover:bg-white/[0.02]"}`}>
+                  <tr key={t.id} className={`border-b border-[#0D1219] ${blurred ? "opacity-20 blur-[2px] select-none pointer-events-none" : "hover:bg-white/[0.02]"}`} style={t.flow_highlight === 'oi_multi' ? { backgroundColor: 'rgba(168,85,247,0.07)' } : t.flow_highlight === 'oi_single' ? { backgroundColor: 'rgba(234,179,8,0.06)' } : undefined}>
                     <td className="px-3 py-2 text-white/50 text-xs whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
                       <div className="font-bold text-sm" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>{t.symbol}</div>

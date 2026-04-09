@@ -50,6 +50,7 @@ interface Trade {
   adv_multiple?: number | null
   badges?: { label: string; tier: string }[]
   row_color?: 'bullish' | 'bearish'
+  flow_highlight?: 'oi_multi' | 'oi_single' | 'late' | null
 }
 
 interface Stats {
@@ -95,14 +96,10 @@ function isMarketOpen() {
 
 /* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
 function getRowStyle(t: Trade): React.CSSProperties {
-  if (t.whale) return { backgroundColor: "rgba(245,158,11,0.10)", borderLeft: "3px solid #f59e0b" }
-  if (t.flow_type === "BLOCK" && t.premium >= 1000000) return { backgroundColor: "rgba(96,165,250,0.08)", borderLeft: "3px solid #60a5fa" }
-  if ((t.vol_oi ?? 0) >= 2.0 && t.accum_hits > 0) return { backgroundColor: "rgba(168,85,247,0.08)", borderLeft: "2px solid rgba(168,85,247,0.6)" }
-  if ((t.vol_oi ?? 0) >= 1.0 && t.flow_type === "SWEEP") return { backgroundColor: "rgba(234,179,8,0.07)", borderLeft: "2px solid rgba(234,179,8,0.55)" }
-  if ((t.dte ?? 99) <= 7 && t.flow_type === "SWEEP" && t.position_action === "OPENING" && (t.aggression === "ABOVE_ASK" || t.aggression === "AT_ASK")) return { backgroundColor: "rgba(234,179,8,0.04)", borderLeft: "2px solid rgba(234,179,8,0.4)" }
-  if (t.accum_hits >= 2) return { borderLeft: "2px solid rgba(96,165,250,0.3)" }
-  if (t.grade === "A") return { borderLeft: "1px solid rgba(249,115,22,0.4)" }
-  if (t.flow_type === "SWEEP") return { borderLeft: "1px solid rgba(234,179,8,0.15)" }
+  // BlackBox-style OI highlights from backend
+  if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.08)", borderLeft: "3px solid rgba(168,85,247,0.6)" }
+  if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.07)", borderLeft: "3px solid rgba(234,179,8,0.55)" }
+  if (t.flow_highlight === 'late') return { backgroundColor: "rgba(251,146,60,0.06)", borderLeft: "2px solid rgba(251,146,60,0.4)" }
   return {}
 }
 
