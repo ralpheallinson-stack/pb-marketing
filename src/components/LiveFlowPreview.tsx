@@ -40,7 +40,7 @@ interface Trade {
   high_conviction: boolean
   whale: boolean
   badges: { label: string; tier: string }[]
-  row_color: 'buy' | 'sell' | 'neutral'
+  row_color: 'bullish' | 'bearish'
 }
 
 interface ApiData {
@@ -183,7 +183,7 @@ export default function LiveFlowPreview() {
         ) : (
           visible.map((t, i) => {
             const isCall  = t.opt_type === 'C'
-            const dirColor = t.row_color === 'buy' ? '#22c55e' : t.row_color === 'sell' ? '#ef4444' : 'rgba(255,255,255,0.5)'
+            const dirColor = t.row_color === 'bullish' ? '#22c55e' : '#ef4444'
             const isFlash = flashId === t.id
             const rowBg   = isFlash
               ? 'rgba(34,197,94,0.07)'
@@ -228,11 +228,9 @@ export default function LiveFlowPreview() {
                       <span
                         className="font-bold"
                         style={isLarge ? {
-                          background: t.row_color === 'buy'
+                          background: t.row_color === 'bullish'
                             ? 'linear-gradient(135deg, #22c55e, #86efac)'
-                            : t.row_color === 'sell'
-                            ? 'linear-gradient(135deg, #ef4444, #fca5a5)'
-                            : 'linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.7))',
+                            : 'linear-gradient(135deg, #ef4444, #fca5a5)',
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
                           backgroundClip: 'text',
