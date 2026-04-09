@@ -920,127 +920,90 @@ export default function ScannerPage() {
       {/* ── FILTER PANEL ── */}
       {showFilters && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-72 bg-[#161B24] border-l border-[#252E3D] z-50 flex flex-col overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-[#252E3D]">
-              <span className="text-white font-semibold text-sm">Filters</span>
-              <div className="flex items-center gap-3">
-                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/40 hover:text-white text-xs">Reset all</button>
-                <button onClick={() => setShowFilters(false)} className="text-white/40 hover:text-white text-lg leading-none">&times;</button>
+          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
+          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #0E1219 0%, #131820 100%)' }}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
+                <span className="text-white font-semibold text-[13px] tracking-wide">Filters</span>
+                {activeFilterCount > 0 && <span className="bg-[#60a5fa] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/30 hover:text-white/60 text-[11px] transition-colors">Reset</button>
+                <button onClick={() => setShowFilters(false)} className="w-7 h-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-white/40 hover:text-white transition-colors text-sm">&times;</button>
               </div>
             </div>
-            <div className="flex-1 p-4 space-y-6">
-              {/* 0. Time Range */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Time Range</div>
-                <div className="flex gap-2 flex-wrap">
-                  {TIME_RANGES.map(r => (
-                    <button key={r.key} onClick={() => { setTimeRange(r.key); setPage(0) }}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${timeRange === r.key ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {r.label}
+
+            <div className="flex-1 px-5 py-4 space-y-5">
+              {/* Segmented control helper */}
+              {(() => {
+                const Seg = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
+                  <div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/25 mb-2">{label}</div>
+                    <div className="inline-flex rounded-lg bg-white/[0.03] border border-white/[0.06] p-0.5">
+                      {options.map(o => (
+                        <button key={String(o.v)} onClick={() => onChange(o.v)}
+                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${value === o.v ? "bg-white/[0.1] text-white shadow-sm" : "text-white/30 hover:text-white/50"}`}>
+                          {o.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+                const Pill = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
+                  <div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/25 mb-2">{label}</div>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {options.map(o => (
+                        <button key={String(o.v)} onClick={() => onChange(o.v)}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-all ${value === o.v ? "bg-white/[0.1] border-white/[0.15] text-white" : "bg-transparent border-white/[0.06] text-white/25 hover:text-white/45 hover:border-white/[0.1]"}`}>
+                          {o.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+                const Toggle = ({ label, desc, active, onToggle, color }: { label: string; desc: string; active: boolean; onToggle: () => void; color?: string }) => (
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-white/80 text-[12px] font-medium">{label}</div>
+                      <div className="text-white/20 text-[10px] mt-0.5">{desc}</div>
+                    </div>
+                    <button onClick={onToggle}
+                      className={`w-9 h-[22px] rounded-full transition-all relative flex-shrink-0 ${active ? "" : "bg-white/[0.06]"}`}
+                      style={active ? { backgroundColor: color || '#60a5fa' } : undefined}>
+                      <div className={`absolute top-[3px] w-4 h-4 rounded-full transition-all ${active ? "left-[18px] bg-white" : "left-[3px] bg-white/30"}`} />
                     </button>
-                  ))}
-                </div>
-              </div>
-              {/* 1. Grade */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Grade</div>
-                <div className="flex gap-2 flex-wrap">
-                  {["", "A", "B"].map(g => (
-                    <button key={g} onClick={() => setFilterGrade(g)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterGrade === g ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {g === "" ? "All" : `Grade ${g}`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 2. Flow Type */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Flow Type</div>
-                <div className="flex gap-2 flex-wrap">
-                  {[{ v: "", l: "All" }, { v: "SWEEP", l: "Sweep" }, { v: "BLOCK", l: "Block" }].map(t => (
-                    <button key={t.v} onClick={() => setFilterType(t.v)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterType === t.v ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {t.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 3. Calls / Puts */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Calls / Puts</div>
-                <div className="flex gap-2">
-                  {[{ v: "", l: "All" }, { v: "C", l: "Calls" }, { v: "P", l: "Puts" }].map(o => (
-                    <button key={o.v} onClick={() => setFilterOptType(o.v)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterOptType === o.v ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {o.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 4. Min Premium */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Min Premium</div>
-                <div className="flex gap-2 flex-wrap">
-                  {[{ v: 0, l: "Any" }, { v: 100000, l: "$100K+" }, { v: 250000, l: "$250K+" }, { v: 500000, l: "$500K+" }, { v: 1000000, l: "$1M+" }].map(p => (
-                    <button key={p.v} onClick={() => setFilterMinPremium(p.v)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterMinPremium === p.v ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {p.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 5. DTE */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Days to Expiry</div>
-                <div className="flex gap-2 flex-wrap">
-                  {[{ v: "", l: "All" }, { v: "0dte", l: "0DTE" }, { v: "1-7", l: "1-7d" }, { v: "8-30", l: "8-30d" }, { v: "30+", l: "30d+" }].map(d => (
-                    <button key={d.v} onClick={() => setFilterDte(d.v)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterDte === d.v ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {d.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 6. Side */}
-              <div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-2">Side</div>
-                <div className="flex gap-2 flex-wrap">
-                  {[{ v: "", l: "All" }, { v: "ABOVE_ASK", l: "Above Ask" }, { v: "AT_ASK", l: "At Ask" }, { v: "BELOW_BID", l: "Below Bid" }].map(s => (
-                    <button key={s.v} onClick={() => setFilterSide(s.v)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filterSide === s.v ? "bg-[#60a5fa] border-[#60a5fa] text-black" : "bg-[#1E2530] border-[#252E3D] text-[#7A8BA8] hover:text-[#E8EDF5]"}`}>
-                      {s.l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {/* 7. Unusual Only */}
-              <div className="flex items-center justify-between py-2 border-t border-[#252E3D]">
-                <div>
-                  <div className="text-white text-sm font-medium">Unusual Only</div>
-                  <div className="text-white/35 text-xs">Flagged unusual activity</div>
-                </div>
-                <button onClick={() => setFilterUnusualOnly(!filterUnusualOnly)}
-                  className={`w-10 h-6 rounded-full transition-colors relative ${filterUnusualOnly ? "bg-[#60a5fa]" : "bg-[#252E3D]"}`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterUnusualOnly ? "left-5" : "left-1"}`} />
-                </button>
-              </div>
-              {/* 9. No Index */}
-              <div className="flex items-center justify-between py-2 border-t border-[#252E3D]">
-                <div>
-                  <div className="text-white text-sm font-medium">No Index</div>
-                  <div className="text-white/35 text-xs">Hide SPX, SPXW, NDX, NDXP, RUT, RUTW</div>
-                </div>
-                <button onClick={() => setFilterNoIndex(!filterNoIndex)}
-                  className={`w-10 h-6 rounded-full transition-colors relative ${filterNoIndex ? "bg-[#F5820A]" : "bg-[#252E3D]"}`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${filterNoIndex ? "left-5" : "left-1"}`} />
-                </button>
-              </div>
+                  </div>
+                )
+                return <>
+                  <Seg label="Time Range" options={TIME_RANGES.map(r => ({ v: r.key, l: r.label }))} value={timeRange} onChange={(v: string) => { setTimeRange(v); setPage(0) }} />
+
+                  <div className="border-t border-white/[0.04] pt-4 space-y-4">
+                    <Seg label="Grade" options={[{ v: "", l: "All" }, { v: "A", l: "A" }, { v: "B", l: "B" }]} value={filterGrade} onChange={setFilterGrade} />
+                    <Seg label="Flow Type" options={[{ v: "", l: "All" }, { v: "SWEEP", l: "Sweep" }, { v: "BLOCK", l: "Block" }]} value={filterType} onChange={setFilterType} />
+                    <Seg label="Calls / Puts" options={[{ v: "", l: "All" }, { v: "C", l: "Calls" }, { v: "P", l: "Puts" }]} value={filterOptType} onChange={setFilterOptType} />
+                  </div>
+
+                  <div className="border-t border-white/[0.04] pt-4 space-y-4">
+                    <Pill label="Min Premium" options={[{ v: 0, l: "Any" }, { v: 100000, l: "$100K" }, { v: 250000, l: "$250K" }, { v: 500000, l: "$500K" }, { v: 1000000, l: "$1M" }]} value={filterMinPremium} onChange={setFilterMinPremium} />
+                    <Pill label="Expiry" options={[{ v: "", l: "All" }, { v: "0dte", l: "0DTE" }, { v: "1-7", l: "1-7d" }, { v: "8-30", l: "8-30d" }, { v: "30+", l: "30d+" }]} value={filterDte} onChange={setFilterDte} />
+                    <Pill label="Side" options={[{ v: "", l: "All" }, { v: "ABOVE_ASK", l: "Above" }, { v: "AT_ASK", l: "Ask" }, { v: "BELOW_BID", l: "Bid" }]} value={filterSide} onChange={setFilterSide} />
+                  </div>
+
+                  <div className="border-t border-white/[0.04] pt-3 space-y-0">
+                    <Toggle label="Unusual Only" desc="V/OI flagged activity" active={filterUnusualOnly} onToggle={() => setFilterUnusualOnly(!filterUnusualOnly)} />
+                    <Toggle label="No Index" desc="Hide SPX, NDX, RUT, VIX" active={filterNoIndex} onToggle={() => setFilterNoIndex(!filterNoIndex)} color="#F5820A" />
+                  </div>
+                </>
+              })()}
             </div>
-            <div className="p-4 border-t border-[#252E3D]">
+
+            <div className="px-5 py-4 border-t border-white/[0.06]">
               <button onClick={() => { setPage(0); setShowFilters(false) }}
-                className="w-full bg-[#60a5fa] hover:bg-[#3b82f6] text-black font-bold py-3 rounded-xl text-sm transition-colors">
-                Apply Filters
+                className="w-full py-2.5 rounded-lg text-[12px] font-semibold transition-all bg-white/[0.08] hover:bg-white/[0.12] text-white/70 hover:text-white border border-white/[0.06]">
+                Apply
               </button>
             </div>
           </div>
