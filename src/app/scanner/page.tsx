@@ -241,22 +241,25 @@ export default function ScannerPage() {
       if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
       const ctx = audioCtxRef.current
       if (ctx.state === "suspended") ctx.resume()
-      const play = (freq: number, t: number, dur: number, vol: number) => {
+      const now = ctx.currentTime
+
+      // Soft two-tone blip — Bloomberg-style
+      const tone = (freq: number, start: number, dur: number, vol: number) => {
         const o = ctx.createOscillator()
         const g = ctx.createGain()
-        o.connect(g); g.connect(ctx.destination)
-        o.type = "sine"
+        const f = ctx.createBiquadFilter()
+        o.connect(f); f.connect(g); g.connect(ctx.destination)
+        o.type = "triangle"
+        f.type = "lowpass"
+        f.frequency.value = 2000
         o.frequency.value = freq
-        g.gain.setValueAtTime(0, t)
-        g.gain.linearRampToValueAtTime(vol, t + 0.005)
-        g.gain.exponentialRampToValueAtTime(0.001, t + dur)
-        o.start(t); o.stop(t + dur)
+        g.gain.setValueAtTime(0, start)
+        g.gain.linearRampToValueAtTime(vol, start + 0.008)
+        g.gain.exponentialRampToValueAtTime(0.001, start + dur)
+        o.start(start); o.stop(start + dur)
       }
-      const now = ctx.currentTime
-      play(523, now, 1.8, 0.18)
-      play(1047, now, 1.4, 0.09)
-      play(1318, now, 1.0, 0.05)
-      play(1568, now, 0.7, 0.03)
+      tone(880, now, 0.08, 0.12)        // A5 — short tap
+      tone(1174.7, now + 0.07, 0.1, 0.08) // D6 — soft follow
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
