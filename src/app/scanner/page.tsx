@@ -146,9 +146,9 @@ function condBadges(t: Trade): { label: string; cls: string }[] {
 }
 
 function fmtExpiry(exp: string) {
-  const parts = exp.split("-")
-  if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0].slice(2)}`
-  return exp
+  if (!exp) return '—'
+  const [year, month, day] = exp.split('-')
+  return year && month && day ? `${parseInt(month)}-${day}-${year}` : exp
 }
 
 function aggrColor(a: string | null | undefined) {

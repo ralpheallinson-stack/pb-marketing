@@ -9,7 +9,7 @@ import { BlurFade } from "@/components/magicui/BlurFade"
 interface Signal { symbol: string; action: string; strike: number; premium_fmt: string; flow_type: string; grade: string; expiration: string }
 interface Stats { total_signals: number; signals_this_week: number; grade_a_this_month: number }
 
-function fmtExp(exp: string) { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
+function fmtExp(exp: string) { if (!exp) return '—'; const [y, m, d] = exp.split('-'); return y && m && d ? `${parseInt(m)}-${d}-${y}` : exp }
 
 export default function CommunityPage() {
   const [signals, setSignals] = useState<Signal[]>([])

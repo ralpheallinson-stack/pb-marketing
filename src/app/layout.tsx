@@ -1,11 +1,18 @@
 import type { Metadata } from "next"
-import { Teko } from "next/font/google"
+import { Teko, Bricolage_Grotesque } from "next/font/google"
 import "./globals.css"
 
 const teko = Teko({
   weight: "700",
   subsets: ["latin"],
   variable: "--font-teko",
+  display: "swap",
+})
+
+const bricolage = Bricolage_Grotesque({
+  weight: "800",
+  subsets: ["latin"],
+  variable: "--font-bricolage",
   display: "swap",
 })
 
@@ -40,7 +47,7 @@ const orgSchema = JSON.stringify({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={teko.variable}>
+    <html lang="en" className={`${teko.variable} ${bricolage.variable}`}>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: orgSchema }} />
       </head>

@@ -1,5 +1,5 @@
 import Nav from "@/components/Nav"
-import Hero from "@/components/Hero"
+import HeroSection from "@/components/HeroSection"
 import TrackRecord from "@/components/TrackRecord"
 import AccumulationSection from "@/components/AccumulationSection"
 import AlertCards from "@/components/AlertCards"
@@ -38,13 +38,13 @@ export default function Home() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: appSchema }} />
       <Nav />
-      <Hero />
-      <TrackRecord />
-      <AccumulationSection />
-      <AlertCards />
-      <GexSection />
+      <HeroSection />
+      <div className="border-t border-white/[0.05]"><TrackRecord /></div>
+      <div className="border-t border-white/[0.05]"><AccumulationSection /></div>
+      <div className="border-t border-white/[0.05]"><AlertCards /></div>
+      <div className="border-t border-white/[0.05]"><GexSection /></div>
       {/* Mid-page CTA */}
-      <section className="bg-[#0E1117] w-full py-12 px-6">
+      <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
         <div className="max-w-lg mx-auto text-center">
           <p className="text-white/40 text-sm mb-4">
             Grade A signals. Verified track record. Free to start.
@@ -58,9 +58,9 @@ export default function Home() {
           </p>
         </div>
       </section>
-      <Pricing />
-      <EmailCapture />
-      <FAQ />
+      <div className="border-t border-white/[0.05]"><Pricing /></div>
+      <div className="border-t border-white/[0.05]"><EmailCapture /></div>
+      <div className="border-t border-white/[0.05]"><FAQ /></div>
       <Footer />
     </>
   )

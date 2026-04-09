@@ -32,21 +32,6 @@ body {
   color: #7A8BA8;
 }
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.pb-brand-title {
-  opacity: 0;
-  animation: fadeUp 0.8s ease 0.1s forwards;
-}
 
 @keyframes shimmer-border {
   0% { background-position: 0% 50%; }

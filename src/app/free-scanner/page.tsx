@@ -49,8 +49,9 @@ function fmtPrem(v: number) {
 }
 
 function fmtExpiry(exp: string) {
-  const p = exp.split("-")
-  return p.length === 3 ? `${p[1]}/${p[2]}/${p[0].slice(2)}` : exp
+  if (!exp) return '—'
+  const [year, month, day] = exp.split('-')
+  return year && month && day ? `${parseInt(month)}-${day}-${year}` : exp
 }
 
 const COND_CLS: Record<string, string> = {
