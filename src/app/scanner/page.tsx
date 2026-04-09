@@ -404,10 +404,10 @@ export default function ScannerPage() {
   const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#070A0E' }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#111318' }}>
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#0B0F1A", borderRight: "1px solid #131B27" }}>
+      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#161B26", borderRight: "1px solid #1E2633" }}>
         <a href="/" className="mb-4 flex items-center justify-center w-full" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={24} height={24} className="w-6 h-6 object-contain" />
         </a>
@@ -456,9 +456,9 @@ export default function ScannerPage() {
         const todayStr = new Date().toISOString().slice(0, 10)
         const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
         return (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F1A" }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#161B26" }}>
           {/* Metrics header */}
-          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#131B27] flex-shrink-0">
+          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#1E2633] flex-shrink-0">
             <div className="flex items-center gap-4">
               <div>
                 <div className="text-[9px] font-bold text-[#3D4D63] tracking-[0.15em] uppercase">GEX Heatmap</div>
@@ -511,18 +511,18 @@ export default function ScannerPage() {
             ) : gexData ? (
               <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
                 {/* Column headers */}
-                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>Strike</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#1E2633]" style={{ background: "#161B26" }}>Strike</div>
                 {gexData.expirations.map(exp => {
                   const isToday = exp === todayStr
                   return (
-                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#131B27]" style={{ background: "#0B0F1A" }}>
+                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#1E2633]" style={{ background: "#161B26" }}>
                       <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#F5820A]" : "text-white/50"}`}>
                         {isToday ? "TODAY" : fmtExp(exp)}
                       </div>
                     </div>
                   )
                 })}
-                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#131B27]" style={{ background: "#0B0F1A", borderLeft: "1px solid #1E2A3A" }}>Total</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#1E2633]" style={{ background: "#161B26", borderLeft: "1px solid #1E2A3A" }}>Total</div>
                 {/* Data rows */}
                 {(() => {
                   const strikes = [...gexData.strikes].reverse()
@@ -536,7 +536,7 @@ export default function ScannerPage() {
                   const isZg = strike === zgStrike
                   const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
                   return [
-                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#0D1219]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
+                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#1A2030]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
                       {isAtm && <span className="text-[9px] font-bold text-white/70 mr-0.5">● SPOT</span>}
                       {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
                       <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
@@ -547,7 +547,7 @@ export default function ScannerPage() {
                       const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
                       const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
                       return (
-                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#0D1219] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
+                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#1A2030] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
                           {gex !== 0 && (
                             <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                               {fmtGex(gex)}
@@ -556,7 +556,7 @@ export default function ScannerPage() {
                         </div>
                       )
                     }),
-                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#0D1219]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
+                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#1A2030]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
                       <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                         {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
                       </span>
@@ -569,9 +569,9 @@ export default function ScannerPage() {
         </div>
         )
       })()) : activePage === "watchlist" ? (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F1A" }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#161B26" }}>
           {/* Watchlist header */}
-          <div className="px-5 py-3 border-b border-[#131B27] flex items-center gap-3 flex-shrink-0">
+          <div className="px-5 py-3 border-b border-[#1E2633] flex items-center gap-3 flex-shrink-0">
             <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
             <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
             <div className="ml-auto">
@@ -594,7 +594,7 @@ export default function ScannerPage() {
             ) : (
               <div>
                 {/* Column headers */}
-                <div className="grid sticky top-0 z-10 border-b border-[#131B27] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#0B0F1A" }}>
+                <div className="grid sticky top-0 z-10 border-b border-[#1E2633] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#161B26" }}>
                   <div className="px-5 py-2">Symbol</div>
                   <div className="px-3 py-2 text-right">Call Flow</div>
                   <div className="px-3 py-2 text-right">Put Flow</div>
@@ -609,7 +609,7 @@ export default function ScannerPage() {
                   const isBull = callPrem > putPrem * 1.3
                   const isBear = putPrem > callPrem * 1.3
                   return (
-                    <div key={sym} className="grid border-b border-[#0D1219] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
+                    <div key={sym} className="grid border-b border-[#1A2030] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
                       onClick={() => { setSearch(sym); setActivePage("scanner") }}>
                       <div className="px-5 flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{sym}</span>
@@ -645,7 +645,7 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#0A0D12' }}>
+      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#151921' }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -668,7 +668,7 @@ export default function ScannerPage() {
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
-        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#080B10' }}>
+        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#131720' }}>
           <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
             className="flex items-center gap-1.5 bg-[#60a5fa]/10 border border-[#60a5fa]/30 rounded-full px-3 py-1 text-[#60a5fa] text-xs font-bold hover:bg-[#60a5fa]/20">
             {focusTicker} <span className="text-[#60a5fa]/50">&times;</span>
@@ -697,7 +697,7 @@ export default function ScannerPage() {
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
         return (
-          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#080B10' }}>
+          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#131720' }}>
             {/* Sentiment + bar */}
             <div className="flex items-center gap-2 min-w-[180px]">
               <span className={`text-[12px] font-bold ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#EF4444]" : "text-white/40"}`}>
@@ -738,11 +738,11 @@ export default function ScannerPage() {
       })()}
 
       {/* ── TABLE ── */}
-      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#070A0E' }}>
+      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#111318' }}>
         {loading ? (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10" style={{ background: '#0A0D12' }}>
-              <tr className="text-[9px] text-white/15 uppercase tracking-[0.1em]">
+            <thead className="sticky top-0 z-10" style={{ background: '#151921' }}>
+              <tr className="text-[9px] text-white/20 uppercase tracking-[0.1em]">
                 <th className="text-left px-3 py-1.5 font-medium">Time</th>
                 <th className="text-left px-2 py-1.5 font-medium">Tick</th>
                 <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell">Expiry</th>
@@ -783,8 +783,8 @@ export default function ScannerPage() {
                 <col key={col.key} style={{ width: col.width ? `${col.width}px` : undefined }} />
               ))}
             </colgroup>
-            <thead className="sticky top-0 z-10" style={{ background: '#0A0D12' }}>
-              <tr className="text-[9px] text-white/15 uppercase tracking-[0.1em]">
+            <thead className="sticky top-0 z-10" style={{ background: '#151921' }}>
+              <tr className="text-[9px] text-white/20 uppercase tracking-[0.1em]">
                 {COLS.map(c => (
                   <th key={c.key} className={`${c.cls} py-1.5 font-medium`}>{c.label}</th>
                 ))}
@@ -895,7 +895,7 @@ export default function ScannerPage() {
       {showFilters && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #0E1219 0%, #131820 100%)' }}>
+          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #151921 0%, #1A2030 100%)' }}>
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2.5">
