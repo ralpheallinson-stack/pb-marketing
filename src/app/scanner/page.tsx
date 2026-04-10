@@ -722,13 +722,13 @@ export default function ScannerPage() {
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
             {/* Flow sentiment */}
             <div className="px-5 py-4">
-              <div className="text-[11px] text-white/30 mb-2">Flow sentiment</div>
+              <div className="text-[12px] text-white/35 mb-2">Flow sentiment</div>
               <div className="flex items-center gap-3">
-                <span className={`text-[26px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
+                <span className={`text-[32px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
-                <div className="flex-1 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #FF605D, #00E85A)` }} />
+                <div className="flex-1 h-[4px] bg-white/[0.06] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: isBull ? '#00E85A' : '#FF605D' }} />
                 </div>
               </div>
             </div>
@@ -736,8 +736,8 @@ export default function ScannerPage() {
             {/* Put to call */}
             <div className="px-5 py-4 flex items-center justify-between">
               <div>
-                <div className="text-[11px] text-white/30 mb-2">Put to call</div>
-                <div className="text-[26px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+                <div className="text-[12px] text-white/35 mb-2">Put to call</div>
+                <div className="text-[32px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
               </div>
               <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
                 <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
@@ -753,9 +753,9 @@ export default function ScannerPage() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-[11px] text-white/30">Call flow</span>
-                  <span className="text-[12px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
+                  <span className="text-[14px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[26px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+                <div className="text-[32px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
               </div>
               <Donut pct={callPct} color="#00E85A" />
             </div>
@@ -765,9 +765,9 @@ export default function ScannerPage() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-[11px] text-white/30">Put flow</span>
-                  <span className="text-[12px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
+                  <span className="text-[14px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[26px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+                <div className="text-[32px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
               </div>
               <Donut pct={putPct} color="#FF605D" />
             </div>
