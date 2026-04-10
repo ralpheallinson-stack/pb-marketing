@@ -401,51 +401,60 @@ export default function ScannerPage() {
     }
   })() : stats
 
-  const iconCls = "w-[18px] h-[18px]"
-  const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
+  const iconCls = "w-5 h-5"
+  const sideBtn = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-lg transition-all cursor-pointer ${active ? "bg-white/[0.08] text-white" : "text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`
+  const sideCircle = (active: boolean) => `w-9 h-9 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.12] text-white" : "bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.08]"}`
 
   return (
     <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1A1A1E', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#242428", borderRight: "1px solid #2E2E33" }}>
-        <a href="/" className="mb-4 flex items-center justify-center w-full" aria-label="Home">
-          <img src="/images/pb-logo.png" alt="Profit Builders" width={24} height={24} className="w-6 h-6 object-contain" />
+      <nav className="fixed left-0 top-0 h-full w-[56px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#1E1E22', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+        {/* Logo */}
+        <a href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
+          <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain" />
         </a>
-        <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")}>
-          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
+
+        {/* Main nav */}
+        <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")} title="Flow Scanner">
+          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
         </button>
         <button
           onClick={() => canAccessGamma ? setActivePage("heatmap") : setShowUpgradeModal(true)}
           className={`${sideBtn(activePage === "heatmap")} relative`}
-          title={canAccessGamma ? "GEX Heatmap" : "Upgrade to Pro for Gamma Wall"}
+          title={canAccessGamma ? "GEX Heatmap" : "Upgrade for GEX"}
         >
-          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-          {!canAccessGamma && <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-[#FF8A00]" />}
+          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+          {!canAccessGamma && <span className="absolute -top-0.5 -right-0.5 text-[8px] font-bold text-[#48DEFF] bg-[#48DEFF]/15 px-1 rounded">NEW</span>}
         </button>
-        <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")}>
-          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
+        <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")} title="Watchlist">
+          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
         </button>
-        <div className="w-5 h-px bg-white/[0.06] my-1" />
-        <button onClick={() => {}} className={sideBtn(false)}>
-          <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+
+        <div className="w-6 h-px bg-white/[0.06] my-1" />
+
+        {/* Filters */}
+        <button onClick={() => setShowFilters(true)} className={sideBtn(showFilters)} title="Filters">
+          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" d="M3 4h18M6 8h12M9 12h6" /></svg>
         </button>
-        <div className="mt-auto flex flex-col items-center gap-1">
-          <button onClick={() => setSoundEnabled(!soundEnabled)} className={sideBtn(soundEnabled)}>
+
+        {/* Bottom circle buttons */}
+        <div className="mt-auto flex flex-col items-center gap-2">
+          <button onClick={() => setSoundEnabled(!soundEnabled)} className={sideCircle(soundEnabled)} title={soundEnabled ? "Sound on" : "Sound off"}>
             {soundEnabled ? (
-              <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             ) : (
-              <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             )}
           </button>
-          <a href="/account" className={sideBtn(false)}>
-            <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+          <a href="/account" className={sideCircle(false)} title="Account">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
           </a>
         </div>
       </nav>
 
       {/* ── MAIN CONTENT ── */}
-      <div className="ml-[52px] flex flex-col h-screen overflow-hidden flex-1">
+      <div className="ml-[56px] flex flex-col h-screen overflow-hidden flex-1">
 
       {activePage === "heatmap" ? ((() => {
         const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
