@@ -101,7 +101,7 @@ export default function HeroSection() {
         <p className="text-white/25 text-xs font-mono mb-16">Free 7-day trial · Then $99/mo · Cancel anytime</p>
 
         {/* Stat strip */}
-        <div ref={statsRef} className="flex items-center justify-center gap-12 mb-16 border-t border-b border-white/[0.06] py-6">
+        <div ref={statsRef} className="flex items-center justify-center gap-12 mb-8 border-t border-b border-white/[0.06] py-6">
           {[
             { value: `${wr}.1%`, label: 'STRONG WIN RATE' },
             { value: `+${(ev/100).toFixed(2)}%`, label: 'AVG EV PER TRADE' },
