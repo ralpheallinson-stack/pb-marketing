@@ -697,42 +697,70 @@ export default function ScannerPage() {
         const totalPrem = displayStats.bull + displayStats.bear
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
+        const putPct = 100 - callPct
+        const circ = 2 * Math.PI * 22
+        const pcDash = Math.min(displayStats.pc_ratio / 2, 1) * circ
+        const Donut = ({ pct, color }: { pct: number; color: string }) => (
+          <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
+            <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+            <circle cx="26" cy="26" r="22" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round"
+              strokeDasharray={`${(pct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
+              style={{ transition: 'stroke-dasharray 0.6s ease' }} />
+            <text x="26" y="27" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600" fontFamily="monospace">{pct.toFixed(1)}%</text>
+          </svg>
+        )
         return (
-          <div className="flex items-center border-b border-white/[0.06] flex-shrink-0 px-4 py-3" style={{ background: '#1E1E22' }}>
-            {/* Sentiment + bar */}
-            <div className="flex items-center gap-2.5 min-w-[180px]">
-              <span className={`text-[13px] font-bold ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/40"}`}>
-                {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
-              </span>
-              <div className="w-24 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #FF605D, #00E85A)` }} />
+          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1A1A1E' }}>
+            {/* Flow sentiment */}
+            <div className="px-5 py-4">
+              <div className="text-[11px] text-white/30 mb-2">Flow sentiment</div>
+              <div className="flex items-center gap-3">
+                <span className={`text-[22px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
+                  {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
+                </span>
+                <div className="flex-1 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #FF605D, #00E85A)` }} />
+                </div>
               </div>
             </div>
-            <div className="w-px h-6 bg-white/[0.08] mx-4" />
-            {/* P/C */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">P/C</span>
-              <span className="text-[14px] font-bold text-white font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
+            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+            {/* Put to call */}
+            <div className="px-5 py-4 flex items-center justify-between">
+              <div>
+                <div className="text-[11px] text-white/30 mb-2">Put to call</div>
+                <div className="text-[22px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+              </div>
+              <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
+                <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+                <circle cx="26" cy="26" r="22" fill="none" stroke="#48DEFF" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${pcDash} ${circ}`} strokeDashoffset={circ / 4}
+                  style={{ transition: 'stroke-dasharray 0.6s ease' }} />
+                <text x="26" y="27" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600" fontFamily="monospace">{displayStats.pc_ratio.toFixed(2)}</text>
+              </svg>
             </div>
-            <div className="w-px h-6 bg-white/[0.08] mx-4" />
-            {/* Calls */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Calls</span>
-              <span className="text-[14px] font-bold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
-              <span className="text-[10px] text-white/20 font-mono">{callPct}%</span>
+            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+            {/* Call flow */}
+            <div className="px-5 py-4 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-[11px] text-white/30">Call flow</span>
+                  <span className="text-[12px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
+                </div>
+                <div className="text-[22px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+              </div>
+              <Donut pct={callPct} color="#00E85A" />
             </div>
-            <div className="w-px h-6 bg-white/[0.08] mx-4" />
-            {/* Puts */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Puts</span>
-              <span className="text-[14px] font-bold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
-              <span className="text-[10px] text-white/20 font-mono">{100 - callPct}%</span>
-            </div>
-            <div className="w-px h-6 bg-white/[0.08] mx-4" />
-            {/* Count */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Signals</span>
-              <span className="text-[14px] font-bold text-white font-mono">{totalCount.toLocaleString()}</span>
+            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+            {/* Put flow */}
+            <div className="px-5 py-4 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-[11px] text-white/30">Put flow</span>
+                  <span className="text-[12px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
+                </div>
+                <div className="text-[22px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+              </div>
+              <Donut pct={putPct} color="#FF605D" />
             </div>
           </div>
         )
