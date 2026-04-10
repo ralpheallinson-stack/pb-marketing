@@ -145,21 +145,21 @@ const TIME_RANGES = [
 ] as const
 
 const COLS = [
-  { key: "time",   label: "Time",   width: 96,  cls: "text-left px-3" },
-  { key: "tick",   label: "Tick",   width: 80,  cls: "text-left px-2" },
-  { key: "expiry", label: "Expiry", width: 82,  cls: "text-left px-2" },
-  { key: "strike", label: "Strike", width: 64,  cls: "text-right px-2" },
-  { key: "cp",     label: "C/P",    width: 46,  cls: "text-center px-2" },
-  { key: "side",   label: "Side",   width: 56,  cls: "text-center px-2" },
-  { key: "bs",     label: "B/S",    width: 42,  cls: "text-center px-2" },
-  { key: "spot",   label: "Spot",   width: 80,  cls: "text-right px-2" },
-  { key: "size",   label: "Size",   width: 62,  cls: "text-right px-2" },
-  { key: "price",  label: "Price",  width: 62,  cls: "text-right px-2" },
-  { key: "prem",   label: "Prem",   width: 76,  cls: "text-right px-2" },
-  { key: "type",   label: "Type",   width: 68,  cls: "text-center px-2" },
-  { key: "vol",    label: "Vol",    width: 72,  cls: "text-right px-2" },
-  { key: "oi",     label: "OI",     width: 64,  cls: "text-right px-2" },
-  { key: "conds",  label: "Conds",  width: 180, cls: "text-left px-2" },
+  { key: "time",   label: "Time",   width: 104, cls: "text-left px-3" },
+  { key: "tick",   label: "Tick",   width: 88,  cls: "text-left px-2" },
+  { key: "expiry", label: "Expiry", width: 90,  cls: "text-left px-2" },
+  { key: "strike", label: "Strike", width: 70,  cls: "text-right px-2" },
+  { key: "cp",     label: "C/P",    width: 48,  cls: "text-center px-2" },
+  { key: "side",   label: "Side",   width: 60,  cls: "text-center px-2" },
+  { key: "bs",     label: "B/S",    width: 46,  cls: "text-center px-2" },
+  { key: "spot",   label: "Spot",   width: 86,  cls: "text-right px-2" },
+  { key: "size",   label: "Size",   width: 68,  cls: "text-right px-2" },
+  { key: "price",  label: "Price",  width: 68,  cls: "text-right px-2" },
+  { key: "prem",   label: "Prem",   width: 82,  cls: "text-right px-2" },
+  { key: "type",   label: "Type",   width: 72,  cls: "text-center px-2" },
+  { key: "vol",    label: "Vol",    width: 78,  cls: "text-right px-2" },
+  { key: "oi",     label: "OI",     width: 70,  cls: "text-right px-2" },
+  { key: "conds",  label: "Conds",  width: 0,   cls: "text-left px-2" },
 ] as const
 
 /* ── page ── */
@@ -771,7 +771,7 @@ export default function ScannerPage() {
         {loading ? (
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
-              <tr className="text-[11px] text-white/25 uppercase tracking-[0.08em]">
+              <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
                 <th className="text-left px-3 py-1.5 font-medium">Time</th>
                 <th className="text-left px-2 py-1.5 font-medium">Tick</th>
                 <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell">Expiry</th>
@@ -813,7 +813,7 @@ export default function ScannerPage() {
               ))}
             </colgroup>
             <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
-              <tr className="text-[11px] text-white/25 uppercase tracking-[0.08em]">
+              <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
                 {COLS.map(c => (
                   <th key={c.key} className={`${c.cls} py-1.5 font-medium`} style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>{c.label}</th>
                 ))}
@@ -836,53 +836,53 @@ export default function ScannerPage() {
                     className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.02]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-2 text-white/50 text-[12px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
-                    <td className="px-2 py-2">
+                    <td className="px-3 py-2.5 text-white/50 text-sm font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-2 py-2.5">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[15px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
+                        <div className="font-bold text-[17px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
                         {t.sector && <div className="text-white/25 text-[10px] mt-0.5">{t.sector}</div>}
                       </button>
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2.5">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[13px] font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-sm font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-right">
+                    <td className="px-2 py-2.5 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[13px] font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-sm font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-center text-[13px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2.5 text-center text-sm font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[13px] ${aggrColor(t.aggression)}`}>
+                    <td className={`px-2 py-2.5 text-center text-sm ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[13px] font-medium ${bsColor(t.trade_direction)}`}>
+                    <td className={`px-2 py-2.5 text-center text-sm font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-2 text-right text-white text-[13px] font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-2 text-right text-[13px] font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-2 text-right text-white/70 text-[13px] font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-                    <td className="px-2 py-2 text-right text-[13px] font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2.5 text-right text-white text-sm font-mono">{t.spot_fmt}</td>
+                    <td className={`px-2 py-2.5 text-right text-sm font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-2.5 text-right text-white/70 text-sm font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-2.5 text-right text-sm font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[13px] font-medium ${
+                    <td className={`px-2 py-2.5 text-center text-sm font-medium ${
                       t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/70"
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-[13px] font-mono text-white/80">
+                    <td className="px-2 py-2.5 text-right text-sm font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/80 text-[13px] font-mono">
+                    <td className="px-2 py-2.5 text-right text-white/80 text-sm font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2.5">
                       <div className="flex flex-wrap gap-1">
                         {t.badges?.slice(0, 4).map((b, i) => (
                           <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
@@ -927,7 +927,7 @@ export default function ScannerPage() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
-                <span className="text-white font-semibold text-[13px] tracking-wide">Filters</span>
+                <span className="text-white font-semibold text-sm tracking-wide">Filters</span>
                 {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
               </div>
               <div className="flex items-center gap-2">
