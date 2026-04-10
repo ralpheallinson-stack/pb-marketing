@@ -655,24 +655,24 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#252430' }}>
-        <div className="flex items-center gap-2">
+      <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
+        <div className="flex items-center gap-3">
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={e => setSearch(e.target.value.toUpperCase())}
-            className="w-36 bg-white/[0.03] border border-white/[0.06] rounded-md px-2.5 py-1 text-[11px] text-white placeholder-white/20 focus:outline-none focus:border-white/[0.12] font-mono"
+            className="w-52 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/[0.15] font-mono"
           />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-white/50 hover:text-white/70 transition-colors">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors">
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             Filters
-            {activeFilterCount > 0 && <span className="bg-white/[0.12] text-white/70 text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && <span className="bg-white/[0.15] text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">{activeFilterCount}</span>}
           </button>
         </div>
-        <div className="ml-auto flex items-center gap-3">
-          <a href="/account" className="text-white/20 text-[10px] hover:text-white/40 transition-colors">Account</a>
-          <a href="/logout" className="text-white/20 text-[10px] hover:text-white/40 transition-colors">Logout</a>
+        <div className="ml-auto flex items-center gap-4">
+          <a href="/account" className="text-white/25 text-xs hover:text-white/50 transition-colors">Account</a>
+          <a href="/logout" className="text-white/25 text-xs hover:text-white/50 transition-colors">Logout</a>
         </div>
       </header>
 
@@ -926,30 +926,29 @@ export default function ScannerPage() {
       {showFilters && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #222226 0%, #2D2C38 100%)' }}>
+          <div className="fixed right-0 top-0 h-full w-[340px] z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #252430 0%, #2D2C38 100%)' }}>
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
-                <span className="text-white font-semibold text-[15px]tracking-wide">Filters</span>
-                {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
+                <span className="text-white font-semibold text-base">Filters</span>
+                {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[11px] font-bold text-black px-2 py-0.5 rounded-full min-w-[20px] text-center">{activeFilterCount}</span>}
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/30 hover:text-white/60 text-[11px] transition-colors">Reset</button>
-                <button onClick={() => setShowFilters(false)} className="w-7 h-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-white/40 hover:text-white transition-colors text-sm">&times;</button>
+              <div className="flex items-center gap-3">
+                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/30 hover:text-white/60 text-xs transition-colors">Reset</button>
+                <button onClick={() => setShowFilters(false)} className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white transition-colors text-base">&times;</button>
               </div>
             </div>
 
-            <div className="flex-1 px-5 py-4 space-y-5">
-              {/* Segmented control helper */}
+            <div className="flex-1 px-6 py-5 space-y-6">
               {(() => {
                 const Seg = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
                   <div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/25 mb-2">{label}</div>
-                    <div className="inline-flex rounded-lg bg-white/[0.03] border border-white/[0.06] p-0.5">
+                    <div className="text-xs font-medium uppercase tracking-[0.1em] text-white/30 mb-2.5">{label}</div>
+                    <div className="inline-flex rounded-lg bg-white/[0.03] border border-white/[0.06] p-1">
                       {options.map(o => (
                         <button key={String(o.v)} onClick={() => onChange(o.v)}
-                          className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${value === o.v ? "bg-white/[0.1] text-white shadow-sm" : "text-white/30 hover:text-white/50"}`}>
+                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${value === o.v ? "bg-white/[0.1] text-white shadow-sm" : "text-white/30 hover:text-white/50"}`}>
                           {o.l}
                         </button>
                       ))}
@@ -958,11 +957,11 @@ export default function ScannerPage() {
                 )
                 const Pill = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
                   <div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/25 mb-2">{label}</div>
-                    <div className="flex gap-1.5 flex-wrap">
+                    <div className="text-xs font-medium uppercase tracking-[0.1em] text-white/30 mb-2.5">{label}</div>
+                    <div className="flex gap-2 flex-wrap">
                       {options.map(o => (
                         <button key={String(o.v)} onClick={() => onChange(o.v)}
-                          className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-all ${value === o.v ? "bg-white/[0.1] border-white/[0.15] text-white" : "bg-transparent border-white/[0.06] text-white/25 hover:text-white/45 hover:border-white/[0.1]"}`}>
+                          className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all ${value === o.v ? "bg-white/[0.1] border-white/[0.15] text-white" : "bg-transparent border-white/[0.06] text-white/25 hover:text-white/45 hover:border-white/[0.1]"}`}>
                           {o.l}
                         </button>
                       ))}
@@ -972,13 +971,13 @@ export default function ScannerPage() {
                 const Toggle = ({ label, desc, active, onToggle, color }: { label: string; desc: string; active: boolean; onToggle: () => void; color?: string }) => (
                   <div className="flex items-center justify-between py-3">
                     <div>
-                      <div className="text-white/80 text-[12px] font-medium">{label}</div>
-                      <div className="text-white/20 text-[10px] mt-0.5">{desc}</div>
+                      <div className="text-white/80 text-sm font-medium">{label}</div>
+                      <div className="text-white/25 text-xs mt-0.5">{desc}</div>
                     </div>
                     <button onClick={onToggle}
-                      className={`w-9 h-[22px] rounded-full transition-all relative flex-shrink-0 ${active ? "" : "bg-white/[0.06]"}`}
+                      className={`w-11 h-6 rounded-full transition-all relative flex-shrink-0 ${active ? "" : "bg-white/[0.06]"}`}
                       style={active ? { backgroundColor: color || '#48DEFF' } : undefined}>
-                      <div className={`absolute top-[3px] w-4 h-4 rounded-full transition-all ${active ? "left-[18px] bg-white" : "left-[3px] bg-white/30"}`} />
+                      <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${active ? "left-6 bg-white" : "left-1 bg-white/30"}`} />
                     </button>
                   </div>
                 )
@@ -1005,10 +1004,10 @@ export default function ScannerPage() {
               })()}
             </div>
 
-            <div className="px-5 py-4 border-t border-white/[0.06]">
+            <div className="px-6 py-5 border-t border-white/[0.06]">
               <button onClick={() => { setPage(0); setShowFilters(false) }}
-                className="w-full py-3 rounded-lg text-[12px] font-semibold transition-all bg-white/[0.08] hover:bg-white/[0.12] text-white/70 hover:text-white border border-white/[0.06]">
-                Apply
+                className="w-full py-3 rounded-xl text-sm font-bold transition-all bg-white/[0.08] hover:bg-white/[0.14] text-white/80 hover:text-white border border-white/[0.08]">
+                Apply Filters
               </button>
             </div>
           </div>
