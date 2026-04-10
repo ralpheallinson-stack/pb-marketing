@@ -33,6 +33,7 @@ interface Trade {
   dte: number
   premium_fmt: string
   premium: number
+  contracts: number
   flow_type: string
   bullish: boolean
   grade: string
@@ -46,7 +47,7 @@ interface Trade {
 
 interface ApiData {
   trades?: Trade[]
-  stats?: { bull_premium?: number; bear_premium?: number; put_call_ratio?: number; total?: number }
+  stats?: { bull_premium?: number; bear_premium?: number; bull?: number; bear?: number; put_call_ratio?: number; pc_ratio?: number; total?: number; count?: number }
   session?: { bull_pct?: number; sentiment?: string }
 }
 
@@ -118,19 +119,19 @@ export default function LiveFlowPreview() {
 
   const bullPct   = session?.bull_pct ?? 54
   const sentiment = session?.sentiment ?? 'Mixed'
-  const bullCount  = useCountUp(stats?.bull_premium ?? 0)
-  const bearCount  = useCountUp(stats?.bear_premium ?? 0)
-  const totalCount = useCountUp(stats?.total ?? 0)
+  const bullCount  = useCountUp(stats?.bull_premium ?? stats?.bull ?? 0)
+  const bearCount  = useCountUp(stats?.bear_premium ?? stats?.bear ?? 0)
+  const totalCount = useCountUp(stats?.total ?? stats?.count ?? 0)
 
   return (
     <div className="pb-scanner-wrap overflow-x-auto rounded-xl" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <div className="min-w-[640px]">
     <div
       className="relative w-full overflow-hidden rounded-xl border border-[#1E2A3A]"
-      style={{ background: '#0E1117', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' }}
+      style={{ background: '#0E1117', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}
     >
       {/* Header */}
-      <div className="flex items-center gap-5 border-b border-[#1E2A3A] px-4 py-2.5">
+      <div className="flex items-center gap-4 border-b border-[#1E2A3A] px-4 py-2">
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
@@ -138,22 +139,31 @@ export default function LiveFlowPreview() {
           </span>
           <span className="font-mono text-[10px] uppercase tracking-widest text-green-400">Live</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-1 w-14 overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${bullPct}%`, background: 'linear-gradient(90deg,#ef4444,#22c55e)' }}
-            />
-          </div>
-          <span className="text-[11px] font-semibold text-white/60">{sentiment}</span>
-        </div>
+        {/* P/C Ring Gauge */}
+        {(() => {
+          const pcr = stats?.pc_ratio ?? stats?.put_call_ratio ?? 1
+          const r = 16, circ = 2 * Math.PI * r
+          const dash = Math.min(pcr / 3, 1) * circ
+          const ringColor = pcr > 1.2 ? '#ef4444' : pcr < 0.8 ? '#22c55e' : '#22d3ee'
+          return (
+            <div className="relative flex items-center justify-center flex-shrink-0" style={{ width: 40, height: 40 }}>
+              <svg width="40" height="40" style={{ transform: 'rotate(-90deg)' }}>
+                <circle cx="20" cy="20" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+                <circle cx="20" cy="20" r={r} fill="none" stroke={ringColor} strokeWidth="3"
+                  strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+                  style={{ transition: 'stroke-dasharray 0.8s ease' }} />
+              </svg>
+              <span className="absolute font-mono text-[9px] font-bold text-white">{pcr.toFixed(1)}</span>
+            </div>
+          )
+        })()}
         <div className="flex items-center gap-4 ml-auto">
           <div>
-            <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Call Flow</div>
+            <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Calls</div>
             <div className="text-[11px] font-bold text-[#22c55e]">{fmt(bullCount)}</div>
           </div>
           <div>
-            <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Put Flow</div>
+            <div className="font-mono text-[8px] uppercase tracking-wider text-white/20">Puts</div>
             <div className="text-[11px] font-bold text-[#ef4444]">{fmt(bearCount)}</div>
           </div>
           <div>
@@ -166,10 +176,10 @@ export default function LiveFlowPreview() {
       {/* Column headers */}
       <div
         className="grid border-b border-[#1E2A3A] bg-white/[0.01]"
-        style={{ gridTemplateColumns: '80px 80px 44px 100px 72px 68px 1fr' }}
+        style={{ gridTemplateColumns: '72px 72px 40px 92px 52px 64px 60px 1fr 28px' }}
       >
-        {['TIME','TICKER','C/P','STRIKE / EXP','PREMIUM','TYPE','CONDS'].map(h => (
-          <div key={h} className="px-3 py-1.5 font-mono text-[8px] font-semibold uppercase tracking-[1.5px] text-[#3D4D63]">
+        {['TIME','TICK','C/P','STRIKE/EXP','SIZE','PREM','TYPE','CONDS',''].map(h => (
+          <div key={h} className="px-2 py-1.5 font-mono text-[8px] font-semibold uppercase tracking-[1.5px] text-[#3D4D63]">
             {h}
           </div>
         ))}
@@ -201,62 +211,49 @@ export default function LiveFlowPreview() {
                 key={`${t.id}-${i}`}
                 className="grid border-b border-[#1E2A3A] transition-colors duration-300"
                 style={{
-                  gridTemplateColumns: '80px 80px 44px 100px 72px 68px 1fr',
+                  gridTemplateColumns: '72px 72px 40px 92px 52px 64px 60px 1fr 28px',
                   background: rowBg,
                   animation: i === 0 ? 'pbSlideIn 0.35s ease' : undefined,
                 }}
               >
-                <div className="px-3 py-2.5 font-mono text-[10px] text-white/25 flex items-center">
+                <div className="px-2 py-2 font-mono text-[10px] text-white/30 flex items-center">
                   {t.time?.replace(' PM','p')?.replace(' AM','a')}
                 </div>
-                <div className="px-3 py-2.5 flex flex-col justify-center">
-                  <div className="text-[13px] font-bold leading-none" style={{ color: dirColor }}>
+                <div className="px-2 py-2 flex flex-col justify-center">
+                  <div className="text-[12px] font-bold text-white leading-none">
                     {t.symbol}
                   </div>
-                  <div className="text-[9px] text-white/25 mt-0.5">{t.sector}</div>
+                  <div className="text-[8px] text-white/20 mt-0.5">{t.sector}</div>
                 </div>
-                <div className="px-3 py-2.5 flex items-center">
-                  <span className="text-[11px] font-semibold" style={{ color: dirColor }}>
-                    {isCall ? 'Call' : 'Put'}
+                <div className="px-2 py-2 flex items-center">
+                  <span className="text-[10px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    {isCall ? 'C' : 'P'}
                   </span>
                 </div>
-                <div className="px-3 py-2.5 flex flex-col justify-center">
-                  <div className="text-[11px] text-white/70 font-medium">{t.strike_fmt}</div>
-                  <div className="text-[9px] text-white/25 font-mono">{t.expiration?.slice(5)} · {t.dte}d</div>
+                <div className="px-2 py-2 flex flex-col justify-center">
+                  <div className="text-[11px] text-white font-medium">{t.strike_fmt}</div>
+                  <div className="text-[8px] text-white/25 font-mono">{t.expiration?.slice(5)} · {t.dte}d</div>
                 </div>
-                <div className="px-3 py-2.5 flex items-center">
-                  {(() => {
-                    const isLarge = (t.premium >= 500000) || t.whale
-                    return (
-                      <span
-                        className="font-bold"
-                        style={isLarge ? {
-                          background: t.row_color === 'bullish'
-                            ? 'linear-gradient(135deg, #22c55e, #86efac)'
-                            : 'linear-gradient(135deg, #ef4444, #fca5a5)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                          fontWeight: 800,
-                          fontSize: '13px',
-                        } : {
-                          color: dirColor,
-                          fontSize: '12px',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {t.premium_fmt}
-                      </span>
-                    )
-                  })()}
+                <div className="px-2 py-2 flex items-center">
+                  <span className="font-mono text-[10px]" style={{ color: (t.contracts ?? 0) >= 1000 ? '#22d3ee' : 'rgba(255,255,255,0.5)' }}>
+                    {(t.contracts ?? 0) > 0 ? (t.contracts ?? 0).toLocaleString() : '—'}
+                  </span>
                 </div>
-                <div className="px-3 py-2.5 flex items-center">
+                <div className="px-2 py-2 flex items-center">
+                  <span className="font-bold text-[11px]" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    {t.premium_fmt}
+                  </span>
+                </div>
+                <div className="px-2 py-2 flex items-center">
                   <span className={badgeClass(t.flow_type === 'SWEEP' ? 'flow' : t.flow_type === 'BLOCK' ? 'info' : 'muted')}>{t.flow_type?.replace('_1M','')}</span>
                 </div>
-                <div className="px-3 py-2.5 flex items-center gap-1 flex-wrap">
-                  {t.badges?.slice(0, 2).map((b, i) => (
-                    <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
+                <div className="px-2 py-2 flex items-center gap-1 flex-wrap">
+                  {t.badges?.slice(0, 2).map((b, bi) => (
+                    <span key={bi} className={badgeClass(b.tier)}>{b.label}</span>
                   ))}
+                </div>
+                <div className="px-1 py-2 flex items-center justify-center">
+                  <a href={`/scanner?symbol=${t.symbol}`} className="text-white/15 hover:text-white/50 transition-colors text-[10px]" title={`View ${t.symbol} flow`}>•••</a>
                 </div>
               </div>
             )

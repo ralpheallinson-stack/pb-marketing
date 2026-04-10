@@ -108,7 +108,7 @@ export default function FreeScannerPage() {
 
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#0B0F1A" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "#0B0F1A", fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
       <Nav />
 
       {/* Conversion banner */}

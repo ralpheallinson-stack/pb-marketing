@@ -405,7 +405,7 @@ export default function ScannerPage() {
   const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1A1A1E' }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1A1A1E', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
 
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#242428", borderRight: "1px solid #2E2E33" }}>
