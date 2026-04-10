@@ -112,8 +112,8 @@ function fmtExpiry(exp: string) {
 
 function aggrColor(a: string | null | undefined) {
   if (!a || a === "NEUTRAL") return "text-white/30"
-  if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#22c55e]"
-  if (a === "BELOW_BID" || a === "AT_BID") return "text-[#ef4444]"
+  if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#00E85A]"
+  if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
   return "text-white/50"
 }
 
@@ -125,8 +125,8 @@ function aggrLabel(a: string | null | undefined) {
 
 function bsColor(d: string | null | undefined) {
   if (!d || d === "NEUTRAL") return "text-white/30"
-  if (d === "BUY") return "text-[#22c55e]"
-  if (d === "SELL") return "text-[#ef4444]"
+  if (d === "BUY") return "text-[#00E85A]"
+  if (d === "SELL") return "text-[#FF605D]"
   return "text-white/50"
 }
 
@@ -404,10 +404,10 @@ export default function ScannerPage() {
   const sideBtn = (active: boolean) => `w-full flex items-center justify-center h-10 transition-opacity cursor-pointer ${active ? "opacity-100" : "opacity-20 hover:opacity-50"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#111318' }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1A1A1E' }}>
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#161B26", borderRight: "1px solid #1E2633" }}>
+      <nav className="fixed left-0 top-0 h-full w-[52px] flex flex-col items-center py-3 gap-1 z-40" style={{ background: "#242428", borderRight: "1px solid #2E2E33" }}>
         <a href="/" className="mb-4 flex items-center justify-center w-full" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={24} height={24} className="w-6 h-6 object-contain" />
         </a>
@@ -420,7 +420,7 @@ export default function ScannerPage() {
           title={canAccessGamma ? "GEX Heatmap" : "Upgrade to Pro for Gamma Wall"}
         >
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-          {!canAccessGamma && <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-[#F5820A]" />}
+          {!canAccessGamma && <span className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-[#FF8A00]" />}
         </button>
         <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")}>
           <svg className={iconCls} fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
@@ -456,16 +456,16 @@ export default function ScannerPage() {
         const todayStr = new Date().toISOString().slice(0, 10)
         const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
         return (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#161B26" }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
           {/* Metrics header */}
-          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#1E2633] flex-shrink-0">
+          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#2E2E33] flex-shrink-0">
             <div className="flex items-center gap-4">
               <div>
                 <div className="text-[9px] font-bold text-[#3D4D63] tracking-[0.15em] uppercase">GEX Heatmap</div>
                 <div className="text-[10px] text-[#4A5A72]">Gamma Exposure by Strike</div>
               </div>
               <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
-                className="bg-[#161B24] border border-[#1E2A3A] text-white text-sm rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#F5820A]/50">
+                className="bg-[#161B24] border border-[#1E2A3A] text-white text-sm rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#FF8A00]/50">
                 {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -478,26 +478,26 @@ export default function ScannerPage() {
                 {gexData.zero_gamma_strike != null && (
                   <div>
                     <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Zero Gamma</div>
-                    <div className="text-sm font-bold text-[#F5820A]">${gexData.zero_gamma_strike.toFixed(2)}</div>
+                    <div className="text-sm font-bold text-[#FF8A00]">${gexData.zero_gamma_strike.toFixed(2)}</div>
                   </div>
                 )}
                 <div>
                   <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Net GEX</div>
-                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                     {netGex >= 0 ? "+" : ""}{fmtGex(netGex)}
                   </div>
                 </div>
                 <div>
                   <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Dominant</div>
-                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                     {netGex >= 0 ? "CALL GEX" : "PUT GEX"}
                   </div>
                 </div>
               </div>
             )}
             <div className="ml-auto flex items-center gap-4 text-[9px] text-[#4A5A72]">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#22C55E]/50 border border-[#22C55E]/30" /> Call</div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#EF4444]/50 border border-[#EF4444]/30" /> Put</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#00E85A]/50 border border-[#00E85A]/30" /> Call</div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#FF605D]/50 border border-[#FF605D]/30" /> Put</div>
               <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-white" /> Spot</div>
               <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-t-2 border-[#a855f7]" /> Zero &gamma;</div>
             </div>
@@ -507,22 +507,22 @@ export default function ScannerPage() {
             {gexLoading ? (
               <div className="flex items-center justify-center h-full text-[#3D4D63] text-sm">Loading heatmap...</div>
             ) : gexError ? (
-              <div className="flex items-center justify-center h-full text-[#EF4444] text-sm">{gexError}</div>
+              <div className="flex items-center justify-center h-full text-[#FF605D] text-sm">{gexError}</div>
             ) : gexData ? (
               <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
                 {/* Column headers */}
-                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#1E2633]" style={{ background: "#161B26" }}>Strike</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#2E2E33]" style={{ background: "#242428" }}>Strike</div>
                 {gexData.expirations.map(exp => {
                   const isToday = exp === todayStr
                   return (
-                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#1E2633]" style={{ background: "#161B26" }}>
-                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#F5820A]" : "text-white/50"}`}>
+                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#2E2E33]" style={{ background: "#242428" }}>
+                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#FF8A00]" : "text-white/50"}`}>
                         {isToday ? "TODAY" : fmtExp(exp)}
                       </div>
                     </div>
                   )
                 })}
-                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#1E2633]" style={{ background: "#161B26", borderLeft: "1px solid #1E2A3A" }}>Total</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#2E2E33]" style={{ background: "#242428", borderLeft: "1px solid #1E2A3A" }}>Total</div>
                 {/* Data rows */}
                 {(() => {
                   const strikes = [...gexData.strikes].reverse()
@@ -536,7 +536,7 @@ export default function ScannerPage() {
                   const isZg = strike === zgStrike
                   const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
                   return [
-                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#1A2030]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
+                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#28282E]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
                       {isAtm && <span className="text-[9px] font-bold text-white/70 mr-0.5">● SPOT</span>}
                       {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
                       <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
@@ -547,17 +547,17 @@ export default function ScannerPage() {
                       const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
                       const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
                       return (
-                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#1A2030] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
+                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#28282E] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
                           {gex !== 0 && (
-                            <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                            <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                               {fmtGex(gex)}
                             </span>
                           )}
                         </div>
                       )
                     }),
-                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#1A2030]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
-                      <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#28282E]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
+                      <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                         {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
                       </span>
                     </div>,
@@ -569,9 +569,9 @@ export default function ScannerPage() {
         </div>
         )
       })()) : activePage === "watchlist" ? (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#161B26" }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
           {/* Watchlist header */}
-          <div className="px-5 py-3 border-b border-[#1E2633] flex items-center gap-3 flex-shrink-0">
+          <div className="px-5 py-3 border-b border-[#2E2E33] flex items-center gap-3 flex-shrink-0">
             <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
             <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
             <div className="ml-auto">
@@ -580,7 +580,7 @@ export default function ScannerPage() {
                 value={wlInput}
                 onChange={e => setWlInput(e.target.value.toUpperCase())}
                 onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
-                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-sm text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#F5820A]/50 w-36"
+                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-sm text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
               />
             </div>
           </div>
@@ -594,7 +594,7 @@ export default function ScannerPage() {
             ) : (
               <div>
                 {/* Column headers */}
-                <div className="grid sticky top-0 z-10 border-b border-[#1E2633] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#161B26" }}>
+                <div className="grid sticky top-0 z-10 border-b border-[#2E2E33] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#242428" }}>
                   <div className="px-5 py-2">Symbol</div>
                   <div className="px-3 py-2 text-right">Call Flow</div>
                   <div className="px-3 py-2 text-right">Put Flow</div>
@@ -609,23 +609,23 @@ export default function ScannerPage() {
                   const isBull = callPrem > putPrem * 1.3
                   const isBear = putPrem > callPrem * 1.3
                   return (
-                    <div key={sym} className="grid border-b border-[#1A2030] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
+                    <div key={sym} className="grid border-b border-[#28282E] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
                       onClick={() => { setSearch(sym); setActivePage("scanner") }}>
                       <div className="px-5 flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{sym}</span>
                         {count > 0 && (
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${isBull ? "bg-[#22C55E]/15 text-[#22C55E]" : isBear ? "bg-[#EF4444]/15 text-[#EF4444]" : "bg-white/5 text-[#4A5A72]"}`}>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#4A5A72]"}`}>
                             {isBull ? "BULL" : isBear ? "BEAR" : "MIXED"}
                           </span>
                         )}
                       </div>
                       <div className="px-3 flex items-center justify-end">
-                        <span className={`text-[11px] font-mono font-semibold ${callPrem > 0 ? "text-[#22C55E]" : "text-[#3D4D63]"}`}>
+                        <span className={`text-[11px] font-mono font-semibold ${callPrem > 0 ? "text-[#00E85A]" : "text-[#3D4D63]"}`}>
                           {callPrem > 0 ? fmtPrem(callPrem) : "—"}
                         </span>
                       </div>
                       <div className="px-3 flex items-center justify-end">
-                        <span className={`text-[11px] font-mono font-semibold ${putPrem > 0 ? "text-[#EF4444]" : "text-[#3D4D63]"}`}>
+                        <span className={`text-[11px] font-mono font-semibold ${putPrem > 0 ? "text-[#FF605D]" : "text-[#3D4D63]"}`}>
                           {putPrem > 0 ? fmtPrem(putPrem) : "—"}
                         </span>
                       </div>
@@ -633,7 +633,7 @@ export default function ScannerPage() {
                         <span className="text-[11px] text-[#7A8BA8] font-mono">{count || "—"}</span>
                       </div>
                       <div className="flex items-center justify-center">
-                        <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }} className="text-[#3D4D63] hover:text-[#EF4444] transition-colors text-xs">×</button>
+                        <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }} className="text-[#3D4D63] hover:text-[#FF605D] transition-colors text-xs">×</button>
                       </div>
                     </div>
                   )
@@ -645,7 +645,7 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#151921' }}>
+      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#222226' }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -668,10 +668,10 @@ export default function ScannerPage() {
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
-        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#131720' }}>
+        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#1E1E22' }}>
           <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
-            className="flex items-center gap-1.5 bg-[#60a5fa]/10 border border-[#60a5fa]/30 rounded-full px-3 py-1 text-[#60a5fa] text-xs font-bold hover:bg-[#60a5fa]/20">
-            {focusTicker} <span className="text-[#60a5fa]/50">&times;</span>
+            className="flex items-center gap-1.5 bg-[#48DEFF]/10 border border-[#48DEFF]/30 rounded-full px-3 py-1 text-[#48DEFF] text-xs font-bold hover:bg-[#48DEFF]/20">
+            {focusTicker} <span className="text-[#48DEFF]/50">&times;</span>
           </button>
           {focusStrike && (
             <button onClick={() => setFocusStrike(null)}
@@ -697,14 +697,14 @@ export default function ScannerPage() {
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
         return (
-          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#131720' }}>
+          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#1E1E22' }}>
             {/* Sentiment + bar */}
             <div className="flex items-center gap-2 min-w-[180px]">
-              <span className={`text-[12px] font-bold ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#EF4444]" : "text-white/40"}`}>
+              <span className={`text-[12px] font-bold ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/40"}`}>
                 {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
               </span>
               <div className="w-20 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #EF4444, #22C55E)` }} />
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #FF605D, #00E85A)` }} />
               </div>
             </div>
             <div className="w-px h-4 bg-white/[0.06] mx-3" />
@@ -717,14 +717,14 @@ export default function ScannerPage() {
             {/* Calls */}
             <div className="flex items-center gap-1.5">
               <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Calls</span>
-              <span className="text-[12px] font-bold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
+              <span className="text-[12px] font-bold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
               <span className="text-[10px] text-white/20 font-mono">{callPct}%</span>
             </div>
             <div className="w-px h-4 bg-white/[0.06] mx-3" />
             {/* Puts */}
             <div className="flex items-center gap-1.5">
               <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Puts</span>
-              <span className="text-[12px] font-bold text-[#EF4444] font-mono">{fmtPrem(putPrem)}</span>
+              <span className="text-[12px] font-bold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
               <span className="text-[10px] text-white/20 font-mono">{100 - callPct}%</span>
             </div>
             <div className="w-px h-4 bg-white/[0.06] mx-3" />
@@ -738,10 +738,10 @@ export default function ScannerPage() {
       })()}
 
       {/* ── TABLE ── */}
-      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#111318' }}>
+      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1A1A1E' }}>
         {loading ? (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10" style={{ background: '#151921' }}>
+            <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
               <tr className="text-[9px] text-white/20 uppercase tracking-[0.1em]">
                 <th className="text-left px-3 py-1.5 font-medium">Time</th>
                 <th className="text-left px-2 py-1.5 font-medium">Tick</th>
@@ -783,7 +783,7 @@ export default function ScannerPage() {
                 <col key={col.key} style={{ width: col.width ? `${col.width}px` : undefined }} />
               ))}
             </colgroup>
-            <thead className="sticky top-0 z-10" style={{ background: '#151921' }}>
+            <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
               <tr className="text-[9px] text-white/20 uppercase tracking-[0.1em]">
                 {COLS.map(c => (
                   <th key={c.key} className={`${c.cls} py-1.5 font-medium`}>{c.label}</th>
@@ -811,23 +811,23 @@ export default function ScannerPage() {
                     <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[12px] group-hover:text-[#60a5fa] transition-colors" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>{t.symbol}</div>
+                        <div className="font-bold text-[12px] group-hover:text-[#48DEFF] transition-colors" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>{t.symbol}</div>
                         {t.sector && <div className="text-white/15 text-[9px]">{t.sector}</div>}
                       </button>
                     </td>
                     <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white/60 hover:text-[#60a5fa] transition-colors text-xs font-mono">
+                        className="text-white/60 hover:text-[#48DEFF] transition-colors text-xs font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
                     <td className="px-2 py-1.5 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white/80 hover:text-[#60a5fa] transition-colors text-xs font-mono">
+                        className="text-white/80 hover:text-[#48DEFF] transition-colors text-xs font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-1.5 text-center text-xs font-medium" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    <td className="px-2 py-1.5 text-center text-xs font-medium" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
                     <td className={`px-2 py-1.5 text-center text-xs ${aggrColor(t.aggression)}`}>
@@ -839,11 +839,11 @@ export default function ScannerPage() {
                     <td className="px-2 py-1.5 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
                     <td className="px-2 py-1.5 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
                     <td className={`px-2 py-1.5 text-center text-xs font-medium ${
-                      t.flow_type === "SWEEP" ? "text-[#eab308]" : t.flow_type === "BLOCK" ? "text-[#60a5fa]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/50"
+                      t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/50"
                     }`}>
                       {t.premium >= 1000000 && t.flow_type === "BLOCK" ? "BLOCK 1M+" : t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#22c55e' : '#ef4444' }}>
+                    <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
                     <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>
@@ -895,13 +895,13 @@ export default function ScannerPage() {
       {showFilters && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #151921 0%, #1A2030 100%)' }}>
+          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #222226 0%, #28282E 100%)' }}>
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
                 <span className="text-white font-semibold text-[13px] tracking-wide">Filters</span>
-                {activeFilterCount > 0 && <span className="bg-[#60a5fa] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
+                {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/30 hover:text-white/60 text-[11px] transition-colors">Reset</button>
@@ -946,7 +946,7 @@ export default function ScannerPage() {
                     </div>
                     <button onClick={onToggle}
                       className={`w-9 h-[22px] rounded-full transition-all relative flex-shrink-0 ${active ? "" : "bg-white/[0.06]"}`}
-                      style={active ? { backgroundColor: color || '#60a5fa' } : undefined}>
+                      style={active ? { backgroundColor: color || '#48DEFF' } : undefined}>
                       <div className={`absolute top-[3px] w-4 h-4 rounded-full transition-all ${active ? "left-[18px] bg-white" : "left-[3px] bg-white/30"}`} />
                     </button>
                   </div>
@@ -968,7 +968,7 @@ export default function ScannerPage() {
 
                   <div className="border-t border-white/[0.04] pt-3 space-y-0">
                     <Toggle label="Unusual Only" desc="V/OI flagged activity" active={filterUnusualOnly} onToggle={() => setFilterUnusualOnly(!filterUnusualOnly)} />
-                    <Toggle label="No Index" desc="Hide SPX, NDX, RUT, VIX" active={filterNoIndex} onToggle={() => setFilterNoIndex(!filterNoIndex)} color="#F5820A" />
+                    <Toggle label="No Index" desc="Hide SPX, NDX, RUT, VIX" active={filterNoIndex} onToggle={() => setFilterNoIndex(!filterNoIndex)} color="#FF8A00" />
                   </div>
                 </>
               })()}
@@ -990,12 +990,12 @@ export default function ScannerPage() {
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setShowUpgradeModal(false)}>
           <div className="border border-[#1E2A3A] rounded-xl p-8 max-w-sm w-full mx-4" style={{ background: "#0F1520" }} onClick={e => e.stopPropagation()}>
-            <div className="text-[#F5820A] text-[10px] font-bold tracking-[0.15em] uppercase mb-3">Pro Feature</div>
+            <div className="text-[#FF8A00] text-[10px] font-bold tracking-[0.15em] uppercase mb-3">Pro Feature</div>
             <div className="text-xl font-bold text-white mb-2">Gamma Wall Scanner</div>
             <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
               Real-time GEX heatmaps, gamma wall detection, and squeeze identification are available on the Pro plan.
             </div>
-            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#F5820A] text-black font-bold text-sm hover:bg-[#e57309] transition-colors">
+            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-sm hover:bg-[#e57309] transition-colors">
               Upgrade to Pro
             </a>
             <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-sm hover:text-[#7A8BA8] transition-colors">
