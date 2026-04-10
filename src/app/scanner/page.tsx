@@ -98,9 +98,9 @@ function isMarketOpen() {
 /* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
 function getRowStyle(t: Trade): React.CSSProperties {
   // BlackBox-style OI highlights from backend
-  if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.08)", borderLeft: "3px solid rgba(168,85,247,0.6)" }
-  if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.07)", borderLeft: "3px solid rgba(234,179,8,0.55)" }
-  if (t.flow_highlight === 'late') return { backgroundColor: "rgba(251,146,60,0.06)", borderLeft: "2px solid rgba(251,146,60,0.4)" }
+  if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.14)", borderLeft: "3px solid rgba(168,85,247,0.8)" }
+  if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.12)", borderLeft: "3px solid rgba(234,179,8,0.7)" }
+  if (t.flow_highlight === 'late') return { backgroundColor: "rgba(251,146,60,0.10)", borderLeft: "3px solid rgba(251,146,60,0.6)" }
   return {}
 }
 
@@ -406,10 +406,10 @@ export default function ScannerPage() {
   const sideCircle = (active: boolean) => `w-9 h-9 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.12] text-white" : "bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.08]"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1A1A1E', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[56px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#1E1E22', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+      <nav className="fixed left-0 top-0 h-full w-[56px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
         {/* Logo */}
         <a href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain" />
@@ -468,14 +468,14 @@ export default function ScannerPage() {
         return (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
           {/* Metrics header */}
-          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#2E2E33] flex-shrink-0">
+          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#35343F] flex-shrink-0">
             <div className="flex items-center gap-4">
               <div>
                 <div className="text-[9px] font-bold text-[#3D4D63] tracking-[0.15em] uppercase">GEX Heatmap</div>
                 <div className="text-[10px] text-[#4A5A72]">Gamma Exposure by Strike</div>
               </div>
               <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
-                className="bg-[#161B24] border border-[#1E2A3A] text-white text-sm rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#FF8A00]/50">
+                className="bg-[#161B24] border border-[#1E2A3A] text-white text-[15px]rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#FF8A00]/50">
                 {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -521,18 +521,18 @@ export default function ScannerPage() {
             ) : gexData ? (
               <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
                 {/* Column headers */}
-                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#2E2E33]" style={{ background: "#242428" }}>Strike</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#35343F]" style={{ background: "#242428" }}>Strike</div>
                 {gexData.expirations.map(exp => {
                   const isToday = exp === todayStr
                   return (
-                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#2E2E33]" style={{ background: "#242428" }}>
+                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#35343F]" style={{ background: "#242428" }}>
                       <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#FF8A00]" : "text-white/50"}`}>
                         {isToday ? "TODAY" : fmtExp(exp)}
                       </div>
                     </div>
                   )
                 })}
-                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#2E2E33]" style={{ background: "#242428", borderLeft: "1px solid #1E2A3A" }}>Total</div>
+                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#35343F]" style={{ background: "#242428", borderLeft: "1px solid #1E2A3A" }}>Total</div>
                 {/* Data rows */}
                 {(() => {
                   const strikes = [...gexData.strikes].reverse()
@@ -546,7 +546,7 @@ export default function ScannerPage() {
                   const isZg = strike === zgStrike
                   const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
                   return [
-                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#28282E]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
+                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#2D2C38]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
                       {isAtm && <span className="text-[9px] font-bold text-white/70 mr-0.5">● SPOT</span>}
                       {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
                       <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
@@ -557,7 +557,7 @@ export default function ScannerPage() {
                       const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
                       const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
                       return (
-                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#28282E] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
+                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#2D2C38] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
                           {gex !== 0 && (
                             <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                               {fmtGex(gex)}
@@ -566,7 +566,7 @@ export default function ScannerPage() {
                         </div>
                       )
                     }),
-                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#28282E]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
+                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#2D2C38]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
                       <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                         {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
                       </span>
@@ -581,7 +581,7 @@ export default function ScannerPage() {
       })()) : activePage === "watchlist" ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
           {/* Watchlist header */}
-          <div className="px-5 py-3 border-b border-[#2E2E33] flex items-center gap-3 flex-shrink-0">
+          <div className="px-5 py-3 border-b border-[#35343F] flex items-center gap-3 flex-shrink-0">
             <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
             <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
             <div className="ml-auto">
@@ -590,7 +590,7 @@ export default function ScannerPage() {
                 value={wlInput}
                 onChange={e => setWlInput(e.target.value.toUpperCase())}
                 onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
-                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-sm text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
+                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[15px]text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
               />
             </div>
           </div>
@@ -604,7 +604,7 @@ export default function ScannerPage() {
             ) : (
               <div>
                 {/* Column headers */}
-                <div className="grid sticky top-0 z-10 border-b border-[#2E2E33] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#242428" }}>
+                <div className="grid sticky top-0 z-10 border-b border-[#35343F] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#242428" }}>
                   <div className="px-5 py-2">Symbol</div>
                   <div className="px-3 py-2 text-right">Call Flow</div>
                   <div className="px-3 py-2 text-right">Put Flow</div>
@@ -619,7 +619,7 @@ export default function ScannerPage() {
                   const isBull = callPrem > putPrem * 1.3
                   const isBear = putPrem > callPrem * 1.3
                   return (
-                    <div key={sym} className="grid border-b border-[#28282E] hover:bg-white/[0.02] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
+                    <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.05] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
                       onClick={() => { setSearch(sym); setActivePage("scanner") }}>
                       <div className="px-5 flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{sym}</span>
@@ -655,7 +655,7 @@ export default function ScannerPage() {
       ) : (<>
 
       {/* ── HEADER ── */}
-      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#222226' }}>
+      <header className="h-9 border-b border-white/[0.04] flex items-center px-3 flex-shrink-0" style={{ background: '#252430' }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -678,7 +678,7 @@ export default function ScannerPage() {
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
-        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#1E1E22' }}>
+        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#23222D' }}>
           <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
             className="flex items-center gap-1.5 bg-[#48DEFF]/10 border border-[#48DEFF]/30 rounded-full px-3 py-1 text-[#48DEFF] text-xs font-bold hover:bg-[#48DEFF]/20">
             {focusTicker} <span className="text-[#48DEFF]/50">&times;</span>
@@ -719,12 +719,12 @@ export default function ScannerPage() {
           </svg>
         )
         return (
-          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1A1A1E' }}>
+          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
             {/* Flow sentiment */}
             <div className="px-5 py-4">
               <div className="text-[11px] text-white/30 mb-2">Flow sentiment</div>
               <div className="flex items-center gap-3">
-                <span className={`text-[22px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
+                <span className={`text-[26px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
                 <div className="flex-1 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
@@ -737,7 +737,7 @@ export default function ScannerPage() {
             <div className="px-5 py-4 flex items-center justify-between">
               <div>
                 <div className="text-[11px] text-white/30 mb-2">Put to call</div>
-                <div className="text-[22px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+                <div className="text-[26px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
               </div>
               <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
                 <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
@@ -755,7 +755,7 @@ export default function ScannerPage() {
                   <span className="text-[11px] text-white/30">Call flow</span>
                   <span className="text-[12px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[22px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+                <div className="text-[26px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
               </div>
               <Donut pct={callPct} color="#00E85A" />
             </div>
@@ -767,7 +767,7 @@ export default function ScannerPage() {
                   <span className="text-[11px] text-white/30">Put flow</span>
                   <span className="text-[12px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[22px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+                <div className="text-[26px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
               </div>
               <Donut pct={putPct} color="#FF605D" />
             </div>
@@ -776,10 +776,10 @@ export default function ScannerPage() {
       })()}
 
       {/* ── TABLE ── */}
-      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1A1A1E' }}>
+      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1B23' }}>
         {loading ? (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
+            <thead className="sticky top-0 z-10" style={{ background: '#252430' }}>
               <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
                 <th className="text-left px-3 py-1.5 font-medium">Time</th>
                 <th className="text-left px-2 py-1.5 font-medium">Tick</th>
@@ -816,7 +816,7 @@ export default function ScannerPage() {
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
+            <thead className="sticky top-0 z-10" style={{ background: '#252430' }}>
               <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
                 {COLS.map(c => (
                   <th key={c.key} className={`${c.cls} py-1.5 font-medium`} style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>{c.label}</th>
@@ -837,56 +837,56 @@ export default function ScannerPage() {
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.02]'}`}
+                    className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-2.5 text-white/50 text-sm font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
-                    <td className="px-2 py-2.5">
+                    <td className="px-3 py-3 text-white/50 text-[15px]font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-2 py-3">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[17px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
+                        <div className="font-bold text-[18px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
                         {t.sector && <div className="text-white/25 text-[10px] mt-0.5">{t.sector}</div>}
                       </button>
                     </td>
-                    <td className="px-2 py-2.5">
+                    <td className="px-2 py-3">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-sm font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
-                    <td className="px-2 py-2.5 text-right">
+                    <td className="px-2 py-3 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-sm font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-2.5 text-center text-sm font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-3 text-center text-[15px]font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
-                    <td className={`px-2 py-2.5 text-center text-sm ${aggrColor(t.aggression)}`}>
+                    <td className={`px-2 py-3 text-center text-[15px]${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-2.5 text-center text-sm font-medium ${bsColor(t.trade_direction)}`}>
+                    <td className={`px-2 py-3 text-center text-[15px]font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-2.5 text-right text-white text-sm font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-2.5 text-right text-sm font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-2.5 text-right text-white/70 text-sm font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-                    <td className="px-2 py-2.5 text-right text-sm font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-3 text-right text-white text-[15px]font-mono">{t.spot_fmt}</td>
+                    <td className={`px-2 py-3 text-right text-[15px]font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-3 text-right text-white/70 text-[15px]font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-3 text-right text-[15px]font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-2.5 text-center text-sm font-medium ${
+                    <td className={`px-2 py-3 text-center text-[15px]font-medium ${
                       t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/70"
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-2.5 text-right text-sm font-mono text-white/80">
+                    <td className="px-2 py-3 text-right text-[15px]font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2.5 text-right text-white/80 text-sm font-mono">
+                    <td className="px-2 py-3 text-right text-white/80 text-[15px]font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2.5">
+                    <td className="px-2 py-3">
                       <div className="flex flex-wrap gap-1">
                         {t.badges?.slice(0, 4).map((b, i) => (
                           <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
@@ -926,12 +926,12 @@ export default function ScannerPage() {
       {showFilters && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #222226 0%, #28282E 100%)' }}>
+          <div className="fixed right-0 top-0 h-full w-80 z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #222226 0%, #2D2C38 100%)' }}>
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-2.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
-                <span className="text-white font-semibold text-sm tracking-wide">Filters</span>
+                <span className="text-white font-semibold text-[15px]tracking-wide">Filters</span>
                 {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[10px] font-bold text-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{activeFilterCount}</span>}
               </div>
               <div className="flex items-center gap-2">
@@ -970,7 +970,7 @@ export default function ScannerPage() {
                   </div>
                 )
                 const Toggle = ({ label, desc, active, onToggle, color }: { label: string; desc: string; active: boolean; onToggle: () => void; color?: string }) => (
-                  <div className="flex items-center justify-between py-2.5">
+                  <div className="flex items-center justify-between py-3">
                     <div>
                       <div className="text-white/80 text-[12px] font-medium">{label}</div>
                       <div className="text-white/20 text-[10px] mt-0.5">{desc}</div>
@@ -1007,7 +1007,7 @@ export default function ScannerPage() {
 
             <div className="px-5 py-4 border-t border-white/[0.06]">
               <button onClick={() => { setPage(0); setShowFilters(false) }}
-                className="w-full py-2.5 rounded-lg text-[12px] font-semibold transition-all bg-white/[0.08] hover:bg-white/[0.12] text-white/70 hover:text-white border border-white/[0.06]">
+                className="w-full py-3 rounded-lg text-[12px] font-semibold transition-all bg-white/[0.08] hover:bg-white/[0.12] text-white/70 hover:text-white border border-white/[0.06]">
                 Apply
               </button>
             </div>
@@ -1026,10 +1026,10 @@ export default function ScannerPage() {
             <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
               Real-time GEX heatmaps, gamma wall detection, and squeeze identification are available on the Pro plan.
             </div>
-            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-sm hover:bg-[#e57309] transition-colors">
+            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-[15px]hover:bg-[#e57309] transition-colors">
               Upgrade to Pro
             </a>
-            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-sm hover:text-[#7A8BA8] transition-colors">
+            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-[15px]hover:text-[#7A8BA8] transition-colors">
               Not now
             </button>
           </div>
