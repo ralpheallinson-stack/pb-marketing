@@ -145,21 +145,21 @@ const TIME_RANGES = [
 ] as const
 
 const COLS = [
-  { key: "time",   label: "Time",   width: 104, cls: "text-left px-3" },
-  { key: "tick",   label: "Tick",   width: 88,  cls: "text-left px-2" },
-  { key: "expiry", label: "Expiry", width: 90,  cls: "text-left px-2" },
-  { key: "strike", label: "Strike", width: 70,  cls: "text-right px-2" },
-  { key: "cp",     label: "C/P",    width: 48,  cls: "text-center px-2" },
-  { key: "side",   label: "Side",   width: 60,  cls: "text-center px-2" },
-  { key: "bs",     label: "B/S",    width: 46,  cls: "text-center px-2" },
-  { key: "spot",   label: "Spot",   width: 86,  cls: "text-right px-2" },
-  { key: "size",   label: "Size",   width: 68,  cls: "text-right px-2" },
-  { key: "price",  label: "Price",  width: 68,  cls: "text-right px-2" },
-  { key: "prem",   label: "Prem",   width: 82,  cls: "text-right px-2" },
-  { key: "type",   label: "Type",   width: 72,  cls: "text-center px-2" },
-  { key: "vol",    label: "Vol",    width: 78,  cls: "text-right px-2" },
-  { key: "oi",     label: "OI",     width: 70,  cls: "text-right px-2" },
-  { key: "conds",  label: "Conds",  width: 0,   cls: "text-left px-2" },
+  { key: "time",   label: "Time",   cls: "text-left px-3 w-[7%]" },
+  { key: "tick",   label: "Tick",   cls: "text-left px-2 w-[6%]" },
+  { key: "expiry", label: "Expiry", cls: "text-left px-2 w-[7%]" },
+  { key: "strike", label: "Strike", cls: "text-right px-2 w-[5%]" },
+  { key: "cp",     label: "C/P",    cls: "text-center px-2 w-[4%]" },
+  { key: "side",   label: "Side",   cls: "text-center px-2 w-[5%]" },
+  { key: "bs",     label: "B/S",    cls: "text-center px-2 w-[4%]" },
+  { key: "spot",   label: "Spot",   cls: "text-right px-2 w-[6%]" },
+  { key: "size",   label: "Size",   cls: "text-right px-2 w-[5%]" },
+  { key: "price",  label: "Price",  cls: "text-right px-2 w-[5%]" },
+  { key: "prem",   label: "Prem",   cls: "text-right px-2 w-[6%]" },
+  { key: "type",   label: "Type",   cls: "text-center px-2 w-[5%]" },
+  { key: "vol",    label: "Vol",    cls: "text-right px-2 w-[6%]" },
+  { key: "oi",     label: "OI",     cls: "text-right px-2 w-[5%]" },
+  { key: "conds",  label: "Conds",  cls: "text-left px-2" },
 ] as const
 
 /* ── page ── */
@@ -806,12 +806,7 @@ export default function ScannerPage() {
             {search ? `No trades matching "${search}"` : "No trades found for this period."}
           </div>
         ) : (
-          <table className="w-full text-sm" style={{ tableLayout: "fixed" }}>
-            <colgroup>
-              {COLS.map(col => (
-                <col key={col.key} style={{ width: col.width ? `${col.width}px` : undefined }} />
-              ))}
-            </colgroup>
+          <table className="w-full text-sm">
             <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
               <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
                 {COLS.map(c => (
