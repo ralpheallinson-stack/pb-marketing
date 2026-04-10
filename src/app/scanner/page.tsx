@@ -698,41 +698,41 @@ export default function ScannerPage() {
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
         return (
-          <div className="flex items-center border-b border-white/[0.04] flex-shrink-0 px-3 h-10" style={{ background: '#1E1E22' }}>
+          <div className="flex items-center border-b border-white/[0.06] flex-shrink-0 px-4 py-3" style={{ background: '#1E1E22' }}>
             {/* Sentiment + bar */}
-            <div className="flex items-center gap-2 min-w-[180px]">
-              <span className={`text-[12px] font-bold ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/40"}`}>
+            <div className="flex items-center gap-2.5 min-w-[180px]">
+              <span className={`text-[13px] font-bold ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/40"}`}>
                 {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
               </span>
-              <div className="w-20 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
+              <div className="w-24 h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: `linear-gradient(90deg, #FF605D, #00E85A)` }} />
               </div>
             </div>
-            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            <div className="w-px h-6 bg-white/[0.08] mx-4" />
             {/* P/C */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">P/C</span>
-              <span className="text-[12px] font-bold text-white font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">P/C</span>
+              <span className="text-[14px] font-bold text-white font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
             </div>
-            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            <div className="w-px h-6 bg-white/[0.08] mx-4" />
             {/* Calls */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Calls</span>
-              <span className="text-[12px] font-bold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Calls</span>
+              <span className="text-[14px] font-bold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
               <span className="text-[10px] text-white/20 font-mono">{callPct}%</span>
             </div>
-            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            <div className="w-px h-6 bg-white/[0.08] mx-4" />
             {/* Puts */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Puts</span>
-              <span className="text-[12px] font-bold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Puts</span>
+              <span className="text-[14px] font-bold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
               <span className="text-[10px] text-white/20 font-mono">{100 - callPct}%</span>
             </div>
-            <div className="w-px h-4 bg-white/[0.06] mx-3" />
+            <div className="w-px h-6 bg-white/[0.08] mx-4" />
             {/* Count */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Signals</span>
-              <span className="text-[12px] font-bold text-white font-mono">{totalCount.toLocaleString()}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/25 uppercase tracking-wider font-medium">Signals</span>
+              <span className="text-[14px] font-bold text-white font-mono">{totalCount.toLocaleString()}</span>
             </div>
           </div>
         )
@@ -787,7 +787,7 @@ export default function ScannerPage() {
             <thead className="sticky top-0 z-10" style={{ background: '#222226' }}>
               <tr className="text-[9px] text-white/20 uppercase tracking-[0.1em]">
                 {COLS.map(c => (
-                  <th key={c.key} className={`${c.cls} py-1.5 font-medium`}>{c.label}</th>
+                  <th key={c.key} className={`${c.cls} py-1.5 font-medium`} style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>{c.label}</th>
                 ))}
               </tr>
             </thead>
@@ -812,8 +812,8 @@ export default function ScannerPage() {
                     <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[12px] text-white group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
-                        {t.sector && <div className="text-white/15 text-[9px]">{t.sector}</div>}
+                        <div className="font-bold text-base text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
+                        {t.sector && <div className="text-white/25 text-[10px] mt-0.5">{t.sector}</div>}
                       </button>
                     </td>
                     <td className="px-2 py-1.5">
@@ -838,7 +838,7 @@ export default function ScannerPage() {
                       {bsLabel(t.trade_direction)}
                     </td>
                     <td className="px-2 py-1.5 text-right text-white text-xs font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#00E85A] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
                     <td className="px-2 py-1.5 text-right text-white/70 text-xs font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
                     <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
