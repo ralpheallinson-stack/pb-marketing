@@ -51,6 +51,7 @@ interface Trade {
   badges?: { label: string; tier: string }[]
   row_color?: 'bullish' | 'bearish'
   flow_highlight?: 'oi_multi' | 'oi_single' | 'late' | null
+  entry_price?: number | null
 }
 
 interface Stats {
@@ -144,21 +145,21 @@ const TIME_RANGES = [
 ] as const
 
 const COLS = [
-  { key: "time",   label: "Time",   width: 92,  cls: "text-left px-3" },
-  { key: "tick",   label: "Tick",   width: 80,  cls: "text-left px-2" },
-  { key: "expiry", label: "Expiry", width: 75,  cls: "text-left px-2" },
-  { key: "strike", label: "Strike", width: 62,  cls: "text-right px-2" },
-  { key: "cp",     label: "C/P",    width: 44,  cls: "text-center px-2" },
-  { key: "side",   label: "Side",   width: 52,  cls: "text-center px-2" },
-  { key: "bs",     label: "B/S",    width: 44,  cls: "text-center px-2" },
-  { key: "spot",   label: "Spot",   width: 90,  cls: "text-right px-2" },
+  { key: "time",   label: "Time",   width: 88,  cls: "text-left px-3" },
+  { key: "tick",   label: "Tick",   width: 72,  cls: "text-left px-2" },
+  { key: "expiry", label: "Expiry", width: 72,  cls: "text-left px-2" },
+  { key: "strike", label: "Strike", width: 58,  cls: "text-right px-2" },
+  { key: "cp",     label: "C/P",    width: 40,  cls: "text-center px-2" },
+  { key: "side",   label: "Side",   width: 50,  cls: "text-center px-2" },
+  { key: "bs",     label: "B/S",    width: 38,  cls: "text-center px-2" },
+  { key: "spot",   label: "Spot",   width: 72,  cls: "text-right px-2" },
   { key: "size",   label: "Size",   width: 56,  cls: "text-right px-2" },
-  { key: "type",   label: "Type",   width: 80,  cls: "text-center px-2" },
-  { key: "value",  label: "Value",  width: 68,  cls: "text-right px-2" },
-  { key: "vol",    label: "Volume", width: 72,  cls: "text-right px-2" },
-  { key: "oi",     label: "OI",     width: 62,  cls: "text-right px-2" },
-  { key: "iv",     label: "IV",     width: 44,  cls: "text-right px-2" },
-  { key: "conds",  label: "Conds",  width: 200, cls: "text-left px-2" },
+  { key: "price",  label: "Price",  width: 56,  cls: "text-right px-2" },
+  { key: "prem",   label: "Prem",   width: 68,  cls: "text-right px-2" },
+  { key: "type",   label: "Type",   width: 64,  cls: "text-center px-2" },
+  { key: "vol",    label: "Vol",    width: 64,  cls: "text-right px-2" },
+  { key: "oi",     label: "OI",     width: 56,  cls: "text-right px-2" },
+  { key: "conds",  label: "Conds",  width: 180, cls: "text-left px-2" },
 ] as const
 
 /* ── page ── */
@@ -828,7 +829,7 @@ export default function ScannerPage() {
                       </button>
                     </td>
                     <td className="px-2 py-1.5 text-center text-xs font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
-                      {t.opt_type === "C" ? "C" : "P"}
+                      {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
                     <td className={`px-2 py-1.5 text-center text-xs ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
@@ -837,23 +838,21 @@ export default function ScannerPage() {
                       {bsLabel(t.trade_direction)}
                     </td>
                     <td className="px-2 py-1.5 text-right text-white text-xs font-mono">{t.spot_fmt}</td>
-                    <td className="px-2 py-1.5 text-right text-white text-xs font-mono">{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#00E85A] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-1.5 text-right text-white/70 text-xs font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                      {t.premium_fmt}
+                    </td>
                     <td className={`px-2 py-1.5 text-center text-xs font-medium ${
                       t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/70"
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-xs font-bold text-white">
-                      {t.premium_fmt}
-                    </td>
-                    <td className="px-2 py-1.5 text-right text-xs font-mono text-white/90">
+                    <td className="px-2 py-1.5 text-right text-xs font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-white/90 text-xs font-mono">
+                    <td className="px-2 py-1.5 text-right text-white/80 text-xs font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
-                    </td>
-                    <td className="px-2 py-1.5 text-right text-white/80 text-xs">
-                      {t.iv ? `${t.iv}%` : "—"}
                     </td>
                     <td className="px-2 py-1.5">
                       <div className="flex flex-wrap gap-1">
