@@ -711,7 +711,7 @@ export default function ScannerPage() {
             {/* P/C */}
             <div className="flex items-center gap-1.5">
               <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">P/C</span>
-              <span className="text-[12px] font-bold text-white/60 font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
+              <span className="text-[12px] font-bold text-white font-mono">{displayStats.pc_ratio.toFixed(2)}</span>
             </div>
             <div className="w-px h-4 bg-white/[0.06] mx-3" />
             {/* Calls */}
@@ -731,7 +731,7 @@ export default function ScannerPage() {
             {/* Count */}
             <div className="flex items-center gap-1.5">
               <span className="text-[9px] text-white/20 uppercase tracking-wider font-medium">Signals</span>
-              <span className="text-[12px] font-bold text-white/50 font-mono">{totalCount.toLocaleString()}</span>
+              <span className="text-[12px] font-bold text-white font-mono">{totalCount.toLocaleString()}</span>
             </div>
           </div>
         )
@@ -807,28 +807,28 @@ export default function ScannerPage() {
                     className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.02]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-1.5 text-white/25 text-[10px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-3 py-1.5 text-white/50 text-[10px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[12px] group-hover:text-[#48DEFF] transition-colors" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>{t.symbol}</div>
+                        <div className="font-bold text-[12px] text-white group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
                         {t.sector && <div className="text-white/15 text-[9px]">{t.sector}</div>}
                       </button>
                     </td>
                     <td className="px-2 py-1.5">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white/60 hover:text-[#48DEFF] transition-colors text-xs font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-xs font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
                     <td className="px-2 py-1.5 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white/80 hover:text-[#48DEFF] transition-colors text-xs font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-xs font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-1.5 text-center text-xs font-medium" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
-                      {t.opt_type === "C" ? "Call" : "Put"}
+                    <td className="px-2 py-1.5 text-center text-xs font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                      {t.opt_type === "C" ? "C" : "P"}
                     </td>
                     <td className={`px-2 py-1.5 text-center text-xs ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
@@ -836,23 +836,23 @@ export default function ScannerPage() {
                     <td className={`px-2 py-1.5 text-center text-xs font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-white/60 text-xs font-mono">{t.spot_fmt}</td>
-                    <td className="px-2 py-1.5 text-right text-white/60 text-xs">{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-1.5 text-right text-white text-xs font-mono">{t.spot_fmt}</td>
+                    <td className="px-2 py-1.5 text-right text-white text-xs font-mono">{(t.contracts ?? 0).toLocaleString()}</td>
                     <td className={`px-2 py-1.5 text-center text-xs font-medium ${
-                      t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/50"
+                      t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/70"
                     }`}>
-                      {t.premium >= 1000000 && t.flow_type === "BLOCK" ? "BLOCK 1M+" : t.flow_type || "—"}
+                      {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-xs font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-1.5 text-right text-xs font-bold text-white">
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-1.5 text-right text-xs font-mono ${(t.adv_multiple ?? 0) >= 1.0 ? "text-[#22d3ee] font-semibold" : "text-white/60"}`}>
+                    <td className="px-2 py-1.5 text-right text-xs font-mono text-white/90">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-white/50 text-xs font-mono">
+                    <td className="px-2 py-1.5 text-right text-white/90 text-xs font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-right text-white/50 text-xs">
+                    <td className="px-2 py-1.5 text-right text-white/80 text-xs">
                       {t.iv ? `${t.iv}%` : "—"}
                     </td>
                     <td className="px-2 py-1.5">
