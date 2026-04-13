@@ -4,8 +4,8 @@ import { useState } from "react"
 
 const faqs = [
   {
-    q: "How is this different from other flow tools?",
-    a: "Every filtering decision is derived from win rate data across 161,000+ tracked signals. NEUTRAL direction signals win 4.9% — we filter them. 0DTE ETF flow under $250K wins 18.9% — we filter that too. We alert on what the data says is worth acting on. Every outcome is published publicly.",
+    q: "How is this different from Unusual Whales or FlowAlgo?",
+    a: "Unusual Whales aggregates a lot of data — congressional trades, market maker flow, news. Profit Builders does one thing: real-time institutional options flow with conviction grading. Every signal is graded STRONG / MEDIUM / WEAK based on Vol/OI ratio and premium size. You also get a public track record — every Grade A signal logged and verified at /results. No other flow tool publishes that.",
   },
   {
     q: "Do you guarantee results?",

@@ -77,12 +77,13 @@ export default function ResultsPage() {
               { label: "Signals Tracked", value: s ? `${s.total_closed.toLocaleString()}+` : "—", color: "#F5820A" },
               { label: "Avg Grade A Winner", value: s ? `+${s.avg_grade_a_winner}%` : "—", color: "#22C55E" },
               { label: "Best Trade", value: s ? `${s.best_winner_symbol} +${s.best_winner_pnl}%` : "—", color: "#22C55E" },
-              { label: "Grade A Avg Return", value: s ? `${s.grade_a_avg_return}%` : "—", color: "#7A8BA8" },
+              { label: "Grade A Avg Return", value: s ? `${s.grade_a_avg_return}%` : "—", color: "#7A8BA8", note: "Avg loss capped by DTE-based exit rules" },
             ].map((st, i) => (
               <BlurFade key={st.label} delay={i * 0.1}><div className="relative rounded-xl border border-[#1E2A3A] px-5 py-4 overflow-hidden hover:border-[#2E3A4D] transition-colors" style={{ background: "#0F1520" }}>
                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F5820A]/40 to-transparent" />
                 <div className="text-[10px] font-bold text-[#4A5A72] tracking-[0.12em] uppercase mb-2">{st.label}</div>
                 <div className="text-2xl font-extrabold" style={{ color: st.color }}>{st.value}</div>
+                {('note' in st && st.note) && <p className="text-[10px] font-mono text-white/25 mt-1">{st.note}</p>}
               </div></BlurFade>
             ))}
           </div>

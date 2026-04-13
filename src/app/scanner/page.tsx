@@ -115,7 +115,7 @@ function aggrColor(a: string | null | undefined) {
   if (!a || a === "NEUTRAL") return "text-white/30"
   if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#00E85A]"
   if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
-  return "text-white/50"
+  return "text-white/90"
 }
 
 function aggrLabel(a: string | null | undefined) {
@@ -128,7 +128,7 @@ function bsColor(d: string | null | undefined) {
   if (!d || d === "NEUTRAL") return "text-white/30"
   if (d === "BUY") return "text-[#00E85A]"
   if (d === "SELL") return "text-[#FF605D]"
-  return "text-white/50"
+  return "text-white/90"
 }
 
 function bsLabel(d: string | null | undefined) {
@@ -170,6 +170,7 @@ export default function ScannerPage() {
   const [timeRange, setTimeRange] = useState("today")
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState("")
+  const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
   const [live, setLive] = useState(isMarketOpen())
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -390,20 +391,23 @@ export default function ScannerPage() {
   }, [filtered, rowVirtualizer])
 
   const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterNoIndex || filterDte)
-  const displayStats = hasLocalFilter ? (() => {
-    const bull = filtered.filter(t => t.bullish).reduce((s, t) => s + t.premium, 0)
-    const bear = filtered.filter(t => !t.bullish).reduce((s, t) => s + t.premium, 0)
+  const displayStats = (() => {
+    const source = filtered
+    const cp = source.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
+    const pp = source.filter(t => t.opt_type === "P").reduce((s, t) => s + t.premium, 0)
+    const bull = source.filter(t => t.bullish).reduce((s, t) => s + t.premium, 0)
+    const bear = source.filter(t => !t.bullish).reduce((s, t) => s + t.premium, 0)
     return {
-      count: filtered.length,
+      count: source.length,
       bull, bear,
-      lean: bull > bear * 1.5 ? "BULL" : bear > bull * 1.5 ? "BEAR" : "MIXED",
-      pc_ratio: calls.length > 0 ? +(puts.length / calls.length).toFixed(2) : 0,
+      lean: cp > pp * 1.2 ? "BULL" : pp > cp * 1.2 ? "BEAR" : "MIXED",
+      pc_ratio: cp > 0 ? +(pp / cp).toFixed(2) : 0,
     }
-  })() : stats
+  })()
 
   const iconCls = "w-5 h-5"
   const sideBtn = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-lg transition-all cursor-pointer ${active ? "bg-white/[0.08] text-white" : "text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`
-  const sideCircle = (active: boolean) => `w-9 h-9 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.12] text-white" : "bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.08]"}`
+  const sideCircle = (active: boolean) => `w-9 h-9 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.12] text-white" : "bg-white/[0.04] text-white/40 hover:text-white/90 hover:bg-white/[0.08]"}`
 
   return (
     <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
@@ -526,7 +530,7 @@ export default function ScannerPage() {
                   const isToday = exp === todayStr
                   return (
                     <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#35343F]" style={{ background: "#242428" }}>
-                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#FF8A00]" : "text-white/50"}`}>
+                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#FF8A00]" : "text-white/90"}`}>
                         {isToday ? "TODAY" : fmtExp(exp)}
                       </div>
                     </div>
@@ -547,7 +551,7 @@ export default function ScannerPage() {
                   const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
                   return [
                     <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#2D2C38]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
-                      {isAtm && <span className="text-[9px] font-bold text-white/70 mr-0.5">● SPOT</span>}
+                      {isAtm && <span className="text-[9px] font-bold text-white/90 mr-0.5">● SPOT</span>}
                       {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
                       <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
                     </div>,
@@ -620,7 +624,7 @@ export default function ScannerPage() {
                   const isBear = putPrem > callPrem * 1.3
                   return (
                     <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.05] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
-                      onClick={() => { setSearch(sym); setActivePage("scanner") }}>
+                      onClick={() => { setSearch(sym); setSearchInput(sym); setActivePage("scanner") }}>
                       <div className="px-5 flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{sym}</span>
                         {count > 0 && (
@@ -660,8 +664,9 @@ export default function ScannerPage() {
           <input
             type="text"
             placeholder="Search..."
-            value={search}
-            onChange={e => setSearch(e.target.value.toUpperCase())}
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value.toUpperCase())}
+            onKeyDown={e => { if (e.key === "Enter") setSearch(searchInput); if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
             className="w-52 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/[0.15] font-mono"
           />
           <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors">
@@ -721,10 +726,10 @@ export default function ScannerPage() {
         return (
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
             {/* Flow sentiment */}
-            <div className="px-5 py-4">
-              <div className="text-[12px] text-white/35 mb-2">Flow sentiment</div>
+            <div className="px-5 py-3">
+              <div className="text-[14px] font-medium text-white/60 mb-2">Flow sentiment</div>
               <div className="flex items-center gap-3">
-                <span className={`text-[32px] font-bold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/50"}`}>
+                <span className={`text-[20px] font-semibold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
                 <div className="flex-1 h-[4px] bg-white/[0.06] rounded-full overflow-hidden">
@@ -734,10 +739,10 @@ export default function ScannerPage() {
             </div>
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
             {/* Put to call */}
-            <div className="px-5 py-4 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center justify-between">
               <div>
-                <div className="text-[12px] text-white/35 mb-2">Put to call</div>
-                <div className="text-[32px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+                <div className="text-[14px] font-medium text-white/60 mb-2">Put to call</div>
+                <div className="text-[20px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
               </div>
               <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
                 <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
@@ -749,25 +754,25 @@ export default function ScannerPage() {
             </div>
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
             {/* Call flow */}
-            <div className="px-5 py-4 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-[11px] text-white/30">Call flow</span>
                   <span className="text-[14px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[32px] font-bold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+                <div className="text-[20px] font-semibold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
               </div>
               <Donut pct={callPct} color="#00E85A" />
             </div>
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
             {/* Put flow */}
-            <div className="px-5 py-4 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-[11px] text-white/30">Put flow</span>
                   <span className="text-[14px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[32px] font-bold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+                <div className="text-[20px] font-semibold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
               </div>
               <Donut pct={putPct} color="#FF605D" />
             </div>
@@ -837,56 +842,56 @@ export default function ScannerPage() {
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-white/[0.03] transition-colors ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
+                    className={`border-b border-white/[0.03] ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-3 text-white/50 text-[15px]font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-2 text-white/50 text-[15px]font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-2 py-2">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-bold text-[18px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
+                        <div className="font-semibold text-[14px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
                         {t.sector && <div className="text-white/25 text-[10px] mt-0.5">{t.sector}</div>}
                       </button>
                     </td>
-                    <td className="px-2 py-3">
+                    <td className="px-2 py-2">
                       <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
                         className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
-                    <td className="px-2 py-3 text-right">
+                    <td className="px-2 py-2 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
                         className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-3 text-center text-[15px]font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-center text-[15px]font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
-                    <td className={`px-2 py-3 text-center text-[15px]${aggrColor(t.aggression)}`}>
+                    <td className={`px-2 py-2 text-center text-[15px]${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-3 text-center text-[15px]font-medium ${bsColor(t.trade_direction)}`}>
+                    <td className={`px-2 py-2 text-center text-[15px]font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-3 text-right text-white text-[15px]font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-3 text-right text-[15px]font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-3 text-right text-white/70 text-[15px]font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-                    <td className="px-2 py-3 text-right text-[15px]font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-right text-white text-[15px]font-mono">{t.spot_fmt}</td>
+                    <td className={`px-2 py-2 text-right text-[15px]font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-2 text-right text-white/90 text-[15px]font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-2 text-right text-[15px]font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-3 text-center text-[15px]font-medium ${
-                      t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/70"
+                    <td className={`px-2 py-2 text-center text-[15px]font-medium ${
+                      t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/90"
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-3 text-right text-[15px]font-mono text-white/80">
+                    <td className="px-2 py-2 text-right text-[15px]font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-3 text-right text-white/80 text-[15px]font-mono">
+                    <td className="px-2 py-2 text-right text-white/80 text-[15px]font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-3">
+                    <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">
                         {t.badges?.slice(0, 4).map((b, i) => (
                           <span key={i} className={badgeClass(b.tier)}>{b.label}</span>

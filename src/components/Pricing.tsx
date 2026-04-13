@@ -62,39 +62,41 @@ function FeatureList({ features }: { features: string[] }) {
   )
 }
 
-function Card1() {
+function GexCard() {
   const p = plans[0]
   return (
-    <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-8 flex flex-col">
-      <p className="text-sm font-semibold text-white/50 uppercase tracking-widest">Plan</p>
-      <h3 className="text-xl font-bold text-white mt-1">{p.name}</h3>
-      <p className="text-white/40 text-sm">{p.desc}</p>
-      <div className="mt-6">
-        <span className="text-5xl font-bold text-white">${p.price}</span>
-        <span className="text-white/40 text-lg">/mo</span>
+    <div className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 flex flex-col opacity-80">
+      <span className="text-[10px] font-mono uppercase tracking-widest text-white/30 mb-2 block">GEX only</span>
+      <h3 className="text-lg font-bold text-white mt-1">{p.name}</h3>
+      <p className="text-white/35 text-sm">{p.desc}</p>
+      <div className="mt-5">
+        <span className="text-4xl font-bold text-white/80">${p.price}</span>
+        <span className="text-white/30 text-lg">/mo</span>
       </div>
       <a
         href={p.link}
-        className="block w-full mt-6 py-3 rounded-xl border border-white/20 text-white/70 hover:border-white/40 hover:text-white text-sm font-semibold transition-all text-center"
+        className="block w-full mt-5 py-2.5 rounded-xl border border-white/15 text-white/50 hover:border-white/30 hover:text-white/70 text-sm font-semibold transition-all text-center"
       >
         Try It Free for 7 Days
       </a>
-      <div className="h-px bg-white/10 my-6" />
+      <div className="h-px bg-white/[0.07] my-5" />
       <FeatureList features={p.features} />
+      <p className="text-[10px] font-mono text-white/25 mt-3 text-center">Just the heatmap, no flow data</p>
     </div>
   )
 }
 
-function Card2() {
+function FlowCard() {
   const p = plans[1]
   return (
     <ShineBorder
       borderWidth={2}
-      color={["#60a5fa", "#3b82f6", "#93c5fd"]}
+      color={["#F97316", "#fb923c", "#F97316"]}
       className="rounded-2xl"
     >
-      <div className="bg-[#161B24] rounded-2xl p-8 h-full flex flex-col">
-        <span className="inline-block bg-[#60a5fa]/15 text-[#60a5fa] text-xs font-semibold px-3 py-1 rounded-full border border-[#60a5fa]/30 mb-3 self-start">
+      <div className="relative bg-[#161B24] rounded-2xl p-8 h-full flex flex-col">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#F97316] to-transparent" />
+        <span className="inline-block bg-[#F97316]/15 text-[#F97316] text-xs font-semibold px-3 py-1 rounded-full border border-[#F97316]/30 mb-3 self-start">
           MOST POPULAR
         </span>
         <p className="text-sm font-semibold text-white/50 uppercase tracking-widest">Plan</p>
@@ -106,7 +108,7 @@ function Card2() {
         </div>
         <a
           href={p.link}
-          className="block w-full mt-6 py-3 rounded-xl bg-[#60a5fa] hover:bg-[#3b82f6] text-white text-sm font-semibold transition-all text-center"
+          className="block w-full mt-6 py-3 rounded-xl bg-[#F97316] hover:bg-[#ea580c] text-white text-sm font-semibold transition-all text-center"
         >
           Try It Free for 7 Days
         </a>
@@ -117,10 +119,11 @@ function Card2() {
   )
 }
 
-function Card3() {
+function BundleCard() {
   const p = plans[2]
   return (
-    <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-8 flex flex-col">
+    <div className="relative bg-white/[0.06] border border-white/10 rounded-2xl p-8 flex flex-col">
+      <span className="text-[10px] font-mono uppercase tracking-widest text-[#22c55e] mb-2 block">Best value</span>
       <p className="text-sm font-semibold text-white/50 uppercase tracking-widest">Plan</p>
       <h3 className="text-xl font-bold text-white mt-1">{p.name}</h3>
       <p className="text-white/40 text-sm">{p.desc}</p>
@@ -162,13 +165,13 @@ export default function Pricing() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card1 />
-          <Card2 />
-          <Card3 />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <GexCard />
+          <FlowCard />
+          <BundleCard />
         </div>
 
-        <p className="text-white/25 text-xs text-center mt-12">
+        <p className="text-center text-xs font-mono text-white/20 mt-8">
           All plans include a 7-day free trial. No credit card required to start.
         </p>
       </div>

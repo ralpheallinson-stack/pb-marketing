@@ -95,7 +95,7 @@ export default function CommunityPage() {
             { title: "Discord + Telegram Alerts", desc: "Grade A signals pushed to your phone the moment they hit. No delay, no noise." },
             { title: "GEX Heatmaps", desc: "See where dealers are positioned. Gamma walls, zero-gamma strikes, and squeeze zones — updated live." },
           ].map((card, i) => (
-            <BlurFade key={card.title} delay={i * 0.1}><div className="relative rounded-xl border border-[#1E2A3A] px-6 py-5 overflow-hidden hover:border-[#2E3A4D] transition-colors" style={{ background: "#0F1520" }}>
+            <BlurFade key={card.title} delay={0} duration={0.3}><div className="relative rounded-xl border border-[#1E2A3A] px-6 py-5 overflow-hidden hover:border-[#2E3A4D] transition-colors" style={{ background: "#0F1520" }}>
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F5820A]/40 to-transparent" />
               <div className="text-sm font-bold text-white mb-2">{card.title}</div>
               <div className="text-[12px] text-[#7A8BA8] leading-relaxed">{card.desc}</div>

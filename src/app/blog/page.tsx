@@ -81,10 +81,12 @@ export default function BlogPage() {
           .prose-custom pre code { background: none; padding: 0; color: #C4CDD9; }
           .prose-custom blockquote { border-left: 3px solid #F5820A; padding-left: 16px; color: #7A8BA8; font-style: italic; margin: 1.5em 0; }
         `}</style>
-        <div className="mt-16 border-t border-[#1E2A3A] pt-10 text-center">
-          <div className="text-sm text-[#7A8BA8] mb-4">See these signals live in real time</div>
-          <a href="/free-scanner" className="inline-block bg-[#F5820A] text-black font-bold px-6 py-3 rounded-lg hover:bg-[#e57309] transition-colors text-sm">
-            Try the Free Scanner &rarr;
+        <div className="mt-12 rounded-xl border border-[#F97316]/20 bg-[#F97316]/5 p-8 text-center">
+          <p className="text-white font-bold text-xl mb-2">Try Profit Builders Free for 7 Days</p>
+          <p className="text-white/50 text-sm mb-6">Real-time flow. Conviction grading. Public track record.</p>
+          <a href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
+             className="inline-flex items-center gap-2 bg-[#F97316] text-white font-bold px-8 py-3 rounded-full hover:bg-[#F97316]/90 transition-colors">
+            Start Free Trial
           </a>
         </div>
       </article>

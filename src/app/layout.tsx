@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Teko, Bricolage_Grotesque, Barlow_Condensed } from "next/font/google"
+import { Teko, Bricolage_Grotesque, Barlow_Condensed, Bebas_Neue } from "next/font/google"
 import "./globals.css"
 
 const teko = Teko({
@@ -20,6 +20,13 @@ const barlowCondensed = Barlow_Condensed({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-barlow",
+  display: "swap",
+})
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bebas",
   display: "swap",
 })
 
@@ -54,7 +61,7 @@ const orgSchema = JSON.stringify({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${teko.variable} ${bricolage.variable} ${barlowCondensed.variable}`}>
+    <html lang="en" className={`${teko.variable} ${bricolage.variable} ${barlowCondensed.variable} ${bebasNeue.variable}`}>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: orgSchema }} />
       </head>

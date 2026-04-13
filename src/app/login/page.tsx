@@ -68,7 +68,11 @@ function LoginForm() {
         </button>
       </form>
 
-      <p className="text-white/30 text-[11px] text-center mt-4">
+      <a href="/forgot-password" className="text-sm text-white/40 hover:text-white/70 transition-colors mt-3 block text-center">
+        Forgot your password?
+      </a>
+
+      <p className="text-white/30 text-[11px] text-center mt-3">
         Set a password on your{" "}
         <a href="/account" className="text-[#60a5fa] hover:text-white">
           account page
