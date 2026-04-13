@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
+import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
 
 /* ── types ── */
 interface Trade {
@@ -67,6 +68,22 @@ interface ApiResponse {
   stats: Stats
   is_historical: boolean
   error?: string
+}
+
+interface FilterPreset {
+  name: string
+  filters: {
+    grade: string
+    type: string
+    optType: string
+    side: string
+    dte: string
+    unusualOnly: boolean
+    noIndex: boolean
+    minPremium: string
+    minContracts: number
+    minVolOi: number
+  }
 }
 
 /* ── helpers ── */
@@ -193,7 +210,15 @@ export default function ScannerPage() {
   const [filterGrade, setFilterGrade] = useState("")
   const [filterType, setFilterType] = useState("")
   const [filterOptType, setFilterOptType] = useState("")
-  const [filterMinPremium, setFilterMinPremium] = useState(0)
+  const [filterMinPremium, setFilterMinPremium] = useState<string>("")
+  const [filterMinContracts, setFilterMinContracts] = useState(0)
+  const [filterMinVolOi, setFilterMinVolOi] = useState(0)
+  const [presets, setPresets] = useState<FilterPreset[]>(() => {
+    if (typeof window === "undefined") return []
+    try { return JSON.parse(localStorage.getItem("pb_filter_presets") || "[]") } catch { return [] }
+  })
+  const [presetName, setPresetName] = useState("")
+  const [showSavePreset, setShowSavePreset] = useState(false)
   const [filterDte, setFilterDte] = useState("")
   const [filterSide, setFilterSide] = useState("")
   const [filterUnusualOnly, setFilterUnusualOnly] = useState(false)
@@ -265,10 +290,47 @@ export default function ScannerPage() {
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
+  const savePreset = (name: string) => {
+    if (!name.trim()) return
+    const preset: FilterPreset = {
+      name: name.trim(),
+      filters: {
+        grade: filterGrade, type: filterType, optType: filterOptType, side: filterSide,
+        dte: filterDte, unusualOnly: filterUnusualOnly, noIndex: filterNoIndex,
+        minPremium: filterMinPremium, minContracts: filterMinContracts, minVolOi: filterMinVolOi,
+      },
+    }
+    const updated = [...presets.filter(p => p.name !== preset.name), preset]
+    setPresets(updated)
+    localStorage.setItem("pb_filter_presets", JSON.stringify(updated))
+    setPresetName("")
+    setShowSavePreset(false)
+  }
+
+  const loadPreset = (preset: FilterPreset) => {
+    const f = preset.filters
+    setFilterGrade(f.grade); setFilterType(f.type); setFilterOptType(f.optType)
+    setFilterSide(f.side); setFilterDte(f.dte); setFilterUnusualOnly(f.unusualOnly)
+    setFilterNoIndex(f.noIndex); setFilterMinPremium(f.minPremium)
+    setFilterMinContracts(f.minContracts || 0); setFilterMinVolOi(f.minVolOi || 0)
+  }
+
+  const deletePreset = (name: string) => {
+    const updated = presets.filter(p => p.name !== name)
+    setPresets(updated)
+    localStorage.setItem("pb_filter_presets", JSON.stringify(updated))
+  }
+
+  const resetFilters = () => {
+    setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterSide("")
+    setFilterDte(""); setFilterUnusualOnly(false); setFilterNoIndex(false)
+    setFilterMinPremium(""); setFilterMinContracts(0); setFilterMinVolOi(0)
+  }
+
   const buildUrl = useCallback((opts?: { sinceId?: number; pageNum?: number }) => {
     const p = new URLSearchParams()
     if (timeRange !== "today") p.set("range", timeRange)
-    if (filterMinPremium > 0) p.set("min_premium", filterMinPremium.toString())
+    if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
     else if (filterDte === "8-30") p.set("max_dte", "30")
@@ -347,13 +409,15 @@ export default function ScannerPage() {
     if (filterGrade) c++
     if (filterType) c++
     if (filterOptType) c++
-    if (filterMinPremium > 0) c++
+    if (filterMinPremium !== "") c++
+    if (filterMinContracts > 0) c++
+    if (filterMinVolOi > 0) c++
     if (filterDte) c++
     if (filterSide) c++
     if (filterUnusualOnly) c++
     if (filterNoIndex) c++
     setActiveFilterCount(c)
-  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterDte, filterSide, filterUnusualOnly, filterNoIndex])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex])
 
   const filtered = useMemo(() => trades.filter(t => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
@@ -370,8 +434,10 @@ export default function ScannerPage() {
     if (filterDte === "1-7" && ((t.dte ?? -1) < 1 || (t.dte ?? -1) > 7)) return false
     if (filterDte === "8-30" && ((t.dte ?? -1) < 8 || (t.dte ?? -1) > 30)) return false
     if (filterDte === "30+" && (t.dte ?? -1) < 30) return false
+    if (filterMinContracts > 0 && (t.contracts ?? 0) < filterMinContracts) return false
+    if (filterMinVolOi > 0 && ((t.vol_oi ?? 0) * 10) < filterMinVolOi) return false
     return true
-  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte])
+  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
 
   const calls = filtered.filter(t => t.opt_type === "C")
   const puts = filtered.filter(t => t.opt_type === "P")
@@ -400,7 +466,7 @@ export default function ScannerPage() {
     return {
       count: source.length,
       bull, bear,
-      lean: cp > pp * 1.2 ? "BULL" : pp > cp * 1.2 ? "BEAR" : "MIXED",
+      lean: cp > pp * 1.05 ? "BULL" : pp > cp * 1.05 ? "BEAR" : "MIXED",
       pc_ratio: cp > 0 ? +(pp / cp).toFixed(2) : 0,
     }
   })()
@@ -661,23 +727,28 @@ export default function ScannerPage() {
       {/* ── HEADER ── */}
       <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
         <div className="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchInput}
-            onChange={e => setSearchInput(e.target.value.toUpperCase())}
-            onKeyDown={e => { if (e.key === "Enter") setSearch(searchInput); if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
-            className="w-52 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-sm text-white placeholder-white/25 focus:outline-none focus:border-white/[0.15] font-mono"
-          />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors">
-            <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M3 6h6M5 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <div className="flex items-center bg-black border-[1.5px] border-white/[0.06] rounded-xl px-3.5 gap-2 focus-within:border-[#48DEFF] focus-within:shadow-[0_0_0_3px_rgba(72,222,255,0.08)] transition-all" style={{ maxWidth: 280 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input
+              type="text"
+              placeholder="Search ticker..."
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value.toUpperCase())}
+              onKeyDown={e => { if (e.key === "Enter") setSearch(searchInput); if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
+              className="bg-transparent border-none outline-none text-white text-[13px] font-mono tracking-wide py-2.5 w-full placeholder-white/40"
+            />
+            <span className="text-[9px] text-white/40 border border-white/[0.15] rounded px-1.5 py-0.5 font-mono flex-shrink-0">ENTER</span>
+          </div>
+          <div className="w-px h-7 bg-white/[0.06]" />
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white border border-white/[0.1] hover:border-white/[0.2] transition-all" style={{ background: "linear-gradient(180deg, #1a1a1a, #000)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
             Filters
-            {activeFilterCount > 0 && <span className="bg-white/[0.15] text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && <span className="bg-[#FF605D] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
           </button>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <a href="/account" className="text-white/25 text-xs hover:text-white/50 transition-colors">Account</a>
-          <a href="/logout" className="text-white/25 text-xs hover:text-white/50 transition-colors">Logout</a>
+          <a href="/account" className="text-white/70 text-sm hover:text-white transition-colors">Account</a>
+          <a href="/logout" className="text-white/70 text-sm hover:text-white transition-colors">Logout</a>
         </div>
       </header>
 
@@ -706,76 +777,93 @@ export default function ScannerPage() {
 
       {/* ── STATS BAR ── */}
       {(() => {
-        const totalCount = calls.length + puts.length
-        const callPct = totalCount > 0 ? Math.round((calls.length / totalCount) * 100) : 50
         const totalPrem = displayStats.bull + displayStats.bear
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
-        const putPct = 100 - callPct
-        const circ = 2 * Math.PI * 22
-        const pcDash = Math.min(displayStats.pc_ratio / 2, 1) * circ
-        const Donut = ({ pct, color }: { pct: number; color: string }) => (
-          <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
-            <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
-            <circle cx="26" cy="26" r="22" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round"
-              strokeDasharray={`${(pct / 100) * circ} ${circ}`} strokeDashoffset={circ / 4}
-              style={{ transition: 'stroke-dasharray 0.6s ease' }} />
-            <text x="26" y="27" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600" fontFamily="monospace">{pct.toFixed(1)}%</text>
-          </svg>
-        )
+        const totalCount = calls.length + puts.length
+        const callSharePct = Math.round((calls.length / (totalCount || 1)) * 100)
+        const putSharePct = Math.round((puts.length / (totalCount || 1)) * 100)
         return (
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
+
             {/* Flow sentiment */}
-            <div className="px-5 py-3">
-              <div className="text-[14px] font-medium text-white/60 mb-2">Flow sentiment</div>
-              <div className="flex items-center gap-3">
-                <span className={`text-[20px] font-semibold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
+            <div className="px-5 py-3 flex items-center gap-4">
+              <AnimatedCircularProgressBar
+                value={Math.round(bullPct)}
+                max={100}
+                min={0}
+                gaugePrimaryColor={isBull ? "#00E85A" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
+                gaugeSecondaryColor="rgba(255,255,255,0.06)"
+                className="!size-[52px] !text-[11px]"
+              />
+              <div>
+                <div className="text-[12px] text-white/50 mb-1">Flow sentiment</div>
+                <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
-                <div className="flex-1 h-[4px] bg-white/[0.06] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${bullPct}%`, background: isBull ? '#00E85A' : '#FF605D' }} />
-                </div>
               </div>
             </div>
+
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+
             {/* Put to call */}
-            <div className="px-5 py-3 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center gap-4">
+              <AnimatedCircularProgressBar
+                value={Math.min(Math.round(displayStats.pc_ratio * 50), 100)}
+                max={100}
+                min={0}
+                gaugePrimaryColor="#48DEFF"
+                gaugeSecondaryColor="rgba(255,255,255,0.06)"
+                className="!size-[52px] !text-[11px]"
+              />
               <div>
-                <div className="text-[14px] font-medium text-white/60 mb-2">Put to call</div>
-                <div className="text-[20px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+                <div className="text-[12px] text-white/50 mb-1">Put to call</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
               </div>
-              <svg width="48" height="48" viewBox="0 0 52 52" className="flex-shrink-0">
-                <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
-                <circle cx="26" cy="26" r="22" fill="none" stroke="#48DEFF" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${pcDash} ${circ}`} strokeDashoffset={circ / 4}
-                  style={{ transition: 'stroke-dasharray 0.6s ease' }} />
-                <text x="26" y="27" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="10" fontWeight="600" fontFamily="monospace">{displayStats.pc_ratio.toFixed(2)}</text>
-              </svg>
             </div>
+
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+
             {/* Call flow */}
-            <div className="px-5 py-3 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center gap-4">
+              <AnimatedCircularProgressBar
+                value={callSharePct}
+                max={100}
+                min={0}
+                gaugePrimaryColor="#00E85A"
+                gaugeSecondaryColor="rgba(255,255,255,0.06)"
+                className="!size-[52px] !text-[11px]"
+              />
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[11px] text-white/30">Call flow</span>
-                  <span className="text-[14px] font-bold text-[#00E85A] font-mono ml-auto">{fmtPrem(callPrem)}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[12px] text-white/50">Call flow</span>
+                  <span className="text-[13px] font-semibold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[20px] font-semibold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
               </div>
-              <Donut pct={callPct} color="#00E85A" />
             </div>
+
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+
             {/* Put flow */}
-            <div className="px-5 py-3 flex items-center justify-between">
+            <div className="px-5 py-3 flex items-center gap-4">
+              <AnimatedCircularProgressBar
+                value={putSharePct}
+                max={100}
+                min={0}
+                gaugePrimaryColor="#FF605D"
+                gaugeSecondaryColor="rgba(255,255,255,0.06)"
+                className="!size-[52px] !text-[11px]"
+              />
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[11px] text-white/30">Put flow</span>
-                  <span className="text-[14px] font-bold text-[#FF605D] font-mono ml-auto">{fmtPrem(putPrem)}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[12px] text-white/50">Put flow</span>
+                  <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[20px] font-semibold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
               </div>
-              <Donut pct={putPct} color="#FF605D" />
             </div>
+
           </div>
         )
       })()}
@@ -929,94 +1017,288 @@ export default function ScannerPage() {
 
       {/* ── FILTER PANEL ── */}
       {showFilters && (
-        <>
-          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px]" onClick={() => setShowFilters(false)} />
-          <div className="fixed right-0 top-0 h-full w-[340px] z-50 flex flex-col overflow-y-auto" style={{ background: 'linear-gradient(180deg, #252430 0%, #2D2C38 100%)' }}>
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowFilters(false)}>
+          <div className="w-[340px] h-full overflow-y-auto" style={{ background: '#23222D', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
+            onClick={e => e.stopPropagation()}>
+
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
-              <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"><path d="M3 4h18M6 8h12M9 12h6M11 16h2"/></svg>
-                <span className="text-white font-semibold text-base">Filters</span>
-                {activeFilterCount > 0 && <span className="bg-[#48DEFF] text-[11px] font-bold text-black px-2 py-0.5 rounded-full min-w-[20px] text-center">{activeFilterCount}</span>}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span className="text-[15px] font-semibold">Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="text-[10px] bg-[#48DEFF]/15 text-[#48DEFF] px-2 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
+                )}
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => { setTimeRange("today"); setPage(0); setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterMinPremium(0); setFilterDte(""); setFilterSide(""); setFilterUnusualOnly(false); setFilterNoIndex(false) }} className="text-white/30 hover:text-white/60 text-xs transition-colors">Reset</button>
-                <button onClick={() => setShowFilters(false)} className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-white/40 hover:text-white transition-colors text-base">&times;</button>
+                <button onClick={resetFilters} className="text-[12px] text-[#48DEFF] hover:underline">Reset</button>
+                <button onClick={() => setShowFilters(false)} className="text-white/40 hover:text-white">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
             </div>
 
-            <div className="flex-1 px-6 py-5 space-y-6">
-              {(() => {
-                const Seg = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
-                  <div>
-                    <div className="text-xs font-medium uppercase tracking-[0.1em] text-white/30 mb-2.5">{label}</div>
-                    <div className="inline-flex rounded-lg bg-white/[0.03] border border-white/[0.06] p-1">
-                      {options.map(o => (
-                        <button key={String(o.v)} onClick={() => onChange(o.v)}
-                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all ${value === o.v ? "bg-white/[0.1] text-white shadow-sm" : "text-white/30 hover:text-white/50"}`}>
-                          {o.l}
-                        </button>
-                      ))}
+            <div className="px-5 py-4 space-y-6">
+
+              {/* ── SAVED PRESETS ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Saved presets</div>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {presets.map(p => (
+                    <div key={p.name} className="group flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-2.5 py-1.5 cursor-pointer hover:border-[#48DEFF]/40 hover:bg-[#48DEFF]/5 transition-colors"
+                      onClick={() => loadPreset(p)}>
+                      <span className="text-[12px] text-white/60 group-hover:text-[#48DEFF]">{p.name}</span>
+                      <button onClick={e => { e.stopPropagation(); deletePreset(p.name) }}
+                        className="text-white/20 hover:text-[#FF605D] ml-0.5 text-[10px]">✕</button>
                     </div>
-                  </div>
-                )
-                const Pill = ({ label, options, value, onChange }: { label: string; options: { v: string | number; l: string }[]; value: string | number; onChange: (v: any) => void }) => (
-                  <div>
-                    <div className="text-xs font-medium uppercase tracking-[0.1em] text-white/30 mb-2.5">{label}</div>
-                    <div className="flex gap-2 flex-wrap">
-                      {options.map(o => (
-                        <button key={String(o.v)} onClick={() => onChange(o.v)}
-                          className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all ${value === o.v ? "bg-white/[0.1] border-white/[0.15] text-white" : "bg-transparent border-white/[0.06] text-white/25 hover:text-white/45 hover:border-white/[0.1]"}`}>
-                          {o.l}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )
-                const Toggle = ({ label, desc, active, onToggle, color }: { label: string; desc: string; active: boolean; onToggle: () => void; color?: string }) => (
-                  <div className="flex items-center justify-between py-3">
-                    <div>
-                      <div className="text-white/80 text-sm font-medium">{label}</div>
-                      <div className="text-white/25 text-xs mt-0.5">{desc}</div>
-                    </div>
-                    <button onClick={onToggle}
-                      className={`w-11 h-6 rounded-full transition-all relative flex-shrink-0 ${active ? "" : "bg-white/[0.06]"}`}
-                      style={active ? { backgroundColor: color || '#48DEFF' } : undefined}>
-                      <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${active ? "left-6 bg-white" : "left-1 bg-white/30"}`} />
+                  ))}
+                  {!showSavePreset ? (
+                    <button onClick={() => setShowSavePreset(true)}
+                      className="flex items-center gap-1 border border-dashed border-white/[0.12] rounded-md px-2.5 py-1.5 text-[12px] text-white/30 hover:text-white/50 hover:border-white/20 transition-colors">
+                      <span>+</span> Save current
                     </button>
-                  </div>
-                )
-                return <>
-                  <Seg label="Time Range" options={TIME_RANGES.map(r => ({ v: r.key, l: r.label }))} value={timeRange} onChange={(v: string) => { setTimeRange(v); setPage(0) }} />
+                  ) : (
+                    <div className="flex items-center gap-1.5 w-full mt-1">
+                      <input value={presetName} onChange={e => setPresetName(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && savePreset(presetName)}
+                        placeholder="Preset name..."
+                        className="flex-1 bg-white/[0.04] border border-white/[0.12] rounded-md px-2.5 py-1.5 text-[12px] text-white placeholder-white/25 focus:outline-none focus:border-[#48DEFF]/40"
+                        autoFocus />
+                      <button onClick={() => savePreset(presetName)}
+                        className="px-2.5 py-1.5 bg-[#48DEFF] text-[#1C1B23] rounded-md text-[11px] font-semibold hover:bg-[#6ee8ff]">Save</button>
+                      <button onClick={() => { setShowSavePreset(false); setPresetName("") }}
+                        className="text-white/30 hover:text-white/60 text-[12px]">✕</button>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                  <div className="border-t border-white/[0.04] pt-4 space-y-4">
-                    <Seg label="Grade" options={[{ v: "", l: "All" }, { v: "A", l: "A" }, { v: "B", l: "B" }]} value={filterGrade} onChange={setFilterGrade} />
-                    <Seg label="Flow Type" options={[{ v: "", l: "All" }, { v: "SWEEP", l: "Sweep" }, { v: "BLOCK", l: "Block" }]} value={filterType} onChange={setFilterType} />
-                    <Seg label="Calls / Puts" options={[{ v: "", l: "All" }, { v: "C", l: "Calls" }, { v: "P", l: "Puts" }]} value={filterOptType} onChange={setFilterOptType} />
+              {/* ── DIRECTION ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Direction</div>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Calls only</div>
+                      <div className="text-[12px] text-white/35">Show call options only</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "C" ? "bg-[#00E85A]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterOptType(filterOptType === "C" ? "" : "C")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterOptType === "C" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
                   </div>
-
-                  <div className="border-t border-white/[0.04] pt-4 space-y-4">
-                    <Pill label="Min Premium" options={[{ v: 0, l: "Any" }, { v: 100000, l: "$100K" }, { v: 250000, l: "$250K" }, { v: 500000, l: "$500K" }, { v: 1000000, l: "$1M" }]} value={filterMinPremium} onChange={setFilterMinPremium} />
-                    <Pill label="Expiry" options={[{ v: "", l: "All" }, { v: "0dte", l: "0DTE" }, { v: "1-7", l: "1-7d" }, { v: "8-30", l: "8-30d" }, { v: "30+", l: "30d+" }]} value={filterDte} onChange={setFilterDte} />
-                    <Pill label="Side" options={[{ v: "", l: "All" }, { v: "ABOVE_ASK", l: "Above" }, { v: "AT_ASK", l: "Ask" }, { v: "BELOW_BID", l: "Bid" }]} value={filterSide} onChange={setFilterSide} />
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Puts only</div>
+                      <div className="text-[12px] text-white/35">Show put options only</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "P" ? "bg-[#FF605D]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterOptType(filterOptType === "P" ? "" : "P")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterOptType === "P" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
                   </div>
+                </div>
+              </div>
 
-                  <div className="border-t border-white/[0.04] pt-3 space-y-0">
-                    <Toggle label="Unusual Only" desc="V/OI flagged activity" active={filterUnusualOnly} onToggle={() => setFilterUnusualOnly(!filterUnusualOnly)} />
-                    <Toggle label="No Index" desc="Hide SPX, NDX, RUT, VIX" active={filterNoIndex} onToggle={() => setFilterNoIndex(!filterNoIndex)} color="#FF8A00" />
+              {/* ── FLOW TYPE ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Flow type</div>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Sweeps only</div>
+                      <div className="text-[12px] text-white/35">Multi-leg aggressive fills</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterType === "SWEEP" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterType(filterType === "SWEEP" ? "" : "SWEEP")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterType === "SWEEP" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
                   </div>
-                </>
-              })()}
-            </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Blocks only</div>
+                      <div className="text-[12px] text-white/35">Single-fill large orders</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterType === "BLOCK" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterType(filterType === "BLOCK" ? "" : "BLOCK")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterType === "BLOCK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <div className="px-6 py-5 border-t border-white/[0.06]">
-              <button onClick={() => { setPage(0); setShowFilters(false) }}
-                className="w-full py-3 rounded-xl text-sm font-bold transition-all bg-white/[0.08] hover:bg-white/[0.14] text-white/80 hover:text-white border border-white/[0.08]">
-                Apply Filters
+              {/* ── SIGNAL QUALITY ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Signal quality</div>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Grade A only</div>
+                      <div className="text-[12px] text-white/35">$500K+ premium, 20x V/OI</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterGrade === "A" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterGrade(filterGrade === "A" ? "" : "A")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterGrade === "A" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Unusual only</div>
+                      <div className="text-[12px] text-white/35">V/OI flagged activity</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterUnusualOnly ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterUnusualOnly(!filterUnusualOnly)}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterUnusualOnly ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">No index</div>
+                      <div className="text-[12px] text-white/35">Hide SPX, SPXW, NDX, RUT, VIX</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterNoIndex ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterNoIndex(!filterNoIndex)}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterNoIndex ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── SIDE ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Side</div>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Above ask only</div>
+                      <div className="text-[12px] text-white/35">Most aggressive — paid above ask</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "ABOVE_ASK" ? "bg-[#00E85A]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterSide(filterSide === "ABOVE_ASK" ? "" : "ABOVE_ASK")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "ABOVE_ASK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">At ask only</div>
+                      <div className="text-[12px] text-white/35">Aggressive buys at the ask</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "AT_ASK" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterSide(filterSide === "AT_ASK" ? "" : "AT_ASK")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "AT_ASK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">At bid only</div>
+                      <div className="text-[12px] text-white/35">Sells hitting the bid</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "AT_BID" ? "bg-[#FF605D]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterSide(filterSide === "AT_BID" ? "" : "AT_BID")}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "AT_BID" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── RANGE FILTERS ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Range filters</div>
+
+                {/* Min Premium */}
+                <div className="mb-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[13px] text-white/70 font-medium">Min premium</span>
+                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                      {({"": "Any", "100000": "$100K", "250000": "$250K", "500000": "$500K", "1000000": "$1M+"} as Record<string, string>)[filterMinPremium] || "Any"}
+                    </span>
+                  </div>
+                  <input type="range" min={0} max={4} step={1}
+                    value={({"": 0, "100000": 1, "250000": 2, "500000": 3, "1000000": 4} as Record<string, number>)[filterMinPremium] ?? 0}
+                    onChange={e => setFilterMinPremium(["", "100000", "250000", "500000", "1000000"][Number(e.target.value)])}
+                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <div className="flex justify-between mt-1">
+                    {["Any", "$100K", "$250K", "$500K", "$1M+"].map(l => (
+                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Min Contracts */}
+                <div className="mb-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[13px] text-white/70 font-medium">Min contracts</span>
+                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                      {filterMinContracts === 0 ? "Any" : filterMinContracts.toLocaleString()}
+                    </span>
+                  </div>
+                  <input type="range" min={0} max={2000} step={50}
+                    value={filterMinContracts}
+                    onChange={e => setFilterMinContracts(Number(e.target.value))}
+                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <div className="flex justify-between mt-1">
+                    {["0", "500", "1K", "1.5K", "2K"].map(l => (
+                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Max DTE */}
+                <div className="mb-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[13px] text-white/70 font-medium">Max DTE</span>
+                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                      {filterDte === "0dte" ? "0DTE" : filterDte === "1-7" ? "7d" : filterDte === "8-30" ? "30d" : filterDte === "30+" ? "30d+" : "All"}
+                    </span>
+                  </div>
+                  <input type="range" min={0} max={4} step={1}
+                    value={({"": 0, "0dte": 1, "1-7": 2, "8-30": 3, "30+": 4} as Record<string, number>)[filterDte] ?? 0}
+                    onChange={e => setFilterDte(["", "0dte", "1-7", "8-30", "30+"][Number(e.target.value)])}
+                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <div className="flex justify-between mt-1">
+                    {["All", "0DTE", "1-7d", "8-30d", "30d+"].map(l => (
+                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Min V/OI Ratio */}
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[13px] text-white/70 font-medium">Min V/OI ratio</span>
+                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                      {filterMinVolOi === 0 ? "Any" : (filterMinVolOi / 10).toFixed(1) + "x"}
+                    </span>
+                  </div>
+                  <input type="range" min={0} max={50} step={5}
+                    value={filterMinVolOi}
+                    onChange={e => setFilterMinVolOi(Number(e.target.value))}
+                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <div className="flex justify-between mt-1">
+                    {["Any", "1x", "2x", "3x", "4x", "5x"].map(l => (
+                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* ── APPLY BUTTON ── */}
+              <button onClick={() => setShowFilters(false)}
+                className="w-full py-2.5 bg-[#48DEFF] text-[#1C1B23] rounded-lg text-[13px] font-semibold hover:bg-[#6ee8ff] active:scale-[0.98] transition-all">
+                Apply filters
               </button>
+
             </div>
           </div>
-        </>
+        </div>
       )}
 
       </>)}

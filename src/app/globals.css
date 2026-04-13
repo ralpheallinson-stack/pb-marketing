@@ -128,3 +128,34 @@ body {
   background: #2E3A4D;
   border-radius: 3px;
 }
+
+/* Filter panel slider thumb */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #48DEFF;
+  cursor: pointer;
+  border: 2px solid #23222D;
+  box-shadow: 0 0 0 2px rgba(72, 222, 255, 0.2);
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 4px rgba(72, 222, 255, 0.15);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #48DEFF;
+  cursor: pointer;
+  border: 2px solid #23222D;
+  box-shadow: 0 0 0 2px rgba(72, 222, 255, 0.2);
+}
