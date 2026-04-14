@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
+import TrialBanner from "@/components/TrialBanner"
 
+import Link from "next/link"
 /* ── types ── */
 interface Trade {
   id: number
@@ -216,7 +218,7 @@ export default function ScannerPage() {
     const id = setInterval(check, 30000)
     return () => clearInterval(id)
   }, [])
-  const audioCtxRef = useRef<AudioContext | null>(null)
+  const audioCtxRef = useRef<HTMLAudioElement | null>(null)
   const prevTradeIdsRef = useRef<Set<number>>(new Set())
   const [showFilters, setShowFilters] = useState(false)
   const [filterGrade, setFilterGrade] = useState("")
@@ -241,7 +243,6 @@ export default function ScannerPage() {
   const [focusExpiry, setFocusExpiry] = useState<string | null>(null)
   const lastTradeIdRef = useRef<number>(0)
   const isFirstLoadRef = useRef<boolean>(true)
-  const [newTradeIds, setNewTradeIds] = useState<Set<number>>(new Set())
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -250,14 +251,19 @@ export default function ScannerPage() {
     }).catch(() => {})
   }, [])
 
+  const gexReqIdRef = useRef(0)
   useEffect(() => {
     if (activePage !== "heatmap" || !canAccessGamma) return
+    const reqId = ++gexReqIdRef.current
     setGexLoading(true); setGexError("")
     fetch(`/api/scanner/gex-heatmap?symbol=${gexSymbol}`)
       .then(r => r.json())
-      .then(d => { if (d.error) { setGexError(d.error); setGexData(null) } else setGexData(d) })
-      .catch(() => setGexError("Failed to load"))
-      .finally(() => setGexLoading(false))
+      .then(d => {
+        if (reqId !== gexReqIdRef.current) return  // stale response — newer symbol selected
+        if (d.error) { setGexError(d.error); setGexData(null) } else setGexData(d)
+      })
+      .catch(() => { if (reqId === gexReqIdRef.current) setGexError("Failed to load") })
+      .finally(() => { if (reqId === gexReqIdRef.current) setGexLoading(false) })
   }, [activePage, canAccessGamma, gexSymbol])
 
   const addToWatchlist = useCallback((sym: string) => {
@@ -277,28 +283,14 @@ export default function ScannerPage() {
   const playBlip = useCallback(() => {
     if (!soundEnabled) return
     try {
-      if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
-      const ctx = audioCtxRef.current
-      if (ctx.state === "suspended") ctx.resume()
-      const now = ctx.currentTime
-
-      // Soft two-tone blip — Bloomberg-style
-      const tone = (freq: number, start: number, dur: number, vol: number) => {
-        const o = ctx.createOscillator()
-        const g = ctx.createGain()
-        const f = ctx.createBiquadFilter()
-        o.connect(f); f.connect(g); g.connect(ctx.destination)
-        o.type = "triangle"
-        f.type = "lowpass"
-        f.frequency.value = 2000
-        o.frequency.value = freq
-        g.gain.setValueAtTime(0, start)
-        g.gain.linearRampToValueAtTime(vol, start + 0.008)
-        g.gain.exponentialRampToValueAtTime(0.001, start + dur)
-        o.start(start); o.stop(start + dur)
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
+        audioCtxRef.current.volume = 0.6
+        audioCtxRef.current.preload = "auto"
       }
-      tone(880, now, 0.08, 0.12)        // A5 — short tap
-      tone(1174.7, now + 0.07, 0.1, 0.08) // D6 — soft follow
+      const a = audioCtxRef.current
+      a.currentTime = 0
+      a.play().catch(() => { /* autoplay blocked or asset missing */ })
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
@@ -367,9 +359,6 @@ export default function ScannerPage() {
           lastTradeIdRef.current = newMaxId
           setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
           playBlip()
-          const brandNew = new Set(data.trades.map((tr: Trade) => tr.id))
-          setNewTradeIds(brandNew)
-          setTimeout(() => setNewTradeIds(new Set()), 2000)
         }
         return
       }
@@ -493,9 +482,9 @@ export default function ScannerPage() {
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[68px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
         {/* Logo */}
-        <a href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
+        <Link href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="w-8 h-8 object-contain" />
-        </a>
+        </Link>
 
         {/* Main nav */}
         <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")} title="Flow Scanner">
@@ -545,21 +534,22 @@ export default function ScannerPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             )}
           </button>
-          <a href="/account" className={sideCircle(false)} title="Account">
+          <Link href="/account" className={sideCircle(false)} title="Account">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-          </a>
+          </Link>
         </div>
       </nav>
 
       {/* ── MAIN CONTENT ── */}
       <div className="ml-[68px] flex flex-col h-screen overflow-hidden flex-1">
+      <TrialBanner />
 
       {activePage === "heatmap" ? ((() => {
   const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
   const netGex = gexData ? gexData.strikes.reduce((sum: number, strike: number) => {
     const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
     const row = gexData.matrix[sk] || {}
-    return sum + Object.values(row).reduce((rs: number, c: any) => rs + c.net_gex, 0)
+    return sum + Object.values(row).reduce((rs: number, c: { net_gex: number }) => rs + c.net_gex, 0)
   }, 0) : 0
   const todayStr = new Date().toISOString().slice(0, 10)
   const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
@@ -567,7 +557,7 @@ export default function ScannerPage() {
   const strikeTotals = gexData ? [...gexData.strikes].reverse().map(strike => {
     const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
     const row = gexData.matrix[sk] || {}
-    return { strike, total: Object.values(row).reduce((s: number, c: any) => s + c.net_gex, 0) }
+    return { strike, total: Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0) }
   }) : []
   const maxStrikeTotal = Math.max(...strikeTotals.map(s => Math.abs(s.total)), 1)
 
@@ -668,11 +658,11 @@ export default function ScannerPage() {
               return strikes.map((strike: number) => {
                 const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
                 const row = gexData.matrix[sk] || {}
-                const rowTotal = Object.values(row).reduce((s: number, c: any) => s + c.net_gex, 0)
+                const rowTotal = Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0)
                 const isAtm = strike === atmStrike
                 const isZg = strike === zgStrike
                 return [
-                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-white/[0.03]"
+                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-white/[0.04]"
                     style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.035)" : "transparent", position: "sticky", left: 0, zIndex: 5,
                     ...(isAtm ? { borderLeft: "2px solid rgba(255,255,255,0.5)" } : isZg ? { borderLeft: "2px solid #a855f7" } : {}) }}>
                     {isAtm && <span className="text-[8px] font-bold text-white/60">SPT</span>}
@@ -689,7 +679,7 @@ export default function ScannerPage() {
                     const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(0,232,90,${intensity})` : `rgba(255,96,93,${intensity})`
                     return (
                       <div key={`${strike}-${exp}`}
-                        className="border-r border-b border-white/[0.03] flex items-center justify-center"
+                        className="border-r border-b border-white/[0.04] flex items-center justify-center"
                         style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24 }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
                         {gex !== 0 && (
@@ -701,7 +691,7 @@ export default function ScannerPage() {
                     )
                   }),
 
-                  <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.03]"
+                  <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.04]"
                     style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(isAtm ? { background: "rgba(255,255,255,0.035)" } : {}) }}>
                     <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
                       {rowTotal !== 0 ? fmtGex(rowTotal) : ""}
@@ -724,7 +714,7 @@ export default function ScannerPage() {
             const barPct = Math.min(Math.abs(total) / maxStrikeTotal * 100, 100)
             const isPos = total >= 0
             return (
-              <div key={`gp-${strike}`} className="relative border-b border-white/[0.03]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.025)" : "transparent" }}>
+              <div key={`gp-${strike}`} className="relative border-b border-white/[0.04]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.025)" : "transparent" }}>
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/[0.04]" />
                 {total !== 0 && (
                   <div className="absolute top-[4px] bottom-[4px]" style={{
@@ -754,7 +744,7 @@ export default function ScannerPage() {
                 value={wlInput}
                 onChange={e => setWlInput(e.target.value.toUpperCase())}
                 onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
-                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[15px]text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
+                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[12px] text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
               />
             </div>
           </div>
@@ -784,7 +774,7 @@ export default function ScannerPage() {
                   const isBear = putPrem > callPrem * 1.3
                   return (
                     <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.05] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
-                      onClick={() => { setSearch(sym); setSearchInput(sym); setActivePage("scanner") }}>
+                      onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}>
                       <div className="px-5 flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{sym}</span>
                         {count > 0 && (
@@ -828,7 +818,7 @@ export default function ScannerPage() {
               placeholder="Search ticker..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value.toUpperCase())}
-              onKeyDown={e => { if (e.key === "Enter") setSearch(searchInput); if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
+              onKeyDown={e => { if (e.key === "Enter") { setSearch(searchInput); setPage(0) } if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
               className="bg-transparent border-none outline-none text-white text-[13px] font-mono tracking-wide py-2.5 w-full placeholder-white/40"
             />
             <span className="text-[9px] text-white/40 border border-white/[0.15] rounded px-1.5 py-0.5 font-mono flex-shrink-0">ENTER</span>
@@ -841,8 +831,8 @@ export default function ScannerPage() {
           </button>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <a href="/account" className="text-white/70 text-sm hover:text-white transition-colors">Account</a>
-          <a href="/logout" className="text-white/70 text-sm hover:text-white transition-colors">Logout</a>
+          <Link href="/account" className="text-white/70 text-sm hover:text-white transition-colors">Account</Link>
+          <Link href="/logout" className="text-white/70 text-sm hover:text-white transition-colors">Logout</Link>
         </div>
       </header>
 
@@ -989,7 +979,7 @@ export default function ScannerPage() {
             </thead>
             <tbody>
               {Array.from({ length: 25 }).map((_, i) => (
-                <tr key={i} className="border-b border-white/[0.02]">
+                <tr key={i} className="border-b border-white/[0.04]">
                   {Array.from({ length: 15 }).map((_, j) => (
                     <td key={j} className="px-2 py-1.5">
                       <div className="h-2.5 bg-white/[0.03] rounded animate-pulse" style={{ width: `${40 + Math.random() * 40}%` }} />
@@ -1019,17 +1009,16 @@ export default function ScannerPage() {
               {rowVirtualizer.getVirtualItems().map(vRow => {
                 const t = filtered[vRow.index]
                 if (!t || t.mm_suspected) return null
-                const isNew = newTradeIds.has(t.id)
                 const rowStyle = getRowStyle(t)
                 return (
                   <tr
                     key={vRow.key}
                     data-index={vRow.index}
                     ref={rowVirtualizer.measureElement}
-                    className={`border-b border-white/[0.03] ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
+                    className={`border-b border-white/[0.04] ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-2 text-white/50 text-[15px]font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-3 py-2 text-white/50 text-[12px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
@@ -1038,41 +1027,41 @@ export default function ScannerPage() {
                       </button>
                     </td>
                     <td className="px-2 py-2">
-                      <button onClick={() => { setFocusExpiry(t.expiration); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
+                      <button onClick={() => { setFocusExpiry(t.expiration); setFocusTicker(cur => cur ?? t.symbol) }}
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[12px] font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
                     <td className="px-2 py-2 text-right">
-                      <button onClick={() => { setFocusStrike(String(t.strike)); if (!focusTicker) setFocusTicker(t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[15px]font-mono">
+                      <button onClick={() => { setFocusStrike(String(t.strike)); setFocusTicker(cur => cur ?? t.symbol) }}
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[12px] font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-center text-[15px]font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-center text-[12px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[15px]${aggrColor(t.aggression)}`}>
+                    <td className={`px-2 py-2 text-center text-[12px] ${aggrColor(t.aggression)}`}>
                       {aggrLabel(t.aggression)}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[15px]font-medium ${bsColor(t.trade_direction)}`}>
+                    <td className={`px-2 py-2 text-center text-[12px] font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-2 text-right text-white text-[15px]font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-2 text-right text-[15px]font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-2 text-right text-white/90 text-[15px]font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-                    <td className="px-2 py-2 text-right text-[15px]font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-right text-white text-[12px] font-mono">{t.spot_fmt}</td>
+                    <td className={`px-2 py-2 text-right text-[12px] font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-2 text-right text-white/90 text-[12px] font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
-                    <td className={`px-2 py-2 text-center text-[15px]font-medium ${
+                    <td className={`px-2 py-2 text-center text-[12px] font-medium ${
                       t.flow_type === "SWEEP" ? "text-[#F2C94C]" : t.flow_type === "BLOCK" ? "text-[#48DEFF]" + (t.premium >= 1000000 ? " font-bold" : "") : "text-white/90"
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-[15px]font-mono text-white/80">
+                    <td className="px-2 py-2 text-right text-[12px] font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/80 text-[15px]font-mono">
+                    <td className="px-2 py-2 text-right text-white/80 text-[12px] font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
                     <td className="px-2 py-2">
@@ -1310,16 +1299,16 @@ export default function ScannerPage() {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-[13px] text-white/70 font-medium">Min premium</span>
                     <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
-                      {({"": "Any", "100000": "$100K", "250000": "$250K", "500000": "$500K", "1000000": "$1M+"} as Record<string, string>)[filterMinPremium] || "Any"}
+                      {({"": "Any", "50000": "$50K", "100000": "$100K", "200000": "$200K", "500000": "$500K", "1000000": "$1M", "5000000": "$5M+"} as Record<string, string>)[filterMinPremium] || "Any"}
                     </span>
                   </div>
-                  <input type="range" min={0} max={4} step={1}
-                    value={({"": 0, "100000": 1, "250000": 2, "500000": 3, "1000000": 4} as Record<string, number>)[filterMinPremium] ?? 0}
-                    onChange={e => setFilterMinPremium(["", "100000", "250000", "500000", "1000000"][Number(e.target.value)])}
+                  <input type="range" min={0} max={6} step={1}
+                    value={({"": 0, "50000": 1, "100000": 2, "200000": 3, "500000": 4, "1000000": 5, "5000000": 6} as Record<string, number>)[filterMinPremium] ?? 0}
+                    onChange={e => setFilterMinPremium(["", "50000", "100000", "200000", "500000", "1000000", "5000000"][Number(e.target.value)])}
                     className="w-full h-1 rounded-full appearance-none cursor-pointer"
                     style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
                   <div className="flex justify-between mt-1">
-                    {["Any", "$100K", "$250K", "$500K", "$1M+"].map(l => (
+                    {["Any", "$50K", "$100K", "$200K", "$500K", "$1M", "$5M+"].map(l => (
                       <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
                     ))}
                   </div>
@@ -1408,10 +1397,10 @@ export default function ScannerPage() {
             <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
               Real-time GEX heatmaps, gamma wall detection, and squeeze identification are available on the Pro plan.
             </div>
-            <a href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-[15px]hover:bg-[#e57309] transition-colors">
+            <Link href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-[15px] hover:bg-[#e57309] transition-colors">
               Upgrade to Pro
-            </a>
-            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-[15px]hover:text-[#7A8BA8] transition-colors">
+            </Link>
+            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-[15px] hover:text-[#7A8BA8] transition-colors">
               Not now
             </button>
           </div>

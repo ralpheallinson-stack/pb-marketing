@@ -1,4 +1,4 @@
-import { Suspense } from "react"
+
 import { Tweet } from "react-tweet"
 import { cn } from "@/lib/utils"
 

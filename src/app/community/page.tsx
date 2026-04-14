@@ -6,6 +6,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker"
 import { ShimmerButton } from "@/components/magicui/ShimmerButton"
 import { BlurFade } from "@/components/magicui/BlurFade"
 
+import Link from "next/link"
 interface Signal { symbol: string; action: string; strike: number; premium_fmt: string; flow_type: string; grade: string; expiration: string }
 interface Stats { total_signals: number; signals_this_week: number; grade_a_this_month: number }
 
@@ -108,9 +109,9 @@ export default function CommunityPage() {
       <section className="text-center py-16 px-4 border-t border-[#1E2A3A]">
         <div className="text-2xl font-bold text-white mb-2">Ready to see the flow?</div>
         <div className="text-sm text-[#7A8BA8] mb-8">Join thousands of traders who stopped guessing.</div>
-        <a href="/#pricing" className="inline-block bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">
+        <Link href="/#pricing" className="inline-block bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">
           Start Free Trial &rarr;
-        </a>
+        </Link>
         <div className="text-[10px] text-[#3D4D63] mt-2">$99/month after trial &middot; Cancel anytime</div>
       </section>
     </div>

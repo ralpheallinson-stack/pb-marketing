@@ -6,6 +6,7 @@ import { BorderBeam } from "@/components/magicui/BorderBeam"
 import { ShimmerButton } from "@/components/magicui/ShimmerButton"
 import { badgeClass } from "@/lib/badge-styles"
 
+import Link from "next/link"
 interface Trade {
   id: number
   symbol: string
@@ -116,7 +117,7 @@ export default function FreeScannerPage() {
         <span className="flex items-center gap-2"><span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" /></span><span className="text-[11px] font-semibold text-[#F5820A] tracking-wide uppercase">Free — 15-Min Delayed</span></span>
         <span className="text-[11px] text-[#3D4D63]">|</span>
         <span className="text-[11px] text-[#7A8BA8]">Want real-time flow + alerts?</span>
-        <a href="/#pricing" className="text-[11px] font-bold text-black bg-[#F5820A] px-3 py-1 rounded-md hover:bg-[#e57309] transition-colors">Start Free Trial</a>
+        <Link href="/#pricing" className="text-[11px] font-bold text-black bg-[#F5820A] px-3 py-1 rounded-md hover:bg-[#e57309] transition-colors">Start Free Trial</Link>
       </div>
 
       {/* Stats bar */}
@@ -198,9 +199,9 @@ export default function FreeScannerPage() {
                   <td colSpan={15} className="px-6 py-16 text-center">
                     <div className="text-white/30 text-sm font-mono mb-2">Market opens at 9:30 AM ET</div>
                     <div className="text-white/15 text-xs font-mono mb-4">No signals yet today — check back at market open</div>
-                    <a href="/?trial=true" className="inline-flex items-center gap-2 bg-[#F97316] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-[#F97316]/90 transition-colors">
+                    <Link href="/?trial=true" className="inline-flex items-center gap-2 bg-[#F97316] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-[#F97316]/90 transition-colors">
                       Get real-time flow + alerts →
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               )}
@@ -233,7 +234,7 @@ export default function FreeScannerPage() {
                           <span key={i} className={badgeClass(b.tier)}>{b.label}</span>
                         ))}
                         {!blurred && (t.badges?.length ?? 0) > 2 && (
-                          <a href="/#pricing" className="text-[9px] text-[#F5820A] hover:underline">+more</a>
+                          <Link href="/#pricing" className="text-[9px] text-[#F5820A] hover:underline">+more</Link>
                         )}
                       </div>
                     </td>
@@ -269,7 +270,7 @@ export default function FreeScannerPage() {
           <div className="w-2 h-2 rounded-full bg-amber-400" />
           <span className="text-[10px] text-[#4A5A72]">15-minute delayed data · {stats.count.toLocaleString()} signals today</span>
         </div>
-        <a href="/#pricing" className="text-[10px] font-semibold text-[#F5820A] hover:text-[#e57309] transition-colors">Get Real-Time Access →</a>
+        <Link href="/#pricing" className="text-[10px] font-semibold text-[#F5820A] hover:text-[#e57309] transition-colors">Get Real-Time Access →</Link>
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ interface BentoCardProps {
   name: string
   className?: string
   background?: ReactNode
-  Icon?: any
+  Icon?: React.ElementType
   description: string
   tag?: string
   tagColor?: string

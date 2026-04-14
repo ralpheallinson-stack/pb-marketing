@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Nav from "@/components/Nav"
 
+import Link from "next/link"
 interface GexCell { net_gex: number; call_oi: number; put_oi: number; has_greeks?: boolean }
 interface GexData {
   symbol: string; spot: number; spot_fmt: string; expirations: string[]; strikes: number[]
@@ -74,9 +75,9 @@ export default function HeatmapPage() {
             <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
               Real-time gamma exposure heatmaps with dealer positioning by strike and expiry.
             </div>
-            <a href="/#pricing" className="inline-block bg-[#F5820A] text-black font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-[#e57309] transition-colors">
+            <Link href="/#pricing" className="inline-block bg-[#F5820A] text-black font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-[#e57309] transition-colors">
               Upgrade to Pro
-            </a>
+            </Link>
             <div className="text-[10px] text-[#3D4D63] mt-2">Included in Pro Bundle</div>
           </div>
         </div>

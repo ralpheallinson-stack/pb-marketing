@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import Nav from "@/components/Nav"
 
+import Link from "next/link"
 export default function AboutPage() {
   useEffect(() => { document.title = "About | Profit Builders" }, [])
 
@@ -22,12 +23,12 @@ export default function AboutPage() {
           Every signal is tracked publicly. Every outcome published. No cherry-picking, no hiding losses. Over 170,000 signals tracked since launch with full P&amp;L transparency.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <a href="/#pricing" className="bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">
+          <Link href="/#pricing" className="bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">
             Start Free Trial &rarr;
-          </a>
-          <a href="/results" className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
+          </Link>
+          <Link href="/results" className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
             View Track Record
-          </a>
+          </Link>
         </div>
       </section>
     </div>

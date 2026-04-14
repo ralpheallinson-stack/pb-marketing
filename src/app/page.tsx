@@ -2,7 +2,6 @@ import Nav from "@/components/Nav"
 import HeroSection from "@/components/HeroSection"
 import TrackRecord from "@/components/TrackRecord"
 import AccumulationSection from "@/components/AccumulationSection"
-import FeaturesBento from "@/components/FeaturesBento"
 import GexSection from "@/components/GexSection"
 import Pricing from "@/components/Pricing"
 import EmailCapture from "@/components/EmailCapture"
@@ -41,7 +40,6 @@ export default function Home() {
       <HeroSection />
 <div className="border-t border-white/[0.05]"><TrackRecord /></div>
       <div className="border-t border-white/[0.05]"><AccumulationSection /></div>
-      <div className="border-t border-white/[0.05]"><FeaturesBento /></div>
       <div className="border-t border-white/[0.05]"><GexSection /></div>
       {/* Mid-page CTA */}
       <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
