@@ -204,6 +204,18 @@ export default function ScannerPage() {
   })
   const [wlInput, setWlInput] = useState("")
   const [soundEnabled, setSoundEnabled] = useState(true)
+  const [marketOpen, setMarketOpen] = useState(false)
+  useEffect(() => {
+    const check = () => {
+      const et = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }))
+      const day = et.getDay()
+      const mins = et.getHours() * 60 + et.getMinutes()
+      setMarketOpen(day >= 1 && day <= 5 && mins >= 570 && mins < 960)
+    }
+    check()
+    const id = setInterval(check, 30000)
+    return () => clearInterval(id)
+  }, [])
   const audioCtxRef = useRef<AudioContext | null>(null)
   const prevTradeIdsRef = useRef<Set<number>>(new Set())
   const [showFilters, setShowFilters] = useState(false)
@@ -471,23 +483,24 @@ export default function ScannerPage() {
     }
   })()
 
-  const iconCls = "w-5 h-5"
-  const sideBtn = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-lg transition-all cursor-pointer ${active ? "bg-white/[0.08] text-white" : "text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`
-  const sideCircle = (active: boolean) => `w-9 h-9 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.12] text-white" : "bg-white/[0.04] text-white/40 hover:text-white/90 hover:bg-white/[0.08]"}`
+  const iconCls = "w-[22px] h-[22px]"
+  const sideBtn = (active: boolean) => `w-14 h-14 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${active ? "bg-white/[0.1] text-white" : "text-white/40 hover:text-white/80 hover:bg-white/[0.06]"}`
+  const sideCircle = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.14] text-white" : "bg-white/[0.05] text-white/45 hover:text-white/90 hover:bg-white/[0.1]"}`
 
   return (
     <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
 
       {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[56px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+      <nav className="fixed left-0 top-0 h-full w-[68px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
         {/* Logo */}
         <a href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
-          <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain" />
+          <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="w-8 h-8 object-contain" />
         </a>
 
         {/* Main nav */}
         <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")} title="Flow Scanner">
           <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
+          <span className="text-[10px] font-medium tracking-wider text-white/50">Flow</span>
         </button>
         <button
           onClick={() => canAccessGamma ? setActivePage("heatmap") : setShowUpgradeModal(true)}
@@ -495,10 +508,12 @@ export default function ScannerPage() {
           title={canAccessGamma ? "GEX Heatmap" : "Upgrade for GEX"}
         >
           <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-          {!canAccessGamma && <span className="absolute -top-0.5 -right-0.5 text-[8px] font-bold text-[#48DEFF] bg-[#48DEFF]/15 px-1 rounded">NEW</span>}
+          <span className="text-[10px] font-medium tracking-wider text-white/50">GEX</span>
+          {<span className="absolute -top-0.5 -right-0.5 text-[8px] font-bold text-[#48DEFF] bg-[#48DEFF]/20 px-1.5 py-0.5 rounded-md">NEW</span>}
         </button>
         <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")} title="Watchlist">
           <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
+          <span className="text-[10px] font-medium tracking-wider text-white/50">Watch</span>
         </button>
 
         <div className="w-6 h-px bg-white/[0.06] my-1" />
@@ -506,149 +521,228 @@ export default function ScannerPage() {
         {/* Filters */}
         <button onClick={() => setShowFilters(true)} className={sideBtn(showFilters)} title="Filters">
           <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" d="M3 4h18M6 8h12M9 12h6" /></svg>
+          <span className="text-[10px] font-medium tracking-wider text-white/50">Filters</span>
         </button>
 
+        {/* Market status — pinned to bottom */}
+        <div className="mt-auto flex flex-col items-center gap-1 pt-3 pb-2 w-full border-t border-white/[0.06]" title={marketOpen ? "Market open" : "Market closed"}>
+          <style>{`@keyframes pb-ping { 75%, 100% { transform: scale(2); opacity: 0; } } .pb-dot-ping { animation: pb-ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }`}</style>
+          <div style={{ position: "relative", width: 8, height: 8 }}>
+            <div className={marketOpen ? "pb-dot-ping" : ""} style={{ position: "absolute", inset: 0, borderRadius: "50%", background: marketOpen ? "#22c55e" : "#ef4444", opacity: 0.4 }} />
+            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: marketOpen ? "#22c55e" : "#ef4444" }} />
+          </div>
+          <span style={{ fontSize: 8, fontFamily: "monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: marketOpen ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.25)" }}>
+            {marketOpen ? "OPEN" : "CLOSED"}
+          </span>
+        </div>
+
         {/* Bottom circle buttons */}
-        <div className="mt-auto flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2">
           <button onClick={() => setSoundEnabled(!soundEnabled)} className={sideCircle(soundEnabled)} title={soundEnabled ? "Sound on" : "Sound off"}>
             {soundEnabled ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             )}
           </button>
           <a href="/account" className={sideCircle(false)} title="Account">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
           </a>
         </div>
       </nav>
 
       {/* ── MAIN CONTENT ── */}
-      <div className="ml-[56px] flex flex-col h-screen overflow-hidden flex-1">
+      <div className="ml-[68px] flex flex-col h-screen overflow-hidden flex-1">
 
       {activePage === "heatmap" ? ((() => {
-        const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
-        const netGex = gexData ? gexData.strikes.reduce((sum, strike) => {
-          const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
-          const row = gexData.matrix[sk] || {}
-          return sum + Object.values(row).reduce((rs, c) => rs + c.net_gex, 0)
-        }, 0) : 0
-        const todayStr = new Date().toISOString().slice(0, 10)
-        const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
-        return (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
-          {/* Metrics header */}
-          <div className="flex items-center px-5 py-3 gap-8 border-b border-[#35343F] flex-shrink-0">
-            <div className="flex items-center gap-4">
-              <div>
-                <div className="text-[9px] font-bold text-[#3D4D63] tracking-[0.15em] uppercase">GEX Heatmap</div>
-                <div className="text-[10px] text-[#4A5A72]">Gamma Exposure by Strike</div>
-              </div>
-              <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
-                className="bg-[#161B24] border border-[#1E2A3A] text-white text-[15px]rounded-md px-3 py-1.5 font-semibold cursor-pointer focus:outline-none focus:border-[#FF8A00]/50">
-                {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            {gexData && (
-              <div className="flex items-center gap-6 ml-4">
-                <div>
-                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Spot</div>
-                  <div className="text-sm font-bold text-white">${gexData.spot.toFixed(2)}</div>
-                </div>
-                {gexData.zero_gamma_strike != null && (
-                  <div>
-                    <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Zero Gamma</div>
-                    <div className="text-sm font-bold text-[#FF8A00]">${gexData.zero_gamma_strike.toFixed(2)}</div>
-                  </div>
-                )}
-                <div>
-                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Net GEX</div>
-                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
-                    {netGex >= 0 ? "+" : ""}{fmtGex(netGex)}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[9px] text-[#3D4D63] uppercase tracking-widest mb-0.5">Dominant</div>
-                  <div className={`text-sm font-bold ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
-                    {netGex >= 0 ? "CALL GEX" : "PUT GEX"}
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="ml-auto flex items-center gap-4 text-[9px] text-[#4A5A72]">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#00E85A]/50 border border-[#00E85A]/30" /> Call</div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-[#FF605D]/50 border border-[#FF605D]/30" /> Put</div>
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-white" /> Spot</div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 border-t-2 border-[#a855f7]" /> Zero &gamma;</div>
-            </div>
-          </div>
-          {/* GEX table */}
-          <div className="flex-1 overflow-auto">
-            {gexLoading ? (
-              <div className="flex items-center justify-center h-full text-[#3D4D63] text-sm">Loading heatmap...</div>
-            ) : gexError ? (
-              <div className="flex items-center justify-center h-full text-[#FF605D] text-sm">{gexError}</div>
-            ) : gexData ? (
-              <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${gexData.expirations.length}, 1fr) 80px` }}>
-                {/* Column headers */}
-                <div className="sticky top-0 z-10 px-3 py-1 text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-r border-b border-[#35343F]" style={{ background: "#242428" }}>Strike</div>
-                {gexData.expirations.map(exp => {
-                  const isToday = exp === todayStr
-                  return (
-                    <div key={exp} className="sticky top-0 z-10 px-2 py-1 text-center border-r border-b border-[#35343F]" style={{ background: "#242428" }}>
-                      <div className={`text-[8px] font-semibold tracking-[0.06em] uppercase ${isToday ? "text-[#FF8A00]" : "text-white/90"}`}>
-                        {isToday ? "TODAY" : fmtExp(exp)}
-                      </div>
-                    </div>
-                  )
-                })}
-                <div className="sticky top-0 z-10 px-3 py-1 text-right text-[8px] font-semibold text-white/50 tracking-[0.1em] uppercase border-b border-[#35343F]" style={{ background: "#242428", borderLeft: "1px solid #1E2A3A" }}>Total</div>
-                {/* Data rows */}
-                {(() => {
-                  const strikes = [...gexData.strikes].reverse()
-                  const atmStrike = strikes.reduce((best, s) => Math.abs(s - gexData.spot) < Math.abs(best - gexData.spot) ? s : best, strikes[0])
-                  const zgStrike = gexData.zero_gamma_strike != null ? strikes.reduce((best, s) => Math.abs(s - gexData.zero_gamma_strike!) < Math.abs(best - gexData.zero_gamma_strike!) ? s : best, strikes[0]) : null
-                  return strikes.map(strike => {
-                  const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
-                  const row = gexData.matrix[sk] || {}
-                  const rowTotal = Object.values(row).reduce((s, c) => s + c.net_gex, 0)
-                  const isAtm = strike === atmStrike
-                  const isZg = strike === zgStrike
-                  const lineShadow = isZg ? "inset 0 2px 0 #a855f7" : isAtm ? "inset 0 1px 0 rgba(255,255,255,0.45)" : "none"
-                  return [
-                    <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-[#2D2C38]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.04)" : "#0B0F1A", position: "sticky", left: 0, zIndex: 5, boxShadow: lineShadow, ...(isAtm ? { borderLeft: "3px solid rgba(255,255,255,0.7)" } : {}) }}>
-                      {isAtm && <span className="text-[9px] font-bold text-white/90 mr-0.5">● SPOT</span>}
-                      {isZg && <span className="text-[9px] font-bold text-[#a855f7] mr-0.5">ZG</span>}
-                      <span className={`text-[11px] font-mono font-semibold ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-[#C4CDD9]"}`}>{strike}</span>
-                    </div>,
-                    ...gexData.expirations.map(exp => {
-                      const cell = row[exp]
-                      const gex = cell?.net_gex ?? 0
-                      const intensity = gexData.max_abs_gex > 0 ? Math.min(0.85, 0.08 + 0.77 * Math.abs(gex) / gexData.max_abs_gex) : 0
-                      const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(34,197,94,${intensity})` : `rgba(239,68,68,${intensity})`
-                      return (
-                        <div key={`${strike}-${exp}`} className="border-r border-b border-[#2D2C38] flex items-center justify-center" style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.04)" : bg, minHeight: 24, boxShadow: lineShadow }} title={`${strike} / ${exp}: ${fmtGex(gex)}`}>
-                          {gex !== 0 && (
-                            <span className={`text-[10px] font-mono font-semibold ${intensity > 0.4 ? "text-white" : gex > 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
-                              {fmtGex(gex)}
-                            </span>
-                          )}
-                        </div>
-                      )
-                    }),
-                    <div key={`t-${strike}`} className="px-3 flex items-center justify-end border-b border-[#2D2C38]" style={{ minHeight: 24, borderLeft: "1px solid #1E2A3A", ...(isAtm ? { background: "rgba(255,255,255,0.04)" } : {}), boxShadow: lineShadow }}>
-                      <span className={`text-[11px] font-mono font-bold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
-                        {rowTotal !== 0 ? fmtGex(rowTotal) : "—"}
-                      </span>
-                    </div>,
-                  ]
-                })})()}
-              </div>
-            ) : null}
-          </div>
+  const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
+  const netGex = gexData ? gexData.strikes.reduce((sum: number, strike: number) => {
+    const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
+    const row = gexData.matrix[sk] || {}
+    return sum + Object.values(row).reduce((rs: number, c: any) => rs + c.net_gex, 0)
+  }, 0) : 0
+  const todayStr = new Date().toISOString().slice(0, 10)
+  const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
+
+  const strikeTotals = gexData ? [...gexData.strikes].reverse().map(strike => {
+    const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
+    const row = gexData.matrix[sk] || {}
+    return { strike, total: Object.values(row).reduce((s: number, c: any) => s + c.net_gex, 0) }
+  }) : []
+  const maxStrikeTotal = Math.max(...strikeTotals.map(s => Math.abs(s.total)), 1)
+
+  const callWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike > gexData.spot).sort((a, b) => b.total - a.total)[0] : null
+  const putWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike < gexData.spot).sort((a, b) => b.total - a.total)[0] : null
+
+  return (
+  <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F14" }}>
+
+    <div className="flex items-center px-5 h-12 gap-8 border-b border-white/[0.06] flex-shrink-0" style={{ background: "#10141B" }}>
+
+      <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
+        className="bg-transparent border border-white/[0.1] text-white text-[14px] rounded-md px-2.5 py-1 font-semibold cursor-pointer focus:outline-none focus:border-white/[0.25] font-mono">
+        {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
+      </select>
+
+      <div className="w-px h-5 bg-white/[0.08]" />
+
+      {gexData && (<>
+        <div>
+          <span className="text-[10px] text-white/30 mr-2">SPOT</span>
+          <span className="text-[14px] font-semibold text-white font-mono">{gexData.spot.toFixed(2)}</span>
         </div>
-        )
-      })()) : activePage === "watchlist" ? (
+
+        {gexData.zero_gamma_strike != null && (
+          <div>
+            <span className="text-[10px] text-[#a855f7]/60 mr-2">ZERO &gamma;</span>
+            <span className="text-[14px] font-semibold text-[#a855f7] font-mono">{gexData.zero_gamma_strike.toFixed(0)}</span>
+          </div>
+        )}
+
+        <div>
+          <span className="text-[10px] text-white/30 mr-2">NET</span>
+          <span className={`text-[14px] font-semibold font-mono ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
+            {netGex >= 0 ? "+" : ""}{fmtGex(netGex)}
+          </span>
+        </div>
+
+        <div className="w-px h-5 bg-white/[0.08]" />
+
+        {callWall && (
+          <div>
+            <span className="text-[10px] text-[#00E85A]/50 mr-2">CALL WALL</span>
+            <span className="text-[14px] font-semibold text-[#00E85A] font-mono">{callWall.strike}</span>
+            <span className="text-[10px] text-white/20 ml-1.5 font-mono">{((callWall.strike - gexData.spot) / gexData.spot * 100).toFixed(1)}%</span>
+          </div>
+        )}
+
+        {putWall && (
+          <div>
+            <span className="text-[10px] text-[#FF605D]/50 mr-2">PUT WALL</span>
+            <span className="text-[14px] font-semibold text-[#FF605D] font-mono">{putWall.strike}</span>
+            <span className="text-[10px] text-white/20 ml-1.5 font-mono">-{((gexData.spot - putWall.strike) / gexData.spot * 100).toFixed(1)}%</span>
+          </div>
+        )}
+
+        <div className="w-px h-5 bg-white/[0.08]" />
+
+        <span className={`text-[12px] font-semibold ${netGex >= 0 ? "text-[#00E85A]/70" : "text-[#FF605D]/70"}`}>
+          {netGex >= 0 ? "POSITIVE" : "NEGATIVE"} &gamma;
+        </span>
+
+        <div className="ml-auto flex items-center gap-4 text-[10px] text-white/30">
+          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#00E85A]/40" /> Call</div>
+          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#FF605D]/40" /> Put</div>
+          <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/60" /> Spot</div>
+          <div className="flex items-center gap-1.5"><div className="w-2.5 h-0.5 bg-[#a855f7]" /> Zero &gamma;</div>
+        </div>
+      </>)}
+    </div>
+
+    <div className="flex-1 flex overflow-hidden">
+
+      <div className="flex-1 overflow-auto">
+        {gexLoading ? (
+          <div className="flex items-center justify-center h-full text-white/20 text-sm">Loading...</div>
+        ) : gexError ? (
+          <div className="flex items-center justify-center h-full text-[#FF605D] text-sm">{gexError}</div>
+        ) : gexData ? (
+          <div style={{ display: "grid", gridTemplateColumns: `90px repeat(${gexData.expirations.length}, 1fr) 72px` }}>
+            <div className="sticky top-0 z-10 px-2 py-1 text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase border-r border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>Strike</div>
+            {gexData.expirations.map((exp: string) => {
+              const isToday = exp === todayStr
+              return (
+                <div key={exp} className="sticky top-0 z-10 px-1 py-1 text-center border-r border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>
+                  <div className={`text-[9px] font-semibold tracking-wider ${isToday ? "text-[#FF8A00]" : "text-white/30"}`}>
+                    {isToday ? "TODAY" : fmtExp(exp)}
+                  </div>
+                </div>
+              )
+            })}
+            <div className="sticky top-0 z-10 px-2 py-1 text-right text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase border-b border-white/[0.04]" style={{ background: "#0B0F14", borderLeft: "1px solid rgba(255,255,255,0.06)" }}>Total</div>
+
+            {(() => {
+              const strikes = [...gexData.strikes].reverse()
+              const atmStrike = strikes.reduce((best: number, s: number) => Math.abs(s - gexData.spot) < Math.abs(best - gexData.spot) ? s : best, strikes[0])
+              const zgStrike = gexData.zero_gamma_strike != null ? strikes.reduce((best: number, s: number) => Math.abs(s - gexData.zero_gamma_strike!) < Math.abs(best - gexData.zero_gamma_strike!) ? s : best, strikes[0]) : null
+              return strikes.map((strike: number) => {
+                const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
+                const row = gexData.matrix[sk] || {}
+                const rowTotal = Object.values(row).reduce((s: number, c: any) => s + c.net_gex, 0)
+                const isAtm = strike === atmStrike
+                const isZg = strike === zgStrike
+                return [
+                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-white/[0.03]"
+                    style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.035)" : "transparent", position: "sticky", left: 0, zIndex: 5,
+                    ...(isAtm ? { borderLeft: "2px solid rgba(255,255,255,0.5)" } : isZg ? { borderLeft: "2px solid #a855f7" } : {}) }}>
+                    {isAtm && <span className="text-[8px] font-bold text-white/60">SPT</span>}
+                    {isZg && !isAtm && <span className="text-[8px] font-bold text-[#a855f7]/70">ZG</span>}
+                    <span className={`text-[11px] font-mono font-medium ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-white/40"}`}>{strike}</span>
+                  </div>,
+
+                  ...gexData.expirations.map((exp: string) => {
+                    const cell = row[exp]
+                    const gex = cell?.net_gex ?? 0
+                    const callOi = cell?.call_oi ?? 0
+                    const putOi = cell?.put_oi ?? 0
+                    const intensity = gexData.max_abs_gex > 0 ? Math.min(0.8, 0.06 + 0.74 * Math.abs(gex) / gexData.max_abs_gex) : 0
+                    const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(0,232,90,${intensity})` : `rgba(255,96,93,${intensity})`
+                    return (
+                      <div key={`${strike}-${exp}`}
+                        className="border-r border-b border-white/[0.03] flex items-center justify-center"
+                        style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24 }}
+                        title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
+                        {gex !== 0 && (
+                          <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#00E85A]/80" : "text-[#FF605D]/80"}`}>
+                            {fmtGex(gex)}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  }),
+
+                  <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.03]"
+                    style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(isAtm ? { background: "rgba(255,255,255,0.035)" } : {}) }}>
+                    <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
+                      {rowTotal !== 0 ? fmtGex(rowTotal) : ""}
+                    </span>
+                  </div>,
+                ]
+              })
+            })()}
+          </div>
+        ) : null}
+      </div>
+
+      {gexData && (
+        <div className="w-[120px] border-l border-white/[0.06] overflow-y-auto flex-shrink-0" style={{ background: "#0B0F14" }}>
+          <div className="sticky top-0 z-10 px-2 py-1 text-[9px] font-semibold text-white/20 tracking-wider uppercase text-center border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>
+            Profile
+          </div>
+          {strikeTotals.map(({ strike, total }) => {
+            const isAtm = gexData && Math.abs(strike - gexData.spot) <= (gexData.strikes.length > 1 ? Math.abs(gexData.strikes[1] - gexData.strikes[0]) / 2 : 1)
+            const barPct = Math.min(Math.abs(total) / maxStrikeTotal * 100, 100)
+            const isPos = total >= 0
+            return (
+              <div key={`gp-${strike}`} className="relative border-b border-white/[0.03]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.025)" : "transparent" }}>
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/[0.04]" />
+                {total !== 0 && (
+                  <div className="absolute top-[4px] bottom-[4px]" style={{
+                    [isPos ? "left" : "right"]: "50%",
+                    width: `${Math.max(barPct * 0.48, 2)}%`,
+                    background: isPos ? "rgba(0,232,90,0.3)" : "rgba(255,96,93,0.3)",
+                    borderRadius: isPos ? "0 2px 2px 0" : "2px 0 0 2px",
+                  }} />
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  </div>
+  )
+})()) : activePage === "watchlist" ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
           {/* Watchlist header */}
           <div className="px-5 py-3 border-b border-[#35343F] flex items-center gap-3 flex-shrink-0">
@@ -727,7 +821,7 @@ export default function ScannerPage() {
       {/* ── HEADER ── */}
       <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-black border-[1.5px] border-white/[0.06] rounded-xl px-3.5 gap-2 focus-within:border-[#48DEFF] focus-within:shadow-[0_0_0_3px_rgba(72,222,255,0.08)] transition-all" style={{ maxWidth: 280 }}>
+          <div className="flex items-center bg-white/[0.08] border-[1.5px] border-white/[0.15] rounded-xl px-3.5 gap-2 focus-within:border-white/[0.3] focus-within:shadow-none transition-all" style={{ maxWidth: 280 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input
               type="text"
@@ -740,7 +834,7 @@ export default function ScannerPage() {
             <span className="text-[9px] text-white/40 border border-white/[0.15] rounded px-1.5 py-0.5 font-mono flex-shrink-0">ENTER</span>
           </div>
           <div className="w-px h-7 bg-white/[0.06]" />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white border border-white/[0.1] hover:border-white/[0.2] transition-all" style={{ background: "linear-gradient(180deg, #1a1a1a, #000)" }}>
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white border border-white/[0.15] hover:border-white/[0.3] hover:bg-white/[0.12] transition-all" style={{ background: "rgba(255,255,255,0.08)" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
             Filters
             {activeFilterCount > 0 && <span className="bg-[#FF605D] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
@@ -756,8 +850,10 @@ export default function ScannerPage() {
       {focusTicker && (
         <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#23222D' }}>
           <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
-            className="flex items-center gap-1.5 bg-[#48DEFF]/10 border border-[#48DEFF]/30 rounded-full px-3 py-1 text-[#48DEFF] text-xs font-bold hover:bg-[#48DEFF]/20">
-            {focusTicker} <span className="text-[#48DEFF]/50">&times;</span>
+            className="group flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-md px-2.5 py-1 text-white text-[11px] font-mono font-semibold tracking-wider hover:border-white/[0.2] transition-colors">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/40"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
+            <span>{focusTicker}</span>
+            <span className="text-white/30 group-hover:text-[#FF605D] transition-colors text-[13px] leading-none">&times;</span>
           </button>
           {focusStrike && (
             <button onClick={() => setFocusStrike(null)}
@@ -924,7 +1020,7 @@ export default function ScannerPage() {
                 const t = filtered[vRow.index]
                 if (!t || t.mm_suspected) return null
                 const isNew = newTradeIds.has(t.id)
-                const rowStyle = isNew ? { backgroundColor: "rgba(96,165,250,0.10)" } : getRowStyle(t)
+                const rowStyle = getRowStyle(t)
                 return (
                   <tr
                     key={vRow.key}

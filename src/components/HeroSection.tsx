@@ -251,7 +251,7 @@ export default function HeroSection() {
       {/* Scanner image */}
       <motion.div
         {...fadeUp(0.55)}
-        className="relative z-10 max-w-6xl mx-auto px-6 pb-0"
+        className="relative z-10 max-w-[1400px] mx-auto px-4 pb-0"
       >
         <div className="relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.7)]">
           <Image
@@ -263,7 +263,11 @@ export default function HeroSection() {
             priority
           />
           <div
-            className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
+            className="absolute top-0 left-0 right-0 h-32 pointer-events-none z-10"
+            style={{ background: 'linear-gradient(to bottom, #080c10 0%, transparent 100%)' }}
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
             style={{ background: 'linear-gradient(to top, #080c10 0%, transparent 100%)' }}
           />
         </div>
