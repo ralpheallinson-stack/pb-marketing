@@ -251,7 +251,7 @@ export default function HeroSection() {
       {/* Scanner image */}
       <motion.div
         {...fadeUp(0.55)}
-        className="relative z-10 max-w-[1400px] mx-auto px-4 pb-0"
+        className="relative z-10 max-w-[1120px] mx-auto px-4 pb-0"
       >
         <div className="relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.7)]">
           <Image

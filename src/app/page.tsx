@@ -1,8 +1,8 @@
 import Nav from "@/components/Nav"
 import HeroSection from "@/components/HeroSection"
 import TrackRecord from "@/components/TrackRecord"
-import AccumulationSection from "@/components/AccumulationSection"
 import GexSection from "@/components/GexSection"
+import FeaturesSection from "@/components/FeaturesSection"
 import Pricing from "@/components/Pricing"
 import EmailCapture from "@/components/EmailCapture"
 import FAQ from "@/components/FAQ"
@@ -38,9 +38,9 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: appSchema }} />
       <Nav />
       <HeroSection />
-<div className="border-t border-white/[0.05]"><TrackRecord /></div>
-      <div className="border-t border-white/[0.05]"><AccumulationSection /></div>
+      <div className="border-t border-white/[0.05]"><FeaturesSection /></div>
       <div className="border-t border-white/[0.05]"><GexSection /></div>
+      <div className="border-t border-white/[0.05]"><TrackRecord /></div>
       {/* Mid-page CTA */}
       <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
         <div className="max-w-lg mx-auto text-center">
@@ -48,7 +48,7 @@ export default function Home() {
             Grade A signals. Verified track record. Free to start.
           </p>
           <a href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
-            className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#F97316]/90 text-white font-bold px-8 py-4 rounded-full text-base transition-all">
+            className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-[#0a0d12] font-bold px-8 py-4 rounded-full text-base transition-all">
             Start Free 7-Day Trial
           </a>
           <p className="text-white/30 text-xs mt-3">
@@ -56,8 +56,8 @@ export default function Home() {
           </p>
         </div>
       </section>
-      <div className="border-t border-white/[0.05]"><Pricing /></div>
       <div className="border-t border-white/[0.05]"><EmailCapture /></div>
+      <div className="border-t border-white/[0.05]"><Pricing /></div>
       <div className="border-t border-white/[0.05]"><FAQ /></div>
       <Footer />
     </>
