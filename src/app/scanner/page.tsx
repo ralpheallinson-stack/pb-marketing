@@ -358,7 +358,7 @@ export default function ScannerPage() {
           const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
           lastTradeIdRef.current = newMaxId
           setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
-          playBlip()
+          if (data.trades.some(matchesFilterRef.current)) playBlip()
         }
         return
       }
@@ -369,7 +369,7 @@ export default function ScannerPage() {
       const data: ApiResponse = await res.json()
       if (data.error) return
       const incoming = data.trades || []
-      if (pg === 0 && prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id))) {
+      if (pg === 0 && prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
         playBlip()
       }
       prevTradeIdsRef.current = new Set(incoming.map(tr => tr.id))
@@ -398,7 +398,7 @@ export default function ScannerPage() {
       intervalRef.current = setInterval(() => {
         setLive(isMarketOpen())
         fetchData({ pageNum: 0 })
-      }, 5000)
+      }, 3000)
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [page, fetchData])
@@ -420,7 +420,7 @@ export default function ScannerPage() {
     setActiveFilterCount(c)
   }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex])
 
-  const filtered = useMemo(() => trades.filter(t => {
+  const matchesFilter = useCallback((t: Trade) => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
     if (focusTicker && t.symbol !== focusTicker) return false
     if (focusStrike && String(t.strike) !== focusStrike) return false
@@ -438,7 +438,13 @@ export default function ScannerPage() {
     if (filterMinContracts > 0 && (t.contracts ?? 0) < filterMinContracts) return false
     if (filterMinVolOi > 0 && ((t.vol_oi ?? 0) * 10) < filterMinVolOi) return false
     return true
-  }), [trades, search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
+  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
+
+  // Ref so fetchData doesn't rebind on filter changes
+  const matchesFilterRef = useRef(matchesFilter)
+  useEffect(() => { matchesFilterRef.current = matchesFilter }, [matchesFilter])
+
+  const filtered = useMemo(() => trades.filter(matchesFilter), [trades, matchesFilter])
 
   const calls = filtered.filter(t => t.opt_type === "C")
   const puts = filtered.filter(t => t.opt_type === "P")
@@ -477,7 +483,7 @@ export default function ScannerPage() {
   const sideCircle = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.14] text-white" : "bg-white/[0.05] text-white/45 hover:text-white/90 hover:bg-white/[0.1]"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
 
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[68px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
@@ -1018,23 +1024,23 @@ export default function ScannerPage() {
                     className={`border-b border-white/[0.04] ${rowStyle.backgroundColor ? '' : 'hover:bg-white/[0.05]'}`}
                     style={rowStyle}
                   >
-                    <td className="px-3 py-2 text-white/50 text-[12px] font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
+                    <td className="px-3 py-2 text-white/50 text-[13px] font-medium font-mono whitespace-nowrap">{t.time ?? t.date_time?.slice(11, 16) ?? "—"}</td>
                     <td className="px-2 py-2">
                       <button onClick={() => { setFocusTicker(t.symbol); setFocusStrike(null); setFocusExpiry(null) }}
                         className="text-left group">
-                        <div className="font-semibold text-[14px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
+                        <div className="font-semibold text-[15px] text-white leading-none group-hover:text-[#48DEFF] transition-colors">{t.symbol}</div>
                         {t.sector && <div className="text-white/25 text-[10px] mt-0.5">{t.sector}</div>}
                       </button>
                     </td>
                     <td className="px-2 py-2">
                       <button onClick={() => { setFocusExpiry(t.expiration); setFocusTicker(cur => cur ?? t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[12px] font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[13px] font-medium font-mono">
                         {fmtExpiry(t.expiration)}
                       </button>
                     </td>
                     <td className="px-2 py-2 text-right">
                       <button onClick={() => { setFocusStrike(String(t.strike)); setFocusTicker(cur => cur ?? t.symbol) }}
-                        className="text-white hover:text-[#48DEFF] transition-colors text-[12px] font-mono">
+                        className="text-white hover:text-[#48DEFF] transition-colors text-[13px] font-medium font-mono">
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
@@ -1047,9 +1053,9 @@ export default function ScannerPage() {
                     <td className={`px-2 py-2 text-center text-[12px] font-medium ${bsColor(t.trade_direction)}`}>
                       {bsLabel(t.trade_direction)}
                     </td>
-                    <td className="px-2 py-2 text-right text-white text-[12px] font-mono">{t.spot_fmt}</td>
-                    <td className={`px-2 py-2 text-right text-[12px] font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
-                    <td className="px-2 py-2 text-right text-white/90 text-[12px] font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
+                    <td className="px-2 py-2 text-right text-white text-[13px] font-medium font-mono">{t.spot_fmt}</td>
+                    <td className={`px-2 py-2 text-right text-[13px] font-medium font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+                    <td className="px-2 py-2 text-right text-white/90 text-[13px] font-medium font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
                     <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
@@ -1058,10 +1064,10 @@ export default function ScannerPage() {
                     }`}>
                       {t.flow_type || "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-[12px] font-mono text-white/80">
+                    <td className="px-2 py-2 text-right text-[13px] font-medium font-mono text-white/80">
                       {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
                     </td>
-                    <td className="px-2 py-2 text-right text-white/80 text-[12px] font-mono">
+                    <td className="px-2 py-2 text-right text-white/80 text-[13px] font-medium font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
                     </td>
                     <td className="px-2 py-2">
