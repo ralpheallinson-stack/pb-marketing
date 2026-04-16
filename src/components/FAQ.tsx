@@ -34,6 +34,15 @@ export default function FAQ() {
 
   return (
     <section className="bg-[#0E1117] w-full py-24 px-6" id="faq">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(f => ({
+          "@type": "Question",
+          "name": f.q,
+          "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        }))
+      }) }} />
       <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="max-w-3xl mx-auto pt-24">

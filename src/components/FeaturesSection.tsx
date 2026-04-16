@@ -19,7 +19,7 @@ export default function FeaturesSection() {
           <p className="text-center text-[9px] font-mono text-white/20 tracking-[0.2em] uppercase mb-8">
             Tracked Symbols
           </p>
-          <div className="flex items-center justify-center gap-24">
+          <div className="flex items-center justify-center flex-wrap gap-8 md:gap-16 lg:gap-24">
             {tickers.map((t, i) => (
               <motion.div
                 key={t.sym}

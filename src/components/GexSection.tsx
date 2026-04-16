@@ -70,10 +70,10 @@ export default function GexSection() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(16,185,129,0.12),transparent_50%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_75%,rgba(16,185,129,0.06),transparent_45%)] pointer-events-none" />
 
-          <div className="relative m-12 min-h-[420px]">
+          <div className="relative m-4 sm:m-8 md:m-12 min-h-[280px] sm:min-h-[360px] md:min-h-[420px]">
             <div className="absolute inset-0 rounded-2xl border border-white/[0.06] bg-[rgba(22,27,36,0.5)]" />
 
-            <div className="absolute top-8 bottom-8 left-[10%] right-[10%] rounded-2xl border border-white/10 overflow-hidden bg-[#161B24] shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-10">
+            <div className="absolute top-4 bottom-4 left-4 right-4 md:top-8 md:bottom-8 md:left-[10%] md:right-[10%] rounded-2xl border border-white/10 overflow-hidden bg-[#161B24] shadow-[0_20px_60px_rgba(0,0,0,0.5)] z-10">
               <Image
                 src="/images/gex-heatmap.png"
                 alt="GEX Heatmap — live dealer gamma exposure"

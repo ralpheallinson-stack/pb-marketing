@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Teko, Bricolage_Grotesque, Barlow_Condensed, Bebas_Neue } from "next/font/google"
 import "./globals.css"
 
@@ -30,12 +30,20 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 })
 
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#0a0d12',
+}
+
 export const metadata: Metadata = {
   title: {
     default: "Options Flow Scanner | Profit Builders",
     template: "%s | Profit Builders",
   },
-  description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 174,000+ signals tracked.",
+  description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 208,000+ signals tracked.",
   metadataBase: new URL("https://profitbuilders.org"),
   alternates: { canonical: "https://profitbuilders.org" },
   openGraph: {
@@ -44,9 +52,9 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Profit Builders",
     url: "https://profitbuilders.org",
-    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Scanner" }],
+    images: [{ url: "/images/og-v4.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Scanner" }],
   },
-  twitter: { card: "summary_large_image", site: "@ProfitBldrs", images: ["/images/og-default.png"] },
+  twitter: { card: "summary_large_image", site: "@ProfitBldrs", images: ["/images/og-v4.png"] },
   robots: { index: true, follow: true },
 }
 
@@ -55,7 +63,7 @@ const orgSchema = JSON.stringify({
   "@type": "Organization",
   "name": "Profit Builders",
   "url": "https://profitbuilders.org",
-  "logo": "https://profitbuilders.org/images/og-default.png",
+  "logo": "https://profitbuilders.org/images/pb-logo.png",
   "sameAs": ["https://x.com/ProfitBldrs"]
 })
 

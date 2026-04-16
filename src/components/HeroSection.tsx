@@ -167,7 +167,7 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-12 text-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-5 pt-24 md:pt-32 pb-12 text-center">
 
         {/* Eyebrow */}
         <motion.div {...fadeUp(0)} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.03] px-4 py-1 mb-8">
