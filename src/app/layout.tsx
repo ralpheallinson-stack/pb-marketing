@@ -44,14 +44,14 @@ export const metadata: Metadata = {
     template: "%s | Profit Builders",
   },
   description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 208,000+ signals tracked.",
-  metadataBase: new URL("https://profitbuilders.org"),
-  alternates: { canonical: "https://profitbuilders.org" },
+  metadataBase: new URL("https://profitbuilders.io"),
+  alternates: { canonical: "https://profitbuilders.io" },
   openGraph: {
     title: "Options Flow Scanner | Profit Builders",
     description: "Real-time institutional options flow. Every signal tracked publicly.",
     type: "website",
     siteName: "Profit Builders",
-    url: "https://profitbuilders.org",
+    url: "https://profitbuilders.io",
     images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Scanner" }],
   },
   twitter: { card: "summary_large_image", site: "@ProfitBldrs", images: ["/images/og-card.png"] },
@@ -62,8 +62,8 @@ const orgSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Profit Builders",
-  "url": "https://profitbuilders.org",
-  "logo": "https://profitbuilders.org/images/pb-logo.png",
+  "url": "https://profitbuilders.io",
+  "logo": "https://profitbuilders.io/images/pb-logo.png",
   "sameAs": ["https://x.com/ProfitBldrs"]
 })
 

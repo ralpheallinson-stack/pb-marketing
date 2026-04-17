@@ -44,7 +44,7 @@ Full disclosure: this is our platform. We're transparent about the bias, and we'
 
 The result: instead of 5,000+ raw prints per day, you see the 200-400 that passed conviction scoring. Less time filtering. More time evaluating actual setups.
 
-**Public track record.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.org/results](/results). That's 174,000+ signals with win/loss data, average returns, and monthly breakdowns. Grade A signals carry a 39.3% win rate across that sample. You can audit every one.
+**Public track record.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.io/results](/results). That's 174,000+ signals with win/loss data, average returns, and monthly breakdowns. Grade A signals carry a 39.3% win rate across that sample. You can audit every one.
 
 Most scanners ask you to trust their data quality on faith. We publish the receipts.
 
@@ -84,6 +84,6 @@ Unusual Whales has a limited free tier. Profit Builders has a [free scanner](/fr
 
 The best way to compare is to use both. Open UW's flow feed on one screen and PB's graded scanner on another. After a full trading session, count how many signals from each led to actionable setups.
 
-The data speaks for itself. [Start your free 7-day trial](https://profitbuilders.org) and see the difference grading makes.
+The data speaks for itself. [Start your free 7-day trial](https://profitbuilders.io) and see the difference grading makes.
 
 *For a full comparison of all five major flow scanners, see our [2026 scanner roundup](/blog/best-options-flow-scanner-2026).*

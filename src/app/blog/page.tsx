@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Learn Options Flow Trading",
   description:
     "Educational guides on reading institutional order flow, understanding the Greeks, and using AI-powered analysis to find high-conviction setups.",
-  alternates: { canonical: "https://profitbuilders.org/blog" },
+  alternates: { canonical: "https://profitbuilders.io/blog" },
 }
 
 export default function BlogIndex() {

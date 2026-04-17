@@ -30,7 +30,7 @@ export default function GexDashboardFrame() {
           </div>
           <div className="flex-1 mx-4">
             <div className="bg-white/[0.05] border border-white/[0.06] rounded-md px-3 py-1 text-center">
-              <span className="text-[11px] font-mono text-white/30">profitbuilders.org/scanner · GEX</span>
+              <span className="text-[11px] font-mono text-white/30">profitbuilders.io/scanner · GEX</span>
             </div>
           </div>
           <div className="flex items-center gap-1.5">

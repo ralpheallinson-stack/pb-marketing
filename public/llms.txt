@@ -1,0 +1,38 @@
+# Profit Builders — Institutional Options Flow Scanner
+> Real-time options flow tracking with conviction grading, accumulation detection, and GEX heatmaps.
+
+## What This Site Is
+Profit Builders is a SaaS platform that tracks institutional options flow in real time. The scanner monitors every US options trade via Polygon.io and grades signals by conviction (Grade A = highest, Grade B = standard). Features include sweep/block detection, accumulation tracking (repeated aggressive buys on the same contract), gamma exposure (GEX) heatmaps, and market maker identification.
+
+## Key Pages
+- [Homepage](https://profitbuilders.org/) — product overview, feature highlights, pricing
+- [Blog](https://profitbuilders.org/blog) — daily flow recaps, educational content on options flow
+- [Results](https://profitbuilders.org/results) — public track record of scanner signal outcomes
+- [Free Scanner](https://profitbuilders.org/free-scanner) — 15-minute delayed flow viewer, no login required
+- [Pricing](https://profitbuilders.org/pricing) — subscription tiers and features
+
+## Blog Content (updated daily)
+Daily institutional options flow recaps published after market close. Each post covers:
+- Total premium tracked and signal count
+- Top tickers by institutional flow
+- Notable Grade A signals (large blocks and sweeps)
+- Accumulation patterns (repeated aggressive prints on the same contract)
+- Prior signals that resolved (receipts with stock price movement)
+- Market context (VIX, sector breakdown, directional lean)
+
+## What Makes This Different From Competitors
+- Every signal graded by conviction (9 automated filters, not just premium size)
+- Accumulation detection (groups repeated prints on same contract)
+- Public track record of signal outcomes
+- GEX heatmaps showing dealer positioning by strike
+- Market maker identification to filter hedging noise
+
+## RSS Feed
+https://profitbuilders.org/rss.xml
+
+## Sitemap
+https://profitbuilders.org/sitemap.xml
+
+## Contact
+Website: https://profitbuilders.org
+Twitter/X: @ProfitBldrs

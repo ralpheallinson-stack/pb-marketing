@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "GEX Heatmap",
   description: "Real-time gamma exposure heatmap by strike and expiry. See dealer positioning, zero-gamma levels, and net GEX across 20 symbols.",
-  alternates: { canonical: "https://profitbuilders.org/heatmap" },
+  alternates: { canonical: "https://profitbuilders.io/heatmap" },
   robots: { index: false, follow: true },
 }
 

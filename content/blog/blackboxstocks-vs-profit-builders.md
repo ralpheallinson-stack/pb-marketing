@@ -44,7 +44,7 @@ Disclosure: this is our platform.
 
 On a typical day, 5,000+ institutional prints hit the tape. The grading system surfaces 200-400 that pass conviction scoring. That's the difference between staring at a wall of data and looking at a curated watchlist.
 
-**Public track record.** Every signal gets tracked with full P&L outcomes — wins and losses — at [profitbuilders.org/results](/results). That's 174,000+ signals with a 39.3% Grade A win rate, auditable by anyone. No cherry-picked screenshots. No "look at this winner we called." Just the full data set.
+**Public track record.** Every signal gets tracked with full P&L outcomes — wins and losses — at [profitbuilders.io/results](/results). That's 174,000+ signals with a 39.3% Grade A win rate, auditable by anyone. No cherry-picked screenshots. No "look at this winner we called." Just the full data set.
 
 This is the feature no competitor matches. Before you pay for any scanner, you should be able to answer: "What's the actual win rate?" With Profit Builders, you can.
 
@@ -78,6 +78,6 @@ At the same price point, the question is whether you get more value from people 
 
 At $99/month each, neither is a cheap tool. But they're paying for different things. BlackBoxStocks buys you a seat in a trading room with experienced moderators and broad data coverage. Profit Builders buys you a signal engine that filters institutional flow by conviction and proves its results publicly.
 
-If you're still building your flow-reading skills, BlackBoxStocks has real value. If you've done the learning and just want the highest-probability alerts with verified data behind them, [start your free 7-day trial](https://profitbuilders.org) and compare.
+If you're still building your flow-reading skills, BlackBoxStocks has real value. If you've done the learning and just want the highest-probability alerts with verified data behind them, [start your free 7-day trial](https://profitbuilders.io) and compare.
 
 *For a comparison of all five major scanners, see our [2026 scanner roundup](/blog/best-options-flow-scanner-2026). For Unusual Whales vs Profit Builders specifically, [read the head-to-head](/blog/unusual-whales-vs-profit-builders).*

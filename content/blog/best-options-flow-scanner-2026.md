@@ -66,7 +66,7 @@ Full disclosure: this is our platform. We're biased. But we built it specificall
 
 **Conviction grading.** Every signal gets an A or B grade based on 9 data-backed filters — [premium thresholds, position action, delta, Vol/OI ratio](/blog/options-flow-signals-grade-a-b-c), market maker detection, spread identification, and more. Grade A signals carry the highest conviction. Grade B is standard. Noise gets filtered before it reaches your screen.
 
-**Public track record.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.org/results](/results). Right now that's 174,000+ signals with a 39.3% Grade A win rate. You can audit every single one. No cherry-picking, no hiding losses.
+**Public track record.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.io/results](/results). Right now that's 174,000+ signals with a 39.3% Grade A win rate. You can audit every single one. No cherry-picking, no hiding losses.
 
 **GEX heatmap.** Gamma exposure visualization by strike and expiry. See where dealers are positioned, identify gamma walls, and find squeeze setups. No other scanner in this price range offers this.
 
@@ -98,4 +98,4 @@ Full disclosure: this is our platform. We're biased. But we built it specificall
 
 Every scanner on this list shows you institutional options flow. The difference is what happens after the data hits your screen. Most platforms hand you a firehose and wish you luck. A few filter it. Only one tracks every signal publicly so you can verify the results yourself.
 
-If you want to see what graded, conviction-scored flow looks like, [start your free 7-day trial](https://profitbuilders.org). Every signal tracked. Every outcome published.
+If you want to see what graded, conviction-scored flow looks like, [start your free 7-day trial](https://profitbuilders.io). Every signal tracked. Every outcome published.

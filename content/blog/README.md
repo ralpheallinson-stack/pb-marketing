@@ -1,6 +1,6 @@
 # Blog Content — Source of Truth
 
-This directory is the **canonical authorship location** for all blog posts on profitbuilders.org.
+This directory is the **canonical authorship location** for all blog posts on profitbuilders.io.
 
 ## Where things live
 
@@ -35,8 +35,8 @@ cd /opt/pb-marketing && npm run build && supervisorctl restart profitbuilders-we
 3. Verify the post is statically rendered:
 
 ```
-curl -sI https://profitbuilders.org/blog/<slug>          # → HTTP 200
-curl -s  https://profitbuilders.org/blog/<slug> | grep '"@type":"Article"'   # → JSON-LD present
+curl -sI https://profitbuilders.io/blog/<slug>          # → HTTP 200
+curl -s  https://profitbuilders.io/blog/<slug> | grep '"@type":"Article"'   # → JSON-LD present
 ```
 
 ## What the build produces

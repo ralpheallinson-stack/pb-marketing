@@ -47,7 +47,7 @@ Disclosure: this is our platform.
 
 Out of 5,000+ daily prints, the grading surfaces 200-400 that pass all filters. That's the core value proposition: less noise, more signal.
 
-**Public track record.** 174,000+ signals tracked with full win/loss outcomes at [profitbuilders.org/results](/results). Grade A signals carry a 39.3% win rate across that entire sample. Every signal is auditable. Before you spend $99/month — or $149 on FlowAlgo — you can see exactly how our graded signals perform.
+**Public track record.** 174,000+ signals tracked with full win/loss outcomes at [profitbuilders.io/results](/results). Grade A signals carry a 39.3% win rate across that entire sample. Every signal is auditable. Before you spend $99/month — or $149 on FlowAlgo — you can see exactly how our graded signals perform.
 
 No other scanner in the category publishes this data. It's our strongest differentiator and the reason we're comfortable being compared head-to-head.
 
@@ -95,6 +95,6 @@ FlowAlgo is a fast, reliable data feed at a premium price. If you need the absol
 
 Profit Builders is a conviction engine at a lower price. Graded signals, public track record, GEX heatmap — for $50/month less.
 
-[Start a free 7-day trial](https://profitbuilders.org) and run both side by side for a session. Count how many filtered prints from each platform led to actionable setups. The data will tell you which one is worth your money.
+[Start a free 7-day trial](https://profitbuilders.io) and run both side by side for a session. Count how many filtered prints from each platform led to actionable setups. The data will tell you which one is worth your money.
 
 *For a full comparison of all five major scanners, see our [2026 scanner roundup](/blog/best-options-flow-scanner-2026). For other head-to-heads: [Unusual Whales vs PB](/blog/unusual-whales-vs-profit-builders) and [BlackBoxStocks vs PB](/blog/blackboxstocks-vs-profit-builders).*

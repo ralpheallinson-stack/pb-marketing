@@ -35,7 +35,7 @@ export default function ResultsPage() {
     "@type": "Dataset",
     "name": "Profit Builders Signal Track Record",
     "description": "Public log of every options flow signal issued by Profit Builders. 174K+ signals with win/loss outcomes tracked.",
-    "url": "https://profitbuilders.org/results",
+    "url": "https://profitbuilders.io/results",
     "creator": { "@type": "Organization", "name": "Profit Builders" }
   })
 

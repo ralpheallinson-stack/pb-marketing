@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { slug } = await params
   const post = getPost(slug)
   if (!post) return {}
-  const url = `https://profitbuilders.org/blog/${slug}`
+  const url = `https://profitbuilders.io/blog/${slug}`
   return {
     title: post.title,
     description: post.description,
@@ -46,7 +46,7 @@ export default async function BlogPostPage({
   const post = getPost(slug)
   if (!post) notFound()
 
-  const url = `https://profitbuilders.org/blog/${slug}`
+  const url = `https://profitbuilders.io/blog/${slug}`
   const shareText = encodeURIComponent(post.title + " " + url)
 
   const articleSchema = {
@@ -56,15 +56,15 @@ export default async function BlogPostPage({
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
-    author: { "@type": "Organization", name: "Profit Builders", url: "https://profitbuilders.org" },
+    author: { "@type": "Organization", name: "Profit Builders", url: "https://profitbuilders.io" },
     publisher: {
       "@type": "Organization",
       name: "Profit Builders",
-      logo: { "@type": "ImageObject", url: "https://profitbuilders.org/images/pb-logo.png" },
+      logo: { "@type": "ImageObject", url: "https://profitbuilders.io/images/pb-logo.png" },
     },
     url,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: "https://profitbuilders.org/images/og-card.png",
+    image: "https://profitbuilders.io/images/og-card.png",
   }
 
   const allPosts = getAllPosts()

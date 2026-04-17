@@ -12,7 +12,7 @@ const appSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Profit Builders",
-  "url": "https://profitbuilders.org",
+  "url": "https://profitbuilders.io",
   "applicationCategory": "FinanceApplication",
   "operatingSystem": "Web",
   "description": "Real-time institutional options flow scanner with conviction grading, Greeks, IV, and spread detection. 174K+ signals tracked publicly.",
@@ -21,7 +21,7 @@ const appSchema = JSON.stringify({
     "price": "99.00",
     "priceCurrency": "USD",
     "priceValidUntil": "2027-01-01",
-    "url": "https://profitbuilders.org/#pricing"
+    "url": "https://profitbuilders.io/#pricing"
   },
   "aggregateRating": {
     "@type": "AggregateRating",
