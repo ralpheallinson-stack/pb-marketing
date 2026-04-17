@@ -17,7 +17,7 @@ export default function Nav() {
 
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav className="relative flex items-center justify-between gap-4 px-5 h-12 rounded-full bg-white/90 backdrop-blur-xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full max-w-3xl">
+      <nav className="relative flex items-center justify-between gap-4 px-5 h-12 rounded-full bg-white md:bg-white/90 md:backdrop-blur-xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full max-w-3xl">
         <Link href="/" className="flex-shrink-0" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain brightness-0" />
         </Link>
