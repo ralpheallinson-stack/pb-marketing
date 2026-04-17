@@ -464,8 +464,8 @@ export default function ScannerPage() {
   const rowVirtualizer = useVirtualizer({
     count: pageRows.length,
     getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 40,
-    overscan: 20,
+    estimateSize: () => 44,
+    overscan: 50,
     getItemKey: (index) => pageRows[index]?.id ?? index,
   })
 
