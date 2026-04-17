@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getAllSlugs, getAllPosts, getPost } from "@/lib/blog"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
+import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
 
 export const dynamicParams = false
@@ -173,22 +174,8 @@ export default async function BlogPostPage({
         />
 
         {/* ── EMAIL CTA ── */}
-        <div className="my-12 py-7 px-6 rounded-lg border border-gray-200 bg-gray-50">
-          <div className="flex items-start gap-4">
-            <div className="w-9 h-9 rounded-lg bg-[#F97316] flex items-center justify-center flex-shrink-0">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-gray-900 font-semibold text-[15px] mb-1">The Flow Brief</div>
-              <div className="text-gray-500 text-[13px] mb-3">Yesterday&apos;s top institutional flow, in your inbox before the bell. Free, daily, no spam.</div>
-              <a href="/free-scanner" className="text-[12px] font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">
-                Subscribe &rarr;
-              </a>
-            </div>
-          </div>
+        <div className="my-12">
+          <EmailSignup source="blog" variant="inline" />
         </div>
 
         {/* ── TRIAL CTA ── */}

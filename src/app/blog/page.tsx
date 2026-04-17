@@ -3,6 +3,7 @@ import Link from "next/link"
 import { BlurFade } from "@/components/magicui/BlurFade"
 import { getAllPosts } from "@/lib/blog"
 import type { Metadata } from "next"
+import { EmailSignup } from "@/components/EmailSignup"
 
 export const metadata: Metadata = {
   title: "Learn Options Flow Trading",
@@ -33,6 +34,9 @@ export default function BlogIndex() {
           <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight">
             Learn Options Flow Trading
           </h1>
+          <div className="mt-8 mb-4 max-w-2xl mx-auto">
+            <EmailSignup source="blog-index" variant="banner" />
+          </div>
           <p className="text-[#7A8BA8] max-w-xl mx-auto text-sm leading-relaxed">
             Educational guides on reading institutional order flow, understanding
             the Greeks, and using AI-powered analysis to find high-conviction
