@@ -450,18 +450,29 @@ export default function ScannerPage() {
   const puts = filtered.filter(t => t.opt_type === "P")
   const callPrem = calls.reduce((s, t) => s + t.premium, 0)
   const putPrem = puts.reduce((s, t) => s + t.premium, 0)
+
+  // Client-side pagination for "today" — all data already loaded, just slice for display
+  const CLIENT_PAGE_SIZE = 200
+  const [clientPage, setClientPage] = useState(0)
+  const totalClientPages = Math.max(1, Math.ceil(filtered.length / CLIENT_PAGE_SIZE))
+  const pageRows = timeRange === "today"
+    ? filtered.slice(clientPage * CLIENT_PAGE_SIZE, (clientPage + 1) * CLIENT_PAGE_SIZE)
+    : filtered
+  // Reset client page when filters change
+  useEffect(() => { setClientPage(0) }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
+
   const rowVirtualizer = useVirtualizer({
-    count: filtered.length,
+    count: pageRows.length,
     getScrollElement: () => tableContainerRef.current,
     estimateSize: () => 40,
     overscan: 20,
-    getItemKey: (index) => filtered[index]?.id ?? index,
+    getItemKey: (index) => pageRows[index]?.id ?? index,
   })
 
   // Invalidate cached measurements when the filtered dataset changes identity
   useEffect(() => {
     rowVirtualizer.measure()
-  }, [filtered, rowVirtualizer])
+  }, [pageRows, rowVirtualizer])
 
   const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterNoIndex || filterDte)
   const displayStats = (() => {
@@ -1013,7 +1024,7 @@ export default function ScannerPage() {
               paddingBottom: `${rowVirtualizer.getTotalSize() - (rowVirtualizer.getVirtualItems().at(-1)?.end ?? 0)}px`,
             }}>
               {rowVirtualizer.getVirtualItems().map(vRow => {
-                const t = filtered[vRow.index]
+                const t = pageRows[vRow.index]
                 if (!t || t.mm_suspected) return null
                 const rowStyle = getRowStyle(t)
                 return (
@@ -1087,23 +1098,47 @@ export default function ScannerPage() {
 
       {/* ── PAGINATION BAR ── */}
       <div className="flex items-center justify-between px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
-        <button
-          onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
-          disabled={page === 0}
-          className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          ← Newer
-        </button>
-        <span className="text-[11px] text-[#4A5A72]">
-          {page === 0 ? `Live · ${filtered.length.toLocaleString()} signals` : `Page ${page + 1} · earlier ${timeRange === "today" ? "today" : timeRange.replace("_", " ")}`}
-        </span>
-        <button
-          onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
-          disabled={trades.length < 2000 && page > 0}
-          className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          Older →
-        </button>
+        {timeRange === "today" ? (
+          <>
+            <button
+              onClick={() => { setClientPage(Math.max(0, clientPage - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+              disabled={clientPage === 0}
+              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Newer
+            </button>
+            <span className="text-[11px] text-[#4A5A72]">
+              Page {clientPage + 1} of {totalClientPages} · {filtered.length.toLocaleString()} signals
+            </span>
+            <button
+              onClick={() => { setClientPage(Math.min(totalClientPages - 1, clientPage + 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+              disabled={clientPage >= totalClientPages - 1}
+              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              Older →
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+              disabled={page === 0}
+              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Newer
+            </button>
+            <span className="text-[11px] text-[#4A5A72]">
+              {page === 0 ? `${filtered.length.toLocaleString()} signals` : `Page ${page + 1} · ${timeRange.replace("_", " ")}`}
+            </span>
+            <button
+              onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
+              disabled={trades.length < 2000 && page > 0}
+              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              Older →
+            </button>
+          </>
+        )}
       </div>
 
       {/* ── FILTER PANEL ── */}
