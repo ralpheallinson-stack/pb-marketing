@@ -1170,6 +1170,26 @@ export default function ScannerPage() {
 
             <div className="px-5 py-4 space-y-6">
 
+              {/* ── TIME RANGE ── */}
+              <div>
+                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Time range</div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {TIME_RANGES.map(tr => (
+                    <button
+                      key={tr.key}
+                      onClick={() => { setTimeRange(tr.key); setPage(0); setClientPage(0) }}
+                      className={`text-[11px] font-medium py-2 rounded-lg border transition-all ${
+                        timeRange === tr.key
+                          ? "bg-[#F97316]/15 border-[#F97316]/40 text-[#F97316]"
+                          : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:border-white/[0.15] hover:text-white/70"
+                      }`}
+                    >
+                      {tr.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* ── SAVED PRESETS ── */}
               <div>
                 <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Saved presets</div>
