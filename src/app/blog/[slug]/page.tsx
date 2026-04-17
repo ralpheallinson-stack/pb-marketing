@@ -68,6 +68,43 @@ export default async function BlogPostPage({
     image: "https://profitbuilders.io/images/og-card.png",
   }
 
+
+  // FAQ schema for comparison/high-intent posts (SEO rich snippets)
+  const FAQ_DATA: Record<string, {q: string, a: string}[]> = {
+    "best-options-flow-scanner-2026": [
+      { q: "What is the best options flow scanner in 2026?", a: "The top options flow scanners in 2026 include Profit Builders, Unusual Whales, CheddarFlow, FlowAlgo, and BlackBoxStocks. Profit Builders is the only scanner that grades every signal by conviction and publishes a public track record of outcomes." },
+      { q: "How much does an options flow scanner cost?", a: "Options flow scanners range from $29 to $199 per month. Profit Builders offers a 7-day free trial with real-time flow, conviction grading, and GEX heatmaps." },
+      { q: "What is conviction grading in options flow?", a: "Conviction grading uses automated filters to score each options signal by institutional characteristics — premium size, aggressive fill conditions, volume-to-open-interest ratio, and market maker identification. Grade A signals represent the highest conviction institutional flow." },
+    ],
+    "cheddarflow-vs-profit-builders": [
+      { q: "Is CheddarFlow or Profit Builders better for options flow?", a: "CheddarFlow has a clean UI and fast data. Profit Builders adds conviction grading (Grade A/B system), accumulation detection, GEX heatmaps, and a public track record of signal outcomes — features CheddarFlow does not offer." },
+      { q: "Does CheddarFlow have conviction grading?", a: "No. CheddarFlow sorts flow by premium, time, or type but does not grade signals by conviction. Profit Builders scores every signal through 9 automated filters before it reaches your screen." },
+    ],
+    "flowalgo-vs-profit-builders": [
+      { q: "Is FlowAlgo or Profit Builders better?", a: "FlowAlgo delivers fast data and clean dark pool tracking. Profit Builders adds conviction grading, accumulation detection, GEX heatmaps, and a public track record. FlowAlgo does not grade signals or publish outcomes." },
+      { q: "Does FlowAlgo have a free trial?", a: "FlowAlgo offers limited free access. Profit Builders offers a full 7-day free trial with all features including real-time flow, conviction grading, and GEX heatmaps." },
+    ],
+    "blackboxstocks-vs-profit-builders": [
+      { q: "Is BlackBoxStocks or Profit Builders better for options flow?", a: "BlackBoxStocks combines a flow scanner with a community chat room. Profit Builders focuses on signal quality — conviction grading, accumulation detection, and GEX heatmaps with a public track record of outcomes." },
+      { q: "Does BlackBoxStocks have GEX heatmaps?", a: "No. BlackBoxStocks does not offer gamma exposure heatmaps. Profit Builders includes GEX heatmaps by strike and expiry, showing where dealer hedging creates price walls." },
+    ],
+    "unusual-whales-vs-profit-builders": [
+      { q: "Is Unusual Whales or Profit Builders better?", a: "Unusual Whales offers broad coverage at a lower price point. Profit Builders focuses on signal depth — every trade is graded by conviction, accumulation is detected automatically, and outcomes are published publicly." },
+      { q: "Does Unusual Whales grade options flow signals?", a: "Unusual Whales does not use a conviction grading system. Profit Builders scores every signal through 9 automated filters including premium thresholds, aggressive fill detection, and market maker identification." },
+    ],
+  }
+
+  const faqItems = FAQ_DATA[slug] ?? []
+  const faqSchema = faqItems.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(f => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a },
+    })),
+  } : null
+
   const allPosts = getAllPosts()
   const related = allPosts.filter(p => p.slug !== slug).slice(0, 3)
 
@@ -83,6 +120,12 @@ export default async function BlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* Reading progress bar */}
       <div id="reading-progress" style={{
