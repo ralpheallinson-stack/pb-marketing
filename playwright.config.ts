@@ -11,7 +11,7 @@ export default defineConfig({
     ["list"],
   ],
   use: {
-    baseURL: process.env.BASE_URL || "https://profitbuilders.org",
+    baseURL: process.env.BASE_URL || "https://profitbuilders.io",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
