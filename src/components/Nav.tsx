@@ -38,7 +38,7 @@ export default function Nav() {
         {/* Right cluster */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <a
-            href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
+            href="/pricing"
             className="bg-gray-900 hover:bg-black text-white text-xs font-semibold px-4 py-1.5 rounded-full transition-colors"
           >
             Get Started

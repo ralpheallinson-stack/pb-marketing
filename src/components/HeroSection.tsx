@@ -206,7 +206,7 @@ export default function HeroSection() {
         {/* CTAs */}
         <motion.div {...fadeUp(0.3)} className="flex items-center justify-center gap-4 mb-4 flex-wrap">
           <Link
-            href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
+            href="/pricing"
             className="relative inline-flex items-center gap-2 rounded-full bg-[#F97316] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#F97316]/90 transition-all overflow-hidden"
           >
             <motion.span

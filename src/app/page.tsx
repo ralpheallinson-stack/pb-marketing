@@ -47,7 +47,7 @@ export default function Home() {
           <p className="text-white/40 text-sm mb-4">
             Grade A signals. Verified track record. Free to start.
           </p>
-          <a href="https://buy.stripe.com/7sYdRbcs8bqTfC21j50RG07"
+          <a href="/pricing"
             className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-[#0a0d12] font-bold px-8 py-4 rounded-full text-base transition-all">
             Start Free 7-Day Trial
           </a>
