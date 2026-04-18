@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 export function EmailSignup({
-  source = "blog",
+  source = "blog-course",
   variant = "inline",
 }: {
   source?: string
@@ -79,11 +79,11 @@ export function EmailSignup({
   if (variant === "banner") {
     return (
       <div className="bg-gray-950 rounded-xl p-6 sm:p-8 text-center">
-        <div className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-2">The Flow Brief</div>
+        <div className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-2">5 Days to Reading Flow</div>
         <h3 className="text-white font-bold text-lg mb-1" style={{ fontFamily: "Georgia, serif" }}>
-          Yesterday's top institutional flow, before the bell.
+          Learn to read institutional flow in 5 days.
         </h3>
-        <p className="text-gray-400 text-sm mb-5">Free. Daily. No spam. Delivered 8:45 AM ET.</p>
+        <p className="text-gray-400 text-sm mb-5">Free email course. Real scanner data. One concept per day.</p>
         <form onSubmit={submit} className="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto">
           <input
             type="email"
@@ -117,8 +117,8 @@ export function EmailSignup({
           </svg>
         </div>
         <div className="flex-1">
-          <div className="text-gray-900 font-semibold text-[15px] mb-1">The Flow Brief</div>
-          <div className="text-gray-500 text-[13px] mb-3">Yesterday's top institutional flow, in your inbox before the bell. Free, daily, no spam.</div>
+          <div className="text-gray-900 font-semibold text-[15px] mb-1">5 Days to Reading Flow</div>
+          <div className="text-gray-500 text-[13px] mb-3">Free 5-day email course. Learn to read sweeps, accumulation, Vol/OI, and conviction grading — with real scanner data.</div>
           <form onSubmit={submit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <input
               type="email"
