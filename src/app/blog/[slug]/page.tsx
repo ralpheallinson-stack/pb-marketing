@@ -29,13 +29,11 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.date,
       authors: ["Profit Builders"],
-      images: ["/images/og-card.png"],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: ["/images/og-card.png"],
     },
   }
 }
@@ -89,8 +87,34 @@ export default async function BlogPostPage({
       { q: "Does BlackBoxStocks have GEX heatmaps?", a: "No. BlackBoxStocks does not offer gamma exposure heatmaps. Profit Builders includes GEX heatmaps by strike and expiry, showing where dealer hedging creates price walls." },
     ],
     "unusual-whales-vs-profit-builders": [
-      { q: "Is Unusual Whales or Profit Builders better?", a: "Unusual Whales offers broad coverage at a lower price point. Profit Builders focuses on signal depth — every trade is graded by conviction, accumulation is detected automatically, and outcomes are published publicly." },
-      { q: "Does Unusual Whales grade options flow signals?", a: "Unusual Whales does not use a conviction grading system. Profit Builders scores every signal through 9 automated filters including premium thresholds, aggressive fill detection, and market maker identification." },
+      { q: "Is Unusual Whales or Profit Builders better?", a: "Unusual Whales offers broad coverage at a lower price point. Profit Builders focuses on signal depth — every trade is graded by conviction, accumulation is detected automatically, and outcomes are published publicly at /results." },
+      { q: "Does Unusual Whales grade options flow signals?", a: "Unusual Whales does not use a conviction grading system. Profit Builders scores every signal through a 9-filter conviction engine including premium thresholds, aggressive fill detection, and market maker identification." },
+    ],
+    "barchart-vs-profit-builders": [
+      { q: "Is Barchart or Profit Builders better for options flow?", a: "Barchart is a broad multi-asset trading platform with options flow as one feature among many — charts, futures, crypto, news. Profit Builders is a focused options flow scanner with conviction grading (Grade A/B), accumulation detection, GEX heatmaps, and a public track record of 174,000+ tracked outcomes at /results. For traders whose primary edge is reading institutional flow, Profit Builders is more specialized; for traders who need a full platform across asset classes, Barchart has broader coverage." },
+      { q: "How much does Barchart cost compared to Profit Builders?", a: "Barchart offers tiered pricing: Premier at $39.95/mo, Plus at $69.95/mo, and Pro at $199.95/mo. Pro is the tier you need for serious options flow analysis. Profit Builders is $99/mo with a 7-day free trial, and every feature is included (real-time flow, conviction grading, accumulation detection, GEX heatmap)." },
+      { q: "Does Barchart have a public track record of signal outcomes?", a: "No. Barchart shows you options flow data but does not publish a public track record of signal outcomes. Profit Builders publishes every signal's full P&L at profitbuilders.io/results — 174,000+ signals tracked with a 39.3% Grade A win rate, fully auditable." },
+      { q: "Does Barchart have conviction grading for options flow?", a: "No. Barchart displays unusual options activity and lets you filter by premium, volume, and sentiment, but does not automatically grade signals by conviction. Profit Builders runs every print through a 9-filter conviction engine before it reaches your screen, surfacing only Grade A and Grade B institutional-quality flow." },
+    ],
+    "what-is-options-flow-trading": [
+      { q: "What is options flow trading?", a: "Options flow trading is the practice of tracking large, institutional options orders in real time to identify directional bets made by hedge funds, banks, and professional traders. Flow scanners surface sweeps, blocks, and unusual activity as they hit the tape so retail traders can follow informed money." },
+      { q: "Is options flow trading profitable?", a: "Options flow is a signal layer, not a complete strategy. On its own, raw flow data has mixed results because most prints include market maker hedging and routine adjustments. Conviction-graded flow performs better — Profit Builders' Grade A signals carry a 39.3% win rate across 174,000+ tracked outcomes at /results." },
+      { q: "What's the difference between a sweep and a block?", a: "A sweep is an order that hits multiple exchanges simultaneously, signaling urgency. A block is a single large fill, often negotiated off-exchange, signaling planned institutional positioning. Both carry signal, but a sweep says 'I need this now' and a block says 'I've been planning this.'" },
+    ],
+    "what-is-options-accumulation": [
+      { q: "What is options accumulation?", a: "Options accumulation is when an institutional trader builds a position by breaking a large order into multiple smaller prints on the same ticker, strike, and expiry over a short window. The pattern signals deliberate position-building rather than a one-off speculative bet." },
+      { q: "How do you spot options accumulation?", a: "Look for repeated prints on the exact same contract — same ticker, strike, and expiry — within a tight time window, often with aggressive fills at or above the ask. Profit Builders flags these sequences automatically with RAPID badges so you don't have to cross-reference rows manually." },
+      { q: "Why does options accumulation matter?", a: "Single prints can be noise. Accumulation is a pattern — and patterns are harder to fake. When an institution is willing to spend $5M+ across a sequence of prints on the same contract, they have conviction. That's one of the strongest signals in options flow." },
+    ],
+    "what-is-gamma-exposure-gex": [
+      { q: "What is gamma exposure (GEX)?", a: "Gamma exposure measures how much dealers need to buy or sell the underlying stock to stay hedged as price moves. Positive GEX means dealers buy dips and sell rallies (stabilizing). Negative GEX means dealers sell dips and chase rallies (destabilizing). GEX predicts the character of movement, not direction." },
+      { q: "What are gamma walls?", a: "Gamma walls are price levels where dealer hedging creates strong buying or selling pressure. Call walls above spot act as resistance because dealers sell into rallies. Put walls below spot act as support because dealers buy into dips. These levels often pin price near expiration." },
+      { q: "How do traders use GEX to trade?", a: "Traders use GEX to identify where price is likely to stall (gamma walls), where volatility will spike (zero gamma levels), and where squeezes can accelerate (negative GEX environments). Profit Builders' GEX heatmap visualizes all of this across 220 symbols with real-time options chain data." },
+    ],
+    "vol-oi-ratio-explained": [
+      { q: "What is the volume-to-open-interest ratio?", a: "Vol/OI ratio divides today's trading volume by the open interest going into the day on a given strike and expiry. It measures how much new positioning is happening relative to existing contracts. A Vol/OI of 20x means 20 times more contracts traded today than existed yesterday — a strong sign of fresh money entering." },
+      { q: "What is a good Vol/OI ratio?", a: "For flow-following, Vol/OI above 5x is meaningful and above 10x is strong. A ratio of 20x or higher typically indicates institutional-scale new positioning. Anything under 2x usually means routine rolls or adjustments rather than directional conviction." },
+      { q: "Why does Vol/OI matter for options flow?", a: "Vol/OI separates opening activity (new directional bets) from closing activity (position unwinds or rolls). A $1M call buy looks bullish, but if Vol/OI is under 1x, it's probably someone closing a prior position rather than building a new one. High Vol/OI confirms fresh money with conviction." },
     ],
   }
 
@@ -102,6 +126,74 @@ export default async function BlogPostPage({
       "@type": "Question",
       "name": f.q,
       "acceptedAnswer": { "@type": "Answer", "text": f.a },
+    })),
+  } : null
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://profitbuilders.io" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://profitbuilders.io/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": url },
+    ],
+  }
+
+  // ── HowTo schema for "how-to-*" posts (rich step display in Google) ──
+  const HOWTO_DATA: Record<string, { name: string; description: string; totalTime: string; steps: { name: string; text: string }[] }> = {
+    "how-to-read-options-flow": {
+      name: "How to Read Institutional Options Flow",
+      description: "Step-by-step method for reading institutional options flow signals — direction, premium size, Vol/OI, DTE, flow type, and market maker filtering.",
+      totalTime: "PT15M",
+      steps: [
+        { name: "Check the direction", text: "Identify whether the order was a BUY or SELL on calls or puts. Aggressive buying at the ask on calls is the most bullish single-print signal." },
+        { name: "Confirm the size", text: "A $50K print could be anyone; a $2M+ print is almost certainly institutional. Set your premium floor at $175K+ to eliminate retail noise." },
+        { name: "Measure Volume-to-Open-Interest", text: "Vol/OI above 10x means fresh money is entering the contract. Under 2x suggests routine rolls or adjustments." },
+        { name: "Evaluate DTE", text: "Short DTE (0-7 days) signals urgency; medium DTE (14-45 days) is the sweet spot; long DTE (60+) signals strategic positioning." },
+        { name: "Check the flow type", text: "Sweeps signal urgency across multiple exchanges. Blocks are single deliberate fills. Both carry signal but in different ways." },
+        { name: "Filter out market maker hedging", text: "When a market maker sells a call, they hedge by buying the underlying. Good scanners filter this at the database level before it reaches your screen." },
+        { name: "Watch for accumulation", text: "Multiple prints on the same contract across a session is accumulation — one of the strongest signals in options flow." },
+      ],
+    },
+    "how-to-read-sweep-and-block-trades": {
+      name: "How to Read Sweep and Block Trades in Options Flow",
+      description: "Identify urgency and institutional intent by reading sweep versus block trade execution.",
+      totalTime: "PT10M",
+      steps: [
+        { name: "Identify the execution type", text: "A sweep hits multiple exchanges simultaneously; a block is a single large negotiated fill, often off-exchange." },
+        { name: "Read the aggression", text: "Sweeps signal urgency — the buyer needs in NOW. Blocks signal deliberate, planned positioning." },
+        { name: "Check the fill price", text: "Filled at or above the ask means aggressive buying. Filled at the bid means aggressive selling." },
+        { name: "Confirm with size", text: "$1M+ blocks and $500K+ sweeps both cross the institutional-conviction threshold." },
+        { name: "Rule out hedging", text: "Spread legs and market maker hedges can look directional but aren't. Use a scanner that filters spreads and MM activity automatically." },
+      ],
+    },
+    "how-to-read-unusual-options-activity": {
+      name: "How to Read Unusual Options Activity",
+      description: "Systematic method for identifying and evaluating unusual options activity for trading signal quality.",
+      totalTime: "PT15M",
+      steps: [
+        { name: "Define the volume threshold", text: "Unusual means volume significantly above the contract's average. Use Vol/OI ratio rather than raw volume." },
+        { name: "Look for aggressive execution", text: "At-ask or above-ask fills carry more signal than passive bids. Sweeps outrank blocks for urgency." },
+        { name: "Check expiration proximity", text: "1-6 week expirations carry more directional conviction than LEAPs (often hedges) or 0DTE (often scalps)." },
+        { name: "Correlate with context", text: "Flow ahead of known catalysts — earnings, FDA decisions, macro events — is more actionable." },
+        { name: "Use a conviction grading system", text: "A rule-based engine that scores signals against multiple filters — aggression, premium, Vol/OI, MM activity — dramatically reduces noise." },
+      ],
+    },
+  }
+
+  const howtoData = HOWTO_DATA[slug]
+  const howtoSchema = howtoData ? {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": howtoData.name,
+    "description": howtoData.description,
+    "totalTime": howtoData.totalTime,
+    "step": howtoData.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.name,
+      "text": s.text,
+      "url": `${url}#step-${i + 1}`,
     })),
   } : null
 
@@ -120,12 +212,36 @@ export default async function BlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {faqSchema && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
       )}
+      {howtoSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howtoSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "url": url,
+            "speakable": {
+              "@type": "SpeakableSpecification",
+              "cssSelector": ["h1", ".blog-subtitle", ".pb-prose h2", ".pb-prose h2 + p"],
+            },
+          }),
+        }}
+      />
 
       {/* Reading progress bar */}
       <div id="reading-progress" style={{
@@ -171,11 +287,11 @@ export default async function BlogPostPage({
             <span>{post.read_time} min read</span>
           </div>
 
-          <h1 className="text-[36px] md:text-[44px] font-bold text-gray-950 leading-[1.1] tracking-[-0.03em] mb-5" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+          <h1 className="text-[34px] md:text-[44px] font-bold text-gray-950 leading-[1.1] tracking-[-0.035em] mb-5 blog-h1">
             {post.title}
           </h1>
 
-          <p className="text-[17px] text-gray-500 leading-relaxed mb-6" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+          <p className="text-[18px] text-gray-500 leading-relaxed mb-6 font-normal blog-subtitle">
             {post.description}
           </p>
 
@@ -218,13 +334,14 @@ export default async function BlogPostPage({
 
         {/* ── EMAIL CTA ── */}
         <div className="my-12">
-          <EmailSignup source="blog" variant="inline" />
+          <EmailSignup source="blog-course" variant="inline" />
+          <EmailSignup source="flow-brief" variant="flow-brief-compact" />
         </div>
 
         {/* ── TRIAL CTA ── */}
         <div className="mt-14 py-10 px-8 rounded-xl bg-gray-950 text-center">
           <div className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-3">Live Scanner</div>
-          <p className="text-white font-bold text-[20px] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+          <p className="text-white font-bold text-[20px] mb-2 tracking-tight">
             See the prints we can&apos;t publish here.
           </p>
           <p className="text-gray-400 text-[14px] mb-6 max-w-sm mx-auto leading-relaxed">
@@ -256,7 +373,7 @@ export default async function BlogPostPage({
                   <div className="text-[11px] text-gray-400 mb-3">
                     {p.date} · {p.read_time} min
                   </div>
-                  <div className="text-[15px] font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug" style={{ fontFamily: "Georgia, serif" }}>
+                  <div className="text-[15px] font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug tracking-tight">
                     {p.title}
                   </div>
                   <div className="text-[12px] text-gray-400 mt-2 line-clamp-2 leading-relaxed">
@@ -271,38 +388,58 @@ export default async function BlogPostPage({
 
       {/* ── PROSE STYLES ── */}
       <style>{`
+        /* Unified professional typography — Inter throughout */
+        .pb-prose,
+        .pb-prose h1,
+        .pb-prose h2,
+        .pb-prose h3,
+        .pb-prose h4,
+        .pb-prose p,
+        .pb-prose li,
+        .pb-prose blockquote,
+        .pb-prose table,
+        .pb-prose thead,
+        .pb-prose tbody,
+        .pb-prose th,
+        .pb-prose td,
+        .blog-h1,
+        .blog-subtitle,
+        .blog-byline {
+          font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        }
+
         .pb-prose {
           color: #1a1a1a;
-          font-family: Georgia, 'Times New Roman', serif;
-          font-size: 18px;
-          line-height: 1.8;
-          letter-spacing: -0.003em;
+          font-size: 17px;
+          line-height: 1.75;
+          letter-spacing: -0.006em;
+          font-weight: 400;
         }
         .pb-prose h2 {
-          font-family: -apple-system, 'Segoe UI', sans-serif;
-          color: #0a0a0a;
-          font-weight: 800;
-          font-size: 24px;
-          margin-top: 2.2em;
-          margin-bottom: 0.6em;
-          letter-spacing: -0.02em;
-          line-height: 1.3;
-        }
-        .pb-prose h3 {
-          font-family: -apple-system, 'Segoe UI', sans-serif;
           color: #0a0a0a;
           font-weight: 700;
+          font-size: 26px;
+          margin-top: 2.4em;
+          margin-bottom: 0.6em;
+          letter-spacing: -0.025em;
+          line-height: 1.25;
+        }
+        .pb-prose h3 {
+          color: #0a0a0a;
+          font-weight: 600;
           font-size: 19px;
-          margin-top: 1.8em;
+          margin-top: 2em;
           margin-bottom: 0.5em;
-          letter-spacing: -0.01em;
+          letter-spacing: -0.015em;
+          line-height: 1.35;
         }
         .pb-prose p {
           margin-bottom: 1.3em;
         }
         .pb-prose strong {
           color: #0a0a0a;
-          font-weight: 700;
+          font-weight: 600;
         }
         .pb-prose a {
           color: #F97316;
@@ -310,6 +447,7 @@ export default async function BlogPostPage({
           text-decoration-color: rgba(249,115,22,0.3);
           text-underline-offset: 3px;
           transition: text-decoration-color 0.15s;
+          font-weight: 500;
         }
         .pb-prose a:hover {
           text-decoration-color: #F97316;
@@ -329,13 +467,14 @@ export default async function BlogPostPage({
         /* Pull quotes */
         .pb-prose blockquote {
           border-left: 3px solid #F97316;
-          padding: 12px 20px;
+          padding: 14px 22px;
           margin: 1.8em 0;
           background: #FFF7ED;
           border-radius: 0 6px 6px 0;
           color: #1a1a1a;
           font-style: normal;
           font-size: 17px;
+          font-weight: 500;
         }
 
         /* Data/code */
@@ -373,6 +512,70 @@ export default async function BlogPostPage({
         .pb-prose img {
           border-radius: 8px;
           margin: 1.5em 0;
+        }
+
+        /* Tables — editorial comparison */
+        .pb-prose table {
+          width: 100%;
+          margin: 2em 0;
+          border-collapse: collapse;
+          font-size: 15px;
+          line-height: 1.5;
+          border: 1px solid #E5E7EB;
+          border-radius: 10px;
+          overflow: hidden;
+          table-layout: fixed;
+        }
+        .pb-prose thead {
+          background: #FAFAFA;
+        }
+        .pb-prose thead th {
+          padding: 14px 18px;
+          text-align: left;
+          font-weight: 700;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #6B7280;
+          border-bottom: 1px solid #E5E7EB;
+          vertical-align: middle;
+        }
+        .pb-prose thead th:first-child {
+          width: 34%;
+        }
+        .pb-prose tbody td {
+          padding: 14px 18px;
+          border-top: 1px solid #F3F4F6;
+          vertical-align: middle;
+          color: #1a1a1a;
+        }
+        .pb-prose tbody tr:first-child td {
+          border-top: none;
+        }
+        .pb-prose tbody td:first-child {
+          font-weight: 600;
+          color: #0a0a0a;
+          background: #FAFAFA;
+          border-right: 1px solid #F3F4F6;
+        }
+        .pb-prose tbody td strong {
+          color: #0a0a0a;
+        }
+        /* Highlight the last column (Profit Builders side of comparison) */
+        .pb-prose tbody td:last-child strong {
+          color: #F97316;
+        }
+        .pb-prose table a {
+          color: #F97316;
+        }
+        @media (max-width: 640px) {
+          .pb-prose table {
+            font-size: 13px;
+          }
+          .pb-prose thead th,
+          .pb-prose tbody td {
+            padding: 10px 12px;
+          }
         }
 
         /* Line clamp */

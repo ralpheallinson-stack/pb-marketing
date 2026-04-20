@@ -30,13 +30,54 @@ export default function ResultsPage() {
   const s = data?.summary
   const gradeA = data?.by_grade?.find(g => g.grade === "A")
 
+  const totalClosed = s?.total_closed ?? 174000
+  const gradeAWinRate = gradeA?.win_rate ?? 39.3
+  const avgReturn = s?.grade_a_avg_return ?? 0
+
   const datasetSchema = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Dataset",
-    "name": "Profit Builders Signal Track Record",
-    "description": "Public log of every options flow signal issued by Profit Builders. 174K+ signals with win/loss outcomes tracked.",
+    "name": "Profit Builders Options Flow Signal Track Record",
+    "alternateName": "Profit Builders Public Signal Log",
+    "description": `Publicly auditable log of every Grade A and Grade B institutional options flow signal issued by the Profit Builders scanner. ${totalClosed.toLocaleString()}+ signals tracked with full win/loss outcomes, P&L, and exit reasons. Grade A win rate: ${gradeAWinRate}%.`,
     "url": "https://profitbuilders.io/results",
-    "creator": { "@type": "Organization", "name": "Profit Builders" }
+    "sameAs": "https://profitbuilders.io/results",
+    "keywords": [
+      "options flow track record",
+      "options signal win rate",
+      "unusual options activity performance",
+      "institutional options flow outcomes",
+      "Grade A options signals",
+      "profit builders results",
+    ],
+    "creator": {
+      "@type": "Organization",
+      "name": "Profit Builders",
+      "url": "https://profitbuilders.io",
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Profit Builders",
+      "url": "https://profitbuilders.io",
+      "logo": "https://profitbuilders.io/images/pb-logo.png",
+    },
+    "license": "https://profitbuilders.io/terms",
+    "isAccessibleForFree": true,
+    "variableMeasured": [
+      { "@type": "PropertyValue", "name": "Total closed signals", "value": totalClosed },
+      { "@type": "PropertyValue", "name": "Grade A win rate", "value": `${gradeAWinRate}%` },
+      { "@type": "PropertyValue", "name": "Grade A average return", "value": `${avgReturn}%` },
+      { "@type": "PropertyValue", "name": "Conviction grades tracked", "value": "Grade A, Grade B" },
+      { "@type": "PropertyValue", "name": "Outcome categories", "value": "BIG_WIN, WIN, SMALL_WIN, LOSS, BIG_LOSS, EXPIRED" },
+      { "@type": "PropertyValue", "name": "Update frequency", "value": "Real-time" },
+    ],
+    "distribution": {
+      "@type": "DataDownload",
+      "encodingFormat": "text/html",
+      "contentUrl": "https://profitbuilders.io/results",
+    },
+    "temporalCoverage": "2024-01-01/..",
+    "spatialCoverage": "US equity options markets",
   })
 
   return (

@@ -41,20 +41,23 @@ A block trade is a single, large order executed at one price — typically throu
 
 Dark pool prints are trades that occur on private exchanges (dark pools) and are reported after execution. These trades are invisible to most traders until they show up on the tape, making them valuable for detecting institutional activity that was intentionally hidden.
 
-## How AI Changes the Game
+## How the Conviction Engine Filters Flow
 
-Manually watching thousands of options orders per day is impossible. That's where AI-powered flow analysis comes in.
+Manually watching thousands of options orders per day is impossible. That's where a rule-based filtering layer does the work.
 
-At Profit Builders, our AI evaluates every significant options order against multiple criteria:
+At Profit Builders, the conviction engine evaluates every significant options order against 9 data-backed filters:
 
 - **Premium size** — Is this order large enough to matter?
 - **Sweep urgency** — Was it a passive limit order or an aggressive sweep?
 - **Open interest changes** — Is this opening a new position or closing an old one?
 - **Implied volatility rank** — Is the buyer paying a premium relative to historical IV?
 - **Days to expiration** — Short-dated options signal near-term conviction
-- **Technical alignment** — Does the flow agree with the chart?
+- **Vol/OI ratio** — Fresh positioning vs. routine rolls
+- **Delta** — Directional lean of the order
+- **Market maker detection** — Is this real directional flow or a hedge?
+- **Accumulation tracking** — Is this one print or part of a sequence?
 
-Each signal gets a conviction grade from **A** (highest) to **C**, so you can focus on the setups that matter most.
+Every signal that passes earns Grade A (highest conviction) or Grade B (standard institutional flow). Everything below threshold is filtered out before the alert fires.
 
 ## Getting Started with Flow Trading
 
@@ -70,7 +73,7 @@ If you're new to options flow, here's a simple framework:
 
 Options flow trading gives you a window into what the largest, most informed participants in the market are doing — in real time. It doesn't replace fundamental or technical analysis, but it adds a powerful signal layer that most retail traders don't have.
 
-The key is having the right tools to filter the noise, grade the signals, and deliver them fast enough to act on. That's exactly what Profit Builders was built to do.
+The key is having the right tools to filter the noise, grade the signals, and deliver them fast enough to act on. That's exactly what Profit Builders was built to do — and every signal outcome is published at [/results](/results) so you can verify the edge before you pay.
 
 
 ---

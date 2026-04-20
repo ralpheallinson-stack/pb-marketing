@@ -95,7 +95,7 @@ The highest-conviction setups occur when sweeps and blocks align on the same nam
 
 ## How Profit Builders Grades Flow
 
-Our AI evaluates every sweep and block against multiple factors — premium size, urgency, IV rank, DTE, and technical alignment — to assign a conviction grade. This eliminates the guesswork and lets you focus on the setups that historically produce the best outcomes.
+Profit Builders' conviction engine scores every sweep and block against 9 data-backed filters — premium size, Vol/OI ratio, delta, DTE, market maker detection, fill aggression, accumulation, and more — to assign Grade A or Grade B. Everything below threshold is filtered out before it hits the feed. Across 174,000+ tracked signals, Grade A carries a 39.3% win rate — auditable at [/results](/results) so you can verify the grading before you pay.
 
 
 ---

@@ -1,5 +1,5 @@
 ---
-title: "What Is Options Accumulation? How to Spot Institutions Building a Position"
+title: "What Is Options Accumulation? How to Spot It"
 description: "Learn what options accumulation is, why institutions build positions across multiple prints, and how to detect accumulation patterns in real-time options flow data."
 date: "2026-04-15"
 author: "Profit Builders"
@@ -128,4 +128,4 @@ The pattern is always the same: same contract, multiple hits, tight window, aggr
 
 Whether you follow the trade is your decision. But knowing the position is being built — that's the edge.
 
-See accumulation detection live in the Profit Builders scanner. Start your free 7-day trial.
+Open the [free scanner](/free-scanner) tomorrow at 9:30 AM ET, watch for RAPID badges stacking on the same contract, and count how many of those accumulation sequences moved by close. The 7-day trial opens up real-time alerts and full history when the pattern clicks.

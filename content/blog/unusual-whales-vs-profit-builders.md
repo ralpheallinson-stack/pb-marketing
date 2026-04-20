@@ -1,5 +1,5 @@
 ---
-title: "Unusual Whales vs Profit Builders: Which Options Flow Scanner Is Worth It?"
+title: "Unusual Whales vs Profit Builders: Which Is Worth It?"
 description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, track record transparency, and who each scanner is actually built for."
 date: "2026-04-08"
 author: "Profit Builders"
@@ -8,7 +8,7 @@ read_time: "6"
 
 Two scanners. Both show institutional options flow. One costs $35/month, the other $99. The price gap is obvious. The signal quality gap is harder to see until you've traded both for a month and counted how many filtered prints actually worked.
 
-Here's the honest breakdown.
+Here's the honest breakdown. (Looking at more than these two? The [2026 options flow scanner comparison](/blog/best-options-flow-scanner-2026) puts all four major platforms side-by-side.)
 
 ## Side-by-Side Comparison
 
@@ -16,7 +16,7 @@ Here's the honest breakdown.
 |---------|---------------|-----------------|
 | **Price** | $35-48/mo | $99/mo |
 | **Free tier** | Limited free access | 7-day free trial (full access) |
-| **Conviction grading** | None | Grade A/B/C system |
+| **Conviction grading** | None | Grade A / Grade B (9-filter conviction engine) |
 | **Public track record** | No | [174K+ signals tracked](/results) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
 | **Signal filtering** | Basic size/type filters | 9 automated conviction filters |
@@ -38,9 +38,9 @@ There's also no public track record. UW doesn't track signal outcomes, so there'
 
 ## Where Profit Builders Wins
 
-Full disclosure: this is our platform. We're transparent about the bias, and we're transparent about the data.
+Yes, we built this. Here's what the tradeoff looks like in practice.
 
-**Conviction grading.** Every signal runs through [9 automated filters](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A signals require $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else gets filtered out.
+**Conviction grading.** Every signal runs through the [9-filter conviction engine](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else is filtered out.
 
 The result: instead of 5,000+ raw prints per day, you see the 200-400 that passed conviction scoring. Less time filtering. More time evaluating actual setups.
 
@@ -73,17 +73,19 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 - You prefer maximum data breadth over pre-filtered signal depth
 
 **Choose Profit Builders if:**
-- You want signals pre-graded by conviction level (A/B/C)
+- You want signals pre-graded Grade A or Grade B before they hit the feed
 - You want a publicly verified track record you can audit at [/results](/results)
 - You trade [Grade A setups](/blog/options-flow-signals-grade-a-b-c) and want GEX context for entries
 - You'd rather pay more for filtered signals than spend time filtering yourself
 
-## Try Before You Decide
+## What $64 More Per Month Actually Buys You
 
-Unusual Whales has a limited free tier. Profit Builders has a [free scanner](/free-scanner) with 15-minute delayed data and a full 7-day free trial with real-time access.
+The honest math: Unusual Whales is $35-48/mo. Profit Builders is $99/mo. That's roughly $50-64 more.
 
-The best way to compare is to use both. Open UW's flow feed on one screen and PB's graded scanner on another. After a full trading session, count how many signals from each led to actionable setups.
+What the extra buys: a 9-filter conviction engine that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and 174,000+ outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
 
-The data speaks for itself. [Start your free 7-day trial](https://profitbuilders.io) and see the difference grading makes.
+What you give up: congressional trade tracking and the cheapest raw data in the category.
 
-*For a full comparison of all five major flow scanners, see our [2026 scanner roundup](/blog/best-options-flow-scanner-2026).*
+If you'd trade 2-3 hours of daily manual filtering for $64 a month, the math works. If your filtering system already works and you just need cheap data, it doesn't. Run both side-by-side for a week — UW's [free tier](https://unusualwhales.com) on one screen, the [Profit Builders free scanner](/free-scanner) on the other. At close on Friday, count how many prints from each feed actually moved. That's the only comparison that matters.
+
+*For a full look at every major flow scanner, see our [2026 scanner comparison](/blog/best-options-flow-scanner-2026).*

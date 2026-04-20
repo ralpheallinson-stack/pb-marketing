@@ -1,5 +1,5 @@
 ---
-title: "BlackBoxStocks vs Profit Builders: Same Price, Different Philosophy"
+title: "BlackBoxStocks vs Profit Builders: The $99 Decision"
 description: "BlackBoxStocks and Profit Builders are both $99/mo. But one is a community platform with raw flow. The other is a signal engine with a public track record. Here's how to choose."
 date: "2026-04-08"
 author: "Profit Builders"
@@ -10,7 +10,7 @@ $99.97/month for BlackBoxStocks. $99/month for Profit Builders. Nearly identical
 
 One gives you live trading rooms, a mobile app, and a community of traders calling out setups together. The other gives you pre-graded institutional flow signals with a publicly auditable track record. Same monthly charge, different bet on what makes a trader profitable.
 
-Here's the honest comparison.
+Here's the honest comparison. (For a broader view including Unusual Whales, FlowAlgo, and Cheddar Flow, see the [2026 options flow scanner comparison](/blog/best-options-flow-scanner-2026).)
 
 ## Side-by-Side
 
@@ -18,7 +18,7 @@ Here's the honest comparison.
 |---------|---------------|-----------------|
 | **Price** | $99.97/mo | $99/mo |
 | **Free trial** | First month $29.95 | 7-day free trial (full access) |
-| **Conviction grading** | Color-coded alerts | [Grade A/B/C system](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | Color-coded alerts | [Grade A / Grade B (9-filter conviction engine)](/blog/options-flow-signals-grade-a-b-c) |
 | **Public track record** | No | [174K+ signals at /results](/results) |
 | **Live trading rooms** | Yes | No (Discord community) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
@@ -38,9 +38,9 @@ The color-coded alert system flags bullish and bearish prints visually. Green fo
 
 ## Where Profit Builders Wins
 
-Disclosure: this is our platform.
+Yes, we built this. Here's what the same $99 buys on our side.
 
-**Conviction grading.** Every signal passes through [9 automated filters](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything else is filtered out.
+**Conviction grading.** Every signal passes through the [9-filter conviction engine](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything below is filtered out entirely.
 
 On a typical day, 5,000+ institutional prints hit the tape. The grading system surfaces 200-400 that pass conviction scoring. That's the difference between staring at a wall of data and looking at a curated watchlist.
 
@@ -74,10 +74,12 @@ At the same price point, the question is whether you get more value from people 
 - You trade Grade A setups and want [GEX context](/blog/what-is-gamma-exposure-gex) for positioning
 - You'd rather spend time trading than filtering a raw feed
 
-## The Bottom Line
+## People or Algorithms — Pick One
 
-At $99/month each, neither is a cheap tool. But they're paying for different things. BlackBoxStocks buys you a seat in a trading room with experienced moderators and broad data coverage. Profit Builders buys you a signal engine that filters institutional flow by conviction and proves its results publicly.
+BlackBoxStocks is paying a group of moderators and a chat room to point at good trades. Profit Builders is paying a conviction engine and a public log to do the same thing without the chatter.
 
-If you're still building your flow-reading skills, BlackBoxStocks has real value. If you've done the learning and just want the highest-probability alerts with verified data behind them, [start your free 7-day trial](https://profitbuilders.io) and compare.
+Neither is wrong. They just bill the same $99 for opposite jobs. If you learn by watching other traders think out loud, BlackBox has a real product. If you've done that year already and you want the signal without the room noise, the value shifts to grading and a track record you can audit.
+
+Here's the cheapest test: open the [Profit Builders free scanner](/free-scanner) tomorrow morning and filter to Grade A only. If the quiet list of graded prints looks more actionable than yesterday's chat scrollback, you already know which $99 you want to pay. The 7-day trial is there when you're ready for real-time and GEX.
 
 *For a comparison of all five major scanners, see our [2026 scanner roundup](/blog/best-options-flow-scanner-2026). For Unusual Whales vs Profit Builders specifically, [read the head-to-head](/blog/unusual-whales-vs-profit-builders).*

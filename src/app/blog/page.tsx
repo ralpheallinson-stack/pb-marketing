@@ -8,15 +8,41 @@ import { EmailSignup } from "@/components/EmailSignup"
 export const metadata: Metadata = {
   title: "Learn Options Flow Trading",
   description:
-    "Educational guides on reading institutional order flow, understanding the Greeks, and using AI-powered analysis to find high-conviction setups.",
+    "Educational guides on reading institutional order flow, understanding the Greeks, and using conviction-graded analysis to find high-conviction setups.",
   alternates: { canonical: "https://profitbuilders.io/blog" },
 }
 
 export default function BlogIndex() {
   const posts = getAllPosts()
 
+  const itemListSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Profit Builders Options Flow Blog",
+    "description": "Educational guides and daily flow recaps covering institutional options flow, conviction grading, sweeps, blocks, accumulation, and gamma exposure.",
+    "numberOfItems": posts.length,
+    "itemListElement": posts.slice(0, 20).map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "url": `https://profitbuilders.io/blog/${p.slug}`,
+      "name": p.title,
+      "description": p.description,
+    })),
+  })
+
+  const breadcrumbSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://profitbuilders.io" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://profitbuilders.io/blog" },
+    ],
+  })
+
   return (
     <div className="min-h-screen" style={{ background: "#0B0F1A" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: itemListSchema }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbSchema }} />
       <Nav />
       <section className="relative text-center pt-24 pb-12 px-4 overflow-hidden">
         <div
@@ -37,10 +63,13 @@ export default function BlogIndex() {
           <div className="mt-8 mb-4 max-w-2xl mx-auto">
             <EmailSignup source="blog-index" variant="banner" />
           </div>
+          <div className="text-[12px] text-[#4A5A72] mb-4">
+            Prefer a one-page printable reference? <Link href="/cheat-sheet" className="text-[#F5820A] hover:text-white transition-colors font-semibold">Get the free Options Flow Cheat Sheet &rarr;</Link>
+          </div>
           <p className="text-[#7A8BA8] max-w-xl mx-auto text-sm leading-relaxed">
             Educational guides on reading institutional order flow, understanding
-            the Greeks, and using AI-powered analysis to find high-conviction
-            setups.
+            the Greeks, and using conviction-graded analysis to find
+            high-probability setups.
           </p>
         </div>
       </section>

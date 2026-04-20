@@ -1,5 +1,5 @@
 ---
-title: "Options Greeks for Flow Trading: Delta, Gamma, Vega, and Theta"
+title: "Options Greeks for Flow Trading: Delta to Theta"
 description: "A practical guide to the options Greeks — delta, gamma, vega, and theta — and how they apply to reading institutional options flow signals."
 date: "2026-01-14"
 author: "Profit Builders"
@@ -73,7 +73,7 @@ Theta tells you the **daily cost** of holding the position. When you see a large
 
 **Longer-dated trades (30-90 DTE)**: Low theta. The buyer is willing to wait. This signals strategic positioning rather than an imminent catalyst.
 
-When our AI evaluates flow signals, DTE (and therefore theta exposure) is a key factor in the conviction grade. A large sweep on a 2 DTE option tells a very different story than the same sweep on a 60 DTE option.
+When the conviction engine evaluates flow signals, DTE (and therefore theta exposure) is a key factor in the grade. A large sweep on a 2 DTE option tells a very different story than the same sweep on a 60 DTE option.
 
 ## Vega: The Volatility Bet
 
@@ -126,7 +126,7 @@ When scanning [options flow](/blog/what-is-options-flow-trading), use these Gree
 
 ## How Profit Builders Uses the Greeks
 
-Every signal delivered by Profit Builders includes a Greeks summary — delta, gamma, theta, and vega — so you can immediately understand the risk profile of the institutional trade. Our AI factors these into the conviction grade, penalizing trades with excessive theta decay and rewarding those with favorable delta-to-premium ratios.
+Every signal delivered by Profit Builders includes a Greeks summary — delta, gamma, theta, and vega — so you can immediately understand the risk profile of the institutional trade. The conviction engine factors these into the grade, penalizing trades with excessive theta decay and rewarding those with favorable delta-to-premium ratios.
 
 
 ---

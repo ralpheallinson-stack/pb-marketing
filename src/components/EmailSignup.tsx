@@ -7,7 +7,7 @@ export function EmailSignup({
   variant = "inline",
 }: {
   source?: string
-  variant?: "inline" | "banner" | "hero"
+  variant?: "inline" | "banner" | "hero" | "flow-brief" | "flow-brief-compact"
 }) {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
@@ -26,7 +26,10 @@ export function EmailSignup({
       const data = await res.json()
       if (res.ok) {
         setStatus("success")
-        setMsg("You're in. First brief arrives tomorrow at 8:45 AM ET.")
+        const successText = source === "flow-brief" || source === "newsletter"
+          ? "You're in. First Flow Brief arrives tomorrow at 8:45 AM ET."
+          : "You're in. First lesson arrives tomorrow at 9:00 AM ET."
+        setMsg(successText)
         setEmail("")
       } else {
         setStatus("error")
@@ -38,6 +41,11 @@ export function EmailSignup({
     }
   }
 
+  // Success message changes based on what they're subscribing to
+  const successMsg = source === "flow-brief" || source === "newsletter"
+    ? "You're in. First Flow Brief arrives tomorrow at 8:45 AM ET."
+    : "You're in. First lesson arrives tomorrow at 9:00 AM ET."
+
   if (status === "success") {
     return (
       <div className={variant === "hero" ? "text-center" : ""}>
@@ -45,7 +53,7 @@ export function EmailSignup({
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          {msg}
+          {msg || successMsg}
         </div>
       </div>
     )
@@ -102,6 +110,56 @@ export function EmailSignup({
           </button>
         </form>
         {status === "error" && <div className="text-red-500 text-xs mt-2">{msg}</div>}
+      </div>
+    )
+  }
+
+  // ── Flow Brief variant: prominent, for /newsletter landing page ──
+  if (variant === "flow-brief") {
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="text-[10px] text-[#F97316] uppercase tracking-[3px] font-bold mb-3">DAILY FLOW BRIEF</div>
+        <h3 className="text-gray-900 font-bold text-xl sm:text-2xl mb-2 leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+          Yesterday&apos;s institutional flow. Every weekday at 8:45 AM ET.
+        </h3>
+        <p className="text-gray-500 text-sm mb-5 leading-relaxed">
+          Top Grade A prints, accumulation patterns, closed-position P&amp;L. No fluff. Free.
+        </p>
+        <form onSubmit={submit} className="flex flex-col sm:flex-row items-stretch gap-3">
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="you@email.com"
+            required
+            className="flex-1 px-4 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/10 placeholder:text-gray-400"
+          />
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="px-6 py-3 text-sm font-bold text-white bg-[#F97316] hover:bg-[#EA580C] rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+          >
+            {status === "loading" ? "..." : "Get the Brief"}
+          </button>
+        </form>
+        {status === "error" && <div className="text-red-500 text-xs mt-2">{msg}</div>}
+        <div className="text-[11px] text-gray-400 mt-4">
+          Free. Unsubscribe with one click. We never share your email.
+        </div>
+      </div>
+    )
+  }
+
+  // ── Flow Brief compact: tiny secondary CTAs below main course signup ──
+  if (variant === "flow-brief-compact") {
+    return (
+      <div className="text-center py-4 space-y-1.5">
+        <div className="text-[12px] text-gray-500">
+          Already reading flow? <a href="/newsletter" className="text-[#F97316] hover:underline font-semibold">Skip the course — get the daily Flow Brief →</a>
+        </div>
+        <div className="text-[12px] text-gray-500">
+          Want a printable reference? <a href="/cheat-sheet" className="text-[#F97316] hover:underline font-semibold">Get the free Options Flow Cheat Sheet →</a>
+        </div>
       </div>
     )
   }

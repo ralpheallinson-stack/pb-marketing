@@ -16,8 +16,8 @@ export default function Footer() {
             ))}
           </div>
           <div>
-            <h4 className="text-xs font-bold text-pb-dim uppercase tracking-widest mb-3 font-mono">Company</h4>
-            {[["About","/about"],["FAQ","/#faq"],["Blog","/blog"],["Community","/community"]].map(([l,h])=>(
+            <h4 className="text-xs font-bold text-pb-dim uppercase tracking-widest mb-3 font-mono">Learn</h4>
+            {[["Blog","/blog"],["Flow Brief","/newsletter"],["Cheat Sheet","/cheat-sheet"],["About","/about"],["FAQ","/#faq"],["Community","/community"]].map(([l,h])=>(
               <a key={l} href={h} className="block text-sm text-pb-dim hover:text-white transition-colors py-1">{l}</a>
             ))}
           </div>

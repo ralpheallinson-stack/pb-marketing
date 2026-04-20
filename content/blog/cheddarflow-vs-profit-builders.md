@@ -1,6 +1,6 @@
 ---
-title: "CheddarFlow vs Profit Builders: Which Options Flow Scanner Is Worth It?"
-description: "CheddarFlow and Profit Builders both track institutional options flow. But one shows raw data with AI alerts. The other grades every signal and publishes its track record. Here's how to choose."
+title: "CheddarFlow vs Profit Builders: Which Is Worth It?"
+description: "CheddarFlow and Profit Builders both track institutional options flow at $99/mo. One shows raw data. The other grades every signal and publishes 174K+ outcomes. Here's how to choose."
 date: "2026-04-15"
 author: "Profit Builders"
 read_time: "7"
@@ -8,11 +8,11 @@ read_time: "7"
 
 CheddarFlow and Profit Builders both do the same fundamental thing — scan institutional options flow and surface the trades that matter. They're in the same price range. They both offer free trials. And they both track sweeps, blocks, and unusual activity in real time.
 
-So what's actually different? Quite a bit, once you look under the hood.
+So what's actually different? Quite a bit, once you look under the hood. (If you're weighing more than two platforms, our [full 2026 scanner comparison](/blog/best-options-flow-scanner-2026) covers all four alternatives head-to-head.)
 
 ## Pricing
 
-CheddarFlow runs a three-tier structure. The Standard plan is $85/mo with a 7-day free trial. The Professional plan is $99/mo with no free trial — this is the tier that unlocks dark pool data, custom watchlists, and AI-powered Power Alerts. The Annual Professional plan brings the monthly cost down to $75/mo.
+CheddarFlow runs a three-tier structure. The Standard plan is $85/mo with a 7-day free trial. The Professional plan is $99/mo with no free trial — this is the tier that adds dark pool data, custom watchlists, and Power Alerts. The Annual Professional plan brings the monthly cost down to $75/mo.
 
 Profit Builders offers a Flow Scanner plan at $99/mo, a standalone GEX Heatmap plan at $39/mo, and a Pro Bundle at $129/mo that includes everything. All plans include a 7-day free trial.
 
@@ -22,17 +22,17 @@ At the $99/mo tier, you're comparing CheddarFlow Professional against Profit Bui
 
 Both platforms have real-time scanners that display options prints as they hit the tape. The basics are similar — ticker, strike, expiry, premium, volume, contract type.
 
-CheddarFlow's scanner is built on a WordPress/Elementor frontend with a clean dark theme. It shows flow sentiment (bullish/bearish), put-to-call ratio, and total call/put flow at the top. Filters let you narrow by premium, DTE, contract type, and more. TradingView charts are embedded directly in the platform.
+CheddarFlow's scanner has a clean dark theme. It shows flow sentiment (bullish/bearish), put-to-call ratio, and total call/put flow at the top. Filters let you narrow by premium, DTE, contract type, and more. TradingView charts are embedded directly in the platform.
 
-Profit Builders runs a Next.js web scanner with a slim sidebar layout. What's different is what happens to the data before it reaches you.
+Profit Builders runs a slim sidebar layout with grade filters pinned at the top. What's different is what happens to the data before it reaches you.
 
 ## Signal Quality: Raw Flow vs Conviction Grading
 
 This is the core philosophical difference.
 
-CheddarFlow shows you the flow and lets you interpret it. Their AI-powered Power Alerts flag trades that meet certain criteria, but the scanner itself is primarily a raw feed with filters. You see the print, you decide what it means.
+CheddarFlow shows you the flow and lets you interpret it. Their Power Alerts flag trades that meet certain criteria, but the scanner itself is primarily a raw feed with filters. You see the print, you decide what it means.
 
-Profit Builders grades every single signal before it reaches your screen. Every print is scored A, B, or C based on premium size, volume-to-open interest ratio, delta, DTE, and whether the order was bought at or above the ask. [Grade A signals](/blog/options-flow-signals-grade-a-b-c) ($500K+ premium, 20x+ Vol/OI) represent the highest conviction. Grade B and C follow with progressively lower thresholds.
+Profit Builders grades every signal before it reaches your screen. Every print is scored Grade A or Grade B by the conviction engine based on premium size, volume-to-open interest ratio, delta, DTE, market maker filtering, and whether the order was bought at or above the ask. [Grade A signals](/blog/options-flow-signals-grade-a-b-c) ($500K+ premium, 20x+ Vol/OI) represent the highest conviction. Grade B carries lower but still-tradable thresholds. Everything below that is filtered out before it reaches the scanner.
 
 This isn't just a label — it's a filter. When you set the scanner to "Grade A only," you're looking at a handful of signals per day instead of hundreds. The grading does the work that most traders do manually on other platforms.
 
@@ -58,7 +58,7 @@ This is where the difference is sharpest.
 
 CheddarFlow shows Power Alert performance with some historical data on individual alerts. But there's no comprehensive, public-facing track record of every signal generated by the platform.
 
-Profit Builders publishes a full track record on the Results page. Every signal is tracked — wins and losses. No cherry-picking, no deleted losers. The data shows that Grade A signals win 39.5% of the time versus 31.6% for Grade B, confirming that the grading system separates signal from noise. Over 92,000 signals have been tracked publicly.
+Profit Builders publishes a full track record on the [Results page](/results). Every signal is tracked — wins and losses. No cherry-picking, no deleted losers. As of today, Grade A signals win 39.3% of the time with Grade B tracking below that — proof that the conviction engine actually separates signal from noise. Over 174,000 signals have been tracked publicly.
 
 For a trader evaluating two platforms, this matters. One claims to be accurate. The other proves it with data.
 
@@ -90,14 +90,14 @@ Profit Builders delivers alerts via Discord and Telegram, with a bot that pushes
 
 **Profit Builders is for traders who** want the platform to do the filtering and grading work, care about a verified public track record, want [accumulation detection](/blog/what-is-options-accumulation) built in rather than done manually, and prefer a signal engine over a raw data feed. It's built for traders who want fewer, higher-conviction signals rather than a firehose of prints.
 
-## The Bottom Line
+## Analyst or Operator?
 
-At the same $99/mo price point, the question is what you're paying for.
+At the same $99/mo, you're buying one of two jobs.
 
-CheddarFlow gives you comprehensive raw data with AI alerts, dark pool analysis, and a polished interface. You bring the interpretation.
+CheddarFlow gives you raw flow plus dark pool prints and a clean feed. You're the analyst — you read the prints, decide what has conviction, and do the filtering in your head.
 
-Profit Builders gives you pre-filtered, conviction-graded signals with market maker noise removed, accumulation detection automated, and a public track record backing the system. The platform does the interpretation and shows you the receipts.
+Profit Builders runs that analysis for you. Market maker activity filtered out at the database layer. Accumulation patterns flagged automatically. Every signal graded A or B before it hits your screen, and every outcome logged at /results so you can check whether the grade held up.
 
-Both are legitimate tools. The right choice depends on whether you want to be the analyst (CheddarFlow) or want the platform to be the analyst (Profit Builders).
+If you already know how to read flow cold, CheddarFlow's raw feed plus dark pool data is a reasonable tool. If you'd rather skip the interpretation step and trade off a graded list with receipts, try Profit Builders.
 
-Try either one free for 7 days and see which fits your workflow.
+Open the [Profit Builders free scanner](/free-scanner) tomorrow at 9:30 AM ET, filter to Grade A only, and watch what happens by 10:30. If the grading earns its keep, the 7-day trial unlocks real-time data, GEX, and the full history.
