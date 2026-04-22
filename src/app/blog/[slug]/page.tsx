@@ -1,7 +1,7 @@
-import Nav from "@/components/Nav"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getAllSlugs, getAllPosts, getPost } from "@/lib/blog"
+import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown } from "@/lib/blog"
+import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
@@ -48,14 +48,31 @@ export default async function BlogPostPage({
   const url = `https://profitbuilders.io/blog/${slug}`
   const shareText = encodeURIComponent(post.title + " " + url)
 
+  const author = getAuthor(post.author)
+  const modified = post.updated ?? post.date
+  const hasBeenUpdated = post.updated && post.updated !== post.date
+
+  // Author schema — Organization when using the default fallback, Person when
+  // a human author has been configured (richer E-E-A-T signal for YMYL content).
+  const authorSchema = author.name === "Profit Builders"
+    ? { "@type": "Organization", name: author.name, url: "https://profitbuilders.io" }
+    : {
+        "@type": "Person",
+        name: author.name,
+        url: author.url ? `https://profitbuilders.io${author.url}` : undefined,
+        image: author.image?.startsWith("http") ? author.image : author.image ? `https://profitbuilders.io${author.image}` : undefined,
+        jobTitle: author.role,
+        ...(author.sameAs && author.sameAs.length > 0 ? { sameAs: author.sameAs } : {}),
+      }
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    dateModified: post.date,
-    author: { "@type": "Organization", name: "Profit Builders", url: "https://profitbuilders.io" },
+    dateModified: modified,
+    author: authorSchema,
     publisher: {
       "@type": "Organization",
       name: "Profit Builders",
@@ -65,6 +82,11 @@ export default async function BlogPostPage({
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     image: "https://profitbuilders.io/images/og-card.png",
   }
+
+  // Build a table of contents from H2 headings for long-form posts.
+  // Only surface the TOC when the post has 3+ sections, otherwise it's noise.
+  const tocItems = tocFromMarkdown(post.body)
+  const showToc = tocItems.length >= 3
 
 
   // FAQ schema for comparison/high-intent posts (SEO rich snippets)
@@ -215,11 +237,14 @@ export default async function BlogPostPage({
   const allPosts = getAllPosts()
   const related = allPosts.filter(p => p.slug !== slug).slice(0, 3)
 
-  const [y, m, d] = post.date.split("-").map(Number)
-  const dateObj = new Date(Date.UTC(y, m - 1, d))
-  const dateFormatted = dateObj.toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric", timeZone: "UTC",
-  })
+  const fmtDate = (iso: string) => {
+    const [yy, mm, dd] = iso.split("-").map(Number)
+    return new Date(Date.UTC(yy, mm - 1, dd)).toLocaleDateString("en-US", {
+      month: "long", day: "numeric", year: "numeric", timeZone: "UTC",
+    })
+  }
+  const dateFormatted = fmtDate(post.date)
+  const updatedFormatted = hasBeenUpdated ? fmtDate(modified) : null
 
   return (
     <div className="min-h-screen bg-white">
@@ -289,15 +314,27 @@ export default async function BlogPostPage({
 
       <article className="max-w-[680px] mx-auto px-6 pt-12 pb-16">
 
-        {/* Back */}
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] text-gray-400 hover:text-[#F97316] transition-colors mb-10">
-          <span>&larr;</span> All articles
-        </Link>
+        {/* Visible breadcrumbs (schema already emitted above) */}
+        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-[11px] text-gray-400 font-mono uppercase tracking-[0.12em]">
+          <Link href="/" className="hover:text-gray-900 transition-colors">Home</Link>
+          <span className="text-gray-300">/</span>
+          <Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link>
+          <span className="text-gray-300">/</span>
+          <span className="text-gray-600 truncate">{post.title}</span>
+        </nav>
 
         {/* ── HERO ── */}
         <header className="mb-10">
-          <div className="flex items-center gap-2 text-[12px] text-gray-400 mb-4">
-            <time>{dateFormatted}</time>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-gray-400 mb-4">
+            <time dateTime={post.date}>Published {dateFormatted}</time>
+            {updatedFormatted && (
+              <>
+                <span>·</span>
+                <time dateTime={modified} className="text-gray-700 font-semibold">
+                  Updated {updatedFormatted}
+                </time>
+              </>
+            )}
             <span>·</span>
             <span>{post.read_time} min read</span>
           </div>
@@ -312,20 +349,37 @@ export default async function BlogPostPage({
 
           {/* Author + share */}
           <div className="flex items-center justify-between py-4 border-t border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/pb-monogram.png"
-                alt=""
-                width={32}
-                height={32}
-                style={{ filter: "invert(1)", borderRadius: 6 }}
-              />
-              <div>
-                <div className="text-[13px] font-semibold text-gray-900">Profit Builders</div>
-                <div className="text-[11px] text-gray-400">Institutional flow analysis</div>
+            {author.url ? (
+              <Link href={author.url} className="flex items-center gap-3 group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={author.image ?? "/images/pb-monogram.png"}
+                  alt={author.name}
+                  width={32}
+                  height={32}
+                  style={{ filter: author.image && !author.image.includes("monogram") ? "none" : "invert(1)", borderRadius: 6 }}
+                />
+                <div>
+                  <div className="text-[13px] font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors">{author.name}</div>
+                  <div className="text-[11px] text-gray-400">{author.role}</div>
+                </div>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={author.image ?? "/images/pb-monogram.png"}
+                  alt={author.name}
+                  width={32}
+                  height={32}
+                  style={{ filter: author.image && !author.image.includes("monogram") ? "none" : "invert(1)", borderRadius: 6 }}
+                />
+                <div>
+                  <div className="text-[13px] font-semibold text-gray-900">{author.name}</div>
+                  <div className="text-[11px] text-gray-400">{author.role}</div>
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex items-center gap-2">
               <a
                 href={`https://x.com/intent/tweet?text=${shareText}`}
@@ -339,6 +393,25 @@ export default async function BlogPostPage({
               <CopyLinkButton url={url} />
             </div>
           </div>
+
+          {/* Table of contents for long-form posts (3+ H2 sections) */}
+          {showToc && (
+            <div className="mt-8 p-5 border border-gray-200 rounded-lg bg-gray-50">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500 mb-3">In this article</div>
+              <ol className="space-y-2 text-[14px] text-gray-700">
+                {tocItems.map((item, i) => (
+                  <li key={item.slug} className="flex gap-3">
+                    <span className="text-gray-400 font-mono text-[12px] tabular-nums pt-[1px]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <a href={`#${item.slug}`} className="hover:text-[#F97316] transition-colors">
+                      {item.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
         </header>
 
         {/* ── BODY ── */}
@@ -346,6 +419,46 @@ export default async function BlogPostPage({
           className="pb-prose"
           dangerouslySetInnerHTML={{ __html: post.content_html }}
         />
+
+        {/* ── AUTHOR BIO CARD ── */}
+        {author.bio && (
+          <aside className="mt-14 p-6 rounded-xl border border-gray-200 bg-gray-50 flex items-start gap-4" aria-label="About the author">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={author.image ?? "/images/pb-monogram.png"}
+              alt={author.name}
+              width={56}
+              height={56}
+              style={{ filter: author.image && !author.image.includes("monogram") ? "none" : "invert(1)", borderRadius: 10 }}
+              className="flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500 mb-1">About the author</div>
+              <div className="text-[16px] font-bold text-gray-950 mb-1">{author.name}</div>
+              <div className="text-[12px] text-gray-500 mb-3">{author.role}</div>
+              <p className="text-[14px] text-gray-700 leading-relaxed mb-3">{author.bio}</p>
+              <div className="flex items-center gap-4 text-[12px]">
+                {author.url && (
+                  <Link href={author.url} className="text-[#F97316] hover:underline font-semibold">
+                    More from {author.name.split(" ")[0]} →
+                  </Link>
+                )}
+                {author.sameAs?.map(s => {
+                  let label = "Link"
+                  if (/x\.com|twitter\.com/.test(s)) label = "X"
+                  else if (/linkedin\.com/.test(s)) label = "LinkedIn"
+                  else if (/github\.com/.test(s)) label = "GitHub"
+                  return (
+                    <a key={s} href={s} target="_blank" rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-gray-900 transition-colors">
+                      {label} ↗
+                    </a>
+                  )
+                })}
+              </div>
+            </div>
+          </aside>
+        )}
 
         {/* ── EMAIL CTA ── */}
         <div className="my-12">
