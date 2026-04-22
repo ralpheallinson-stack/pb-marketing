@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     default: "Options Flow Scanner | Profit Builders",
     template: "%s | Profit Builders",
   },
-  description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 208,000+ signals tracked.",
+  description: "Real-time institutional options flow scanner. Track sweeps, blocks, and unusual prints with conviction grading. 174,000+ signal outcomes verified.",
   metadataBase: new URL("https://profitbuilders.io"),
   alternates: { canonical: "https://profitbuilders.io" },
   openGraph: {

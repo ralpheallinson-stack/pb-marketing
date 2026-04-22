@@ -1,6 +1,6 @@
 ---
 title: "CheddarFlow vs Profit Builders: Which Is Worth It?"
-description: "CheddarFlow and Profit Builders both track institutional options flow at $99/mo. One shows raw data. The other grades every signal and publishes 174K+ outcomes. Here's how to choose."
+description: "CheddarFlow and Profit Builders both track options flow at $99/mo. One shows raw data; the other grades every signal and publishes 174K+ outcomes. How to choose."
 date: "2026-04-15"
 author: "Profit Builders"
 read_time: "7"

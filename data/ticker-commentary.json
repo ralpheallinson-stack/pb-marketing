@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-04-22T20:30:02.061Z",
+  "trade_date": "2026-04-22",
+  "total_tickers": 8,
+  "tickers": {
+    "AMD": {
+      "stocktwits_post": "$AMD — today's institutional flow totals $32.14M across 200 signals. Raw call/put split is nearly balanced (54.9% / 45.1%), but when you sort by direction, bullish positioning ($21.07M, 65.5%) outpaces bearish ($11.08M, 34.5%). A $500K+ call block is the largest single print of the session. Flow is mixed, not one-sided — but the directional weight is skewing net long intraday.\n\nFull breakdown: https://profitbuilders.io/options-flow/AMD\n\nBullish\n\n#OptionsFlow",
+      "x_post": "$AMD today's flow: $32.14M across 200 signals, 65.5% bullish premium vs 34.5% bearish. A $500K+ call block stands out. Mixed raw split (55/45 calls/puts) but directional money skews net long. https://profitbuilders.io/options-flow/AMD #OptionsFlow",
+      "trade_date": "2026-04-22",
+      "call_pct": 54.897660250162104,
+      "bullish_pct": 65.54415947963275,
+      "signals": 200,
+      "total_premium": "32142838"
+    },
+    "AVGO": {
+      "stocktwits_post": "$AVGO — Today's flow logs $20.74M across 104 signals. Call premium accounts for $17.64M (85%), with bullish-side positioning (buy calls + sell puts) totaling $15.31M, or 73.8% of total. A $500K+ call sweep stands out. Puts are not absent — $3.10M (15%) on the bearish side — but institutional positioning skews heavily toward calls.\n\nFull breakdown: https://profitbuilders.io/options-flow/AVGO\nBullish\n\n#OptionsFlow",
+      "x_post": "$AVGO today's options flow: $20.74M across 104 signals, 85% calls. Bullish-side premium hits $15.31M (73.8%), with a $500K+ call sweep leading the tape. Put activity exists at 15% — this isn't one-sided, but the lean is clear. https://profitbuilders.io/options-flow/AVGO #OptionsFlow",
+      "trade_date": "2026-04-22",
+      "call_pct": 85.03631124413981,
+      "bullish_pct": 73.83885480801355,
+      "signals": 104,
+      "total_premium": "20739719"
+    },
+    "META": {
+      "stocktwits_post": "$META today's flow registers $3.91M across 20 Grade A/B signals with a 50/50 call-put split. No directional lean. Institutions appear to be hedging or positioning for a move without committing to a side.\n\nFull breakdown: https://profitbuilders.io/options-flow/META\n\nNeutral\n\n#OptionsFlow",
+      "x_post": "$META today's flow: $3.91M across 20 Grade A/B signals. Split sits at 50% calls — institutional positioning is balanced, not directional. https://profitbuilders.io/options-flow/META #OptionsFlow",
+      "trade_date": "2026-04-20",
+      "call_pct": null,
+      "bullish_pct": null,
+      "signals": 20,
+      "total_premium": "3914544"
+    },
+    "MSFT": {
+      "stocktwits_post": "$MSFT — today's options flow logged $28.59M across 113 signals, with calls accounting for 77.8% ($22.24M) of total premium. Puts were present at 22.2% ($6.36M), so this wasn't one-sided, but the call-dominant lean was clear. One contract saw 5 separate hits totaling ~$2.16M in accumulated premium. Bullish positioning made up 64.2% of directional flow; bearish side held 35.8%.\n\nFull breakdown: https://profitbuilders.io/options-flow/MSFT\n\nBullish\n\n#OptionsFlow",
+      "x_post": "$MSFT closed today's tape with $22.24M in call premium vs $6.36M puts across 113 signals. One contract drew 5 hits, ~$2.16M accumulated. Calls led 77.8% by premium.\nhttps://profitbuilders.io/options-flow/MSFT #OptionsFlow",
+      "trade_date": "2026-04-21",
+      "call_pct": 77.76859061018621,
+      "bullish_pct": 64.21388877998048,
+      "signals": 113,
+      "total_premium": "28591813"
+    },
+    "MSTR": {
+      "stocktwits_post": "$MSTR Friday's flow came in at $47.89M across 109 Grade A/B signals — every dollar of it on the call side.\n\nOne contract drew 4 separate hits and ~$6.09M in premium. The largest single sweep crossed $500K. That kind of repeat positioning on a single contract is not noise.\n\nFull breakdown: https://profitbuilders.io/options-flow/MSTR\n\nBullish",
+      "x_post": "$MSTR Friday's flow: $47.89M in premium across 109 Grade A/B signals — 100% calls.\n\nOne contract alone saw 4 hits totaling ~$6.09M. Size is not browsing. It's accumulating.\n\nhttps://profitbuilders.io/options-flow/MSTR #OptionsFlow",
+      "trade_date": "2026-04-17",
+      "call_pct": null,
+      "bullish_pct": null,
+      "signals": 109,
+      "total_premium": "47891891"
+    },
+    "MU": {
+      "stocktwits_post": "$MU — Today's flow totaled $30.41M across 148 signals. Calls dominated at 66.5% ($20.23M) vs. puts at 33.5% ($10.18M). Bullish-side premium (buy calls + sell puts) came in at $17.83M (58.6%), with a $500K+ call sweep among the standout prints. Both sides were active; the lean is call-heavy but not one-sided.\nFull breakdown: https://profitbuilders.io/options-flow/MU\nNeutral\n\n#OptionsFlow",
+      "x_post": "$MU saw $30.41M in options premium across 148 signals today. Calls led at 66.5% ($20.23M), but puts held 33.5% — not one-sided. Bullish positioning: 58.6%. A $500K+ call sweep stood out.\nhttps://profitbuilders.io/options-flow/MU #OptionsFlow",
+      "trade_date": "2026-04-21",
+      "call_pct": 66.5357680377471,
+      "bullish_pct": 58.61744228450344,
+      "signals": 148,
+      "total_premium": "30410810"
+    },
+    "NVDA": {
+      "stocktwits_post": "$NVDA — today's options flow totals $27.72M across 141 signals. Bullish positioning dominates at 77.0% of premium ($21.35M in buy calls + sell puts), but put activity is real: 43.6% of premium is on the put side, including a $500K+ sweep. One contract accumulated ~$2.25M across 3 hits — institutional-scale repetition worth watching. Flow leans call-heavy, not one-sided.\n\nFull breakdown: https://profitbuilders.io/options-flow/NVDA\nBullish\n\n#OptionsFlow",
+      "x_post": "$NVDA today's flow: $27.72M across 141 signals, 77% bullish premium ($21.35M). A $500K+ put sweep and 43.6% put-side activity keep this two-sided. One contract hit 3x, totaling ~$2.25M. https://profitbuilders.io/options-flow/NVDA #OptionsFlow",
+      "trade_date": "2026-04-22",
+      "call_pct": 56.36654436927486,
+      "bullish_pct": 77.04493590300972,
+      "signals": 141,
+      "total_premium": "27716590"
+    },
+    "SNDK": {
+      "stocktwits_post": "$SNDK — today's flow logged $2.89M across 21 Grade A/B signals with a 50% call / 50% put split. Institutional positioning is balanced, offering no clear directional read at this stage of the session.\n\nFull breakdown: https://profitbuilders.io/options-flow/SNDK\nNeutral\n\n#OptionsFlow",
+      "x_post": "$SNDK today's flow: $2.89M across 21 Grade A/B signals. 50/50 call-put split — institutional positioning shows no directional conviction yet.\nhttps://profitbuilders.io/options-flow/SNDK #OptionsFlow",
+      "trade_date": "2026-04-20",
+      "call_pct": null,
+      "bullish_pct": null,
+      "signals": 21,
+      "total_premium": "2891407"
+    }
+  }
+}

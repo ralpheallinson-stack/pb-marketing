@@ -6,6 +6,7 @@ const links = [
   { href: "/#features",    label: "Features" },
   { href: "/results",      label: "Results" },
   { href: "/#pricing",     label: "Pricing" },
+  { href: "/vs",           label: "Compare" },
   { href: "/community",    label: "Community" },
   { href: "/blog",         label: "Blog" },
   { href: "/free-scanner", label: "Free Scanner", bold: true },
@@ -17,22 +18,22 @@ export default function Nav() {
 
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav className="relative flex items-center justify-between gap-4 px-5 h-12 rounded-full bg-white md:bg-white/90 md:backdrop-blur-xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full max-w-3xl">
+      <nav className="relative flex items-center justify-between gap-4 px-5 h-12 rounded-full bg-white md:bg-white/90 md:backdrop-blur-xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full max-w-4xl">
         <Link href="/" className="flex-shrink-0" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain brightness-0" />
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-5 text-sm">
+        <div className="hidden md:flex items-center gap-4 text-sm whitespace-nowrap">
           {links.map(l => (
-            <Link key={l.href} href={l.href} className={`text-gray-500 hover:text-black transition-colors ${l.bold ? "font-semibold" : ""}`}>
+            <Link key={l.href} href={l.href} className={`text-gray-500 hover:text-black transition-colors whitespace-nowrap ${l.bold ? "font-semibold" : ""}`}>
               {l.label}
             </Link>
           ))}
-          <a href="https://x.com/ProfitBldrs" target="_blank" rel="noopener noreferrer" aria-label="Follow on X" className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-black transition-colors">
+          <a href="https://x.com/ProfitBldrs" target="_blank" rel="noopener noreferrer" aria-label="Follow on X" className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-black transition-colors flex-shrink-0">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
-          <Link href="/login" className="text-gray-500 hover:text-black transition-colors">Login</Link>
+          <Link href="/login" className="text-gray-500 hover:text-black transition-colors whitespace-nowrap">Login</Link>
         </div>
 
         {/* Right cluster */}

@@ -97,6 +97,15 @@ export default function AccountPage() {
   const [pwMsg, setPwMsg] = useState("")
   const [pwOk, setPwOk] = useState(false)
   const [billingUrl, setBillingUrl] = useState<string | null>(null)
+  const [referral, setReferral] = useState<{
+    referral_code: string
+    share_link: string
+    total_referrals: number
+    converted: number
+    rewards_earned: number
+    total_savings_usd: number
+  } | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     document.title = "Membership | Profit Builders"
@@ -109,7 +118,19 @@ export default function AccountPage() {
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.url) setBillingUrl(d.url) })
       .catch(() => {})
+    fetch("/api/referral-stats")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && d.referral_code) setReferral(d) })
+      .catch(() => {})
   }, [router])
+
+  const copyReferralLink = () => {
+    if (!referral?.share_link) return
+    navigator.clipboard.writeText(referral.share_link).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    })
+  }
 
   const handleSetPassword = async () => {
     setPwMsg(""); setPwOk(false)
@@ -375,6 +396,136 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+
+      {/* Referral panel */}
+      {referral && (
+        <div style={{
+          width: "100%", maxWidth: 480,
+          marginBottom: 24,
+          background: "rgba(249,115,22,0.04)",
+          border: "1px solid rgba(249,115,22,0.22)",
+          borderRadius: 12,
+          padding: 22,
+          color: "#D9E2F0",
+          boxSizing: "border-box",
+        }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, color: "#F97316",
+            letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 6,
+          }}>
+            Refer &amp; Earn
+          </div>
+          <div style={{
+            fontSize: 18, fontWeight: 700, color: "#F8FAFC",
+            letterSpacing: "-0.01em", marginBottom: 14, lineHeight: 1.3,
+          }}>
+            Invite a trader. Earn $99 on every paid referral.
+          </div>
+
+          {/* Share link row */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+            <input
+              type="text"
+              value={referral.share_link}
+              readOnly
+              onFocus={(e) => (e.target as HTMLInputElement).select()}
+              style={{
+                flex: 1,
+                padding: "11px 12px",
+                background: "rgba(0,0,0,0.35)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 8,
+                color: "#F8FAFC",
+                fontSize: 12,
+                fontFamily: "JetBrains Mono, monospace",
+                outline: "none",
+                minWidth: 0,
+              }}
+            />
+            <button
+              onClick={copyReferralLink}
+              style={{
+                padding: "11px 16px",
+                background: copied ? "#10B981" : "#F97316",
+                color: "#0A0E17",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                fontFamily: "JetBrains Mono, monospace",
+                flexShrink: 0,
+              }}
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+
+          {/* Stats row */}
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 10, marginBottom: 14,
+          }}>
+            <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 9, color: "#8494B0", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>Signups</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#F8FAFC", lineHeight: 1 }}>{referral.total_referrals}</div>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 9, color: "#8494B0", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>Converted</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#F97316", lineHeight: 1 }}>{referral.converted}</div>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.25)", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 9, color: "#8494B0", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>Earned</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#10B981", lineHeight: 1 }}>${referral.total_savings_usd}</div>
+            </div>
+          </div>
+
+          {/* Share buttons */}
+          <div style={{ display: "flex", gap: 8 }}>
+            <a
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent("The flow scanner I actually use — 174K+ signals tracked, 39.3% Grade A win rate. 7-day free trial. " + referral.share_link)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: 1, textAlign: "center", padding: "10px 8px",
+                background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 8, color: "#D9E2F0", fontSize: 11, fontWeight: 600,
+                textDecoration: "none", letterSpacing: "0.04em",
+              }}
+            >
+              Share on X
+            </a>
+            <a
+              href={`mailto:?subject=${encodeURIComponent("The options flow scanner I'm using")}&body=${encodeURIComponent("The flow scanner I actually use — 174K+ signals tracked, 39.3% Grade A win rate. 7-day free trial.\n\n" + referral.share_link)}`}
+              style={{
+                flex: 1, textAlign: "center", padding: "10px 8px",
+                background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 8, color: "#D9E2F0", fontSize: 11, fontWeight: 600,
+                textDecoration: "none", letterSpacing: "0.04em",
+              }}
+            >
+              Email
+            </a>
+            <a
+              href={`/referral/dashboard?email=${encodeURIComponent(account?.email ?? "")}`}
+              style={{
+                flex: 1, textAlign: "center", padding: "10px 8px",
+                background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 8, color: "#D9E2F0", fontSize: 11, fontWeight: 600,
+                textDecoration: "none", letterSpacing: "0.04em",
+              }}
+            >
+              Full dashboard →
+            </a>
+          </div>
+
+          <div style={{ fontSize: 11, color: "#8494B0", marginTop: 12, lineHeight: 1.5 }}>
+            $99 Stripe credit applies automatically on each converted paid referral. No cap.
+          </div>
+        </div>
+      )}
 
       {/* Billing section */}
       {billingUrl && (

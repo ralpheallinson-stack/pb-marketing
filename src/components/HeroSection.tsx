@@ -184,7 +184,7 @@ export default function HeroSection() {
           className="font-extrabold leading-[1.05] tracking-tight mb-6"
           style={{ fontSize: 'clamp(52px, 8vw, 92px)' }}
         >
-          <span className="text-white">Options Flow,</span>
+          <span className="text-white">Options Flow Scanner,</span>
           <br />
           <span style={{
             background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 30%, #94a3b8 60%, #e2e8f0 100%)',

@@ -73,6 +73,31 @@ The trade-off: Barchart is breadth-first. Options flow is one feature in a 20-ye
 **Best for:** Multi-asset traders who need one platform for options, futures, crypto, and charts under a single login.
 **Deeper dive:** [Barchart vs Profit Builders head-to-head](/blog/barchart-vs-profit-builders).
 
+## Adjacent Tools — Not Direct Competitors
+
+Three tools show up in the same searches but solve different jobs. Worth knowing where they fit.
+
+### SpotGamma — $99-299/month
+
+[SpotGamma](/blog/spotgamma-vs-profit-builders) grades dealer positioning and gamma exposure on indices. Call walls, put walls, HIRO indicator, Bloomberg integration. It's the institutional vocabulary for macro gamma regime trading — not a whale print scanner. Pairs well with a flow tool but doesn't replace one.
+
+**Best for:** SPX / SPY / QQQ traders who trade off dealer hedging pressure.
+**Deeper dive:** [SpotGamma vs Profit Builders](/blog/spotgamma-vs-profit-builders).
+
+### OptionStrat — $14.99-49.99/month
+
+[OptionStrat](/blog/optionstrat-vs-profit-builders) is a strategy builder — payoff diagrams, Greeks per leg, a multi-leg Optimizer. Flow is a secondary feature (and 15-min delayed on everything except the $49.99 Live Flow tier). Great for thesis-first traders constructing iron condors and credit spreads.
+
+**Best for:** Multi-leg strategy construction and premium sellers.
+**Deeper dive:** [OptionStrat vs Profit Builders](/blog/optionstrat-vs-profit-builders).
+
+### Market Chameleon — $69-99/month
+
+[Market Chameleon](/blog/market-chameleon-vs-profit-builders) is a deep research library — historical earnings reactions, volatility studies, 100+ screeners, backtesting. Data is 15-minute delayed on every tier, so it's research-first, not execution. Useful as a complement to a live flow tool for earnings strategies.
+
+**Best for:** Earnings strategy traders and systematic screeners.
+**Deeper dive:** [Market Chameleon vs Profit Builders](/blog/market-chameleon-vs-profit-builders).
+
 ## Why We Built Profit Builders — $99/month
 
 Yes, we built this. Here's what we did differently after trading on every platform above.

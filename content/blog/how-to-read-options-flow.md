@@ -1,6 +1,6 @@
 ---
 title: "How to Read Options Flow in 2026: A Practical Guide"
-description: "Learn how to read options flow step by step — from understanding sweeps and blocks to interpreting premium, Vol/OI ratios, and conviction grades. Practical examples from real trades."
+description: "Step-by-step guide to reading options flow — sweeps vs blocks, premium thresholds, Vol/OI ratios, DTE, and conviction grading. With real scanner examples."
 date: "2026-04-15"
 author: "Profit Builders"
 read_time: "15"

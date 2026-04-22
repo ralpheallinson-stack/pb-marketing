@@ -5,19 +5,21 @@ import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "The Options Flow Cheat Sheet — Free One-Page Reference",
-  description: "Free one-page options flow cheat sheet. The 9-filter conviction framework, Grade A/B thresholds, sweep vs block decoder, Vol/OI lookup, accumulation checklist. Printable.",
+  title: "Options Flow Cheat Sheet — Free Printable Reference",
+  description: "Free one-page cheat sheet covering the 9-filter conviction engine, Grade A/B thresholds, sweep vs block decoder, Vol/OI reference, and accumulation checklist.",
   alternates: { canonical: "https://profitbuilders.io/cheat-sheet" },
   openGraph: {
-    title: "The Options Flow Cheat Sheet — Free Printable Reference",
+    title: "Options Flow Cheat Sheet — Free Printable Reference",
     description: "One page. The 9-filter conviction framework. Grade thresholds. Sweep vs block decoder. Free.",
     url: "https://profitbuilders.io/cheat-sheet",
     type: "website",
+    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Cheat Sheet" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Options Flow Cheat Sheet",
+    title: "Options Flow Cheat Sheet",
     description: "One page. The 9-filter conviction framework. Free printable reference.",
+    images: ["/images/og-card.png"],
   },
 }
 

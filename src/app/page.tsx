@@ -7,6 +7,7 @@ import Pricing from "@/components/Pricing"
 import EmailCapture from "@/components/EmailCapture"
 import FAQ from "@/components/FAQ"
 import Footer from "@/components/Footer"
+import PopularTickers from "@/components/PopularTickers"
 
 const appSchema = JSON.stringify({
   "@context": "https://schema.org",
@@ -100,6 +101,11 @@ export default function Home() {
       <div className="border-t border-white/[0.05]"><FeaturesSection /></div>
       <div className="border-t border-white/[0.05]"><GexSection /></div>
       <div className="border-t border-white/[0.05]"><TrackRecord /></div>
+      <PopularTickers
+        limit={12}
+        title="Popular tickers by institutional flow"
+        subtitle="Drill into per-ticker track records, call/put lean, and historical Grade A flow by symbol. Click any ticker for the full page."
+      />
       {/* Mid-page CTA */}
       <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
         <div className="max-w-lg mx-auto text-center">
@@ -111,7 +117,7 @@ export default function Home() {
             Start Free 7-Day Trial
           </a>
           <p className="text-white/30 text-xs mt-3">
-            Cancel anytime · No credit card games
+            Card required · Cancel anytime before day 7
           </p>
         </div>
       </section>

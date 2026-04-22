@@ -49,6 +49,51 @@ function loadData(): Dataset {
   return _cache
 }
 
+type TickerCommentary = {
+  stocktwits_post: string
+  x_post: string
+  trade_date: string
+  call_pct: number | null
+  bullish_pct: number | null
+  signals: number | null
+  total_premium: number | null
+}
+
+type CommentaryDataset = {
+  generated_at: string
+  trade_date: string
+  total_tickers: number
+  tickers: Record<string, TickerCommentary>
+}
+
+let _commentary: CommentaryDataset | null = null
+function loadCommentary(): CommentaryDataset | null {
+  if (_commentary) return _commentary
+  try {
+    const p = path.join(process.cwd(), "data", "ticker-commentary.json")
+    const raw = fs.readFileSync(p, "utf-8")
+    _commentary = JSON.parse(raw) as CommentaryDataset
+    return _commentary
+  } catch {
+    // File may not exist on first build before the export script runs; degrade gracefully.
+    return null
+  }
+}
+
+/** Strip social-native adornments (hashtags, footer links, cashtag
+ *  leading-prefix) from the ticker_spotlight stocktwits post so it reads
+ *  cleanly as editorial copy on a ticker page. */
+function cleanCommentary(text: string): string {
+  return text
+    // Remove hashtag cluster at end
+    .replace(/\s*#\w+(?:\s+#\w+)*\s*$/g, "")
+    // Remove "Full breakdown: https://..." footer lines
+    .replace(/\n*Full breakdown:[^\n]*/gi, "")
+    // Remove sentiment tag on its own line at the end ("Bullish" / "Bearish" / "Neutral")
+    .replace(/\n+(Bullish|Bearish|Neutral)\s*$/, "")
+    .trim()
+}
+
 export const dynamicParams = false
 
 export function generateStaticParams() {
@@ -65,7 +110,9 @@ export async function generateMetadata(
   if (!t) return {}
 
   const url = `https://profitbuilders.io/options-flow/${ticker.toUpperCase()}`
-  const title = `${t.symbol} Options Flow: Institutional Activity and Grade A Signals`
+  // Use middle dot instead of ampersand — Next.js auto-escapes & to &amp;
+  // in the <title> which bleeds into some social crawlers and looks ugly.
+  const title = `${t.symbol} Options Flow · Grade A Signals · Premium Tracked Daily`
   const description = `${t.symbol} options flow tracking — ${t.total_signals.toLocaleString()} signals logged, ${t.total_premium_fmt} in total institutional premium, ${t.call_pct}% call lean. Updated ${data.generated_date}.`
 
   return {
@@ -100,6 +147,10 @@ export default async function OptionsFlowTickerPage(
   const data = loadData()
   const t = data.tickers[ticker.toUpperCase()]
   if (!t) notFound()
+
+  const commentaryData = loadCommentary()
+  const commentary = commentaryData?.tickers[t.symbol] ?? null
+  const commentaryClean = commentary ? cleanCommentary(commentary.stocktwits_post) : null
 
   const url = `https://profitbuilders.io/options-flow/${t.symbol}`
   const generatedDisplay = formatDate(data.generated_date)
@@ -201,76 +252,142 @@ export default async function OptionsFlowTickerPage(
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
+      <style>{`
+        .pb-grain {
+          background-image:
+            radial-gradient(ellipse at 20% 10%, rgba(37,99,235,0.10), transparent 50%),
+            radial-gradient(ellipse at 85% 40%, rgba(22,163,74,0.06), transparent 45%),
+            linear-gradient(180deg, #0E1117 0%, #0B0E13 100%);
+        }
+        .pb-rule { background: linear-gradient(90deg, transparent, rgba(122,139,168,0.22) 8%, rgba(122,139,168,0.22) 92%, transparent); }
+        .pb-hairline { border-color: rgba(122,139,168,0.14); }
+        .pb-mono { font-family: "IBM Plex Mono", "Menlo", monospace; letter-spacing: -0.01em; }
+        .pb-editorial { font-family: Georgia, "Times New Roman", serif; }
+        .pb-num { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "tnum"; letter-spacing: -0.03em; }
+        .pb-section-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; color: #3D4D63; text-transform: uppercase; }
+        .pb-link { border-bottom: 1px solid rgba(52,211,153,0.4); transition: border-color 160ms ease; }
+        .pb-link:hover { border-color: #34D399; }
+        @keyframes pbRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .pb-rise { animation: pbRise 700ms cubic-bezier(0.16,1,0.3,1) both; }
+        .pb-chip:hover { border-color: rgba(52,211,153,0.4); color: #fff; }
+      `}</style>
+
       <Nav />
 
-      <main className="bg-white">
+      <main className="pb-grain text-[#E8EDF5] min-h-screen">
         {/* Breadcrumb */}
-        <div className="max-w-5xl mx-auto px-6 pt-8">
-          <nav className="text-[12px] text-gray-500">
-            <Link href="/" className="hover:text-[#F97316]">Home</Link>
-            <span className="mx-2">›</span>
-            <Link href="/options-flow" className="hover:text-[#F97316]">Options Flow</Link>
-            <span className="mx-2">›</span>
-            <span className="text-gray-900 font-semibold">{t.symbol}</span>
+        <div className="max-w-6xl mx-auto px-6 pt-28">
+          <nav className="pb-mono text-[11px] text-[#7A8BA8]">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span className="mx-2 text-[#3D4D63]">/</span>
+            <Link href="/options-flow" className="hover:text-white transition-colors">Options Flow</Link>
+            <span className="mx-2 text-[#3D4D63]">/</span>
+            <span className="text-white">{t.symbol}</span>
           </nav>
         </div>
 
         {/* ── HERO ── */}
-        <section className="max-w-5xl mx-auto px-6 pt-8 pb-12">
-          <div className="flex items-center gap-3 text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-4">
-            <span>{t.sector || "Equity"}</span>
-            {t.market_cap && <><span>·</span><span>{t.market_cap} cap</span></>}
-            <span>·</span>
-            <span>Data as of {generatedDisplay}</span>
-          </div>
+        <section className="max-w-6xl mx-auto px-6 pt-8 pb-20 border-b pb-hairline">
+          <div className="pb-rise">
+            <div className="flex items-baseline gap-3 mb-6">
+              <span className="pb-section-num">01 / 07</span>
+              <span className="pb-rule h-px flex-1" />
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Data as of {generatedDisplay}</span>
+            </div>
 
-          <h1 className="text-[36px] sm:text-[52px] font-bold text-gray-950 leading-[1.05] tracking-[-0.03em] mb-5" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-            {t.symbol} Options Flow: Institutional Activity and Grade A Signals
-          </h1>
+            <div className="flex items-center gap-3 pb-mono text-[10px] uppercase tracking-[0.22em] text-[#7A8BA8] mb-6">
+              <span>{t.sector || "Equity"}</span>
+              {t.market_cap && <><span className="text-[#3D4D63]">·</span><span>{t.market_cap} cap</span></>}
+            </div>
 
-          <p className="text-[18px] text-gray-600 leading-relaxed max-w-3xl mb-8">
-            Profit Builders has tracked <strong className="text-gray-900">{t.total_signals.toLocaleString()} Grade A/B institutional flow signals</strong> on {t.symbol} since {formatDate(t.first_signal)}, representing <strong className="text-gray-900">{t.total_premium_fmt}</strong> in total premium. Flow has been <strong className="text-gray-900">{leanText}</strong>, with {t.call_pct}% of premium into calls and {t.put_pct}% into puts.
-          </p>
+            <h1 className="pb-editorial text-[40px] sm:text-[56px] md:text-[64px] leading-[1.02] tracking-[-0.025em] text-white mb-6">
+              {t.symbol} <span className="text-[#3D4D63]">Options Flow.</span>
+            </h1>
 
-          {/* Hero stats grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <StatCard label="Total signals" value={t.total_signals.toLocaleString()} />
-            <StatCard label="Grade A signals" value={t.grade_a_count.toLocaleString()} accent />
-            <StatCard label="Total premium" value={t.total_premium_fmt} />
-            <StatCard label="Last 30d signals" value={t.last_30d.signals.toLocaleString()} />
-          </div>
+            <p className="text-[17px] md:text-[18px] leading-[1.6] text-[#A9B4C6] max-w-3xl mb-10">
+              Profit Builders has tracked <span className="text-white font-medium">{t.total_signals.toLocaleString()} Grade A/B institutional flow signals</span> on {t.symbol} since {formatDate(t.first_signal)}, representing <span className="text-white font-medium">{t.total_premium_fmt}</span> in total premium. Flow has been <span className="text-white font-medium">{leanText}</span>, with {t.call_pct}% of premium into calls and {t.put_pct}% into puts.
+            </p>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/free-scanner" className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold px-6 py-3 rounded-full text-[14px] transition-colors">
-              Get {t.symbol} alerts in real time →
-            </Link>
-            <Link href="/newsletter" className="inline-flex items-center gap-2 text-gray-700 hover:text-[#F97316] font-semibold text-[14px]">
-              Free daily flow brief →
-            </Link>
+            {/* Hero stats grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border pb-hairline rounded-sm overflow-hidden mb-10">
+              <DataCell label="Total signals" value={t.total_signals.toLocaleString()} />
+              <DataCell label="Grade A signals" value={t.grade_a_count.toLocaleString()} accent />
+              <DataCell label="Total premium" value={t.total_premium_fmt} />
+              <DataCell label="Last 30d signals" value={t.last_30d.signals.toLocaleString()} />
+            </div>
+
+            {/* Today's Read — fresh commentary from pb-flow */}
+            {commentaryClean && (
+              <div className="mt-10 mb-10 relative rounded-sm border pb-hairline px-6 md:px-8 py-6 md:py-7 bg-[rgba(52,211,153,0.03)]">
+                <div className="absolute left-0 top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#34D399] via-[#34D399]/60 to-transparent" />
+                <div className="flex items-baseline justify-between flex-wrap gap-2 mb-5">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34D399] opacity-60" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
+                    </span>
+                    <span className="pb-mono text-[10px] uppercase tracking-[0.24em] text-[#34D399]">
+                      Today&apos;s read · {formatDate(commentary!.trade_date)}
+                    </span>
+                  </div>
+                  <span className="pb-mono text-[10px] uppercase tracking-[0.18em] text-[#3D4D63]">
+                    Generated from live flow
+                  </span>
+                </div>
+                <p className="pb-editorial text-[17px] leading-[1.7] text-[#E8EDF5] whitespace-pre-wrap">
+                  {commentaryClean}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-5">
+              <Link
+                href="/free-scanner"
+                className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[12px] font-bold tracking-wider uppercase px-7 py-3.5 rounded-full transition-colors"
+              >
+                Get {t.symbol} alerts →
+              </Link>
+              <Link
+                href="/newsletter"
+                className="pb-mono text-[11px] uppercase tracking-[0.18em] text-[#A9B4C6] hover:text-white transition-colors"
+              >
+                Free daily flow brief →
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* ── RECENT ACTIVITY (tease only) ── */}
         {t.recent_teases.length > 0 && (
-          <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-            <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-3">RECENT INSTITUTIONAL ACTIVITY</div>
-            <h2 className="text-[28px] font-bold text-gray-950 leading-tight tracking-[-0.02em] mb-6" style={{ fontFamily: "Georgia, serif" }}>
-              Grade A {t.symbol} prints — last 14 days
+          <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+            <div className="flex items-baseline gap-3 mb-10">
+              <span className="pb-section-num">02 / 07</span>
+              <span className="pb-rule h-px flex-1" />
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Last 14 days</span>
+            </div>
+            <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4 max-w-3xl">
+              Recent Grade A {t.symbol} prints.
             </h2>
-            <p className="text-gray-500 text-[14px] mb-8 max-w-2xl">
-              Size-bucketed for public view. Exact strikes, expirations, and premium amounts are available in the live scanner.
+            <p className="text-[15px] leading-[1.65] text-[#A9B4C6] mb-10 max-w-2xl">
+              Size-bucketed for public view. Exact strikes, expirations, and premium amounts are surfaced in the live scanner as they print.
             </p>
 
-            <div className="space-y-3">
+            <div className="border-t border-b pb-hairline">
               {t.recent_teases.map((tease, i) => (
-                <div key={i} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <div className="flex items-center gap-4">
-                    <div className="text-[11px] text-gray-400 font-mono">{formatDate(tease.date)}</div>
-                    <div className="text-[15px] text-gray-900 font-semibold">
-                      {tease.size_bucket} {tease.direction} via {tease.flow_type.toLowerCase().replace("_", " ")}
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-4 border-b pb-hairline last:border-b-0 hover:bg-[rgba(52,211,153,0.03)] transition-colors px-4 -mx-4"
+                >
+                  <div className="flex items-center gap-6">
+                    <div className="pb-mono text-[11px] text-[#3D4D63] w-20">{formatDate(tease.date)}</div>
+                    <div className="text-[15px] text-white">
+                      <span className="pb-mono text-[#34D399] font-semibold">{tease.size_bucket}</span>
+                      <span className="text-[#A9B4C6] mx-2">·</span>
+                      <span>{tease.direction}</span>
+                      <span className="text-[#7A8BA8] text-[13px]"> via {tease.flow_type.toLowerCase().replace("_", " ")}</span>
                     </div>
                   </div>
-                  <div className="text-[11px] text-[#F97316] font-semibold uppercase tracking-wider">Grade A</div>
+                  <span className="pb-mono text-[10px] text-[#34D399] uppercase tracking-[0.2em] font-semibold">Grade A</span>
                 </div>
               ))}
             </div>
@@ -279,61 +396,87 @@ export default async function OptionsFlowTickerPage(
 
         {/* ── ACCUMULATION (if any) ── */}
         {t.accumulation && (
-          <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-            <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-3">ACCUMULATION PATTERN</div>
-            <h2 className="text-[28px] font-bold text-gray-950 leading-tight tracking-[-0.02em] mb-6" style={{ fontFamily: "Georgia, serif" }}>
-              {t.symbol} institutions are building a position
+          <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+            <div className="flex items-baseline gap-3 mb-10">
+              <span className="pb-section-num">03 / 07</span>
+              <span className="pb-rule h-px flex-1" />
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Pattern detected</span>
+            </div>
+            <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-6 max-w-3xl">
+              {t.symbol} institutions are building a position.
             </h2>
-            <p className="text-gray-700 text-[16px] leading-relaxed max-w-3xl mb-4">
-              One {t.symbol} options contract has seen <strong>{t.accumulation.hits} repeat institutional entries</strong> in the last 14 days, totaling approximately <strong>${t.accumulation.total_premium_m}M in premium</strong>. This pattern — multiple aggressive prints on the same strike and expiry — is how institutions typically build a position without moving the market.
+            <p className="text-[16px] leading-[1.7] text-[#A9B4C6] max-w-3xl mb-6">
+              One {t.symbol} options contract has seen <span className="text-white font-medium">{t.accumulation.hits} repeat institutional entries</span> in the last 14 days, totaling approximately <span className="text-white font-medium">${t.accumulation.total_premium_m}M in premium</span>. This pattern — multiple aggressive prints on the same strike and expiry — is how institutions typically build a position without moving the market.
             </p>
-            <Link href="/blog/what-is-options-accumulation" className="text-[#F97316] hover:underline text-[14px] font-semibold">
-              Read: What is options accumulation? →
+            <Link
+              href="/blog/what-is-options-accumulation"
+              className="pb-mono text-[11px] uppercase tracking-[0.18em] text-[#34D399] pb-link"
+            >
+              What is options accumulation? →
             </Link>
           </section>
         )}
 
         {/* ── TRACK RECORD ── */}
         {t.win_rate.closed > 0 && (
-          <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-            <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-3">HISTORICAL TRACK RECORD</div>
-            <h2 className="text-[28px] font-bold text-gray-950 leading-tight tracking-[-0.02em] mb-6" style={{ fontFamily: "Georgia, serif" }}>
-              {t.symbol} Grade A signal outcomes
+          <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+            <div className="flex items-baseline gap-3 mb-10">
+              <span className="pb-section-num">04 / 07</span>
+              <span className="pb-rule h-px flex-1" />
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Historical track record</span>
+            </div>
+            <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-8 max-w-3xl">
+              {t.symbol} Grade A signal outcomes.
             </h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              <StatCard label="Closed Grade A" value={t.win_rate.closed.toLocaleString()} />
-              <StatCard label="Win rate" value={t.win_rate.win_rate !== null ? `${t.win_rate.win_rate}%` : "—"} accent />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-0 border pb-hairline rounded-sm overflow-hidden mb-8">
+              <DataCell label="Closed Grade A" value={t.win_rate.closed.toLocaleString()} />
+              <DataCell label="Win rate" value={t.win_rate.win_rate !== null ? `${t.win_rate.win_rate}%` : "—"} accent />
               {t.win_rate.avg_pnl !== null && (
-                <StatCard label="Avg P&L" value={`${t.win_rate.avg_pnl > 0 ? "+" : ""}${t.win_rate.avg_pnl}%`} />
+                <DataCell label="Avg P&L" value={`${t.win_rate.avg_pnl > 0 ? "+" : ""}${t.win_rate.avg_pnl}%`} />
               )}
             </div>
 
-            <p className="text-gray-600 text-[14px] max-w-2xl leading-relaxed">
-              All {t.symbol} signal outcomes are publicly auditable at <Link href="/results" className="text-[#F97316] hover:underline">/results</Link> — wins and losses, with no cherry-picking.
+            <p className="text-[15px] leading-[1.7] text-[#A9B4C6] max-w-3xl mb-5">
+              All {t.symbol} signal outcomes are publicly auditable at <Link href="/results" className="pb-link text-white">/results</Link> — wins and losses, with no cherry-picking.
             </p>
+            <Link
+              href={`/options-flow/${t.symbol}/grade-a`}
+              className="pb-mono text-[11px] uppercase tracking-[0.18em] text-[#34D399] pb-link"
+            >
+              Full {t.symbol} Grade A performance breakdown →
+            </Link>
           </section>
         )}
 
         {/* ── FAQ ── */}
-        <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-          <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-3">QUESTIONS ABOUT {t.symbol} OPTIONS FLOW</div>
-          <h2 className="text-[28px] font-bold text-gray-950 leading-tight tracking-[-0.02em] mb-8" style={{ fontFamily: "Georgia, serif" }}>
-            FAQ
+        <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+          <div className="flex items-baseline gap-3 mb-10">
+            <span className="pb-section-num">05 / 07</span>
+            <span className="pb-rule h-px flex-1" />
+            <span className="pb-mono text-[11px] text-[#3D4D63]">Questions about {t.symbol}</span>
+          </div>
+          <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-10 max-w-3xl">
+            The questions people actually ask.
           </h2>
 
-          <div className="space-y-6 max-w-3xl">
+          <div className="space-y-10 max-w-3xl">
             {faqItems.map((f, i) => (
-              <div key={i} className="border-b border-gray-100 pb-6 last:border-0">
-                <div className="text-gray-900 font-semibold text-[17px] mb-2" style={{ fontFamily: "Georgia, serif" }}>{f.q}</div>
-                <p className="text-gray-600 text-[14px] leading-relaxed">{f.a}</p>
+              <div key={i}>
+                <div className="pb-editorial text-[20px] md:text-[22px] text-white leading-[1.25] mb-3">{f.q}</div>
+                <p className="text-[15px] text-[#A9B4C6] leading-[1.7]">{f.a}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── EMAIL CTA ── */}
-        <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+        <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+          <div className="flex items-baseline gap-3 mb-10">
+            <span className="pb-section-num">06 / 07</span>
+            <span className="pb-rule h-px flex-1" />
+            <span className="pb-mono text-[11px] text-[#3D4D63]">Flow brief</span>
+          </div>
           <div className="max-w-lg mx-auto">
             <EmailSignup source="flow-brief" variant="flow-brief" />
           </div>
@@ -341,19 +484,23 @@ export default async function OptionsFlowTickerPage(
 
         {/* ── RELATED TICKERS ── */}
         {t.related_tickers.length > 0 && (
-          <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-            <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-3">RELATED {t.sector} FLOW</div>
-            <h2 className="text-[22px] font-bold text-gray-950 mb-6" style={{ fontFamily: "Georgia, serif" }}>
-              Other {t.sector.toLowerCase()} tickers with tracked flow
+          <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+            <div className="flex items-baseline gap-3 mb-10">
+              <span className="pb-section-num">07 / 07</span>
+              <span className="pb-rule h-px flex-1" />
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Related {t.sector.toLowerCase()} flow</span>
+            </div>
+            <h2 className="pb-editorial text-[28px] md:text-[32px] leading-[1.1] tracking-[-0.02em] text-white mb-8 max-w-3xl">
+              Other {t.sector.toLowerCase()} tickers with tracked flow.
             </h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {t.related_tickers.map(sym => (
                 <Link
                   key={sym}
                   href={`/options-flow/${sym}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 hover:border-[#F97316] rounded-lg text-[14px] font-semibold text-gray-900 hover:text-[#F97316] transition-colors"
+                  className="pb-chip pb-mono inline-flex items-center gap-2 px-4 py-2 border pb-hairline rounded-full text-[12px] font-semibold text-[#A9B4C6] transition-colors"
                 >
-                  {sym} →
+                  {sym} <span className="text-[#3D4D63]">→</span>
                 </Link>
               ))}
             </div>
@@ -361,22 +508,19 @@ export default async function OptionsFlowTickerPage(
         )}
 
         {/* ── EDUCATIONAL LINKS ── */}
-        <section className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-          <div className="text-[11px] text-gray-400 uppercase tracking-[3px] font-semibold mb-4">LEARN MORE</div>
-          <div className="flex flex-wrap gap-4 text-[14px]">
-            <Link href="/blog/how-to-read-options-flow" className="text-[#F97316] hover:underline">How to read options flow</Link>
-            <span className="text-gray-300">·</span>
-            <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#F97316] hover:underline">What Grade A, B, and C mean</Link>
-            <span className="text-gray-300">·</span>
-            <Link href="/blog/what-is-options-accumulation" className="text-[#F97316] hover:underline">Options accumulation explained</Link>
-            <span className="text-gray-300">·</span>
-            <Link href="/results" className="text-[#F97316] hover:underline">Public track record</Link>
+        <section className="max-w-6xl mx-auto px-6 py-12 border-b pb-hairline">
+          <div className="pb-mono text-[10px] uppercase tracking-[0.22em] text-[#3D4D63] mb-4">Learn more</div>
+          <div className="flex flex-wrap gap-x-6 gap-y-3 pb-mono text-[12px] uppercase tracking-[0.14em]">
+            <Link href="/blog/how-to-read-options-flow" className="text-[#A9B4C6] hover:text-white transition-colors">How to read options flow</Link>
+            <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#A9B4C6] hover:text-white transition-colors">Grade A, B, and C explained</Link>
+            <Link href="/blog/what-is-options-accumulation" className="text-[#A9B4C6] hover:text-white transition-colors">Options accumulation</Link>
+            <Link href="/results" className="text-[#A9B4C6] hover:text-white transition-colors">Public track record</Link>
           </div>
         </section>
 
         {/* ── DATA FRESHNESS FOOTER ── */}
-        <section className="max-w-5xl mx-auto px-6 py-8 border-t border-gray-100 text-[12px] text-gray-400">
-          Data refreshed daily. This page was last generated {generatedDisplay}. Last Grade A/B {t.symbol} signal logged on {lastSignalDisplay}.
+        <section className="max-w-6xl mx-auto px-6 py-8 pb-mono text-[11px] text-[#3D4D63] uppercase tracking-[0.14em]">
+          Data refreshed daily · Generated {generatedDisplay} · Last {t.symbol} signal {lastSignalDisplay}
         </section>
       </main>
 
@@ -385,11 +529,13 @@ export default async function OptionsFlowTickerPage(
   )
 }
 
-function StatCard({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+function DataCell({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="p-4 border border-gray-200 rounded-lg bg-white">
-      <div className="text-[10px] text-gray-400 uppercase tracking-[2px] font-semibold mb-2">{label}</div>
-      <div className={`text-[24px] font-bold leading-none ${accent ? "text-[#F97316]" : "text-gray-950"}`} style={{ fontFamily: "Georgia, serif" }}>
+    <div className="p-5 md:p-6 border-r last:border-r-0 border-b md:border-b-0 pb-hairline">
+      <div className="pb-mono text-[10px] uppercase tracking-[0.2em] text-[#7A8BA8] mb-3">{label}</div>
+      <div
+        className={`pb-num text-[28px] md:text-[32px] leading-none ${accent ? "text-[#34D399]" : "text-white"} font-bold tabular-nums`}
+      >
         {value}
       </div>
     </div>

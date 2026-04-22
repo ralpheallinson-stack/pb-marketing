@@ -26,15 +26,29 @@ function loadData(): Dataset {
   return JSON.parse(fs.readFileSync(p, "utf-8")) as Dataset
 }
 
-export const metadata: Metadata = {
-  title: "Options Flow by Ticker — 107 Tickers Tracked | Profit Builders",
-  description: "Institutional options flow data for 107 tickers. Grade A signals, total premium, call/put lean, and historical track record — updated daily.",
-  alternates: { canonical: "https://profitbuilders.io/options-flow" },
-  openGraph: {
-    title: "Options Flow by Ticker",
-    description: "Institutional options flow data across 107 tickers. Updated daily.",
-    url: "https://profitbuilders.io/options-flow",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const data = loadData()
+  const count = Object.keys(data.tickers).length
+  const title = `Options Flow by Ticker — ${count} Tickers Tracked`
+  const description = `Institutional options flow data for ${count} tickers. Grade A signals, total premium, call/put lean, and historical track record — refreshed daily.`
+  const ogDescription = `Institutional options flow data across ${count} tickers. Refreshed daily.`
+  return {
+    title,
+    description,
+    alternates: { canonical: "https://profitbuilders.io/options-flow" },
+    openGraph: {
+      title,
+      description: ogDescription,
+      url: "https://profitbuilders.io/options-flow",
+      images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Options Flow by Ticker — Profit Builders" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: ogDescription,
+      images: ["/images/og-card.png"],
+    },
+  }
 }
 
 export default async function OptionsFlowIndex() {

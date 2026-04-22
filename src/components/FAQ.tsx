@@ -86,7 +86,7 @@ export default function FAQ() {
             Ready to trade with institutional flow?
           </h3>
           <p className="text-white/50 mb-8">
-            7-day free trial. No credit card required.
+            7-day free trial · Card required · Cancel anytime before day 7.
           </p>
           <div className="flex gap-4 justify-center">
             <a

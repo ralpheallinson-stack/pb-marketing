@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer className="bg-pb-navy border-t border-pb-border-dk py-12">
       <div className="max-w-[980px] mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
           <div>
             <div className="mb-2">
               <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain" />
@@ -16,6 +16,12 @@ export default function Footer() {
             ))}
           </div>
           <div>
+            <h4 className="text-xs font-bold text-pb-dim uppercase tracking-widest mb-3 font-mono">Compare</h4>
+            {[["All comparisons","/vs"],["vs Unusual Whales","/vs/unusual-whales"],["vs FlowAlgo","/vs/flowalgo"],["vs Cheddar Flow","/vs/cheddar-flow"]].map(([l,h])=>(
+              <a key={l} href={h} className="block text-sm text-pb-dim hover:text-white transition-colors py-1">{l}</a>
+            ))}
+          </div>
+          <div>
             <h4 className="text-xs font-bold text-pb-dim uppercase tracking-widest mb-3 font-mono">Learn</h4>
             {[["Blog","/blog"],["Flow Brief","/newsletter"],["Cheat Sheet","/cheat-sheet"],["About","/about"],["FAQ","/#faq"],["Community","/community"]].map(([l,h])=>(
               <a key={l} href={h} className="block text-sm text-pb-dim hover:text-white transition-colors py-1">{l}</a>
@@ -23,7 +29,7 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="text-xs font-bold text-pb-dim uppercase tracking-widest mb-3 font-mono">Subscribers</h4>
-            {[["Scanner Login","/login"],["Refer & Earn","/referral/dashboard"],["Free Scanner","/free-scanner"]].map(([l,h])=>(
+            {[["Scanner Login","/login"],["Refer & Earn","/refer"],["Free Scanner","/free-scanner"]].map(([l,h])=>(
               <a key={l} href={h} className="block text-sm text-pb-dim hover:text-white transition-colors py-1">{l}</a>
             ))}
           </div>
