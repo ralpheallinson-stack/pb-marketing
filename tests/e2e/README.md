@@ -15,7 +15,7 @@ npx playwright install --with-deps
 Put in `.env.e2e` (loaded by `dotenv -e .env.e2e --`) — never commit:
 
 ```
-BASE_URL=https://profitbuilders.org          # or a staging URL
+BASE_URL=https://profitbuilders.io          # or a staging URL
 
 # Active paid subscriber (used by loggedInPage fixture)
 E2E_EMAIL=...
