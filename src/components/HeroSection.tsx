@@ -236,9 +236,8 @@ export default function HeroSection() {
         >
           {[
             { node: <><CountUp from={0} to={52.1} duration={2} />%</>, label: 'Strong Win Rate' },
-            { node: <>+<CountUp from={0} to={2.18} duration={2} />%</>, label: 'Avg EV Per Trade' },
             { node: <><CountUp from={0} to={174} duration={2} />K+</>, label: 'Signals Tracked' },
-            { node: <><CountUp from={0} to={71} duration={2} /></>, label: 'Closed Trades' },
+            { node: <>100%</>, label: 'Every Outcome Public' },
           ].map(({ node, label }) => (
             <div key={label} className="text-center">
               <div className="text-2xl font-bold text-white mb-1">{node}</div>
