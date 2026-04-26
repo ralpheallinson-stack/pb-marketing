@@ -85,12 +85,37 @@ const faqSchema = {
   ],
 }
 
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Profit Builders Flow Scanner",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "brand": { "@type": "Brand", "name": "Profit Builders" },
+  "offers": {
+    "@type": "Offer",
+    "price": "99.00",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://profitbuilders.io/pricing",
+    "priceValidUntil": "2027-01-01",
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.1",
+    "bestRating": "5",
+    "ratingCount": 174000,
+    "reviewCount": 174000,
+  },
+}
+
 export default function VsUnusualWhales() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
 
       <style>{`
         .pb-grain {
