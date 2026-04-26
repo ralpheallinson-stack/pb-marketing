@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/fix-og-slashes.mjs",
+    "build": "next build && node scripts/fix-og-slashes.mjs && node scripts/purge-cloudflare.mjs",
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",

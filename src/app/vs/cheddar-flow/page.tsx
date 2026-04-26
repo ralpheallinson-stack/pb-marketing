@@ -32,10 +32,10 @@ const articleSchema = {
   "@type": "Article",
   "headline": "Cheddar Flow vs Profit Builders: 2026 Options Flow Scanner Comparison",
   "description": "Side-by-side comparison of Cheddar Flow and Profit Builders across pricing, feature access, conviction grading, track record, alerts, and filtering.",
-  "author": { "@type": "Organization", "name": "Profit Builders" },
+  "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": { "@type": "Organization", "name": "Profit Builders", "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" } },
-  "datePublished": "2026-04-22",
-  "dateModified": "2026-04-22",
+  "datePublished": "2026-04-22T09:00:00-04:00",
+  "dateModified": "2026-04-26T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -87,6 +87,10 @@ const productSchema = {
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
   "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "image": [
+    "https://profitbuilders.io/images/scanner-preview.png",
+    "https://profitbuilders.io/images/og-card.png"
+  ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {
     "@type": "Offer",

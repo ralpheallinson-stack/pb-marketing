@@ -86,7 +86,8 @@ export async function generateMetadata(
   const url = `https://profitbuilders.io/options-flow/${t.symbol}/grade-a`
   const ga = t.grade_a_detail
   const wrText = ga.win_rate !== null ? `${ga.win_rate}% win rate` : "historical data"
-  const title = `${t.symbol} Grade A Options Flow — ${ga.total.toLocaleString()} Signals Tracked`
+  // Tighter: short suffix + brand template = clean SERP display
+  const title = `${t.symbol} Grade A Flow · ${ga.total.toLocaleString()} Signals`
   const description = `${t.symbol} Grade A institutional options flow — ${ga.total.toLocaleString()} signals tracked, ${wrText}, ${ga.closed.toLocaleString()} closed positions with full P&L. Auditable.`
 
   return {

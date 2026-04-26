@@ -110,9 +110,15 @@ export async function generateMetadata(
   if (!t) return {}
 
   const url = `https://profitbuilders.io/options-flow/${ticker.toUpperCase()}`
-  // Use middle dot instead of ampersand — Next.js auto-escapes & to &amp;
-  // in the <title> which bleeds into some social crawlers and looks ugly.
-  const title = `${t.symbol} Options Flow · Grade A Signals · Premium Tracked Daily`
+  // Tighter title (<= 60 chars after  | Profit Builders  template suffix).
+  // Surfaces a unique-per-ticker number which lifts CTR vs the generic
+  // 'Grade A Signals · Premium Tracked Daily' tail used previously (78 chars,
+  // Google-truncated). Format: 1247 -> '1.2K', 12847 -> '12.8K'.
+  const sigCount = t.total_signals as number
+  const sigShort = sigCount >= 1000
+    ? `${(sigCount / 1000).toFixed(1)}K`
+    : String(sigCount)
+  const title = `${t.symbol} Options Flow · ${sigShort} Signals Tracked`
   const description = `${t.symbol} options flow tracking — ${t.total_signals.toLocaleString()} signals logged, ${t.total_premium_fmt} in total institutional premium, ${t.call_pct}% call lean. Updated ${data.generated_date}.`
 
   return {
