@@ -7,6 +7,7 @@ const links = [
   { href: "/results",      label: "Results" },
   { href: "/#pricing",     label: "Pricing" },
   { href: "/vs",           label: "Compare" },
+  { href: "/learn",        label: "Learn" },
   { href: "/community",    label: "Community" },
   { href: "/blog",         label: "Blog" },
   { href: "/free-scanner", label: "Free Scanner", bold: true },
