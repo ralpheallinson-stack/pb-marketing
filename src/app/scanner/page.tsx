@@ -294,6 +294,16 @@ export default function ScannerPage() {
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
+  // Refs to break dep churn — see plan: scanner live-update fix.
+  // playBlip via ref so sound toggles don't rebuild fetchData.
+  // fetchDataRef so polling/reset effects don't re-run on fetchData identity changes.
+  // lastSuccessRef + pollError power the connection-status banner + stale watchdog.
+  const playBlipRef = useRef<() => void>(() => {})
+  const fetchDataRef = useRef<((opts?: { initial?: boolean; pageNum?: number }) => Promise<void>) | null>(null)
+  const lastSuccessRef = useRef<number>(Date.now())
+  const [pollError, setPollError] = useState<string | null>(null)
+  useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
+
   const savePreset = (name: string) => {
     if (!name.trim()) return
     const preset: FilterPreset = {
@@ -358,8 +368,10 @@ export default function ScannerPage() {
           const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
           lastTradeIdRef.current = newMaxId
           setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
-          if (data.trades.some(matchesFilterRef.current)) playBlip()
+          if (data.trades.some(matchesFilterRef.current)) playBlipRef.current()
         }
+        lastSuccessRef.current = Date.now()
+        setPollError(null)
         return
       }
 
@@ -370,7 +382,7 @@ export default function ScannerPage() {
       if (data.error) return
       const incoming = data.trades || []
       if (pg === 0 && prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
-        playBlip()
+        playBlipRef.current()
       }
       prevTradeIdsRef.current = new Set(incoming.map(tr => tr.id))
       if (incoming.length > 0) {
@@ -379,29 +391,74 @@ export default function ScannerPage() {
       isFirstLoadRef.current = false
       setTrades(incoming)
       setStats(data.stats || { count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
-    } catch { /* network error */ }
+      lastSuccessRef.current = Date.now()
+      setPollError(null)
+    } catch {
+      setPollError("Connection lost — retrying")
+    }
     setLoading(false)
-  }, [page, buildUrl, router, playBlip])
+  }, [page, buildUrl, router])
 
-  // initial load + page/range change — reset incremental state
+  // Keep fetchDataRef in sync — decouples reset/polling effects from fetchData identity
+  useEffect(() => { fetchDataRef.current = fetchData }, [fetchData])
+
+  // initial load + page/range change — reset incremental state.
+  // Uses fetchDataRef so this effect doesn't re-fire (and wipe state) on every
+  // fetchData rebuild — that was Failure 2 in the plan.
   useEffect(() => {
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
     setTrades([])
-    fetchData({ initial: true, pageNum: page })
-  }, [page, timeRange, fetchData])
+    fetchDataRef.current?.({ initial: true, pageNum: page })
+  }, [page, timeRange])
 
-  // auto-refresh every 5s only on page 0 (live)
+  // auto-refresh every 3s on page 0 (live).
+  //
+  // Self-rescheduling setTimeout instead of setInterval: doesn't pile up if a fetch
+  // is slow, and pairs cleanly with visibilitychange to recover from background-tab
+  // throttling (Chrome throttles setInterval to 1Hz in inactive tabs, sometimes pauses entirely).
+  //
+  // Visibility/focus handler: on tab return, immediately catch up via since_id and
+  // restart the timer fresh — don't trust whatever stale state Chrome left it in.
   useEffect(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (page === 0) {
-      intervalRef.current = setInterval(() => {
-        setLive(isMarketOpen())
-        fetchData({ pageNum: 0 })
-      }, 3000)
+    if (page !== 0) return
+
+    const tick = () => {
+      if (document.hidden) return
+      setLive(isMarketOpen())
+      const p = fetchDataRef.current?.({ pageNum: 0 })
+      const after = () => {
+        if (page === 0 && !document.hidden) {
+          intervalRef.current = setTimeout(tick, 3000)
+        }
+        // Stale watchdog — only flag during market hours to avoid pre/after-market noise.
+        if (isMarketOpen() && Date.now() - lastSuccessRef.current > 15000) {
+          setPollError("No updates for 15s — checking connection")
+        }
+      }
+      if (p && typeof (p as Promise<void>).finally === "function") {
+        (p as Promise<void>).finally(after)
+      } else {
+        after()
+      }
     }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [page, fetchData])
+
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return
+      if (intervalRef.current) clearTimeout(intervalRef.current as ReturnType<typeof setTimeout>)
+      fetchDataRef.current?.({ pageNum: 0 })
+      intervalRef.current = setTimeout(tick, 3000)
+    }
+
+    intervalRef.current = setTimeout(tick, 3000)
+    document.addEventListener("visibilitychange", onVisible)
+    window.addEventListener("focus", onVisible)
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current as ReturnType<typeof setTimeout>)
+      document.removeEventListener("visibilitychange", onVisible)
+      window.removeEventListener("focus", onVisible)
+    }
+  }, [page])
 
   // active filter count
   useEffect(() => {
@@ -495,6 +552,11 @@ export default function ScannerPage() {
 
   return (
     <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
+      {pollError && (
+        <div role="status" aria-live="polite" className="fixed top-2 right-2 z-50 px-3 py-1.5 rounded text-xs font-medium text-white shadow-lg" style={{ background: "rgba(217,119,6,0.92)" }}>
+          {pollError}
+        </div>
+      )}
 
       {/* ── SIDEBAR ── */}
       <nav className="fixed left-0 top-0 h-full w-[68px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
