@@ -402,15 +402,17 @@ export default function ScannerPage() {
   // Keep fetchDataRef in sync — decouples reset/polling effects from fetchData identity
   useEffect(() => { fetchDataRef.current = fetchData }, [fetchData])
 
-  // initial load + page/range change — reset incremental state.
-  // Uses fetchDataRef so this effect doesn't re-fire (and wipe state) on every
-  // fetchData rebuild — that was Failure 2 in the plan.
+  // initial load + page/range/filter change — reset incremental state.
+  // Uses fetchDataRef so the dep churn from fetchData identity changes does NOT
+  // wipe state. But we must still depend on the URL-affecting filters
+  // (timeRange, filterMinPremium, filterDte from buildUrl) so changing those
+  // clears the stale trade list and refetches with the new server filter.
   useEffect(() => {
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
     setTrades([])
     fetchDataRef.current?.({ initial: true, pageNum: page })
-  }, [page, timeRange])
+  }, [page, timeRange, filterMinPremium, filterDte])
 
   // auto-refresh every 3s on page 0 (live).
   //
