@@ -367,6 +367,18 @@ export default function ScannerPage() {
     return `/api/scanner/live-flow?${p.toString()}`
   }, [timeRange, filterMinPremium, filterDte])
 
+  // Detect a session-expired response. Flask's @subscriber_required returns a
+  // 302 to /login (not 401/403). The browser fetch follows the redirect by
+  // default, so res.status is 200 with res.redirected=true and res.url ending
+  // in /login. Without this check, the polling loop silently swallows the
+  // login HTML, fails JSON parse, and the user sees "Connection lost" forever
+  // until they manually refresh. Spotted in the 16/199 302 ratio in access logs.
+  const isAuthRedirect = (res: Response): boolean => {
+    if (res.status === 401 || res.status === 403) return true
+    if (res.redirected && res.url.includes("/login")) return true
+    return false
+  }
+
   const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number }) => {
     const pg = opts?.pageNum ?? page
     if (opts?.initial) setLoading(true)
@@ -374,7 +386,11 @@ export default function ScannerPage() {
       // Incremental polling — only on page 0 (live) after first load
       if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
         const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }))
-        if (res.status === 401 || res.status === 403) { router.push("/login"); return }
+        if (isAuthRedirect(res)) {
+          setPollError("Session expired — redirecting to login…")
+          router.push("/login")
+          return
+        }
         const data: ApiResponse = await res.json()
         if (data.trades?.length > 0) {
           const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
@@ -389,7 +405,11 @@ export default function ScannerPage() {
 
       // Full load (first time, page change, filter change)
       const res = await fetch(buildUrl({ pageNum: pg }))
-      if (res.status === 401 || res.status === 403) { router.push("/login"); return }
+      if (isAuthRedirect(res)) {
+        setPollError("Session expired — redirecting to login…")
+        router.push("/login")
+        return
+      }
       const data: ApiResponse = await res.json()
       if (data.error) return
       const incoming = data.trades || []
@@ -405,8 +425,13 @@ export default function ScannerPage() {
       setStats(data.stats || { count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
       lastSuccessRef.current = Date.now()
       setPollError(null)
-    } catch {
-      setPollError("Connection lost — retrying")
+    } catch (err) {
+      // JSON parse error after a missed-auth redirect lands here. Distinguish
+      // "we got HTML" (likely auth) from "real network failure".
+      const msg = err instanceof SyntaxError
+        ? "Session may have expired — refresh to log in."
+        : "Connection lost — retrying"
+      setPollError(msg)
     }
     setLoading(false)
   }, [page, buildUrl, router])
