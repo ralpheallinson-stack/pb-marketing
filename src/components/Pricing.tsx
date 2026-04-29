@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { ShineBorder } from "@/components/magicui/shine-border"
 
 const CHECK = "✓"
@@ -48,6 +49,31 @@ const plans = [
     ],
   },
 ]
+
+const PROMO_EXPIRES = new Date("2026-05-06T07:00:00Z").getTime()
+
+function PromoChip() {
+  const [show, setShow] = useState(false)
+  useEffect(() => { if (Date.now() < PROMO_EXPIRES) setShow(true) }, [])
+  if (!show) return null
+  return (
+    <div className="flex justify-center mb-8 px-4">
+      <div className="inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 px-3.5 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/85 text-[13px] sm:text-sm max-w-full">
+        <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-[#DA552F]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#DA552F]" aria-hidden />
+          Limited Offer
+        </span>
+        <span className="hidden sm:inline-block h-3 w-px bg-white/15" aria-hidden />
+        <span className="whitespace-nowrap">
+          <span className="font-semibold text-white">30% off</span>
+          <span className="hidden sm:inline"> first month with </span>
+          <span className="sm:hidden"> · </span>
+          <span className="font-mono text-[11px] sm:text-[12px] tracking-[0.08em] border border-white/15 rounded px-1.5 py-[2px] text-white">PHHUNT30</span>
+        </span>
+      </div>
+    </div>
+  )
+}
 
 function FeatureList({ features }: { features: string[] }) {
   return (
@@ -163,6 +189,8 @@ export default function Pricing() {
             7-day free trial. Cancel anytime. No questions asked.
           </p>
         </div>
+
+        <PromoChip />
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

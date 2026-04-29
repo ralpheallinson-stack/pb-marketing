@@ -160,3 +160,24 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 0 2px rgba(72, 222, 255, 0.2);
 }
 
+
+/* Promo banner offset — pushes the floating Nav pill down when banner is visible */
+html.has-promo-banner .pb-nav-floating {
+  top: 3.25rem;
+}
+
+/* Eye-popping promo banner — emerald gradient with subtle shimmer */
+.pb-promo-banner {
+  background: linear-gradient(90deg, #059669 0%, #10b981 35%, #06b6d4 70%, #10b981 100%);
+  background-size: 200% 100%;
+  animation: pb-promo-shimmer 6s ease-in-out infinite;
+  box-shadow: 0 1px 12px rgba(16, 185, 129, 0.35);
+}
+@keyframes pb-promo-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-promo-banner { animation: none; }
+}

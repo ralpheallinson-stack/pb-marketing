@@ -10,9 +10,16 @@ export const TIER_STYLES: Record<string, string> = {
   accumulation:  UNIFIED,
   size:          UNIFIED,
   position:      UNIFIED,
-  warning:       UNIFIED,
+  warning:       'bg-amber-500/20 text-amber-300 border-amber-500/30',  // ROLL/HEDGE — fade signal
   structure:     UNIFIED,
   strategy:      UNIFIED,
+  iv_high:       'bg-red-500/20 text-red-300 border-red-500/30',        // IV rank >= 70 — vol expensive
+  iv_low:        'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',     // IV rank <= 30 — vol cheap
+  directional:   'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', // True directional exposure (premium × delta)
+  ruoa:          'bg-violet-500/20 text-violet-300 border-violet-500/30',   // Repeat unusual activity (multi-day streak)
+  ruoa_heavy:    'bg-violet-500/40 text-violet-100 border-violet-400/50',   // Heavy RUOA — 5+ consecutive days
+  iso:           'bg-cyan-500/25 text-cyan-200 border-cyan-400/40',         // Intermarket Sweep Order — directional aggression
+  cross:         'bg-fuchsia-500/25 text-fuchsia-200 border-fuchsia-400/45', // Broker cross — options "dark pool" analog
 }
 
 export const BADGE_BASE = 'whitespace-nowrap inline-flex items-center px-[5px] py-[2px] rounded-sm text-[11px] font-bold tracking-[0.04em] uppercase leading-[1.4] border'

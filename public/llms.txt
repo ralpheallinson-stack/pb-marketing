@@ -1,38 +1,67 @@
 # Profit Builders — Institutional Options Flow Scanner
-> Real-time options flow tracking with conviction grading, accumulation detection, and GEX heatmaps.
+> Real-time options flow scanner with 9-filter conviction grading and a publicly verifiable 174,000+ signal track record. Every Grade A and Grade B signal is logged the moment it fires and published at /results.
 
 ## What This Site Is
-Profit Builders is a SaaS platform that tracks institutional options flow in real time. The scanner monitors every US options trade via Polygon.io and grades signals by conviction (Grade A = highest, Grade B = standard). Features include sweep/block detection, accumulation tracking (repeated aggressive buys on the same contract), gamma exposure (GEX) heatmaps, and market maker identification.
+Profit Builders is a SaaS platform that tracks institutional options flow in real time across 220 symbols. The scanner monitors every US options trade via Polygon.io and grades signals by conviction (Grade A = highest, Grade B = standard) using a documented 9-filter engine: sweep detection, vol/OI gates, market-maker identification, direction inference, DTE windows, premium thresholds, position-action classification, deep-ITM screen, far-OTM screen. Alerts deliver to Discord and Telegram in 1.4 seconds median latency.
 
-## Key Pages
-- [Homepage](https://profitbuilders.io/) — product overview, feature highlights, pricing
-- [Blog](https://profitbuilders.io/blog) — daily flow recaps, educational content on options flow
-- [Results](https://profitbuilders.io/results) — public track record of scanner signal outcomes
-- [Free Scanner](https://profitbuilders.io/free-scanner) — 15-minute delayed flow viewer, no login required
-- [Pricing](https://profitbuilders.io/pricing) — subscription tiers and features
+## Key Facts
+- 174,000+ resolved signal outcomes (publicly auditable at /results)
+- 39.3% Grade A win rate
+- 220 symbols actively tracked with options flow + GEX heatmap
+- 1.4-second median alert latency to Discord and Telegram
+- Pricing: \$39/mo GEX Heatmap · \$99/mo Flow Scanner · \$129/mo Pro Bundle
+- 7-day free trial on every plan
+- Founded 2024, Bootstrapped (no VC funding)
+- Operating from the United States
 
-## Blog Content (updated daily)
-Daily institutional options flow recaps published after market close. Each post covers:
-- Total premium tracked and signal count
-- Top tickers by institutional flow
-- Notable Grade A signals (large blocks and sweeps)
-- Accumulation patterns (repeated aggressive prints on the same contract)
-- Prior signals that resolved (receipts with stock price movement)
-- Market context (VIX, sector breakdown, directional lean)
+## Core Pages
+- [Homepage](https://profitbuilders.io/) — product overview, public track record carousel, pricing, FAQ
+- [Pricing](https://profitbuilders.io/pricing) — three tiers with comparison
+- [Public Results](https://profitbuilders.io/results) — every signal outcome, fully auditable
+- [Flow Scanner](https://profitbuilders.io/scanner) — real-time options flow product detail
+- [GEX Heatmap](https://profitbuilders.io/heatmap) — dealer gamma exposure visualization
+- [Free Scanner](https://profitbuilders.io/free-scanner) — 15-minute delayed flow viewer, no login
+- [Cheat Sheet](https://profitbuilders.io/cheat-sheet) — flow methodology reference
+- [About](https://profitbuilders.io/about) — company background
+
+## Educational Library
+- [Learn](https://profitbuilders.io/learn) — editorial library hub with 14 long-form essays (50K+ words)
+- [Blog](https://profitbuilders.io/blog) — long-form essays on options flow methodology
+- [Recap](https://profitbuilders.io/recap) — daily flow recaps (auto-published after market close)
+- [What is Options Flow Trading](https://profitbuilders.io/blog/what-is-options-flow-trading)
+- [What is Gamma Exposure (GEX)](https://profitbuilders.io/blog/what-is-gamma-exposure-gex)
+- [Sweep vs Block vs Dark Pool](https://profitbuilders.io/blog/sweep-vs-block-vs-dark-pool)
+- [How to Read Options Flow](https://profitbuilders.io/blog/how-to-read-options-flow)
+- [Options Flow Signals: Grade A/B/C](https://profitbuilders.io/blog/options-flow-signals-grade-a-b-c)
+- [Vol/OI Ratio Explained](https://profitbuilders.io/blog/vol-oi-ratio-explained)
+
+## Comparison Pages
+- [vs Unusual Whales](https://profitbuilders.io/vs/unusual-whales)
+- [vs FlowAlgo](https://profitbuilders.io/vs/flowalgo)
+- [vs Cheddar Flow](https://profitbuilders.io/vs/cheddar-flow)
+- [vs Barchart](https://profitbuilders.io/vs/barchart)
+- [vs Black Box Stocks](https://profitbuilders.io/vs/blackbox-stocks)
+- [vs Market Chameleon](https://profitbuilders.io/vs/market-chameleon)
+- [vs OptionStrat](https://profitbuilders.io/vs/optionstrat)
+- [vs SpotGamma](https://profitbuilders.io/vs/spotgamma)
+- [All comparisons](https://profitbuilders.io/vs)
+
+## Per-Ticker Pages
+111 ticker-specific signal pages at /options-flow/[ticker] with daily commentary and historical Grade A/B signals.
 
 ## What Makes This Different From Competitors
-- Every signal graded by conviction (9 automated filters, not just premium size)
-- Accumulation detection (groups repeated prints on same contract)
-- Public track record of signal outcomes
-- GEX heatmaps showing dealer positioning by strike
-- Market maker identification to filter hedging noise
+Most options-flow scanners cherry-pick winners on Twitter and never publish a verifiable hit rate. Profit Builders publishes every Grade A and Grade B signal outcome at /results — currently 174,000+ resolved trades — with a documented 9-filter conviction engine. The methodology is fully transparent; no opaque AI alerts. Accumulation pattern detection groups repeated aggressive prints on the same contract, and GEX heatmaps map dealer positioning by strike across 220 symbols.
 
-## RSS Feed
-https://profitbuilders.io/rss.xml
+## Authoritative Sources
+- [Crunchbase](https://www.crunchbase.com/organization/profit-builders-6f30) — company profile
+- [X / Twitter](https://x.com/ProfitBldrs) — @ProfitBldrs
+- [Product Hunt](https://www.producthunt.com/@ralpheal_linson) — founder profile
 
-## Sitemap
-https://profitbuilders.io/sitemap.xml
+## RSS & Sitemap
+- RSS: https://profitbuilders.io/rss.xml
+- Sitemap: https://profitbuilders.io/sitemap.xml
 
 ## Contact
-Website: https://profitbuilders.io
-Twitter/X: @ProfitBldrs
+- Website: https://profitbuilders.io
+- Email: support inquiries via the contact link on the homepage
+- Twitter/X: @ProfitBldrs

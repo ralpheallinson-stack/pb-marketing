@@ -63,7 +63,7 @@ export default async function Image({
           display: "flex",
           flexDirection: "column",
           padding: 72,
-          background: "linear-gradient(135deg, #0A0A0A 0%, #1A0F07 60%, #2B1505 100%)",
+          background: "linear-gradient(135deg, #1E2030 0%, #0F1119 100%)",
           color: "#FFFFFF",
           fontFamily: "Georgia, serif",
         }}
@@ -88,7 +88,7 @@ export default async function Image({
                 width: 56,
                 height: 56,
                 borderRadius: 8,
-                background: "#F97316",
+                background: "#F59E0B",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -104,14 +104,14 @@ export default async function Image({
           <div style={{ display: "flex", fontSize: 24, fontWeight: 600, fontFamily: "system-ui", letterSpacing: "-0.01em" }}>
             Profit Builders
           </div>
-          <div style={{ display: "flex", marginLeft: "auto", fontSize: 14, color: "#F97316", fontFamily: "system-ui", letterSpacing: 3, textTransform: "uppercase" }}>
+          <div style={{ display: "flex", marginLeft: "auto", fontSize: 14, color: "#F59E0B", fontFamily: "system-ui", letterSpacing: 3, textTransform: "uppercase" }}>
             {sector || "Options Flow"}
           </div>
         </div>
 
         {/* Middle: giant ticker */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", marginTop: 40 }}>
-          <div style={{ display: "flex", fontSize: 28, color: "#A1A1AA", marginBottom: 8, fontFamily: "system-ui" }}>
+          <div style={{ display: "flex", fontSize: 28, color: "#8B94A8", marginBottom: 8, fontFamily: "system-ui" }}>
             Options Flow —
           </div>
           <div
@@ -127,7 +127,7 @@ export default async function Image({
           >
             {symbol}
           </div>
-          <div style={{ display: "flex", fontSize: 26, color: "#A1A1AA", maxWidth: 900, lineHeight: 1.4, fontFamily: "system-ui" }}>
+          <div style={{ display: "flex", fontSize: 26, color: "#8B94A8", maxWidth: 900, lineHeight: 1.4, fontFamily: "system-ui" }}>
             <span>{signals.toLocaleString()} institutional signals tracked · {premium} total premium · {callPct}% call lean</span>
           </div>
         </div>
@@ -143,10 +143,10 @@ export default async function Image({
             fontFamily: "system-ui",
           }}
         >
-          <div style={{ display: "flex", fontSize: 18, color: "#F97316", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+          <div style={{ display: "flex", fontSize: 18, color: "#F59E0B", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase" }}>
             <span>profitbuilders.io/options-flow/{symbol}</span>
           </div>
-          <div style={{ display: "flex", fontSize: 16, color: "#71717A", letterSpacing: "0.06em" }}>
+          <div style={{ display: "flex", fontSize: 16, color: "#5C6478", letterSpacing: "0.06em" }}>
             <span>174,000+ signals tracked · 39.3% Grade A WR</span>
           </div>
         </div>

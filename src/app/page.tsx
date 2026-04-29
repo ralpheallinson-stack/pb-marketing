@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav"
+import PromoBanner from "@/components/PromoBanner"
 import HeroSection from "@/components/HeroSection"
 import TrackRecord from "@/components/TrackRecord"
 import GexSection from "@/components/GexSection"
@@ -194,6 +195,7 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: organizationSchema }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: websiteSchema }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: itemListSchema }} />
+      <PromoBanner />
       <Nav />
       <HeroSection />
       <div className="border-t border-white/[0.05]"><FeaturesSection /></div>

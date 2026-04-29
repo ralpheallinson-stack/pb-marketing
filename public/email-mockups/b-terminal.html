@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  body { margin:0; padding:0; background:#000; font-family:'SF Mono','IBM Plex Mono','Courier New',monospace; }
+  .frame { width:520px; margin:0 auto; padding:48px 0 64px; color:#E8E2D5; }
+  .pad { padding:0 32px; }
+  .ticker-tape { background:#0A0A0A; border-top:1px solid #FF8800; border-bottom:1px solid #FF8800; padding:10px 0; overflow:hidden; white-space:nowrap; font-size:11px; letter-spacing:1px; color:#FF8800; margin-bottom:36px; }
+  .ticker-tape span { margin:0 28px; }
+  .ticker-tape b { color:#22FF88; font-weight:400; }
+  .ticker-tape em { color:#FF4488; font-style:normal; }
+  .mast { display:flex; justify-content:space-between; align-items:center; padding:0 32px 36px; }
+  .pb { font-size:11px; color:#FF8800; letter-spacing:3px; font-weight:700; }
+  .stamp { font-size:10px; color:#6E6557; letter-spacing:1.5px; }
+  .hr-thick { border:0; height:2px; background:#FF8800; margin:0 32px 28px; }
+  .kicker { font-size:10px; color:#FF8800; letter-spacing:3px; margin-bottom:14px; }
+  .h1 { font-size:32px; font-weight:700; line-height:1.05; letter-spacing:-0.5px; color:#FAF7F2; margin:0 0 28px; }
+  .h2 { font-size:22px; font-weight:700; line-height:1.15; letter-spacing:-0.3px; color:#FAF7F2; margin:0 0 14px; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:0; border:1px solid #2A2620; margin-bottom:36px; }
+  .cell { padding:12px 14px; border-right:1px solid #2A2620; border-bottom:1px solid #2A2620; }
+  .cell:nth-child(2n) { border-right:0; }
+  .cell:nth-last-child(-n+2) { border-bottom:0; }
+  .lbl { font-size:9px; color:#6E6557; letter-spacing:2px; margin-bottom:6px; }
+  .val { font-size:18px; color:#FAF7F2; font-weight:700; letter-spacing:-0.3px; }
+  .val.up { color:#22FF88; }
+  .body { font-size:13px; line-height:1.65; color:#A8A199; margin:0 0 18px; }
+  .body b { color:#FAF7F2; font-weight:700; }
+  .ascii { color:#3A352D; letter-spacing:0; line-height:1; font-size:11px; padding:14px 0; }
+  .og-wrap { padding:0 32px; margin-bottom:18px; }
+  .og { width:100%; display:block; }
+  .meta { font-size:9px; color:#6E6557; letter-spacing:2px; padding:6px 0 0; border-top:1px dashed #2A2620; margin-bottom:30px; }
+  .cta { font-size:11px; color:#FF8800; letter-spacing:2.5px; font-weight:700; text-decoration:none; }
+  .cta::after { content:" >>"; }
+  .div { padding:36px 32px; }
+  .div::before { content:""; display:block; height:1px; background:#2A2620; }
+  .pnl { font-size:48px; font-weight:700; line-height:1; color:#22FF88; letter-spacing:-2px; margin:8px 0 6px; }
+  .pnl-sub { font-size:11px; color:#6E6557; letter-spacing:1.5px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; padding:10px 0; border-bottom:1px solid #2A2620; }
+  .row:last-child { border-bottom:0; }
+  .row .l { font-size:12px; color:#A8A199; }
+  .row .r { font-size:12px; color:#FAF7F2; font-weight:700; }
+  .foot { padding:36px 32px 0; border-top:1px solid #2A2620; margin-top:36px; }
+  .foot a { font-size:10px; color:#6E6557; letter-spacing:2px; text-decoration:none; margin-right:24px; font-weight:700; }
+  .legal { font-size:9px; color:#3A352D; letter-spacing:1.5px; margin-top:18px; line-height:1.7; }
+</style></head>
+<body>
+<div class="frame">
+
+  <div class="mast">
+    <div class="pb">// PROFIT BUILDERS</div>
+    <div class="stamp">2026-04-27 &middot; 06:45 ET</div>
+  </div>
+
+  <div class="ticker-tape">
+    <span>SPY <b>+0.34%</b></span><span>QQQ <b>+0.51%</b></span><span>AMD <b>+12.4%</b></span><span>MSFT <em>-0.18%</em></span><span>NVDA <b>+2.1%</b></span><span>VIX <em>14.2</em></span><span>SPY <b>+0.34%</b></span>
+  </div>
+
+  <div class="pad">
+    <div class="kicker">// FLOW BRIEF &middot; ISSUE 084</div>
+    <h1 class="h1">Where size landed.</h1>
+
+    <div class="grid">
+      <div class="cell"><div class="lbl">PREMIUM</div><div class="val">$1.84B</div></div>
+      <div class="cell"><div class="lbl">SIGNALS</div><div class="val">2,184</div></div>
+      <div class="cell"><div class="lbl">LEAN</div><div class="val up">BULL</div></div>
+      <div class="cell"><div class="lbl">VIX</div><div class="val">14.2</div></div>
+    </div>
+
+    <div class="kicker">// 01 RECAP &middot; AMD</div>
+    <h2 class="h2">$AMD calls</h2>
+    <div class="pnl">+4,813%</div>
+    <div class="pnl-sub">FRI 04/24 &middot; GRADE A SWEEP &middot; FLAGGED 09:42 ET</div>
+  </div>
+
+  <div class="og-wrap" style="margin-top:24px">
+    <img class="og" src="https://profitbuilders.io/options-flow/AMD/opengraph-image" alt="">
+    <div class="meta">FIG.01 // SYSTEM CARD &middot; LIVE</div>
+  </div>
+
+  <div class="pad">
+    <p class="body">A Grade A sweep crossed the tape <b>43 minutes after open</b>. By close it had moved 48x. The system flagged the print before it played out — pattern repeats every week.</p>
+    <a class="cta" href="#">VIEW THE BREAKDOWN</a>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="pad">
+    <div class="kicker">// 02 SETUP &middot; MSFT</div>
+    <h2 class="h2">$MSFT calls / $2.1M sweep</h2>
+
+    <div class="row"><div class="l">Strike</div><div class="r">$420 C</div></div>
+    <div class="row"><div class="l">Expiration</div><div class="r">May 17 &middot; 21d</div></div>
+    <div class="row"><div class="l">Premium</div><div class="r">$2.10M</div></div>
+    <div class="row"><div class="l">Accumulation</div><div class="r">3x &middot; ASK-SIDE</div></div>
+    <div class="row"><div class="l">Sector</div><div class="r">TECH</div></div>
+  </div>
+
+  <div class="og-wrap" style="margin-top:30px">
+    <img class="og" src="https://profitbuilders.io/options-flow/MSFT/opengraph-image" alt="">
+    <div class="meta">FIG.02 // LIVE SETUP &middot; MSFT</div>
+  </div>
+
+  <div class="pad">
+    <p class="body">Repeating sweep prints, ask-side, in front of earnings &mdash; the exact pattern that paid on AMD.</p>
+    <a class="cta" href="#">OPEN THE SCANNER</a>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="pad">
+    <div class="kicker">// 03 THE DESK</div>
+    <h2 class="h2">Trade alongside the room.</h2>
+    <p class="body">Real-time A/B alerts, live setup discussion, post-mortem on every trade. Free, forever.</p>
+    <a class="cta" href="#">JOIN DISCORD + TELEGRAM</a>
+  </div>
+
+  <div class="foot">
+    <a href="#">X</a><a href="#">DISCORD</a><a href="#">TELEGRAM</a><a href="#">BLOG</a>
+    <div class="legal">// PROFIT BUILDERS &middot; EDUCATIONAL ONLY &middot; NOT FINANCIAL ADVICE<br>// UNSUBSCRIBE</div>
+  </div>
+
+</div>
+</body></html>

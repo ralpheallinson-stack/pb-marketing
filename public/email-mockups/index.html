@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Flow Brief — three directions</title>
+<style>
+  *,*::before,*::after { box-sizing:border-box; }
+  body { margin:0; background:#0A0A0A; color:#E8E2D5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  .wrap { max-width:1800px; margin:0 auto; padding:48px 32px 96px; }
+  h1 { font-size:32px; font-weight:700; letter-spacing:-0.8px; margin:0 0 8px; color:#FAF7F2; }
+  .sub { color:#8B7E6F; font-size:14px; margin:0 0 48px; letter-spacing:0.2px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+  @media (max-width:1100px){ .grid{ grid-template-columns:1fr; } }
+  .card { background:#0F0F0F; border:1px solid #2A2620; border-radius:6px; overflow:hidden; display:flex; flex-direction:column; }
+  .label { padding:20px 24px 12px; }
+  .tag { display:inline-block; font-family:'SF Mono',monospace; font-size:11px; color:#FF8800; letter-spacing:2.5px; font-weight:700; margin-bottom:8px; }
+  h2 { font-size:20px; font-weight:700; margin:0 0 6px; color:#FAF7F2; letter-spacing:-0.3px; }
+  p { font-size:13px; line-height:1.55; color:#A8A199; margin:0; }
+  .preview { flex:1; min-height:520px; background:#000; border-top:1px solid #2A2620; }
+  .preview iframe { width:100%; height:100%; min-height:760px; border:0; display:block; }
+  .actions { padding:16px 24px; border-top:1px solid #2A2620; display:flex; justify-content:space-between; align-items:center; }
+  .actions a { font-family:'SF Mono',monospace; font-size:11px; color:#FF8800; letter-spacing:2px; text-decoration:none; font-weight:700; }
+  .actions a::after { content:" \2192"; }
+  .actions .pick { color:#22FF88; }
+  .pill { font-family:'SF Mono',monospace; font-size:10px; color:#6E6557; letter-spacing:1.5px; }
+</style></head>
+<body>
+<div class="wrap">
+  <h1>Flow Brief — three directions</h1>
+  <p class="sub">Same content, three points of view. Pick the one you'd hit send on without wincing.</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">
+        <div class="tag">// OPTION A</div>
+        <h2>Warm-Paper Editorial</h2>
+        <p>Cream broadsheet, Georgia serif display, hairline rules, roman-numeral section markers, single amber accent. <em>FT Weekend / Dealbook printed and folded.</em></p>
+      </div>
+      <div class="preview"><iframe src="a-warmpaper.html" loading="lazy"></iframe></div>
+      <div class="actions">
+        <span class="pill">SERIF / CREAM / SLOW</span>
+        <a href="a-warmpaper.html" target="_blank">Open full</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">
+        <div class="tag">// OPTION B</div>
+        <h2>Trading Terminal</h2>
+        <p>Pitch black, mono-everything, ticker-tape masthead, amber + green accents, ASCII rules, big monospace P&amp;L. <em>Bloomberg desk dispatch.</em></p>
+      </div>
+      <div class="preview"><iframe src="b-terminal.html" loading="lazy"></iframe></div>
+      <div class="actions">
+        <span class="pill">MONO / BLACK / DENSE</span>
+        <a href="b-terminal.html" target="_blank">Open full</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">
+        <div class="tag">// OPTION C</div>
+        <h2>Desk Letter</h2>
+        <p>Cream paper, byline, handwritten signature, oversized serif P&amp;L, pull-quote, signs off &ldquo;talk Wednesday.&rdquo; <em>Personal letter from the guy running the desk.</em></p>
+      </div>
+      <div class="preview"><iframe src="c-deskletter.html" loading="lazy"></iframe></div>
+      <div class="actions">
+        <span class="pill">SERIF / CREAM / VOICE</span>
+        <a href="c-deskletter.html" target="_blank">Open full</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body></html>

@@ -26,6 +26,10 @@ interface Trade {
   day_volume: number
   open_interest: number
   iv: number | null
+  iv_rank?: number | null
+  symbol_iv_today?: number | null
+  iv_history_days?: number | null
+  ruoa_streak?: number | null
   flow_type: string
   sector: string
   accum_hits: number
@@ -43,6 +47,9 @@ interface Trade {
   dte?: number
   strategy?: string
   vol_oi?: number
+  contract_volume_multiple?: number | null
+  baseline_volume?: number | null
+  today_volume?: number | null
   delta?: number | null
   whale?: boolean
   aggression?: string | null
@@ -131,14 +138,18 @@ function fmtExpiry(exp: string) {
 }
 
 function aggrColor(a: string | null | undefined) {
-  if (!a || a === "NEUTRAL") return "text-white/30"
+  // Industry-standard 5-bucket aggression: ABOVE/ASK aggressive buy (green),
+  // BID/BELOW aggressive sell (red), MIDPOINT neutral (amber — no directional info).
   if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#00E85A]"
   if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
+  if (!a || a === "NEUTRAL") return "text-[#F59E0B]"   // MIDPOINT (industry standard)
   return "text-white/90"
 }
 
 function aggrLabel(a: string | null | undefined) {
-  if (!a || a === "NEUTRAL") return "—"
+  // NULL/NEUTRAL = MIDPOINT — trade printed within ±35% of spread from mid,
+  // typically negotiated block, hedge leg, or non-directional flow.
+  if (!a || a === "NEUTRAL") return "Mid"
   const map: Record<string, string> = { ABOVE_ASK: "Above", AT_ASK: "Ask", AT_BID: "Bid", BELOW_BID: "Below" }
   return map[a] || a
 }
@@ -178,6 +189,7 @@ const COLS = [
   { key: "type",   label: "Type",   cls: "text-center px-2 w-[5%]" },
   { key: "vol",    label: "Vol",    cls: "text-right px-2 w-[6%]" },
   { key: "oi",     label: "OI",     cls: "text-right px-2 w-[5%]" },
+  { key: "iv",     label: "IV",     cls: "text-right px-2 w-[4%]" },
   { key: "conds",  label: "Conds",  cls: "text-left px-2" },
 ] as const
 
@@ -488,7 +500,8 @@ export default function ScannerPage() {
     if (filterType && t.flow_type !== filterType) return false
     if (filterOptType && t.opt_type !== filterOptType) return false
     if (filterSide && t.aggression !== filterSide) return false
-    if (filterUnusualOnly && (t.vol_oi ?? 0) < 5) return false
+    // Industry-standard "Unusual Volume" filter — uses 20d baseline, not raw vol_oi
+    if (filterUnusualOnly && (t.contract_volume_multiple ?? 0) < 1.5) return false
     if (filterNoIndex && ["SPX","SPXW","NDXP","NDX","RUT","RUTW"].includes(t.symbol)) return false
     if (filterDte === "0dte" && (t.dte ?? -1) !== 0) return false
     if (filterDte === "1-7" && ((t.dte ?? -1) < 1 || (t.dte ?? -1) > 7)) return false
@@ -1144,6 +1157,21 @@ export default function ScannerPage() {
                     </td>
                     <td className="px-2 py-2 text-right text-white/80 text-[13px] font-medium font-mono">
                       {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
+                    </td>
+                    <td className="px-2 py-2 text-right text-[13px] font-semibold font-mono"
+                        style={{
+                          // Per-contract implied volatility (matches every broker).
+                          // Color hints elevated vs normal vol, but absolute thresholds
+                          // are loose because IV scales with DTE and moneyness.
+                          color: t.iv == null ? "rgba(255,255,255,0.3)"
+                                 : t.iv >= 100 ? "#FF605D"          // red — extremely elevated
+                                 : t.iv >= 60  ? "#FFA64D"          // amber — elevated
+                                 : "rgba(255,255,255,0.7)",         // normal — neutral
+                        }}
+                        title={t.iv == null ? "IV unavailable"
+                               : `Implied volatility ${t.iv}% — per-contract IV at trade time`
+                               + (t.iv_rank != null ? ` · ticker IV Rank ${t.iv_rank}` : "")}>
+                      {t.iv == null ? "—" : `${t.iv}%`}
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex flex-wrap gap-1">

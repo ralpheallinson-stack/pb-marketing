@@ -40,7 +40,7 @@ export default async function Image({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(135deg, #0A0A0A 0%, #1A0F07 60%, #2B1505 100%)",
+          background: "linear-gradient(135deg, #1E2030 0%, #0F1119 100%)",
           color: "#FFFFFF",
           fontFamily: "Georgia, serif",
         }}
@@ -61,7 +61,7 @@ export default async function Image({
                 width: 56,
                 height: 56,
                 borderRadius: 8,
-                background: "#F97316",
+                background: "#F59E0B",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -102,7 +102,7 @@ export default async function Image({
             style={{
               fontSize: 26,
               lineHeight: 1.4,
-              color: "#A1A1AA",
+              color: "#8B94A8",
               maxWidth: 960,
               fontFamily: "system-ui",
             }}
@@ -124,7 +124,7 @@ export default async function Image({
           <div
             style={{
               fontSize: 18,
-              color: "#F97316",
+              color: "#F59E0B",
               fontWeight: 600,
               letterSpacing: "0.14em",
               textTransform: "uppercase",
@@ -135,7 +135,7 @@ export default async function Image({
           <div
             style={{
               fontSize: 16,
-              color: "#71717A",
+              color: "#5C6478",
               letterSpacing: "0.06em",
             }}
           >
