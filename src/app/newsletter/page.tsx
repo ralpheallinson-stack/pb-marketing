@@ -44,7 +44,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How is this different from a paid options flow scanner?",
-    a: "The Flow Brief summarizes what already happened yesterday — useful for pattern recognition and context. The Profit Builders scanner shows you institutional flow in real time as it hits the tape, with conviction grading and 174,000+ tracked outcomes at /results. The brief is a free daily summary; the scanner is the live feed.",
+    a: "The Flow Brief summarizes what already happened yesterday — useful for pattern recognition and context. The Profit Builders scanner shows you institutional flow in real time as it hits the tape, with sweep detection and OPRA condition-code parsing. The brief is a free daily summary; the scanner is the live feed.",
   },
 ]
 

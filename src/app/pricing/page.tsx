@@ -12,7 +12,7 @@ const productSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Options Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading, Greeks, IV, spread detection, and GEX heatmap. 174,000+ signals tracked publicly at /results.",
+  "description": "Real-time institutional options flow scanner with conviction grading, Greeks, IV, spread detection, and GEX heatmap. Live OPRA tape · CBOE Rule 6.11 sweeps at /results.",
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "url": "https://profitbuilders.io/pricing",
   "offers": [

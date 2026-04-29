@@ -27,7 +27,7 @@ const TIER_FEATURES: Record<string, string[]> = {
     "Accumulation detection",
     "Discord alerts",
     "Telegram alerts",
-    "Public track record",
+    "Public methodology",
   ],
   heatmap: [
     "Real-time scanner",
@@ -37,7 +37,7 @@ const TIER_FEATURES: Record<string, string[]> = {
     "Gamma walls",
     "Discord alerts",
     "Telegram alerts",
-    "Public track record",
+    "Public methodology",
   ],
   pro_bundle: [
     "Real-time scanner",
@@ -48,7 +48,7 @@ const TIER_FEATURES: Record<string, string[]> = {
     "AI chart analyzer",
     "Discord alerts",
     "Telegram alerts",
-    "Public track record",
+    "Public methodology",
   ],
   lifetime: [
     "Real-time scanner",
@@ -59,7 +59,7 @@ const TIER_FEATURES: Record<string, string[]> = {
     "AI chart analyzer",
     "Discord alerts",
     "Telegram alerts",
-    "Public track record",
+    "Public methodology",
     "Lifetime access",
   ],
   beta: [
@@ -70,7 +70,7 @@ const TIER_FEATURES: Record<string, string[]> = {
     "Gamma walls",
     "Discord alerts",
     "Telegram alerts",
-    "Public track record",
+    "Public methodology",
     "Beta access",
   ],
 }
@@ -485,7 +485,7 @@ export default function AccountPage() {
           {/* Share buttons */}
           <div style={{ display: "flex", gap: 8 }}>
             <a
-              href={`https://x.com/intent/tweet?text=${encodeURIComponent("The flow scanner I actually use — 174K+ signals tracked, 39.3% Grade A win rate. 7-day free trial. " + referral.share_link)}`}
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent("The flow scanner I actually use. CBOE-compliant sweep detection, OPRA condition codes, real-time institutional flow. 7-day free trial. " + referral.share_link)}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -498,7 +498,7 @@ export default function AccountPage() {
               Share on X
             </a>
             <a
-              href={`mailto:?subject=${encodeURIComponent("The options flow scanner I'm using")}&body=${encodeURIComponent("The flow scanner I actually use — 174K+ signals tracked, 39.3% Grade A win rate. 7-day free trial.\n\n" + referral.share_link)}`}
+              href={`mailto:?subject=${encodeURIComponent("The options flow scanner I'm using")}&body=${encodeURIComponent("The flow scanner I actually use. CBOE-compliant sweep detection, OPRA condition codes, real-time institutional flow. 7-day free trial.\n\n" + referral.share_link)}`}
               style={{
                 flex: 1, textAlign: "center", padding: "10px 8px",
                 background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.08)",

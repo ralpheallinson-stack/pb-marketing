@@ -60,7 +60,7 @@ export default function CheatSheetView() {
             </div>
             <div style={{ textAlign: "right", fontSize: 10, color: "#6B7280", lineHeight: 1.5 }}>
               <strong style={{ color: "#0a0a0a" }}>profitbuilders.io</strong><br/>
-              174,000+ signals tracked publicly
+              Live OPRA tape · CBOE Rule 6.11 sweeps
             </div>
           </header>
 

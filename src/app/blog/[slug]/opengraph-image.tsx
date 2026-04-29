@@ -139,7 +139,7 @@ export default async function Image({
               letterSpacing: "0.06em",
             }}
           >
-            174,000+ signals tracked · 39.3% Grade A WR
+            OPRA tape · CBOE-compliant sweeps
           </div>
         </div>
       </div>

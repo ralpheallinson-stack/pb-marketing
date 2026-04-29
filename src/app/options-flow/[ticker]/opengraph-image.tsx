@@ -147,7 +147,7 @@ export default async function Image({
             <span>profitbuilders.io/options-flow/{symbol}</span>
           </div>
           <div style={{ display: "flex", fontSize: 16, color: "#5C6478", letterSpacing: "0.06em" }}>
-            <span>174,000+ signals tracked · 39.3% Grade A WR</span>
+            <span>OPRA tape · CBOE-compliant sweeps</span>
           </div>
         </div>
       </div>

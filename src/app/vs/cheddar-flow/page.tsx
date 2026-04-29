@@ -66,7 +66,7 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Does Cheddar Flow publish a verified track record?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish signal outcomes or win rates publicly. Profit Builders publishes every Grade A/B signal at profitbuilders.io/results — currently 174,000+ resolved outcomes with 39.3% Grade A win rate." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish signal outcomes or win rates publicly. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -99,13 +99,6 @@ const productSchema = {
     "availability": "https://schema.org/InStock",
     "url": "https://profitbuilders.io/pricing",
     "priceValidUntil": "2027-01-01",
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.1",
-    "bestRating": "5",
-    "ratingCount": 174000,
-    "reviewCount": 174000,
   },
 }
 
@@ -156,7 +149,7 @@ export default function VsCheddarFlow() {
                 Cheddar Flow <span className="text-[#3D4D63]">vs</span> Profit Builders.
               </h1>
               <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-xl">
-                Same <span className="pb-mono text-white">$99/mo</span> Pro-tier price. Different philosophies. Cheddar Flow gates dark pool + AI alerts behind its Pro plan. Profit Builders includes everything at one price and publishes the 174,000-signal track record to back it up.
+                Same <span className="pb-mono text-white">$99/mo</span> Pro-tier price. Different philosophies. Cheddar Flow gates dark pool + AI alerts behind its Pro plan. Profit Builders includes everything at one price and publishes its full data methodology to back it up.
               </p>
             </div>
           </div>
@@ -190,10 +183,10 @@ export default function VsCheddarFlow() {
                   Pick Profit Builders.
                 </h2>
                 <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
-                  If you want every feature included at one flat price, a documented 9-filter methodology, and a publicly verified track record of 174,000 signals with a 39.3% Grade A win rate you can audit before you pay.
+                  If you want every feature included at one flat price, a documented documented data methodology, and a documented data methodology and CBOE-compliant sweep detection you can audit before you pay.
                 </p>
                 <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
-                  $99/mo · Graded signals · Public track record
+                  $99/mo · Graded signals · Public methodology
                 </div>
               </div>
             </div>
@@ -228,8 +221,8 @@ export default function VsCheddarFlow() {
                   <MRow label="Annual discount" a={<span className="text-white">$75/mo yearly (-25%)</span>} b={<span className="pb-lose">Monthly only</span>} />
                   <MRow label="Free trial" a="7 days, card required" b="7 days, card required" />
                   <MRow label="Conviction grading" a={<span className="pb-lose">Filters, no grade</span>} b={<span className="pb-win">Grade A / B, documented 9-filter</span>} win />
-                  <MRow label="Public track record" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">174,000+ resolved signals</span>} win />
-                  <MRow label="Grade A win rate" a={<span className="pb-lose">Not disclosed</span>} b={<span className="pb-win">39.3% verified</span>} win />
+                  <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
+                  <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
                   <MRow label="Filter customization" a={<span className="text-white">20+ filters</span>} b="Grade-based, pre-filtered" />
                   <MRow label="Telegram alerts" a={<span className="pb-lose">Limited</span>} b={<span className="pb-win">Native, mobile-first</span>} win />
                   <MRow label="GEX heatmap" a={<span className="pb-lose">No</span>} b={<span className="pb-win">220 symbols</span>} win />
@@ -291,8 +284,8 @@ export default function VsCheddarFlow() {
                   body="Cheddar Flow's $99/mo Pro tier is required to unlock dark pool data and AI Power Alerts. Its $85 Standard tier gives you everything except those two features. Profit Builders is $99 flat — you get flow, dark pool context, conviction grading, Telegram alerts, GEX heatmap, and accumulation detection. Same dollar, everything included." />
                 <Pro win n="02" title="Documented grading vs opaque AI"
                   body="Cheddar Flow's AI Power Alerts surface setups via machine learning, without publishing the system's criteria or its historical hit rate. Profit Builders grades every signal against 9 documented filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and publishes the win rate per grade. When the AI label and the grade both mean 'actionable setup,' only one of them tells you why and how often it's right." />
-                <Pro win n="03" title="Public track record of 174K+ signals"
-                  body="Every Grade A/B signal is logged to profitbuilders.io/results with its outcome. Grade A shows a 39.3% win rate. Grade B runs 31.6% — the 25% spread between them is evidence the filter is doing real work. Cheddar Flow does not publish signal outcomes publicly. If you're paying $99 to act on signals, you should be able to audit their hit rate first." />
+                <Pro win n="03" title="Public methodology of 174K+ signals"
+                  body="Profit Builders publishes its full data processing methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Cheddar Flow does not publish a methodology page. If you're paying $99 for a flow scanner, you should be able to audit how the data is processed before you pay." />
                 <Pro win n="04" title="RAPID badges on accumulation patterns"
                   body="When one contract gets hit 10+ times in quick succession with aggressive, similar-sized prints, that's the signature of a large player slicing a position to hide size. Profit Builders flags it with a RAPID badge and surfaces the full accumulation context. Cheddar Flow's filters can be configured to spot this manually, but there's no dedicated pattern label — you build the detection rule yourself." />
                 <Pro win n="05" title="Telegram-first alerting, not Discord-first"
@@ -330,7 +323,7 @@ export default function VsCheddarFlow() {
                   Cheddar Flow runs two tiers. Standard at <span className="pb-mono text-white">$85/mo</span> gives you flow, charting, unusual volume, and filters. Pro at <span className="pb-mono text-white">$99/mo</span> adds dark pool data and AI Power Alerts — the two features most shoppers are specifically evaluating the platform for. Profit Builders has one tier at <span className="pb-mono text-white">$99/mo</span> that includes everything, plus a separate optional <span className="pb-mono text-white">$39/mo</span> GEX heatmap. If you're already paying $99, the question is what that $99 actually unlocks. The honest answer: more, on Profit Builders.
                 </Dive>
                 <Dive id="filters-vs-grades" heading="Twenty filters vs one grade">
-                  Cheddar Flow's 20+ filters let you slice the flow by whatever characteristic you care about. That flexibility is real — and it's also work. Every filter you add is a hypothesis you have to test and maintain. Profit Builders runs nine specific filters documented publicly (closing-position detection, direction classification, delta screening, spread detection, market-maker ID, and the rest) and collapses them into a single output: Grade A, Grade B, or filtered out. You get fewer knobs but a result you can audit against 174,000 prior outcomes. The tradeoff is flexibility against evidence.
+                  Cheddar Flow's 20+ filters let you slice the flow by whatever characteristic you care about. That flexibility is real — and it's also work. Every filter you add is a hypothesis you have to test and maintain. Profit Builders runs nine specific filters documented publicly (closing-position detection, direction classification, delta screening, spread detection, market-maker ID, and the rest) and collapses them into a single output: Grade A, Grade B, or filtered out. You get fewer knobs but a documented methodology you can audit before you pay. The tradeoff is flexibility against evidence.
                 </Dive>
                 <Dive id="who" heading="Who each platform is actually for">
                   Cheddar Flow suits traders who already have an edge they want to replicate via filter configuration, who value the $75/mo annual discount, and who don't specifically need a public track record to make a decision. Profit Builders suits traders who prefer pre-vetted signals over self-configured filters, who want to audit a platform's hit rate before paying, whose workflow includes Telegram, and who'd rather pay $99 and get everything than price-shop between a $85 Standard and $99 Pro just to access two flagship features.
@@ -360,7 +353,7 @@ export default function VsCheddarFlow() {
                   Dark pool data and AI Power Alerts. Both features are Pro-only. The $85/mo Standard tier gives you flow, charting, and unusual volume but not the two features most comparison-shoppers are specifically evaluating the platform to get. Profit Builders gates nothing at $99.
                 </Faq>
                 <Faq q="Does Cheddar Flow publish a verified track record?">
-                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish signal outcomes or win rates. Profit Builders publishes every Grade A/B signal at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — 174,000+ resolved outcomes with 39.3% Grade A win rate.
+                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
                 </Faq>
                 <Faq q="How does AI Power Alerts compare to Grade A signals?">
                   Different approaches. Cheddar Flow's AI applies machine learning to flag setups in real time, without publishing what qualifies a signal or the system's historical hit rate. Profit Builders runs every print through 9 documented filters and publishes outcomes per grade. Transparent methodology on one side, ML black-box on the other — both are legitimate product choices, only one is auditable.
@@ -381,7 +374,7 @@ export default function VsCheddarFlow() {
               Same price. Nothing gated.
             </h2>
             <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
-              Seven days of full feature access — dark pool context, Grade A conviction, 220-symbol GEX heatmap, Telegram alerts, and the 174,000-signal track record you just read about.
+              Seven days of full feature access — dark pool context, Grade A conviction, 220-symbol GEX heatmap, Telegram alerts, and the OPRA-grade processing pipeline you just read about.
             </p>
             <Link
               href="/pricing"

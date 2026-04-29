@@ -42,3 +42,6 @@ next-env.d.ts
 playwright-report/
 test-results/
 .env.e2e
+
+# Local file backups (per-edit safety — not for git)
+*.bak.*

@@ -36,7 +36,7 @@ export default function CommunityPage() {
         </h1>
         <h2 className="text-2xl md:text-3xl font-bold text-[#34D399] leading-tight mb-6">Stop guessing. Trade the tape with other traders.</h2>
         <p className="text-lg text-[#7A8BA8] max-w-2xl mx-auto mb-10">
-          A private Discord and Telegram community of active options traders reading the same institutional flow in real time — with Grade A signal alerts, live setup discussion, and a public 174,000-signal track record holding the scanner accountable.
+          A private Discord and Telegram community of active options traders reading the same institutional flow in real time — with Grade A signal alerts, live setup discussion, and documented data methodology at /results holding the scanner to institutional standards.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <ShimmerButton href="/#pricing" className="rounded-xl text-base">
@@ -85,7 +85,7 @@ export default function CommunityPage() {
           <div className="text-[10px] text-[#4A5A72] uppercase tracking-widest">During Market Hours</div>
         </div>
         <div className="text-center py-10">
-          <div className="text-3xl font-extrabold mb-1 text-[#34D399]">39.3%</div>
+          <div className="text-3xl font-extrabold mb-1 text-[#34D399]">CBOE</div>
           <div className="text-[10px] text-[#4A5A72] uppercase tracking-widest">Grade A Win Rate</div>
         </div>
       </div>

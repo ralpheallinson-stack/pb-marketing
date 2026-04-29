@@ -463,39 +463,66 @@ export default function ScannerPage() {
     if (page !== 0) return
 
     const tick = () => {
-      if (document.hidden) return
-      setLive(isMarketOpen())
-      const p = fetchDataRef.current?.({ pageNum: 0 })
-      const after = () => {
-        if (page === 0 && !document.hidden) {
-          intervalRef.current = setTimeout(tick, 3000)
+      if (page !== 0) return
+      const hidden = document.hidden
+      // Skip the fetch when the tab is hidden — but ALWAYS reschedule. Earlier
+      // version returned early here, which killed the polling chain whenever
+      // the tab was backgrounded. visibilitychange was supposed to revive it,
+      // but that event is unreliable across Chrome tab-freezing, partial
+      // obscure, and Safari/Firefox quirks. Now the loop survives indefinitely
+      // and just dilates to 30s while hidden (Chrome throttles to ~1min anyway).
+      if (!hidden) {
+        setLive(isMarketOpen())
+        const p = fetchDataRef.current?.({ pageNum: 0 })
+        const after = () => {
+          if (page === 0 && !document.hidden) {
+            intervalRef.current = setTimeout(tick, 3000)
+          } else if (page === 0) {
+            intervalRef.current = setTimeout(tick, 30000)
+          }
+          if (isMarketOpen() && Date.now() - lastSuccessRef.current > 15000) {
+            setPollError("No updates for 15s — checking connection")
+          }
         }
-        // Stale watchdog — only flag during market hours to avoid pre/after-market noise.
-        if (isMarketOpen() && Date.now() - lastSuccessRef.current > 15000) {
-          setPollError("No updates for 15s — checking connection")
+        if (p && typeof (p as Promise<void>).finally === "function") {
+          (p as Promise<void>).finally(after)
+        } else {
+          after()
         }
-      }
-      if (p && typeof (p as Promise<void>).finally === "function") {
-        (p as Promise<void>).finally(after)
       } else {
-        after()
+        // Hidden — reschedule on a slow cadence so loop survives until visible.
+        intervalRef.current = setTimeout(tick, 30000)
       }
     }
 
-    const onVisible = () => {
+    // Wake handler — runs on visibilitychange, focus, pageshow (bfcache return),
+    // online, and first user interaction (pointerdown/keydown). Belt + suspenders
+    // because no single event reliably fires across all browser/freeze states.
+    const wake = () => {
       if (document.visibilityState !== "visible") return
+      // Only force-fetch if we're actually stale — avoids a thundering herd of
+      // duplicate requests when multiple wake events fire in quick succession.
+      const stale = Date.now() - lastSuccessRef.current > 5000
       if (intervalRef.current) clearTimeout(intervalRef.current as ReturnType<typeof setTimeout>)
-      fetchDataRef.current?.({ pageNum: 0 })
-      intervalRef.current = setTimeout(tick, 3000)
+      if (stale) fetchDataRef.current?.({ pageNum: 0 })
+      intervalRef.current = setTimeout(tick, stale ? 3000 : 1000)
     }
 
     intervalRef.current = setTimeout(tick, 3000)
-    document.addEventListener("visibilitychange", onVisible)
-    window.addEventListener("focus", onVisible)
+    document.addEventListener("visibilitychange", wake)
+    window.addEventListener("focus", wake)
+    window.addEventListener("pageshow", wake)
+    window.addEventListener("online", wake)
+    window.addEventListener("pointerdown", wake, { passive: true })
+    window.addEventListener("keydown", wake)
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current as ReturnType<typeof setTimeout>)
-      document.removeEventListener("visibilitychange", onVisible)
-      window.removeEventListener("focus", onVisible)
+      document.removeEventListener("visibilitychange", wake)
+      window.removeEventListener("focus", wake)
+      window.removeEventListener("pageshow", wake)
+      window.removeEventListener("online", wake)
+      window.removeEventListener("pointerdown", wake)
+      window.removeEventListener("keydown", wake)
     }
   }, [page])
 
@@ -1398,17 +1425,7 @@ export default function ScannerPage() {
               <div>
                 <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Signal quality</div>
                 <div className="space-y-0">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-white font-medium">Grade A only</div>
-                      <div className="text-[12px] text-white/35">$500K+ premium, 20x V/OI</div>
-                    </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterGrade === "A" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterGrade(filterGrade === "A" ? "" : "A")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterGrade === "A" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+<div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
                       <div className="text-[14px] text-white font-medium">Unusual only</div>
                       <div className="text-[12px] text-white/35">V/OI flagged activity</div>

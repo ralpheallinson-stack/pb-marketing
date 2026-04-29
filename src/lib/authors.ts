@@ -38,7 +38,7 @@ export const AUTHORS: Record<string, AuthorProfile> = {
     role: "Institutional flow analysis",
     image: "/images/pb-monogram.png",
     bio:
-      "Profit Builders is an options flow scanner with a publicly verified track record of 174,000+ graded signal outcomes. Our posts are written by the team that built the 9-filter conviction engine and operates the scanner daily.",
+      "Profit Builders is an institutional options flow scanner built on the live OPRA tape. Our posts are written by the team that operates the scanner daily, applying CBOE-compliant sweep detection and OPRA condition-code parsing.",
     url: "/about",
     sameAs: ["https://x.com/ProfitBldrs"],
   },

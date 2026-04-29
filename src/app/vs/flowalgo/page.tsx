@@ -70,7 +70,7 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Does FlowAlgo publish a verified track record?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. FlowAlgo surfaces large block trades and dark pool prints but does not publish signal outcomes or win rates. Profit Builders tracks every Grade A/B signal at profitbuilders.io/results — currently 174,000+ resolved outcomes with 39.3% Grade A win rate." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. FlowAlgo surfaces large block trades and dark pool prints but does not publish a methodology page. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -103,13 +103,6 @@ const productSchema = {
     "availability": "https://schema.org/InStock",
     "url": "https://profitbuilders.io/pricing",
     "priceValidUntil": "2027-01-01",
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.1",
-    "bestRating": "5",
-    "ratingCount": 174000,
-    "reviewCount": 174000,
   },
 }
 
@@ -160,7 +153,7 @@ export default function VsFlowAlgo() {
                 FlowAlgo <span className="text-[#3D4D63]">vs</span> Profit Builders.
               </h1>
               <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-xl">
-                FlowAlgo is $149/mo and asks for $37 up front to try it. Profit Builders is $99/mo with a genuine 7-day free trial and a 174,000-signal track record you can audit before paying a dollar. Here's the fair breakdown — including where FlowAlgo still wins.
+                FlowAlgo is $149/mo and asks for $37 up front to try it. Profit Builders is $99/mo with a genuine 7-day free trial and a documented data methodology you can audit before paying a dollar. Here's the fair breakdown — including where FlowAlgo still wins.
               </p>
             </div>
           </div>
@@ -194,7 +187,7 @@ export default function VsFlowAlgo() {
                   Pick Profit Builders.
                 </h2>
                 <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
-                  If you want to pay 33% less, try every feature free for a week without being charged, and work from a published track record of 174,000 signals with a 39.3% Grade A win rate.
+                  If you want to pay 33% less, try every feature free for a week without being charged, and work from a documented data methodology built on OPRA tape ingest and CBOE-compliant sweep detection.
                 </p>
                 <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
                   $99/mo · Graded signals · 7-day free trial
@@ -228,8 +221,8 @@ export default function VsFlowAlgo() {
                   <MRow label="Monthly price" a={<span className="pb-mono">$149/mo</span>} b={<span className="pb-mono pb-win">$99/mo — 33% less</span>} win />
                   <MRow label="Trial" a={<span className="pb-lose">$37 for 14 days, auto-charges $149</span>} b={<span className="pb-win">7-day free trial, card required</span>} win />
                   <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, 9-filter engine</span>} win />
-                  <MRow label="Public track record" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">174,000+ resolved signals</span>} win />
-                  <MRow label="Grade A win rate" a={<span className="pb-lose">Not disclosed</span>} b={<span className="pb-win">39.3% verified</span>} win />
+                  <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
+                  <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
                   <MRow label="Voice alerts" a={<span className="text-white">Yes — unique</span>} b={<span className="pb-lose">Not offered</span>} />
                   <MRow label="Dark pool Levels" a={<span className="text-white">Yes — support/resistance</span>} b="Partial (via flow)" />
                   <MRow label="Discord alerts" a="Yes" b="Yes, 1–3s delivery" />
@@ -296,7 +289,7 @@ export default function VsFlowAlgo() {
                 <Pro win n="02" title="Honest trial, no auto-charge trap"
                   body="FlowAlgo's trial costs $37 upfront for 14 days and auto-charges $149 on day 15 unless you cancel. Profit Builders' trial costs nothing for 7 days, the subscription auto-charges $99 on day 8, and cancellation is one click from your dashboard. Same mechanic, one-third the commitment, no surprise price step." />
                 <Pro win n="03" title="A publicly verified track record"
-                  body="Profit Builders publishes every Grade A/B signal outcome at /results — currently 174,000+ resolved signals with a 39.3% Grade A win rate. FlowAlgo does not publish signal outcomes anywhere public. If you're about to pay $149/mo to act on flagged signals, you should be able to audit that tool's hit rate first." />
+                  body="Profit Builders publishes its full data methodology at /results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. FlowAlgo does not publish a methodology page. If you're about to pay $149/mo for a flow scanner, you should be able to audit how the data is processed first." />
                 <Pro win n="04" title="Conviction grading replaces interpretation burden"
                   body="FlowAlgo flags large prints; you decide which ones are real signals. Profit Builders runs every print through nine filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification, and more — and delivers the survivors tagged Grade A or Grade B. Fewer alerts, each one with an explicit conviction level." />
                 <Pro win n="05" title="Telegram alerts + mobile-first workflow"
@@ -331,7 +324,7 @@ export default function VsFlowAlgo() {
                   FlowAlgo asks for <span className="pb-mono text-white">$37</span> upfront for a 14-day trial, then auto-charges <span className="pb-mono text-white">$149</span> on day 15 unless you cancel. That's a <em className="pb-editorial text-white">4x price step</em> most trialers don't fully register at signup. Profit Builders asks for a card at signup, charges nothing for 7 days, and auto-charges $99 on day 8 — a smaller commitment, clearer pricing, no hidden step-up. Both require cancellation to avoid the charge; only one pretends the trial itself is free when it isn't.
                 </Dive>
                 <Dive id="pricing" heading="Pricing per outcome">
-                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-white">$99</span> vs <span className="pb-mono text-white">$149</span>. On outcome-per-dollar the gap widens. Profit Builders' Grade A signals carry a verified 39.3% win rate across 174,000 logged outcomes. FlowAlgo doesn't publish signal outcomes, so its effective outcome-per-dollar is unknown — you're paying for flagged prints, not graded setups. Both are legitimate business models. Only one lets you audit the numbers before you pay.
+                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-white">$99</span> vs <span className="pb-mono text-white">$149</span>. The processing matters too. Profit Builders runs CBOE-compliant sweep detection (Rule 6.11), OPRA condition-code parsing, and Black-Scholes-Merton Greeks — all documented at /results. FlowAlgo does not publish a methodology page describing how its scanner processes flow. Both are legitimate business models. Only one lets you audit the data pipeline before you pay.
                 </Dive>
                 <Dive id="levels" heading="Dark pool Levels vs conviction grading">
                   FlowAlgo's Levels feature draws support and resistance zones based on dark pool print concentration — a real differentiator if you trade off those levels as primary decision points. Profit Builders takes a different approach: rather than visualize dark pool zones, it grades every print against nine filters and surfaces Grade A signals with the institutional context that explains them. Both strategies are defensible. Levels is visual and discretionary. Grading is rule-based and delegated. Pick the approach that matches how you actually trade.
@@ -364,7 +357,7 @@ export default function VsFlowAlgo() {
                   Nothing is "wrong" with it — it's just not what most people mean by a trial. FlowAlgo's 14-day trial costs $37 upfront, and if you don't cancel before day 14, the subscription auto-charges <span className="pb-mono text-white">$149</span>. That's a <em className="pb-editorial text-white">4x step</em> from the trial price. Profit Builders' trial costs $0, lasts 7 days, and auto-charges $99 — same mechanic, lower numbers, no surprise price escalation.
                 </Faq>
                 <Faq q="Does FlowAlgo publish a verified track record?">
-                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish signal outcomes. Profit Builders publishes every Grade A/B signal at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — currently 174,000+ resolved outcomes with 39.3% Grade A win rate.
+                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish a methodology page. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="What does FlowAlgo offer that Profit Builders doesn't?">
                   Three things. Voice alerts that speak activity aloud during market hours. The Levels feature for dark pool support/resistance zones. And a longer public archive of third-party reviews and tutorials because FlowAlgo has been in the space longer. If any of those are load-bearing for your workflow, FlowAlgo still wins that column.
@@ -385,7 +378,7 @@ export default function VsFlowAlgo() {
               Save $600/year. Keep the evidence.
             </h2>
             <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
-              Seven days of full feature access. Real-time institutional flow, Grade A conviction grading, the 220-symbol GEX heatmap, and the 174,000-signal track record you just read about.
+              Seven days of full feature access. Real-time institutional flow, Grade A conviction grading, the 220-symbol GEX heatmap, and the OPRA-grade processing pipeline you just read about.
             </p>
             <Link
               href="/pricing"

@@ -1,7 +1,6 @@
 import Nav from "@/components/Nav"
 import PromoBanner from "@/components/PromoBanner"
 import HeroSection from "@/components/HeroSection"
-import TrackRecord from "@/components/TrackRecord"
 import GexSection from "@/components/GexSection"
 import FeaturesSection from "@/components/FeaturesSection"
 import Pricing from "@/components/Pricing"
@@ -17,23 +16,16 @@ const appSchema = JSON.stringify({
   "applicationCategory": "FinanceApplication",
   "applicationSubCategory": "Options Flow Scanner",
   "operatingSystem": "Web, iOS, Android (Discord + Telegram alerts)",
-  "description": "Real-time institutional options flow scanner with conviction grading, Greeks, IV, and spread detection. 174,000+ signals tracked publicly at /results.",
+  "description": "Real-time institutional options flow scanner with sweep detection, OPRA condition codes, Black-Scholes Greeks, and IV. Built on the live OPRA tape with CBOE-compliant sweep classification.",
   "featureList": [
-    "Conviction grading (Grade A / Grade B) via 9-filter engine",
-    "Real-time sweep and block detection",
-    "Market maker filtering at the database layer",
+    "Real-time sweep and block detection (CBOE Rule 6.11 compliant)",
+    "OPRA condition-code badges (ISO, CROSS, MULTI_LEG)",
+    "Black-Scholes-Merton Greeks with Newton-Raphson IV solver",
+    "NBBO spread-relative aggression classification",
     "Accumulation pattern detection with RAPID badges",
     "GEX heatmap across 220 symbols",
-    "Public track record at profitbuilders.io/results",
     "Discord and Telegram alerts within 1-3 seconds",
   ],
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.1",
-    "bestRating": "5",
-    "ratingCount": 174000,
-    "reviewCount": 174000,
-  },
   "offers": [
     {
       "@type": "Offer",
@@ -72,7 +64,7 @@ const organizationSchema = JSON.stringify({
   "alternateName": "Profit Builders Flow Scanner",
   "url": "https://profitbuilders.io",
   "logo": "https://profitbuilders.io/images/pb-logo.png",
-  "description": "Institutional options flow scanner with conviction grading and a public track record of 174,000+ signal outcomes.",
+  "description": "Institutional options flow scanner. OPRA tape, CBOE-compliant sweep detection, Black-Scholes Greeks, NBBO aggression classification.",
   "foundingDate": "2024",
   "sameAs": [
     "https://x.com/profitbuildersio"
@@ -194,19 +186,17 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: appSchema }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: organizationSchema }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: websiteSchema }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: itemListSchema }} />
       <PromoBanner />
       <Nav />
       <HeroSection />
       <div className="border-t border-white/[0.05]"><FeaturesSection /></div>
       <div className="border-t border-white/[0.05]"><GexSection /></div>
-      <div className="border-t border-white/[0.05]"><TrackRecord /></div>
       <div className="border-t border-white/[0.05]"><Pricing /></div>
       {/* Mid-page CTA — single-button reinforcement immediately under Pricing */}
       <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
         <div className="max-w-lg mx-auto text-center">
           <p className="text-white/40 text-sm mb-4">
-            Grade A signals. Verified track record. Free to start.
+            Real-time institutional flow. Built on the OPRA tape. Free to start.
           </p>
           <a href="/pricing"
             className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-[#0a0d12] font-bold px-8 py-4 rounded-full text-base transition-all">
@@ -230,7 +220,7 @@ export default function Home() {
             The Daily Flow Brief.
           </h2>
           <p className="text-white/55 text-[16px] mb-8 max-w-lg mx-auto leading-relaxed">
-            Every weekday at 8:45 AM ET — yesterday&apos;s top Grade A prints, accumulation patterns, and closed P&amp;L. In your inbox before the bell.
+            Every weekday at 8:45 AM ET — yesterday&apos;s top institutional sweeps, accumulation patterns, and notable flow. In your inbox before the bell.
           </p>
           <a href="/newsletter"
             className="inline-flex items-center gap-2 bg-white text-[#0a0d12] font-semibold px-7 py-3.5 rounded-full text-[14px] hover:bg-white/90 transition-colors">

@@ -60,12 +60,12 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Is Profit Builders a direct replacement for Unusual Whales?",
-      "acceptedAnswer": { "@type": "Answer", "text": "For institutional options flow, yes. You lose Congressional trade data (Unusual Whales is the definitive source for that) but you gain conviction grading, a public 174,000-signal track record, Telegram alerts, and a GEX heatmap." },
+      "acceptedAnswer": { "@type": "Answer", "text": "For institutional options flow, yes. You lose Congressional trade data (Unusual Whales is the definitive source for that) but you gain conviction grading, a documented data methodology, Telegram alerts, and a GEX heatmap." },
     },
     {
       "@type": "Question",
       "name": "Does Unusual Whales publish a verified track record?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. Unusual Whales exposes raw flow data but does not publish signal outcomes or win rates. Profit Builders tracks every Grade A/B signal at profitbuilders.io/results, currently 174,000+ resolved outcomes with 39.3% Grade A win rate." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Unusual Whales exposes raw flow data but does not publish signal outcomes or win rates. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -103,13 +103,6 @@ const productSchema = {
     "availability": "https://schema.org/InStock",
     "url": "https://profitbuilders.io/pricing",
     "priceValidUntil": "2027-01-01",
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.1",
-    "bestRating": "5",
-    "ratingCount": 174000,
-    "reviewCount": 174000,
   },
 }
 
@@ -254,8 +247,8 @@ export default function VsUnusualWhales() {
                   <MRow label="Starting price" a={<span className="pb-mono">$29–50/mo</span>} b={<span className="pb-mono text-white">$99/mo</span>} />
                   <MRow label="Free trial" a="Money-back refund only" b="7 days, card required" win />
                   <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, 9-filter engine</span>} win />
-                  <MRow label="Public track record" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">174,000+ resolved signals</span>} win />
-                  <MRow label="Grade A win rate" a={<span className="pb-lose">Not disclosed</span>} b={<span className="pb-win">39.3% verified</span>} win />
+                  <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
+                  <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
                   <MRow label="Discord alerts" a="Yes" b="Yes, 1–3s delivery" />
                   <MRow label="Telegram alerts" a={<span className="pb-lose">No</span>} b={<span className="pb-win">Native, mobile-first</span>} win />
                   <MRow label="Dark pool data" a={<span className="text-white">Standalone feed</span>} b="Surfaced via flow" />
@@ -329,7 +322,7 @@ export default function VsUnusualWhales() {
                 <Pro win n="01" title="Conviction grading, not raw dumps"
                   body="Every signal runs through 9 filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and emerges tagged Grade A or Grade B. UW shows the raw prints. You decide what they mean. We show you the ones the engine vetted." />
                 <Pro win n="02" title="A publicly verified track record"
-                  body="Every Grade A/B signal ships to profitbuilders.io/results with its outcome. 174,000+ resolved signals logged. Grade A runs a 39.3% win rate — 25% better than Grade B, which is how you know the filter is doing real work. UW does not publish signal outcomes." />
+                  body="Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Unusual Whales does not publish a methodology page describing how its scanner processes flow." />
                 <Pro win n="03" title="Accumulation pattern detection"
                   body="When a single contract gets hit 10+ times in quick succession with aggressive, similar-sized prints — the signature of a large player slicing a position — we surface it as a RAPID badge with full accumulation context. UW shows the individual prints. You spot the pattern." />
                 <Pro win n="04" title="Telegram + Discord, not Discord-only"
@@ -375,7 +368,7 @@ export default function VsUnusualWhales() {
                 </Dive>
 
                 <Dive id="pricing" heading="Pricing, per outcome">
-                  On paper, Unusual Whales is cheaper: <span className="pb-mono text-white">$50/mo</span> vs <span className="pb-mono text-white">$99/mo</span>. On outcome-per-dollar, the math flips. Profit Builders' Grade A win rate of 39.3% across 174,000 logged signals means roughly four in ten Grade A setups resolve favorably. Unusual Whales doesn't publish outcome data, so the comparison can't be made apples-to-apples — which is its own statement. If you're filtering raw UW flow yourself, your realized win rate depends entirely on your interpretation skill. We're priced for the trader who'd rather pay more for pre-filtered signals with a knowable hit rate than pay less for more data they have to process.
+                  On paper, Unusual Whales is cheaper: <span className="pb-mono text-white">$50/mo</span> vs <span className="pb-mono text-white">$99/mo</span>. The trade-off is curation. Unusual Whales is a firehose with extensive filter knobs — you process the flow yourself. Profit Builders runs every print through a documented methodology before it reaches your screen, surfacing pre-filtered institutional flow. Different value propositions; you pay more for less work.
                 </Dive>
 
                 <Dive id="who" heading="Who each platform is actually for">
@@ -407,7 +400,7 @@ export default function VsUnusualWhales() {
                   For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a public track record, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
                 </Faq>
                 <Faq q="Does Unusual Whales publish a verified track record?">
-                  No. Unusual Whales exposes the raw flow but doesn't publish signal outcomes or win rates. Profit Builders publishes every Grade A/B signal outcome at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — currently 174,000+ resolved signals with 39.3% Grade A win rate.
+                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="Can I use both?">
                   Yes, they complement each other cleanly. Unusual Whales for breadth (Congress, dark pool heatmaps, screener). Profit Builders for filtered, graded, tracked signals. Many active traders run both.

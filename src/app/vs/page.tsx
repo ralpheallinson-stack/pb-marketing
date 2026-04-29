@@ -273,7 +273,7 @@ export default function VsIndex() {
               Stop comparing. Start auditing.
             </h2>
             <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
-              Seven days of full feature access. See the Grade A signals, the 174,000-outcome track record, and the 9-filter methodology up close before paying anything.
+              Seven days of full feature access. See the institutional-grade flow, the documented data methodology, and the 220-symbol GEX heatmap up close before paying anything.
             </p>
             <Link
               href="/pricing"
