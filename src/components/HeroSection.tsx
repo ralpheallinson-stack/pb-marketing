@@ -6,7 +6,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import DynamicBadgeText from './DynamicBadgeText'
 import SoftAurora from './SoftAurora'
-import CountUp from './CountUp'
 
 function AuroraBackground() {
   return (
@@ -105,23 +104,6 @@ function Particles() {
   )
 }
 
-function useCountUp(target: number, inView: boolean, duration = 1400) {
-  const [count, setCount] = useState(0)
-  const started = useRef(false)
-  useEffect(() => {
-    if (!inView || !target || started.current) return
-    started.current = true
-    const start = Date.now()
-    const tick = () => {
-      const p = Math.min((Date.now() - start) / duration, 1)
-      const e = 1 - Math.pow(1 - p, 3)
-      setCount(Math.round(target * e))
-      if (p < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [inView, target, duration])
-  return count
-}
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 20 },
@@ -130,18 +112,6 @@ const fadeUp = (delay: number) => ({
 })
 
 export default function HeroSection() {
-  const statsRef = useRef<HTMLDivElement>(null)
-  const [statsInView, setStatsInView] = useState(false)
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setStatsInView(true) },
-      { threshold: 0.3 }
-    )
-    if (statsRef.current) obs.observe(statsRef.current)
-    return () => obs.disconnect()
-  }, [])
-
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#060810]">
@@ -223,24 +193,6 @@ export default function HeroSection() {
         <motion.p {...fadeUp(0.35)} className="text-white/20 text-xs font-mono mb-16">
           Free 7-day trial · Then $99/mo · Cancel anytime
         </motion.p>
-
-        {/* Stats */}
-        <motion.div
-          ref={statsRef}
-          {...fadeUp(0.45)}
-          className="flex items-center justify-center gap-12 flex-wrap border-t border-b border-white/[0.06] py-6 mb-16"
-        >
-          {[
-            { node: <><CountUp from={0} to={220} duration={2} />+</>, label: 'Symbols Covered' },
-            { node: <>1-3s</>, label: 'Alert Latency' },
-            { node: <>OPRA</>, label: 'Live Tape Ingest' },
-          ].map(({ node, label }) => (
-            <div key={label} className="text-center">
-              <div className="text-2xl font-bold text-white mb-1">{node}</div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-white/30">{label}</div>
-            </div>
-          ))}
-        </motion.div>
       </div>
 
       {/* Scanner image */}
