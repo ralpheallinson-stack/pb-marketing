@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: "14 essays on options flow, GEX, accumulation, and how to read institutional moves before price.",
     url: CANON,
     type: "website",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "The Profit Builders Library" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "The Profit Builders Library — Learn Options Flow",
     description: "Free 50,000-word library on reading institutional flow.",
-    images: ["/images/og-card.png"],
   },
 }
 

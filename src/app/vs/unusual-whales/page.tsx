@@ -16,14 +16,12 @@ export const metadata: Metadata = {
       "Unusual Whales ($50/mo) vs Profit Builders ($99/mo). Feature matrix, pricing, and a verified documented OPRA methodology to compare against.",
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Unusual Whales vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Unusual Whales vs Profit Builders · Options Flow Comparison",
     description:
       "$50/mo vs $99/mo. Congress trades vs conviction grading. Documented methodology comparison inside.",
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -93,7 +91,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

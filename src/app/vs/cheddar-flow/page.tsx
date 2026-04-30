@@ -16,14 +16,12 @@ export const metadata: Metadata = {
       "$99 vs $99. Who actually gives you more? Feature gating exposed. Documented methodology inside.",
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Cheddar Flow vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Cheddar Flow vs Profit Builders · Options Flow Comparison",
     description:
       "Same $99/mo. Cheddar Flow gates dark pool + AI behind Pro. Profit Builders includes everything with a documented OPRA methodology.",
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -89,7 +87,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

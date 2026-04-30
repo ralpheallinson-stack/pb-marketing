@@ -17,13 +17,11 @@ export const metadata: Metadata = {
       "Daily recaps of institutional options flow. Every market day. Free to read.",
     url: CANON,
     type: "website",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Profit Builders Daily Flow Recaps" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "The Tape, Daily — Profit Builders Flow Recaps",
     description: "Every market day's institutional options flow, recapped.",
-    images: ["/images/og-card.png"],
   },
 }
 

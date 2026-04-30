@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Market Chameleon vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: 'Market Chameleon vs Profit Builders · Research or Flow',
     description: "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -70,7 +68,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Barchart vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
     description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -32,7 +30,7 @@ const articleSchema = {
   "description": 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
@@ -74,7 +72,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

@@ -8,9 +8,8 @@ export const metadata: Metadata = {
     title: "Learn Options Flow Trading | Profit Builders",
     description: "Guides on institutional order flow analysis and options trading strategies.",
     url: "https://profitbuilders.io/blog",
-    images: [{ url: "/images/og-blog.png", width: 1200, height: 630, alt: "Profit Builders Blog" }],
   },
-  twitter: { card: "summary_large_image", images: ["/images/og-blog.png"] },
+  twitter: { card: "summary_large_image" },
 }
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {

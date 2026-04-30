@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: "Side-by-side options flow scanner comparisons with documented methodology.",
     url: CANON,
     type: "website",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Compare Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Compare Profit Builders vs top options flow scanners",
     description: "Honest 2026 comparisons: Unusual Whales, FlowAlgo, Cheddar Flow.",
-    images: ["/images/og-card.png"],
   },
 }
 

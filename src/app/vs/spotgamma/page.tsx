@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: 'SpotGamma grades dealer positioning. Profit Builders grades whale prints. Different lenses on the same tape. SpotGamma Alpha $299 vs Profit Builders Pro Bundle $129.',
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "SpotGamma vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: 'SpotGamma vs Profit Builders · Gamma or Flow',
     description: 'SpotGamma grades dealer positioning. Profit Builders grades whale prints. Different lenses on the same tape. SpotGamma Alpha $299 vs Profit Builders Pro Bundle $129.',
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -32,7 +30,7 @@ const articleSchema = {
   "description": 'SpotGamma grades dealer positioning. Profit Builders grades whale prints. Different lenses on the same tape. SpotGamma Alpha $299 vs Profit Builders Pro Bundle $129.',
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
@@ -74,7 +72,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

@@ -80,7 +80,7 @@ export default async function BlogPostPage({
     },
     url,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: "https://profitbuilders.io/images/og-card.png",
+    image: `https://profitbuilders.io/blog/${slug}/opengraph-image`,
   }
 
   // Build a table of contents from H2 headings for long-form posts.

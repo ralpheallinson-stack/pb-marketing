@@ -15,13 +15,11 @@ export const metadata: Metadata = {
     description: "OptionStrat helps you draw the trade. Profit Builders helps you find it. $49.99 vs $99 for two different jobs. Here's which one your workflow needs.",
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "OptionStrat vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: 'OptionStrat vs Profit Builders · Builder or Signal',
     description: "OptionStrat helps you draw the trade. Profit Builders helps you find it. $49.99 vs $99 for two different jobs. Here's which one your workflow needs.",
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -32,7 +30,7 @@ const articleSchema = {
   "description": "OptionStrat helps you draw the trade. Profit Builders helps you find it. $49.99 vs $99 for two different jobs. Here's which one your workflow needs.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
@@ -74,7 +72,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

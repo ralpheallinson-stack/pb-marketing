@@ -16,14 +16,12 @@ export const metadata: Metadata = {
       "FlowAlgo $149/mo vs Profit Builders $99/mo. Honest trial vs auto-charge $37 trial. Documented methodology inside.",
     url: CANON,
     type: "article",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "FlowAlgo vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "FlowAlgo vs Profit Builders · Options Flow Comparison",
     description:
       "$99 vs $149/mo. No trial traps. Verified documented OPRA methodology. Honest comparison inside.",
-    images: ["/images/og-card.png"],
   },
 }
 
@@ -93,7 +91,7 @@ const productSchema = {
   "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
-    "https://profitbuilders.io/images/og-card.png"
+    "https://profitbuilders.io/opengraph-image"
   ],
   "brand": { "@type": "Brand", "name": "Profit Builders" },
   "offers": {

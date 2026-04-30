@@ -12,13 +12,11 @@ export const metadata: Metadata = {
     description: "Earn $99 per paid referral. No cap. Applied automatically to your Stripe balance.",
     url: "https://profitbuilders.io/refer",
     type: "website",
-    images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Profit Builders Referral Program" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Refer a Trader, Earn $99 Per Signup",
     description: "Earn $99 per paid referral. No cap. Applied automatically.",
-    images: ["/images/og-card.png"],
   },
 }
 
