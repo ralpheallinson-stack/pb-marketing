@@ -8,9 +8,8 @@ export const metadata: Metadata = {
     title: "Data Methodology — Profit Builders",
     description: "How Profit Builders processes institutional options flow.",
     url: "https://profitbuilders.io/results",
-    images: [{ url: "/images/og-results.png", width: 1200, height: 630, alt: "Profit Builders Data Methodology" }],
   },
-  twitter: { card: "summary_large_image", images: ["/images/og-results.png"] },
+  twitter: { card: "summary_large_image" },
 }
 
 const breadcrumbSchema = JSON.stringify({
