@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Barchart vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

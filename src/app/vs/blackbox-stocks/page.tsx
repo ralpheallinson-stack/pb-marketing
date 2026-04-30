@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BlackBoxStocks vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

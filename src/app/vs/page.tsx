@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: "Side-by-side options flow scanner comparisons with documented methodology.",
     url: CANON,
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Profit Builders vs Competitors" }],
   },
   twitter: {
     card: "summary_large_image",

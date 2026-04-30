@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Market Chameleon vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

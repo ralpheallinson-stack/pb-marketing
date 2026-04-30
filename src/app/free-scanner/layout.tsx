@@ -8,8 +8,9 @@ export const metadata: Metadata = {
     title: "Free Options Flow Scanner | Profit Builders",
     description: "See institutional sweeps and blocks for free. 15-minute delayed data.",
     url: "https://profitbuilders.io/free-scanner",
+    images: [{ url: "/free-scanner/opengraph-image", width: 1200, height: 630, alt: "Free Options Flow Scanner" }]
   },
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", images: ["/free-scanner/opengraph-image"] },
 }
 
 const softwareAppSchema = JSON.stringify({

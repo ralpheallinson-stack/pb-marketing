@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       "$99 vs $99. Who actually gives you more? Feature gating exposed. Documented methodology inside.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Cheddar Flow vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

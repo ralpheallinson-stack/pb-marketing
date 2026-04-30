@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: "Yesterday's institutional options flow delivered weekday mornings at 8:45 AM ET. Free.",
     url: "https://profitbuilders.io/newsletter",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "The Flow Brief — Daily Options Flow Newsletter" }],
   },
   twitter: {
     card: "summary_large_image",

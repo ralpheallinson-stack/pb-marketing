@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: "OptionStrat helps you draw the trade. Profit Builders helps you find it. $49.99 vs $99 for two different jobs. Here's which one your workflow needs.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "OptionStrat vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

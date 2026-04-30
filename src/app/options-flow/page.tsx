@@ -40,6 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description: ogDescription,
       url: "https://profitbuilders.io/options-flow",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Options Flow by Ticker — Profit Builders" }],
     },
     twitter: {
       card: "summary_large_image",

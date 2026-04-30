@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: 'SpotGamma grades dealer positioning. Profit Builders grades whale prints. Different lenses on the same tape. SpotGamma Alpha $299 vs Profit Builders Pro Bundle $129.',
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "SpotGamma vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

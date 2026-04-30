@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       "FlowAlgo $149/mo vs Profit Builders $99/mo. Honest trial vs auto-charge $37 trial. Documented methodology inside.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FlowAlgo vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

@@ -59,8 +59,9 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Profit Builders",
     url: "https://profitbuilders.io",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Profit Builders Options Flow Scanner" }],
   },
-  twitter: { card: "summary_large_image", site: "@ProfitBldrs" },
+  twitter: { card: "summary_large_image", site: "@ProfitBldrs", images: ["/opengraph-image"] },
   robots: { index: true, follow: true },
 }
 

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       "Unusual Whales ($50/mo) vs Profit Builders ($99/mo). Feature matrix, pricing, and a verified documented OPRA methodology to compare against.",
     url: CANON,
     type: "article",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Unusual Whales vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",

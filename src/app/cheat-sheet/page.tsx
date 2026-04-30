@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     description: "One page. The institutional-flow filter conviction framework. Grade thresholds. Sweep vs block decoder. Free.",
     url: "https://profitbuilders.io/cheat-sheet",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Profit Builders Options Flow Cheat Sheet" }],
   },
   twitter: {
     card: "summary_large_image",
