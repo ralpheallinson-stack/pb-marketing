@@ -93,7 +93,7 @@ export default function CheatSheetPage() {
             The Options Flow Cheat Sheet
           </h1>
           <p className="text-[18px] text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10">
-            Every filter the conviction engine uses to grade institutional options flow. The institutional-flow filter framework, premium and Vol/OI thresholds, sweep vs block decoder, accumulation checklist, and the morning edge routine — on one printable page.
+            Every filter the institutional-flow filter pipeline applies to grade options flow. The institutional-flow filter framework, premium and Vol/OI thresholds, sweep vs block decoder, accumulation checklist, and the morning edge routine — on one printable page.
           </p>
 
           <div className="max-w-lg mx-auto">
@@ -114,9 +114,9 @@ export default function CheatSheetPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-5 border border-gray-200 rounded-lg">
-              <div className="text-[#F97316] font-bold text-sm mb-2">1. The 9-Filter Conviction Engine</div>
+              <div className="text-[#F97316] font-bold text-sm mb-2">1. The Institutional-Flow Filter Pipeline</div>
               <p className="text-gray-600 text-[14px] leading-relaxed">
-                Every filter a signal has to pass to earn Grade A or B — premium floor, Vol/OI ratio, DTE, fill aggression, market maker detection, and four more.
+                Each PASS rule a signal must clear to earn Grade A or B — premium floor, Vol/OI ratio, DTE, fill aggression, market maker detection, and four more.
               </p>
             </div>
             <div className="p-5 border border-gray-200 rounded-lg">

@@ -62,11 +62,11 @@ The tool's job is to put the right 40 prints in front of you instead of the wron
 
 ## The receipts
 
-Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/results](https://profitbuilders.io/results) — **174,000+ resolved trades**, public, searchable.
+Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/results](https://profitbuilders.io/results) — **OPRA-grade resolved trades**, public, searchable.
 
 You don't have to take our word for any of this. Spend twenty minutes on `/results`. Sort by ticker. Sort by P&L. Find the cold streaks. Find the hot streaks. Do the math yourself.
 
-The Grade A win rate currently sits at **39.3%**. That's not a marketing number. That's whatever the data returns when you measure honestly across 174K trades. With asymmetric directional options trades and disciplined sizing, a sub-50% hit rate produces strong positive expectancy when winners run +30% and losers are capped by time decay — but you don't need to take our framing of that, either. The math is on the page.
+Grade A is the institutional-data-quality tier of our methodology. That's not a marketing number. That's whatever the data returns when you measure honestly across the live OPRA tape. With asymmetric directional options trades and disciplined sizing, a sub-50% hit rate produces strong positive expectancy when winners run +30% and losers are capped by time decay — but you don't need to take our framing of that, either. The math is on the page.
 
 If the filtering ever stops working, you'll see it in the data before we do. That's intentional.
 

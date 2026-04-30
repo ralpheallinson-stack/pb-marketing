@@ -8,7 +8,7 @@ read_time: "7"
 
 OptionStrat and Profit Builders are both options tools. They answer different questions.
 
-OptionStrat answers **"if I'm right about this thesis, what does the trade make?"** — a strategy builder with a payoff visualizer, Greeks, and probability distributions. Profit Builders answers **"what are the pros actually buying right now?"** — a scanner that surfaces institutional whale prints, graded by a 9-filter conviction engine.
+OptionStrat answers **"if I'm right about this thesis, what does the trade make?"** — a strategy builder with a payoff visualizer, Greeks, and probability distributions. Profit Builders answers **"what are the pros actually buying right now?"** — a scanner that surfaces institutional whale prints, graded by a institutional-flow filter pipeline.
 
 One starts with your thesis. The other starts with the tape. (For a look at other direct flow scanners, see the [2026 comparison](/blog/best-options-flow-scanner-2026).)
 
@@ -27,10 +27,10 @@ The direct comparison is OptionStrat Live Flow ($49.99) vs Profit Builders Flow 
 | **Price** | $49.99/mo | $99/mo |
 | **Free trial** | 7 days | 7 days, full access |
 | **Real-time flow** | Yes (Live Flow tier only) | Yes |
-| **Conviction grading** | No | [Grade A / Grade B via 9-filter engine](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | No | [Grade A / Grade B via institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) |
 | **Strategy payoff builder** | Yes — flagship feature | No |
 | **Multi-leg Optimizer** | Yes | No |
-| **Public track record** | No | [174K+ signals at /results](/results) |
+| **Documented methodology** | No | [OPRA-grade flow at /results](/results) |
 | **Accumulation detection** | No | [Yes — RAPID badges](/blog/what-is-options-accumulation) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
 | **Market-maker filtering** | No | Filtered at the database layer |
@@ -50,9 +50,9 @@ If your primary edge is reading which sweeps and blocks have institutional convi
 
 Yes, we built this. Here's what a flow-first scanner does differently.
 
-**Conviction grading before the print hits your screen.** Every signal passes through [9 data-backed filters](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker detection, DTE, accumulation pattern, spread identification, single-leg check, and regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, and non-market-maker classification. Grade B is standard institutional flow. Everything below threshold is filtered out.
+**Conviction grading before the print hits your screen.** Every signal passes through [data-derived PASS rules](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker detection, DTE, accumulation pattern, spread identification, single-leg check, and regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, and non-market-maker classification. Grade B is standard institutional flow. Everything below threshold is filtered out.
 
-**Public, auditable track record.** [174,000+ signals](/results) tracked with full P&L — wins, losses, exit reasons. 39.3% Grade A win rate across that sample. OptionStrat doesn't publish signal performance because flow isn't their core product; they don't own the outcomes.
+**Documented data methodology.** [institutional-grade flow](/results) tracked with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression. institutional-data-quality methodology across that sample. OptionStrat doesn't publish signal performance because flow isn't their core product; they don't own the outcomes.
 
 **Accumulation pattern detection.** When the same contract gets hit repeatedly across a session, Profit Builders flags it automatically with RAPID badges. OptionStrat shows you individual prints — connecting the dots is on you.
 
@@ -84,7 +84,7 @@ The one exception: premium-sellers who want to fade crowded retail flow occasion
 **Choose Profit Builders if:**
 - Your primary strategy is directional single-leg: calls and puts on institutional conviction
 - You want every print pre-graded before it reaches your screen
-- A public, auditable track record is non-negotiable
+- A documented data methodology is non-negotiable
 - You want GEX bundled for context on entries
 - You trade sweeps and blocks — not iron condors
 

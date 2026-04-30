@@ -26,7 +26,7 @@ const plans = [
     link: "https://buy.stripe.com/7sYeVf0Jq0Mf4XogdZ0RG04?utm_source=website&utm_medium=cta&utm_campaign=homepage",
     features: [
       "Real-time sweeps & blocks with Greeks",
-      "AI conviction grading — 9 filters",
+      "Conviction grading via institutional-flow filter pipeline",
       "Spread detection & MM filtering",
       "Discord & Telegram alerts",
       "AI Chart Analyzer (20/day)",

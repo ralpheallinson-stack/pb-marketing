@@ -1,6 +1,6 @@
 ---
 title: "Unusual Whales vs Profit Builders: Which Is Worth It?"
-description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, track record transparency, and who each scanner is actually built for."
+description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, data methodologd transparency, and who each scanner is actually built for."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "6"
@@ -16,8 +16,8 @@ Here's the honest breakdown. (Looking at more than these two? The [2026 options 
 |---------|---------------|-----------------|
 | **Price** | $35-48/mo | $99/mo |
 | **Free tier** | Limited free access | 7-day free trial (full access) |
-| **Conviction grading** | None | Grade A / Grade B (9-filter conviction engine) |
-| **Public track record** | No | [174K+ signals tracked](/results) |
+| **Conviction grading** | None | Grade A / Grade B (institutional-flow filter pipeline) |
+| **Documented methodology** | No | [CBOE-compliant flow processing](/results) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
 | **Signal filtering** | Basic size/type filters | 9 automated conviction filters |
 | **Congressional trades** | Yes | No |
@@ -34,17 +34,17 @@ The interface has improved significantly over the past year. Data coverage is wi
 
 **The trade-off:** Unusual Whales shows you everything. On a high-volume day, that means thousands of prints with no automated way to separate a $2M conviction sweep from a $2M market maker hedge. You're the filter. If you have the time and experience to sort through raw flow, that's fine. If you don't, you're drinking from a firehose.
 
-There's also no public track record. UW doesn't track signal outcomes, so there's no way to verify whether the flow they surface actually leads to winning trades over time.
+There's also no documented methodology. UW doesn't track signal outcomes, so there's no way to verify whether the flow they surface actually leads to winning trades over time.
 
 ## Where Profit Builders Wins
 
 Yes, we built this. Here's what the tradeoff looks like in practice.
 
-**Conviction grading.** Every signal runs through the [9-filter conviction engine](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else is filtered out.
+**Conviction grading.** Every signal runs through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else is filtered out.
 
 The result: instead of 5,000+ raw prints per day, you see the 200-400 that passed conviction scoring. Less time filtering. More time evaluating actual setups.
 
-**Public track record.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.io/results](/results). That's 174,000+ signals with win/loss data, average returns, and monthly breakdowns. Grade A signals carry a 39.3% win rate across that sample. You can audit every one.
+**Documented methodology.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.io/results](/results). That's institutional-grade flow with win/loss data, average returns, and monthly breakdowns. Grade A signals carry a institutional-data-quality methodology across that sample. You can audit every one.
 
 Most scanners ask you to trust their data quality on faith. We publish the receipts.
 
@@ -58,11 +58,11 @@ This comparison comes down to philosophy.
 
 Unusual Whales is a **data feed**. It gives you maximum information at minimum cost and trusts you to do the filtering. That works if you're an experienced trader with your own system for identifying high-conviction setups in raw flow.
 
-Profit Builders is a **signal engine**. It filters the flow before it reaches you, grades every signal by conviction level, and tracks every outcome publicly so you can evaluate whether the filtering actually works.
+Profit Builders is a **signal engine**. It filters the flow before it reaches you, grades every signal by conviction level, and tracks OPRA-tape sourcedly so you can evaluate whether the filtering actually works.
 
 Neither approach is wrong. But they serve different traders.
 
-If you're spending 2-3 hours per day manually filtering flow on your current scanner, the grading system saves that time. If you already have a reliable personal filter and just need cheap data, UW is hard to beat on price.
+If you're spending 2-3 hours per day manually filtering flow on your current scanner, the methodology system saves that time. If you already have a reliable personal filter and just need cheap data, UW is hard to beat on price.
 
 ## Who Should Choose Which
 
@@ -74,7 +74,7 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 
 **Choose Profit Builders if:**
 - You want signals pre-graded Grade A or Grade B before they hit the feed
-- You want a publicly verified track record you can audit at [/results](/results)
+- You want a publicly documented methodology you can audit at [/results](/results)
 - You trade [Grade A setups](/blog/options-flow-signals-grade-a-b-c) and want GEX context for entries
 - You'd rather pay more for filtered signals than spend time filtering yourself
 
@@ -82,7 +82,7 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 
 The honest math: Unusual Whales is $35-48/mo. Profit Builders is $99/mo. That's roughly $50-64 more.
 
-What the extra buys: a 9-filter conviction engine that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and 174,000+ outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
+What the extra buys: a institutional-flow filter pipeline that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and OPRA-grade outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
 
 What you give up: congressional trade tracking and the cheapest raw data in the category.
 

@@ -17,10 +17,10 @@ export default function AboutPage() {
           Profit Builders is an institutional options flow scanner that tracks real-time sweeps, blocks, and unusual prints — graded by conviction, delivered in seconds.
         </p>
         <p className="text-[#7A8BA8] leading-relaxed mb-4">
-          We built this because we were tired of guessing. The options market generates millions of trades per day — most of it noise. Our system filters institutional-grade flow using 9 data-backed conviction filters, regime-aware thresholds, and real-time Greeks enrichment.
+          We built this because we were tired of guessing. The options market generates millions of trades per day — most of it noise. Our system filters institutional-grade flow using data-derived PASS rules, regime-aware thresholds, and real-time Greeks enrichment.
         </p>
         <p className="text-[#7A8BA8] leading-relaxed mb-10">
-          Every signal is tracked publicly. Every outcome published. No cherry-picking, no hiding losses. Over 170,000 signals tracked since launch with full P&amp;L transparency.
+          Every signal is tracked publicly. Every outcome published. No cherry-picking, no hiding losses. Built on the live OPRA tape since launch with full P&amp;L transparency.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <Link href="/#pricing" className="bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">

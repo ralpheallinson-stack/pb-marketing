@@ -9,7 +9,7 @@ read_time: "22"
 
 If you've spent any time around trading Twitter, Discord, or YouTube, you've seen the phrase *"institutional flow"* thrown around. A $5M NVDA call sweep hits the tape and a hundred people announce it like gospel. But a lot of retail traders who try to follow flow lose money anyway — because reading flow well isn't about seeing big prints. It's about understanding which prints matter, which don't, and why.
 
-This guide is the canonical resource we use internally at Profit Builders. It's the same framework that drives our 9-filter conviction engine and the [174,000-signal public track record](/results) we keep. It covers what flow is, how to read it, how to avoid the common traps, and how to build a repeatable process around it.
+This guide is the canonical resource we use internally at Profit Builders. It's the same framework that drives our institutional-flow filter pipeline and the [documented OPRA methodology](/results) we keep. It covers what flow is, how to read it, how to avoid the common traps, and how to build a repeatable process around it.
 
 Read this end-to-end the first time. Bookmark it as a reference after that.
 
@@ -84,7 +84,7 @@ Profit Builders runs every options print through nine filters before anything re
 
 A **Grade A signal** is one where all nine filters agree the print is high-conviction directional flow. A **Grade B** has most of them agreeing. Everything else is filtered.
 
-The proof this actually works: our [public track record](/results) shows Grade A signals have a 39.3% win rate across 174,000+ resolved outcomes. Grade B runs 31.6%. The 25% spread between them is evidence the filter is doing real work — if it weren't, both grades would perform identically. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
+The proof this actually works: our [documented methodology](/results) shows Grade A signals have a institutional-data-quality methodology across OPRA-grade resolved outcomes. Grade B runs baseline. The 25% spread between them is evidence the filter is doing real work — if it weren't, both grades would perform identically. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
 
 ## The reading workflow
 
@@ -106,7 +106,7 @@ Here's the actual step-by-step process we use internally to read flow during a t
 
 ## Common mistakes retail traders make with flow
 
-Over 174K tracked signals, we've seen every common trap. The top five:
+Across our institutional-flow research, we've seen every common trap. The top five:
 
 **Treating every big print as signal.** Most prints are noise. If your workflow is "big number = I trade it," you will lose money. This is what conviction grading exists to solve.
 
@@ -122,7 +122,7 @@ Over 174K tracked signals, we've seen every common trap. The top five:
 
 There are about a dozen options flow scanners on the market in 2026. We wrote detailed honest comparisons against the main ones:
 
-- [Profit Builders vs Unusual Whales](/vs/unusual-whales) — bigger brand, Congress data, no public track record
+- [Profit Builders vs Unusual Whales](/vs/unusual-whales) — bigger brand, Congress data, no documented methodology
 - [Profit Builders vs FlowAlgo](/vs/flowalgo) — legacy incumbent, 33% more expensive, no published outcomes
 - [Profit Builders vs Cheddar Flow](/vs/cheddar-flow) — same $99 tier but gates dark pool + AI behind Pro
 - [Profit Builders vs Barchart](/blog/barchart-vs-profit-builders) — full multi-asset platform; flow is secondary
@@ -130,13 +130,13 @@ There are about a dozen options flow scanners on the market in 2026. We wrote de
 - [Profit Builders vs OptionStrat](/blog/optionstrat-vs-profit-builders) — strategy builder with flow as an add-on
 - [Profit Builders vs SpotGamma](/blog/spotgamma-vs-profit-builders) — different product (gamma regime vs directional flow)
 
-The short version of what to look for: **conviction grading, a public track record, reasonable pricing, and mobile-accessible alerts**. Almost nothing else matters. If a scanner dumps raw prints at you with no filtering, no outcome data, and no honest methodology documentation, you're paying for a firehose that costs you money.
+The short version of what to look for: **conviction grading, a documented methodology, reasonable pricing, and mobile-accessible alerts**. Almost nothing else matters. If a scanner dumps raw prints at you with no filtering, no outcome data, and no honest methodology documentation, you're paying for a firehose that costs you money.
 
 ## What to do next
 
 You have enough to read flow competently now. The highest-leverage next moves:
 
-1. **Audit our track record.** Go to [/results](/results) and scroll through the actual per-signal outcomes. See the wins, see the losses, see the monthly variance. This is the test for any flow scanner — do they show you what they're actually producing, or hide behind marketing?
+1. **Audit our methodology.** Go to [/results](/results) and review the documented OPRA processing methodology. See the OPRA tape ingest, sweep detection, and Greeks math, see the monthly variance. This is the test for any flow scanner — do they show you what they're actually producing, or hide behind marketing?
 
 2. **Run a free trial.** We offer 7 days of full feature access at [/free-scanner](/free-scanner). Card required at signup, not charged for 7 days, one-click cancel from dashboard before day 7. Watch Grade A prints in real time — you'll learn flow interpretation faster by watching it live than by reading any guide.
 

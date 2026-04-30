@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from "react"
 /**
  * TrackRecordStamp — the "verified outcome" hero stat card.
  *
- * Used on comparison pages, homepage, results page, and anywhere we need a
+ * DEPRECATED in v7.11. Kept as dead code for now (no live imports).
+ * Originally used on comparison pages, homepage, results page, and anywhere we need a
  * compact "this is the evidence" component. Shows Grade A win rate as the
  * hero number, Grade B below for context (the filter actually working is
  * visible when Grade A > Grade B), corpus size, and a link to /results.
@@ -28,7 +29,7 @@ type Props = {
 export default function TrackRecordStamp({
   gradeAPct = 0,
   gradeBPct = 31.6,
-  signalCount = 174000,
+  signalCount = 0,
   since = "Oct 2024",
   href = "/results",
   compact = false,

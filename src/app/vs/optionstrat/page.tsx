@@ -63,7 +63,7 @@ const faqSchema = {
     {"@type": "Question", "name": "Does OptionStrat grade flow signals?", "acceptedAnswer": {"@type": "Answer", "text": "No. OptionStrat surfaces flow but doesn't apply a conviction filter or publish outcomes. Profit Builders runs every print through a institutional-flow filter engine and publishes the resolved P&L of every Grade A/B signal."}},
     {"@type": "Question", "name": "Can I use OptionStrat for the strategy and Profit Builders for the signal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — that's the most common stack. Profit Builders surfaces the institutional print, you take the underlying conviction to OptionStrat to model the spread or structure that fits your view."}},
     {"@type": "Question", "name": "Does OptionStrat have a free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, but it's 15-minute delayed and shows roughly 10% of the full flow feed. For real-time flow, you need Live Flow at $49.99/mo."}},
-    {"@type": "Question", "name": "Why is Profit Builders more expensive?", "acceptedAnswer": {"@type": "Answer", "text": "Different value prop. Profit Builders is paying for the grading engine, the public outcomes log, and the GEX heatmap on top of the live tape — not just the flow display."}}
+    {"@type": "Question", "name": "Why is Profit Builders more expensive?", "acceptedAnswer": {"@type": "Answer", "text": "Different value prop. Profit Builders is paying for the methodology engine, the public outcomes log, and the GEX heatmap on top of the live tape — not just the flow display."}}
   ],
 }
 
@@ -214,7 +214,7 @@ export default function VsPage() {
               </div>
               <div>
                 <div className="pb-mono text-[11px] tracking-[0.22em] text-[#60a5fa] uppercase mb-4">Pick Profit Builders if</div>
-                <p className="pb-editorial text-[17px] leading-[1.6] text-white/70">You want the signal first, then the trade. The conviction engine surfaces the prints worth following, then you pick the strike and structure on your own platform.</p>
+                <p className="pb-editorial text-[17px] leading-[1.6] text-white/70">You want the signal first, then the trade. The scanner surfaces the prints worth following, then you pick the strike and structure on your own platform.</p>
               </div>
             </div>
           </div>
@@ -245,7 +245,7 @@ export default function VsPage() {
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Why is Profit Builders more expensive?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Different value prop. Profit Builders is paying for the grading engine, the public outcomes log, and the GEX heatmap on top of the live tape — not just the flow display.</p>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Different value prop. Profit Builders is paying for the methodology engine, the public outcomes log, and the GEX heatmap on top of the live tape — not just the flow display.</p>
             </div>
           </div>
         </section>

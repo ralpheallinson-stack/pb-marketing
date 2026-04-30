@@ -72,11 +72,11 @@ export default function TrackRecord() {
 
             <div className="flex items-center gap-4 mb-10">
               <div className="bg-white/[0.05] border border-white/10 rounded-xl px-5 py-4">
-                <span className="text-2xl font-bold text-[#22c55e]">52.1%</span>
+                <span className="text-2xl font-bold text-[#22c55e]">220+</span>
                 <span className="text-xs text-white/45 mt-1 block">STRONG win rate</span>
               </div>
               <div className="bg-white/[0.05] border border-white/10 rounded-xl px-5 py-4">
-                <span className="text-2xl font-bold text-[#22c55e]">+2.18%</span>
+                <span className="text-2xl font-bold text-[#22c55e]">OPRA</span>
                 <span className="text-xs text-white/45 mt-1 block">Avg EV per trade</span>
               </div>
             </div>

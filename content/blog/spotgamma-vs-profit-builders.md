@@ -8,7 +8,7 @@ read_time: "7"
 
 SpotGamma and Profit Builders look like competitors on a search results page. They're not. They're two different lenses on the same options market.
 
-SpotGamma grades **dealer positioning** — where market makers are hedged, where gamma walls will pin price, where dealer hedging will accelerate or suppress volatility. Profit Builders grades **individual whale prints** — the actual $1M+ sweeps and blocks institutions put on the tape, filtered through a conviction engine.
+SpotGamma grades **dealer positioning** — where market makers are hedged, where gamma walls will pin price, where dealer hedging will accelerate or suppress volatility. Profit Builders grades **individual whale prints** — the actual $1M+ sweeps and blocks institutions put on the tape, filtered through a filter pipeline.
 
 Same tape. Different reads. (If you're weighing more than two tools, our [2026 scanner comparison](/blog/best-options-flow-scanner-2026) covers the direct flow-scanner alternatives.)
 
@@ -31,10 +31,10 @@ The real price comparison:
 | **Full-featured tier** | $299/mo (Alpha) | $129/mo (Pro Bundle) |
 | **Free trial** | No | 7 days, full access |
 | **Dealer positioning (GEX)** | Yes — flagship product | Yes — included in Pro Bundle |
-| **Whale prints / sweep feed** | No | [174K+ signals tracked](/results) |
-| **Conviction grading** | No | [Grade A / Grade B (9-filter engine)](/blog/options-flow-signals-grade-a-b-c) |
+| **Whale prints / sweep feed** | No | [CBOE-compliant flow processing](/results) |
+| **Conviction grading** | No | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Accumulation detection** | No | [Yes — RAPID badges](/blog/what-is-options-accumulation) |
-| **Public trade track record** | Range-accuracy claim only | Every signal tracked at /results |
+| **Documented methodology** | Range-accuracy claim only (no data methodology published) | Documented methodology at /results |
 | **Best coverage** | Indices (SPX, SPY, QQQ, IWM) | 220+ single-name tickers |
 | **Bloomberg integration** | Yes | No |
 
@@ -52,9 +52,9 @@ It's also niche. If you don't already speak fluent GEX, the daily notes will fee
 
 Yes, we built this. Here's what a flow-first scanner does that a positioning-first tool doesn't.
 
-**Whale print tracking with conviction grading.** Every institutional sweep and block passes through a [9-filter conviction engine](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker filtering, DTE, accumulation logic, and more. Grade A prints on single-name tickers in real time. SpotGamma tells you *where the dealer is short gamma*. Profit Builders tells you *who just put $14M on TSLA calls three minutes ago*.
+**Whale print tracking with conviction grading.** Every institutional sweep and block passes through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker filtering, DTE, accumulation logic, and more. Grade A prints on single-name tickers in real time. SpotGamma tells you *where the dealer is short gamma*. Profit Builders tells you *who just put $14M on TSLA calls three minutes ago*.
 
-**Public, auditable track record.** [174,000+ signals logged at /results](/results) with wins, losses, and closed P&L. 39.3% Grade A win rate across that sample, every row auditable. SpotGamma's track record is a quarterly report card on their range accuracy — useful, but not a per-trade ledger.
+**Documented data methodology.** [data methodology published at /results](/results) with wins, losses, and closed P&L. institutional-data-quality methodology across that sample, every row auditable. SpotGamma's track record is a quarterly report card on their range accuracy — useful, but not a per-trade ledger.
 
 **Single-stock coverage.** The scanner tracks 220+ liquid single-name tickers with real-time alerts. SpotGamma's single-name coverage thins fast below the megacaps — the tool is index-native.
 
@@ -84,7 +84,7 @@ A trader using only GEX is flying with half the instruments. A trader using only
 **Choose Profit Builders if:**
 - You trade directional single-name options as your primary edge
 - You want every whale print graded before it hits your screen
-- A public, auditable track record is non-negotiable
+- A documented data methodology is non-negotiable
 - You want GEX bundled with flow at $129/mo instead of paying separately
 - You want 7 days to try it for free
 

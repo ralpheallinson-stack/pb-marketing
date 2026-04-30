@@ -135,7 +135,7 @@ The grading system gives you a built-in framework for **position sizing and risk
 
 **Grade C — Paper trade or minimal size.** Use these signals as learning opportunities. Track them in a journal. See how they resolve. Over time, you will develop an intuition for which Grade C signals in specific setups tend to outperform. Until you have that data, keep real capital exposure minimal.
 
-**PASS — No action.** Trust the filter. The temptation to override the system and trade a PASS-grade signal because "it feels right" is exactly the kind of subjective decision-making the grading system is designed to eliminate.
+**PASS — No action.** Trust the filter. The temptation to override the system and trade a PASS-grade signal because "it feels right" is exactly the kind of subjective decision-making the methodology system is designed to eliminate.
 
 ## The Discipline Advantage
 

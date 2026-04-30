@@ -320,7 +320,7 @@ export default function VsUnusualWhales() {
 
               <div className="md:col-span-8 space-y-10">
                 <Pro win n="01" title="Conviction grading, not raw dumps"
-                  body="Every signal runs through 9 filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and emerges tagged Grade A or Grade B. UW shows the raw prints. You decide what they mean. We show you the ones the engine vetted." />
+                  body="Every signal runs through the institutional-flow filter pipeline — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and emerges tagged Grade A or Grade B. UW shows the raw prints. You decide what they mean. We show you the ones the engine vetted." />
                 <Pro win n="02" title="A publicly documented methodology"
                   body="Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Unusual Whales does not publish a methodology page describing how its scanner processes flow." />
                 <Pro win n="03" title="Accumulation pattern detection"

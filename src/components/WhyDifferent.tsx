@@ -7,8 +7,8 @@ export default function WhyDifferent() {
     {
       number: '9',
       color: '#60a5fa',
-      title: '9 Filters. All Data-Derived.',
-      body: 'Other platforms give you 30+ manual sliders. Every one of our 9 PASS rules was built from win rate analysis across institutional-grade pipeline (OPRA tape + CBOE Rule 6.11 + B-S-M Greeks). NEUTRAL signals? 4.9% win rate — filtered. 0DTE ETF under $250K? 18.9% — filtered.',
+      title: 'Data-Derived PASS Rules.',
+      body: 'Other platforms give you 30+ manual sliders. Every PASS rule is data-derived from institutional-flow research across institutional-grade pipeline (OPRA tape + CBOE Rule 6.11 + B-S-M Greeks). NEUTRAL signals? 4.9% win rate — filtered. 0DTE ETF under $250K? 18.9% — filtered.',
       tag: 'vs 30+ manual sliders',
     },
     {
@@ -16,7 +16,7 @@ export default function WhyDifferent() {
       color: '#34d399',
       title: 'We Publish What Others Hide.',
       body: 'Most platforms claim win rates but never show their work. We publish every print, every condition code, every Greek, every grade, every DTE bucket. Check the results page right now. Nothing removed. Nothing adjusted.',
-      tag: 'every outcome public',
+      tag: 'OPRA-tape sourced',
     },
     {
       icon: '⟳',
@@ -31,8 +31,7 @@ export default function WhyDifferent() {
     { value: 161065, suffix: '+', label: 'Signals Tracked', decimals: 0, color: '#60a5fa' },
     { value: 220, suffix: '+', label: 'Symbols Covered', decimals: 0, color: '#34d399' },
     { value: 9, suffix: '', label: 'Data-Backed Filters', decimals: 0, color: '#a78bfa' },
-    { value: 52.1, suffix: '%', label: 'STRONG Conviction WR', decimals: 1, color: '#f59e0b' },
-  ]
+      ]
 
   return (
     <section className="bg-[#0E1117] py-24" id="features">

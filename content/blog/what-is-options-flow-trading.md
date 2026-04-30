@@ -41,11 +41,11 @@ A block trade is a single, large order executed at one price — typically throu
 
 Dark pool prints are trades that occur on private exchanges (dark pools) and are reported after execution. These trades are invisible to most traders until they show up on the tape, making them valuable for detecting institutional activity that was intentionally hidden.
 
-## How the Conviction Engine Filters Flow
+## How the Filter Pipeline Filters Flow
 
 Manually watching thousands of options orders per day is impossible. That's where a rule-based filtering layer does the work.
 
-At Profit Builders, the conviction engine evaluates every significant options order against 9 data-backed filters:
+At Profit Builders, the filter pipeline evaluates every significant options order against data-derived PASS rules:
 
 - **Premium size** — Is this order large enough to matter?
 - **Sweep urgency** — Was it a passive limit order or an aggressive sweep?

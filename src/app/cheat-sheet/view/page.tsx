@@ -67,7 +67,7 @@ export default function CheatSheetView() {
           {/* ── 9-FILTER ENGINE ── */}
           <section style={{ marginBottom: 18 }}>
             <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "#F97316", fontWeight: 700, marginBottom: 6 }}>
-              1 · The 9-Filter Conviction Engine
+              1 · The Institutional-Flow Filter Pipeline
             </div>
             <div style={{ fontSize: 11, color: "#374151", lineHeight: 1.5, marginBottom: 8 }}>
               Every signal must pass ALL nine to earn Grade A. Fails are filtered before reaching your screen.

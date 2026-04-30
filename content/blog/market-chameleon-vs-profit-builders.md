@@ -28,12 +28,12 @@ The direct comparison — Market Chameleon Total Access ($99) vs Profit Builders
 | **Free trial** | Limited free tier | 7 days, full access |
 | **Real-time data** | No — 15-minute delayed across all tiers | Yes |
 | **Unusual options activity** | Yes — but delayed | Yes — real-time |
-| **Conviction grading** | No | [Grade A / Grade B (9-filter engine)](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | No | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Earnings research** | Yes — flagship feature | No |
 | **Volatility studies** | Yes — deep | Basic IV context only |
 | **Backtesting** | Yes | No |
 | **Screeners** | 100+ pre-built | Flow filters only |
-| **Public signal track record** | No | [174K+ signals at /results](/results) |
+| **Documented data methodology** | No | [OPRA + CBOE at /results](/results) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
 | **Best for** | Earnings traders, research-first workflows | Directional flow, live entries |
 
@@ -45,7 +45,7 @@ The screener library is also deep. Covered call screeners, cash-secured put scre
 
 **Where it falls short for flow-first traders:** Everything is 15-minute delayed. Every tier. Even Total Access at $99/mo. For a research-only workflow that's fine — earnings history from last quarter doesn't need to be live. But for reading institutional flow as it happens, 15 minutes is a lifetime. A sweep filed at 9:45 AM ET showing on your screen at 10:00 AM is not actionable flow — it's confirmation of what price already did.
 
-There's also no conviction grading, no market-maker filtering, and no public per-trade track record. The UOA feed exists but reviews consistently describe it as a firehose with weak filtering — you get every large print, not a graded subset.
+There's also no conviction grading, no market-maker filtering, and no documented data methodology. The UOA feed exists but reviews consistently describe it as a firehose with weak filtering — you get every large print, not a graded subset.
 
 ## Where Profit Builders Wins
 
@@ -53,9 +53,9 @@ Yes, we built this. Here's what a live flow-first scanner does differently.
 
 **Real-time data, not delayed.** Every Grade A print hits the scanner within seconds of the exchange filing it. Market Chameleon's 15-minute delay is the single biggest difference between the two tools — at matching price points, you're paying $99 for a research library or $99 for a live tape. Not both.
 
-**Conviction grading before the print reaches your screen.** Every institutional sweep and block passes through a [9-filter engine](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI ratio, fill aggression, market maker filtering, DTE window, accumulation pattern, spread detection, single-leg verification, regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, non-market-maker. Grade B is standard institutional flow. Below threshold, filtered out. Market Chameleon hands you the firehose; we grade it.
+**Conviction grading before the print reaches your screen.** Every institutional sweep and block passes through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI ratio, fill aggression, market maker filtering, DTE window, accumulation pattern, spread detection, single-leg verification, regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, non-market-maker. Grade B is standard institutional flow. Below threshold, filtered out. Market Chameleon hands you the firehose; we grade it.
 
-**Public, auditable track record.** [174,000+ signals](/results) logged with full P&L — wins, losses, exit reasons, closed outcomes. 39.3% Grade A win rate across that sample. Market Chameleon publishes historical earnings data but no per-signal performance ledger on their UOA feed.
+**Documented data methodology.** [institutional-grade flow](/results) logged with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression, closed outcomes. institutional-data-quality methodology across that sample. Market Chameleon publishes historical earnings data but no per-signal performance ledger on their UOA feed.
 
 **Accumulation pattern detection.** [RAPID badges](/blog/what-is-options-accumulation) fire automatically when the same contract is hit repeatedly across a session. Market Chameleon shows individual prints — connecting the accumulation story is on you.
 
@@ -88,7 +88,7 @@ The best stacks often use both — Market Chameleon for research and preparation
 - Your edge is directional single-leg trades off institutional conviction
 - Real-time flow is non-negotiable — 15-minute delay breaks your workflow
 - You want every print pre-graded before it hits your screen
-- A public, auditable track record matters
+- A documented data methodology matters
 - You want GEX bundled for structural context
 
 ## Past Earnings or Present Flow — Pick Your Clock

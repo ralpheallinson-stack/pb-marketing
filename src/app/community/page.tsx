@@ -86,7 +86,7 @@ export default function CommunityPage() {
         </div>
         <div className="text-center py-10">
           <div className="text-3xl font-extrabold mb-1 text-[#34D399]">CBOE</div>
-          <div className="text-[10px] text-[#4A5A72] uppercase tracking-widest">Grade A Win Rate</div>
+          <div className="text-[10px] text-[#4A5A72] uppercase tracking-widest">OPRA Tape Coverage</div>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export default function CommunityPage() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { title: "Real-Time Flow Scanner", desc: "Every institutional sweep, block, and unusual print across the US options tape — filtered through our 9-check conviction engine and delivered in seconds." },
+            { title: "Real-Time Flow Scanner", desc: "Every institutional sweep, block, and unusual print across the US options tape — filtered through our data-derived filter pipeline and delivered in seconds." },
             { title: "Discord + Telegram Alerts", desc: "Grade A signals pushed to your phone the moment they hit. Ticker, strike, expiry, premium, Greeks, grade, sector — full context, no scrolling required." },
             { title: "GEX Heatmaps", desc: "See where dealers are positioned across 220 symbols. Gamma walls, zero-gamma strikes, and squeeze zones — updated live as the tape moves." },
           ].map((card, i) => (
@@ -147,7 +147,7 @@ export default function CommunityPage() {
             A typical alert includes: the ticker and cashtag, option type and strike, expiry date and days-to-expiration, total premium and size, flow type (BLOCK or SWEEP), aggression (at-bid, at-ask, mid), delta and implied volatility context, vol-to-OI ratio, the sector tag, the conviction grade (A or B), and the exit rule that will apply for tracking purposes.
           </p>
           <p>
-            The point isn&apos;t to drown you in data — it&apos;s that the data is already filtered. Most platforms send you a flood of raw prints and expect you to do the interpretation in real time. The community sees only signals that passed the 9-check conviction engine, with the information you need to evaluate them inline.
+            The point isn&apos;t to drown you in data — it&apos;s that the data is already filtered. Most platforms send you a flood of raw prints and expect you to do the interpretation in real time. The community sees only signals that passed the data-derived filter pipeline, with the information you need to evaluate them inline.
           </p>
         </div>
       </section>

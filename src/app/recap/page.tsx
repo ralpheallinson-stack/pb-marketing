@@ -146,7 +146,7 @@ export default function RecapHub() {
               Where the institutional money went. Which Grade A signals fired and where they closed. Dealer gamma reads, accumulation patterns, the prints that mattered.
             </p>
             <p className="pb-editorial text-[17px] leading-[1.65] text-white/65 max-w-[660px]">
-              Each recap is written the night of the session, against the day&apos;s scanner output. We don&apos;t cherry-pick winners — we publish the same recap whether the tape was clean or whether the conviction engine got two of three calls wrong. The recaps are free; the engine that produces them is at <Link href="/results" className="text-[#60a5fa] border-b border-[#60a5fa]/40">profitbuilders.io/results</Link>.
+              Each recap is written the night of the session, against the day&apos;s scanner output. We don&apos;t cherry-pick winners — we publish the same recap whether the tape was clean or whether the scanner misfired on two of three reads. The recaps are free; the engine that produces them is at <Link href="/results" className="text-[#60a5fa] border-b border-[#60a5fa]/40">profitbuilders.io/results</Link>.
             </p>
 
             <div className="mt-11 pt-6 border-t pb-hairline pb-mono text-[11px] tracking-[0.18em] text-white/40 uppercase flex gap-8 max-md:gap-4 max-md:text-[10px] flex-wrap">

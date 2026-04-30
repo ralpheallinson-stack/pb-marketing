@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/learn"
 export const metadata: Metadata = {
   title: "The Library · Learn Options Flow | Profit Builders",
   description:
-    "A field guide to the way institutional money actually moves. 14 essays, 50,000+ words on options flow — what the prints mean, how the conviction engine grades them, and how to build a workflow around the documented methodology.",
+    "A field guide to the way institutional money actually moves. 14 essays, 50,000+ words on options flow — what the prints mean, how the filter pipeline surfaces institutional flow, and how to build a workflow around the documented methodology.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "The Profit Builders Library · Learn Options Flow",
@@ -106,7 +106,7 @@ const SECTION_II: Entry[] = [
     num: "08 / 14",
     href: "/blog/vol-oi-ratio-explained",
     title: "Vol over open interest — the cleanest filter we own.",
-    dek: "The single most useful gate for separating new positioning from closing trades. Why we weight it so heavily in the conviction engine.",
+    dek: "The single most useful gate for separating new positioning from closing trades. Why we weight it so heavily in the institutional-flow filter pipeline.",
     badge: "Filter",
     readTime: "5 min read",
   },

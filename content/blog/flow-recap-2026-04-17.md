@@ -32,7 +32,7 @@ One contract saw **61 repeat entries** on the same TSLA call strike, totaling $5
 
 ## The Receipts
 
-The scanner's track record on prior signals:
+The scanner's recent flagged signals:
 
 - **NFLX puts → +335%**
 - **MSTR calls → +334%**

@@ -1,6 +1,6 @@
 ---
 title: "Best Options Flow Scanners in 2026: Compared and Reviewed"
-description: "We compared Unusual Whales, BlackBoxStocks, FlowAlgo, and Cheddar Flow on speed, grading, price, and verified track record — then show you what we built."
+description: "We compared Unusual Whales, BlackBoxStocks, FlowAlgo, and Cheddar Flow on speed, grading, price, and documented methodology — then show you what we built."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "8"
@@ -32,7 +32,7 @@ Before comparing platforms, these are the five criteria that separate useful sca
 
 [FlowAlgo](/blog/flowalgo-vs-profit-builders) has been in the space for years and delivers fast data. Their interface is clean, and the dark pool print tracking is solid. For traders who want raw speed and are willing to filter signals manually, it's a capable tool.
 
-The catch: $149/month is steep for what you get. There's no conviction grading — you see every print above your size threshold and decide for yourself what matters. FlowAlgo also doesn't publish a public track record, so there's no way to verify the actual win rate of signals that come through their feed.
+The catch: $149/month is steep for what you get. There's no conviction grading — you see every print above your size threshold and decide for yourself what matters. FlowAlgo also doesn't publish a documented methodology, so there's no way to verify the actual win rate of signals that come through their feed.
 
 **Best for:** Experienced traders who want fast raw data and prefer to do their own filtering.
 **Deeper dive:** [FlowAlgo vs Profit Builders head-to-head](/blog/flowalgo-vs-profit-builders).
@@ -59,7 +59,7 @@ Where Cheddar Flow falls short: no conviction grading system. You see flow sorte
 
 Hard to beat on price. [Unusual Whales](/blog/unusual-whales-vs-profit-builders) offers a massive amount of data — flow scanning, politician trades, dark pool data, and options analytics — for under $50/month. The breadth of coverage is impressive for the price point.
 
-The trade-off is depth vs. breadth. Unusual Whales shows you a lot of data but doesn't grade signal quality. There's no [A/B conviction tier system](/blog/options-flow-signals-grade-a-b-c) to separate high-probability setups from noise. For new traders, the volume of data can be more overwhelming than helpful. No public track record of signal outcomes.
+The trade-off is depth vs. breadth. Unusual Whales shows you a lot of data but doesn't grade signal quality. There's no [A/B conviction tier system](/blog/options-flow-signals-grade-a-b-c) to separate high-probability setups from noise. For new traders, the volume of data can be more overwhelming than helpful. No documented methodology of signal outcomes.
 
 **Best for:** Budget-conscious traders who want broad market data coverage and are comfortable filtering signals themselves.
 **Deeper dive:** [Unusual Whales vs Profit Builders head-to-head](/blog/unusual-whales-vs-profit-builders).
@@ -102,9 +102,9 @@ Three tools show up in the same searches but solve different jobs. Worth knowing
 
 Yes, we built this. Here's what we did differently after trading on every platform above.
 
-**Conviction grading.** Every signal gets a Grade A or B based on 9 data-backed filters — [premium thresholds, position action, delta, Vol/OI ratio](/blog/options-flow-signals-grade-a-b-c), market maker detection, spread identification, DTE windows, and accumulation logic. Grade A carries the highest conviction. Grade B is standard. Noise gets filtered before it hits your screen.
+**Conviction grading.** Every signal gets a Grade A or B based on data-derived PASS rules — [premium thresholds, position action, delta, Vol/OI ratio](/blog/options-flow-signals-grade-a-b-c), market maker detection, spread identification, DTE windows, and accumulation logic. Grade A carries the highest conviction. Grade B is standard. Noise gets filtered before it hits your screen.
 
-**Public track record.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.io/results](/results). As of today that's 174,000+ signals at a 39.3% Grade A win rate. You can audit every single one. No cherry-picking, no hidden losses.
+**Documented methodology.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.io/results](/results). As of today that's institutional-grade flow at a institutional-data-quality methodology. You can audit every single one. No cherry-picking, no hidden losses.
 
 **GEX heatmap.** Gamma exposure visualization by strike and expiry. See where dealers are positioned, identify gamma walls, and find squeeze setups. No other scanner in this price range ships this.
 
@@ -114,14 +114,14 @@ Yes, we built this. Here's what we did differently after trading on every platfo
 
 ## Comparison Table
 
-| Scanner | Price | Free Trial | Conviction Grading | Public Track Record |
+| Scanner | Price | Free Trial | Conviction Grading | Documented Methodology |
 |---------|-------|------------|-------------------|--------------------|
 | FlowAlgo | $149/mo | No | No | No |
 | BlackBoxStocks | $99.97/mo | No | No | No |
 | Cheddar Flow | $85-99/mo | No | No | No |
 | Unusual Whales | $35-48/mo | Limited | No | No |
 | Barchart | $39-199.95/mo | Limited tier | No | No |
-| **Profit Builders** | **$99/mo** | **7 days free** | **Yes (Grade A/B)** | **Yes (174K+ signals)** |
+| **Profit Builders** | **$99/mo** | **7 days free** | **Yes (Grade A/B)** | **Yes (OPRA-grade flow)** |
 
 ## Who Should Use What
 

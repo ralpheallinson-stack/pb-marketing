@@ -95,7 +95,7 @@ The highest-conviction setups occur when sweeps and blocks align on the same nam
 
 ## How Profit Builders Grades Flow
 
-Profit Builders' conviction engine scores every sweep and block against 9 data-backed filters — premium size, Vol/OI ratio, delta, DTE, market maker detection, fill aggression, accumulation, and more — to assign Grade A or Grade B. Everything below threshold is filtered out before it hits the feed. Across 174,000+ tracked signals, Grade A carries a 39.3% win rate — auditable at [/results](/results) so you can verify the grading before you pay.
+Profit Builders' filter pipeline scores every sweep and block against data-derived PASS rules — premium size, Vol/OI ratio, delta, DTE, market maker detection, fill aggression, accumulation, and more — to assign Grade A or Grade B. Everything below threshold is filtered out before it hits the feed. Across documented OPRA-tape methodology, Grade A carries a institutional-data-quality methodology — auditable at [/results](/results) so you can verify the methodology before you pay.
 
 
 ---

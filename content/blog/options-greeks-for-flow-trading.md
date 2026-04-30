@@ -73,7 +73,7 @@ Theta tells you the **daily cost** of holding the position. When you see a large
 
 **Longer-dated trades (30-90 DTE)**: Low theta. The buyer is willing to wait. This signals strategic positioning rather than an imminent catalyst.
 
-When the conviction engine evaluates flow signals, DTE (and therefore theta exposure) is a key factor in the grade. A large sweep on a 2 DTE option tells a very different story than the same sweep on a 60 DTE option.
+When the filter pipeline evaluates flow signals, DTE (and therefore theta exposure) is a key factor in the grade. A large sweep on a 2 DTE option tells a very different story than the same sweep on a 60 DTE option.
 
 ## Vega: The Volatility Bet
 
@@ -126,7 +126,7 @@ When scanning [options flow](/blog/what-is-options-flow-trading), use these Gree
 
 ## How Profit Builders Uses the Greeks
 
-Every signal delivered by Profit Builders includes a Greeks summary — delta, gamma, theta, and vega — so you can immediately understand the risk profile of the institutional trade. The conviction engine factors these into the grade, penalizing trades with excessive theta decay and rewarding those with favorable delta-to-premium ratios.
+Every signal delivered by Profit Builders includes a Greeks summary — delta, gamma, theta, and vega — so you can immediately understand the risk profile of the institutional trade. The filter pipeline factors these into the grade, penalizing trades with excessive theta decay and rewarding those with favorable delta-to-premium ratios.
 
 
 ---

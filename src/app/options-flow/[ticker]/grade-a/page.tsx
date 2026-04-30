@@ -85,10 +85,10 @@ export async function generateMetadata(
 
   const url = `https://profitbuilders.io/options-flow/${t.symbol}/grade-a`
   const ga = t.grade_a_detail
-  const wrText = ga.win_rate !== null ? `${ga.win_rate}% win rate` : "historical data"
+  const ctxText = `data methodology`
   // Tighter: short suffix + brand template = clean SERP display
   const title = `${t.symbol} Grade A Flow · ${ga.total.toLocaleString()} Signals`
-  const description = `${t.symbol} Grade A institutional options flow — ${ga.total.toLocaleString()} signals tracked, ${wrText}, ${ga.closed.toLocaleString()} closed positions with full P&L. Auditable.`
+  const description = `${t.symbol} Grade A institutional options flow — ${ga.total.toLocaleString()} signals captured via OPRA tape with CBOE Rule 6.11 sweep detection and Black-Scholes-Merton Greeks. Documented methodology at /results.`
 
   return {
     title,
@@ -162,16 +162,14 @@ export default async function GradeAPage(
     "dateModified": data.generated_date,
     "keywords": [
       `${t.symbol} grade a options`,
-      `${t.symbol} unusual options win rate`,
+      `${t.symbol} options methodology`,
       `${t.symbol} institutional options performance`,
       `${t.symbol} options flow methodology`,
     ],
     "variableMeasured": [
       { "@type": "PropertyValue", "name": "Total Grade A signals", "value": ga.total },
       { "@type": "PropertyValue", "name": "Closed positions", "value": ga.closed },
-      { "@type": "PropertyValue", "name": "Win rate", "value": ga.win_rate !== null ? `${ga.win_rate}%` : "n/a" },
-      { "@type": "PropertyValue", "name": "Average winner", "value": ga.avg_win_pct !== null ? `${ga.avg_win_pct}%` : "n/a" },
-      { "@type": "PropertyValue", "name": "Average loser", "value": ga.avg_loss_pct !== null ? `${ga.avg_loss_pct}%` : "n/a" },
+      { "@type": "PropertyValue", "name": "Closed positions", "value": ga.closed },
     ],
   }
 
@@ -231,20 +229,13 @@ export default async function GradeAPage(
           </h1>
 
           <p className="text-[18px] text-gray-600 leading-relaxed max-w-3xl mb-10">
-            <strong className="text-gray-900">{ga.total.toLocaleString()}</strong> Grade A institutional flow signals on {t.symbol}. <strong className="text-gray-900">{ga.closed.toLocaleString()}</strong> closed with full P&amp;L.{" "}
-            {ga.win_rate !== null ? (
-              <>Win rate across all closed Grade A {t.symbol} signals: <strong style={{ color: wrColor(ga.win_rate) }}>{ga.win_rate}%</strong>.</>
-            ) : (
-              <>Track record accumulating.</>
-            )}
+            <strong className="text-gray-900">{ga.total.toLocaleString()}</strong> Grade A institutional flow signals on {t.symbol}, captured via the live OPRA tape with CBOE Rule 6.11 sweep detection and Black-Scholes-Merton Greeks. Methodology at <Link href="/results" className="underline hover:text-[#F97316]">/results</Link>.
           </p>
 
           {/* Key stats 4-col */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 gap-4 mb-8 max-w-md">
             <StatCard label="Total Grade A" value={ga.total.toLocaleString()} />
-            <StatCard label="Win rate" value={ga.win_rate !== null ? `${ga.win_rate}%` : "—"} color={wrColor(ga.win_rate)} accent />
-            <StatCard label="Avg winner" value={ga.avg_win_pct !== null ? `+${ga.avg_win_pct}%` : "—"} color="#10B981" />
-            <StatCard label="Avg loser" value={ga.avg_loss_pct !== null ? `${ga.avg_loss_pct}%` : "—"} color="#EF4444" />
+            <StatCard label="Closed positions" value={ga.closed.toLocaleString()} accent />
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -412,7 +403,7 @@ export default async function GradeAPage(
 
         {/* ── METHODOLOGY STRIP ── */}
         <section className="max-w-5xl mx-auto px-6 py-10 border-t border-gray-100 text-[12px] text-gray-400 leading-relaxed">
-          <strong className="text-gray-500">Methodology.</strong> Grade A = all 9 filters passed: $500K+ premium, 20x+ Vol/OI, aggressive fill, non-market-maker classification, opening position, single-leg, not deep ITM, not closing LEAP, regime-aware threshold. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/results" className="text-[#F97316] hover:underline">data methodology →</Link>.
+          <strong className="text-gray-500">Methodology.</strong> Grade A signals pass the institutional-flow filter pipeline: institutional premium floor, contract-level volume baseline, aggressive fill detection, market-maker filtering, opening-position classification. See /results for the full data methodology. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/results" className="text-[#F97316] hover:underline">data methodology →</Link>.
         </section>
       </main>
 

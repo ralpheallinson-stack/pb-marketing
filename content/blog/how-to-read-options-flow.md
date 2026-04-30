@@ -46,7 +46,7 @@ Premium is the total dollar amount of the transaction. A $50K print means someth
 
 Larger premiums generally mean more informed money. A $50K bet could be anyone. A $2M bet is almost certainly institutional — nobody risks that kind of capital on a guess.
 
-Most scanners let you set a minimum premium floor. At Profit Builders, the conviction engine uses tiered thresholds: Grade B starts at $175K+ premium, and [Grade A](/blog/options-flow-signals-grade-a-b-c) requires $500K+ with elevated Vol/OI and additional filter checks. Anything below $175K is tracked but held back from the alert feed. The higher the grade, the more conviction behind the bet.
+Most scanners let you set a minimum premium floor. At Profit Builders, the filter pipeline uses tiered thresholds: Grade B starts at $175K+ premium, and [Grade A](/blog/options-flow-signals-grade-a-b-c) requires $500K+ with elevated Vol/OI and additional filter checks. Anything below $175K is tracked but held back from the alert feed. The higher the grade, the more conviction behind the bet.
 
 ### 4. Volume-to-Open Interest Ratio (Vol/OI)
 
@@ -162,6 +162,6 @@ And always remember: not every Grade A signal wins. The edge is in the aggregate
 
 Options flow analysis is a skill. The more you watch, the more patterns you'll recognize. The difference between a trader who reads flow well and one who doesn't isn't intelligence — it's reps.
 
-Profit Builders gives you filtered, graded, conviction-scored flow in real time. Every alert is Grade A or Grade B — everything below that threshold is filtered out. Market maker noise is removed before it reaches you. Accumulation is tracked automatically. And we publish every outcome at [/results](/results) so you can verify the edge against 174,000+ tracked signals before you pay.
+Profit Builders gives you filtered, graded, conviction-scored flow in real time. Every alert is Grade A or Grade B — everything below that threshold is filtered out. Market maker noise is removed before it reaches you. Accumulation is tracked automatically. And we publish every outcome at [/results](/results) so you can verify the edge against documented OPRA-tape methodology before you pay.
 
 Open the [free scanner](/free-scanner) tomorrow at 9:30 AM ET, filter to Grade A only, and watch a real session with the filters already in place. The 7-day trial unlocks real-time data, GEX, and the full history when you're ready.
