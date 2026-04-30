@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://profitbuilders.io" },
   openGraph: {
     title: "Options Flow Scanner | Profit Builders",
-    description: "Real-time institutional options flow. Every signal tracked publicly.",
+    description: "Real-time institutional options flow. OPRA tape · CBOE Rule 6.11 sweeps · BSM Greeks.",
     type: "website",
     siteName: "Profit Builders",
     url: "https://profitbuilders.io",
