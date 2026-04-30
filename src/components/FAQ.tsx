@@ -5,7 +5,7 @@ import { useState } from "react"
 const faqs = [
   {
     q: "How is this different from Unusual Whales or FlowAlgo?",
-    a: "Unusual Whales aggregates a lot of data — congressional trades, market maker flow, news. Profit Builders does one thing: real-time institutional options flow with conviction grading. Every signal is graded STRONG / MEDIUM / WEAK based on Vol/OI ratio and premium size. You also get a public track record — every Grade A signal logged and verified at /results. No other flow tool publishes that.",
+    a: "Unusual Whales aggregates a lot of data — congressional trades, market maker flow, news. Profit Builders does one thing: real-time institutional options flow with conviction grading. Every signal is graded STRONG / MEDIUM / WEAK based on Vol/OI ratio and premium size. You also get a documented methodology — every Grade A signal logged and verified at /results. No other flow tool publishes that.",
   },
   {
     q: "Do you guarantee results?",

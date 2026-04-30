@@ -8,11 +8,11 @@ const CANON = "https://profitbuilders.io/vs/blackbox-stocks"
 export const metadata: Metadata = {
   title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
   description:
-    "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public 174K-outcome log. Here's how to choose.",
+    "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
   alternates: { canonical: CANON },
   openGraph: {
     title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
-    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public 174K-outcome log. Here's how to choose.",
+    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
     url: CANON,
     type: "article",
     images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "BlackBoxStocks vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
-    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public 174K-outcome log. Here's how to choose.",
+    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
     images: ["/images/og-card.png"],
   },
 }
@@ -29,7 +29,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'BlackBoxStocks vs Profit Builders: 2026 Options Flow Scanner Comparison',
-  "description": "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public 174K-outcome log. Here's how to choose.",
+  "description": "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -60,7 +60,7 @@ const faqSchema = {
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Are BlackBoxStocks and Profit Builders the same price?", "acceptedAnswer": {"@type": "Answer", "text": "Effectively yes — $99.97 vs $99. The first month at BlackBoxStocks is $29.95; Profit Builders offers a 7-day free trial then $99/mo."}},
-    {"@type": "Question", "name": "Does BlackBoxStocks publish a verified track record?", "acceptedAnswer": {"@type": "Answer", "text": "No. BlackBoxStocks runs live trading rooms and color-coded alerts but doesn't publish signal outcomes or win rates. Profit Builders publishes every signal at /results."}},
+    {"@type": "Question", "name": "Does BlackBoxStocks publish a documented methodology?", "acceptedAnswer": {"@type": "Answer", "text": "No. BlackBoxStocks runs live trading rooms and color-coded alerts but doesn't publish signal outcomes or win rates. Profit Builders publishes every signal at /results."}},
     {"@type": "Question", "name": "Does Profit Builders have a mobile app?", "acceptedAnswer": {"@type": "Answer", "text": "Not currently. Profit Builders is web-first and routes alerts to Discord and Telegram. BlackBoxStocks has dedicated iOS and Android apps."}},
     {"@type": "Question", "name": "Which is better for a beginner?", "acceptedAnswer": {"@type": "Answer", "text": "Different paths. BlackBoxStocks' trading rooms walk beginners through real-time decisions. Profit Builders' methodology — Grade A/B engine + public log — gives beginners a clear rule set to follow without depending on a chat room."}},
     {"@type": "Question", "name": "Can I use both?", "acceptedAnswer": {"@type": "Answer", "text": "Many traders do. They use Profit Builders for graded entries and BlackBoxStocks for community context. The price stack is ~$200/mo combined."}}
@@ -71,7 +71,7 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -174,12 +174,12 @@ export default function VsPage() {
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Conviction grading</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">Color-coded alerts</span>
-                <span className="pb-editorial text-[14px] text-white text-right">9-filter Grade A/B</span>
+                <span className="pb-editorial text-[14px] text-white text-right">institutional-flow filter Grade A/B</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Public methodology</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">174,293 outcomes</span>
+                <span className="pb-editorial text-[14px] text-white text-right">OPRA + CBOE</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Live trading rooms</span>
@@ -214,7 +214,7 @@ export default function VsPage() {
               </div>
               <div>
                 <div className="pb-mono text-[11px] tracking-[0.22em] text-[#60a5fa] uppercase mb-4">Pick Profit Builders if</div>
-                <p className="pb-editorial text-[17px] leading-[1.6] text-white/70">You want pre-graded signals with verifiable outcomes. You'd rather check a public log of 174K resolved trades than rely on the loudest voice in a room.</p>
+                <p className="pb-editorial text-[17px] leading-[1.6] text-white/70">You want pre-graded signals with documented OPRA methodology. You'd rather audit how the data is processed (OPRA tape, sweep detection, Greeks math) than rely on the loudest voice in a room.</p>
               </div>
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function VsPage() {
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Effectively yes — $99.97 vs $99. The first month at BlackBoxStocks is $29.95; Profit Builders offers a 7-day free trial then $99/mo.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
-              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does BlackBoxStocks publish a verified track record?</h3>
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does BlackBoxStocks publish a documented methodology?</h3>
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. BlackBoxStocks runs live trading rooms and color-coded alerts but doesn't publish signal outcomes or win rates. Profit Builders publishes every signal at /results.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
@@ -262,7 +262,7 @@ export default function VsPage() {
                 Start Free 7-Day Trial
               </Link>
               <Link href="/results" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
-                See the public track record →
+                See the documented methodology →
               </Link>
             </div>
           </div>

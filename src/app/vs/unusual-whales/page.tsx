@@ -8,12 +8,12 @@ const CANON = "https://profitbuilders.io/vs/unusual-whales"
 export const metadata: Metadata = {
   title: "Unusual Whales vs Profit Builders · 2026 Options Flow Comparison",
   description:
-    "Honest 2026 comparison of Unusual Whales and Profit Builders for options flow. Pricing, conviction grading, track record, alerts, and who should pick which.",
+    "Honest 2026 comparison of Unusual Whales and Profit Builders for options flow. Pricing, data methodology, alerts, and who should pick which.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "Unusual Whales vs Profit Builders · Options Flow Comparison",
     description:
-      "Unusual Whales ($50/mo) vs Profit Builders ($99/mo). Feature matrix, pricing, and a verified 174K-signal track record to compare against.",
+      "Unusual Whales ($50/mo) vs Profit Builders ($99/mo). Feature matrix, pricing, and a verified documented OPRA methodology to compare against.",
     url: CANON,
     type: "article",
     images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Unusual Whales vs Profit Builders" }],
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Unusual Whales vs Profit Builders · Options Flow Comparison",
     description:
-      "$50/mo vs $99/mo. Congress trades vs conviction grading. Verified track record comparison inside.",
+      "$50/mo vs $99/mo. Congress trades vs conviction grading. Documented methodology comparison inside.",
     images: ["/images/og-card.png"],
   },
 }
@@ -31,7 +31,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Unusual Whales vs Profit Builders: 2026 Options Flow Scanner Comparison",
-  "description": "Side-by-side comparison of Unusual Whales and Profit Builders across pricing, conviction grading, track record, alerts, and community.",
+  "description": "Side-by-side comparison of Unusual Whales and Profit Builders across pricing, conviction grading, data methodology, alerts, and community.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
     "@type": "Organization",
@@ -64,7 +64,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "Does Unusual Whales publish a verified track record?",
+      "name": "Does Unusual Whales publish a documented methodology?",
       "acceptedAnswer": { "@type": "Answer", "text": "No. Unusual Whales exposes raw flow data but does not publish signal outcomes or win rates. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
@@ -90,7 +90,7 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -209,7 +209,7 @@ export default function VsUnusualWhales() {
                   Pick Profit Builders.
                 </h2>
                 <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
-                  If you want flow already graded for conviction, a public 174K-signal track record you can audit, and alerts that point to setups the engine actually vetted — not a firehose you filter alone.
+                  If you want flow already graded for conviction, a public documented OPRA methodology you can audit, and alerts that point to setups the engine actually vetted — not a firehose you filter alone.
                 </p>
                 <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
                   $99/mo · Graded signals · Telegram + Discord
@@ -246,7 +246,7 @@ export default function VsUnusualWhales() {
                 <tbody>
                   <MRow label="Starting price" a={<span className="pb-mono">$29–50/mo</span>} b={<span className="pb-mono text-white">$99/mo</span>} />
                   <MRow label="Free trial" a="Money-back refund only" b="7 days, card required" win />
-                  <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, 9-filter engine</span>} win />
+                  <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, institutional-flow filter engine</span>} win />
                   <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
                   <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
                   <MRow label="Discord alerts" a="Yes" b="Yes, 1–3s delivery" />
@@ -321,7 +321,7 @@ export default function VsUnusualWhales() {
               <div className="md:col-span-8 space-y-10">
                 <Pro win n="01" title="Conviction grading, not raw dumps"
                   body="Every signal runs through 9 filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and emerges tagged Grade A or Grade B. UW shows the raw prints. You decide what they mean. We show you the ones the engine vetted." />
-                <Pro win n="02" title="A publicly verified track record"
+                <Pro win n="02" title="A publicly documented methodology"
                   body="Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Unusual Whales does not publish a methodology page describing how its scanner processes flow." />
                 <Pro win n="03" title="Accumulation pattern detection"
                   body="When a single contract gets hit 10+ times in quick succession with aggressive, similar-sized prints — the signature of a large player slicing a position — we surface it as a RAPID badge with full accumulation context. UW shows the individual prints. You spot the pattern." />
@@ -397,9 +397,9 @@ export default function VsUnusualWhales() {
             <div className="grid md:grid-cols-12 gap-x-8">
               <div className="md:col-span-12 space-y-10 max-w-3xl">
                 <Faq q="Is Profit Builders a direct replacement for Unusual Whales?">
-                  For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a public track record, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
+                  For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a documented methodology, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
                 </Faq>
-                <Faq q="Does Unusual Whales publish a verified track record?">
+                <Faq q="Does Unusual Whales publish a documented methodology?">
                   No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="Can I use both?">
@@ -428,7 +428,7 @@ export default function VsUnusualWhales() {
               See graded signals in real time.
             </h2>
             <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
-              Seven days of full feature access. Real-time institutional flow, Grade A conviction, 220-symbol GEX heatmap, and the track record you just read about.
+              Seven days of full feature access. Real-time institutional flow, Grade A conviction, 220-symbol GEX heatmap, and the methodology you just read about.
             </p>
             <Link
               href="/pricing"

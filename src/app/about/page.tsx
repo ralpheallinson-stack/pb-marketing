@@ -27,7 +27,7 @@ export default function AboutPage() {
             Start Free Trial &rarr;
           </Link>
           <Link href="/results" className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
-            View Track Record
+            See Methodology
           </Link>
         </div>
       </section>

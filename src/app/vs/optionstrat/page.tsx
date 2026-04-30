@@ -60,7 +60,7 @@ const faqSchema = {
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Is OptionStrat cheaper than Profit Builders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Live Flow tier is $49.99/mo vs Profit Builders' $99. They solve different problems. OptionStrat helps you build a trade; Profit Builders helps you find one."}},
-    {"@type": "Question", "name": "Does OptionStrat grade flow signals?", "acceptedAnswer": {"@type": "Answer", "text": "No. OptionStrat surfaces flow but doesn't apply a conviction filter or publish outcomes. Profit Builders runs every print through a 9-filter engine and publishes the resolved P&L of every Grade A/B signal."}},
+    {"@type": "Question", "name": "Does OptionStrat grade flow signals?", "acceptedAnswer": {"@type": "Answer", "text": "No. OptionStrat surfaces flow but doesn't apply a conviction filter or publish outcomes. Profit Builders runs every print through a institutional-flow filter engine and publishes the resolved P&L of every Grade A/B signal."}},
     {"@type": "Question", "name": "Can I use OptionStrat for the strategy and Profit Builders for the signal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — that's the most common stack. Profit Builders surfaces the institutional print, you take the underlying conviction to OptionStrat to model the spread or structure that fits your view."}},
     {"@type": "Question", "name": "Does OptionStrat have a free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, but it's 15-minute delayed and shows roughly 10% of the full flow feed. For real-time flow, you need Live Flow at $49.99/mo."}},
     {"@type": "Question", "name": "Why is Profit Builders more expensive?", "acceptedAnswer": {"@type": "Answer", "text": "Different value prop. Profit Builders is paying for the grading engine, the public outcomes log, and the GEX heatmap on top of the live tape — not just the flow display."}}
@@ -71,7 +71,7 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -184,12 +184,12 @@ export default function VsPage() {
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Conviction grading</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">9-filter Grade A/B</span>
+                <span className="pb-editorial text-[14px] text-white text-right">institutional-flow filter Grade A/B</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Public methodology</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">174,293 outcomes</span>
+                <span className="pb-editorial text-[14px] text-white text-right">OPRA + CBOE</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">GEX heatmap</span>
@@ -233,7 +233,7 @@ export default function VsPage() {
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does OptionStrat grade flow signals?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. OptionStrat surfaces flow but doesn't apply a conviction filter or publish outcomes. Profit Builders runs every print through a 9-filter engine and publishes the resolved P&L of every Grade A/B signal.</p>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. OptionStrat surfaces flow but doesn't apply a conviction filter or publish outcomes. Profit Builders runs every print through a institutional-flow filter engine and publishes the resolved P&L of every Grade A/B signal.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Can I use OptionStrat for the strategy and Profit Builders for the signal?</h3>
@@ -255,14 +255,14 @@ export default function VsPage() {
           <div className="max-w-3xl mx-auto text-center">
             <div className="pb-mono text-[11px] tracking-[0.28em] text-white/40 uppercase mb-5">Verdict</div>
             <p className="pb-editorial text-[20px] md:text-[22px] leading-[1.55] text-white/85 mb-12 italic">
-              Both useful, often together. OptionStrat is the best-in-class strategy builder. Profit Builders is the focused signal scanner with a track record. If you have a thesis and want to model it, OptionStrat. If you want institutional conviction to act on, Profit Builders.
+              Both useful, often together. OptionStrat is the best-in-class strategy builder. Profit Builders is the focused signal scanner with documented OPRA methodology (CBOE Rule 6.11 sweep detection, B-S-M Greeks, NBBO aggression). If you have a thesis and want to model it, OptionStrat. If you want institutional conviction to act on, Profit Builders.
             </p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link href="/pricing" className="bg-[#F97316] hover:bg-[#F97316]/90 text-white font-bold px-8 py-3.5 rounded-full text-sm transition-colors">
                 Start Free 7-Day Trial
               </Link>
               <Link href="/results" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
-                See the public track record →
+                See the documented methodology →
               </Link>
             </div>
           </div>

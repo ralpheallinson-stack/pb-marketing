@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const data = loadData()
   const count = Object.keys(data.tickers).length
   const title = `Options Flow by Ticker — ${count} Tickers Tracked`
-  const description = `Institutional options flow data for ${count} tickers. Grade A signals, total premium, call/put lean, and historical track record — refreshed daily.`
+  const description = `Institutional options flow data for ${count} tickers. Grade A signals, total premium, call/put lean, and flow leaderboard — refreshed daily.`
   const ogDescription = `Institutional options flow data across ${count} tickers. Refreshed daily.`
   return {
     title,

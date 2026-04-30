@@ -92,7 +92,7 @@ export default function AlertCards() {
             tag="PLATFORM STATS"
             tagColor="rgba(168,85,247,0.2)"
             name="161,065+ Signals Tracked"
-            description="Every outcome published. Grade A win rate: 39.7%. STRONG conviction: 52.1%. MM filtered before delivery."
+            description="Every outcome published. Grade A: institutional-data-quality tier. STRONG conviction: 52.1%. MM filtered before delivery."
             background={
               <div style={{
                 position: 'absolute', inset: 0,

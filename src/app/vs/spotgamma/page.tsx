@@ -71,7 +71,7 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -189,12 +189,12 @@ export default function VsPage() {
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Conviction grading</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">9-filter Grade A/B</span>
+                <span className="pb-editorial text-[14px] text-white text-right">institutional-flow filter Grade A/B</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Public methodology</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">174,293 outcomes</span>
+                <span className="pb-editorial text-[14px] text-white text-right">OPRA + CBOE</span>
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function VsPage() {
                 Start Free 7-Day Trial
               </Link>
               <Link href="/results" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
-                See the public track record →
+                See the documented methodology →
               </Link>
             </div>
           </div>

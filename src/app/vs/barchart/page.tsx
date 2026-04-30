@@ -8,11 +8,11 @@ const CANON = "https://profitbuilders.io/vs/barchart"
 export const metadata: Metadata = {
   title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
   description:
-    'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a 174K-outcome public log.',
+    'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
   alternates: { canonical: CANON },
   openGraph: {
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a 174K-outcome public log.',
+    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
     url: CANON,
     type: "article",
     images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Barchart vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a 174K-outcome public log.',
+    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
     images: ["/images/og-card.png"],
   },
 }
@@ -29,7 +29,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'Barchart vs Profit Builders: 2026 Options Flow Scanner Comparison',
-  "description": 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a 174K-outcome public log.',
+  "description": 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -60,7 +60,7 @@ const faqSchema = {
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Is Barchart Pro worth $199.95/mo?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on whether you need broad market coverage. Barchart Pro bundles options flow with futures, equities, charting, and news. If you'd otherwise pay for those separately, the math works. If you only want options flow, you're paying ~$100/mo for features outside your workflow."}},
-    {"@type": "Question", "name": "Does Barchart publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Barchart provides flow data but doesn't grade signals or publish a verified track record. Profit Builders publishes every Grade A/B signal at /results — currently 174,293 verified outcomes."}},
+    {"@type": "Question", "name": "Does Barchart publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology."}},
     {"@type": "Question", "name": "Which is cheaper for pure options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders at $99/mo. Barchart's flow features at the Premier tier ($39.95) are basic; you need Pro ($199.95) for serious options analysis."}},
     {"@type": "Question", "name": "Does Profit Builders cover futures or stocks like Barchart does?", "acceptedAnswer": {"@type": "Answer", "text": "No. Profit Builders does options flow specifically. If you need futures + equity coverage, Barchart is the broader platform."}},
     {"@type": "Question", "name": "Can I trial both?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders offers a 7-day free trial with full access. Barchart's trial is paid (30 days for $7.99) and converts to monthly billing."}}
@@ -71,7 +71,7 @@ const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Profit Builders Flow Scanner",
-  "description": "Real-time institutional options flow scanner with conviction grading and a public 174K-signal track record.",
+  "description": "Real-time institutional options flow scanner with conviction grading and a public documented OPRA methodology.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/images/og-card.png"
@@ -125,7 +125,7 @@ export default function VsPage() {
               <em className="italic text-white/70">Barchart</em> vs Profit Builders.
             </h1>
             <p className="pb-editorial italic text-[20px] md:text-[22px] leading-[1.45] text-white/65 max-w-[720px]">
-              Two products at very different prices. Barchart bundles options flow into a quotes-and-charts platform. Profit Builders focuses on graded signals with a public track record.
+              Two products at very different prices. Barchart bundles options flow into a quotes-and-charts platform. Profit Builders focuses on graded signals with a documented methodology.
             </p>
           </div>
         </section>
@@ -174,12 +174,12 @@ export default function VsPage() {
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Conviction grading</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">9-filter Grade A/B</span>
+                <span className="pb-editorial text-[14px] text-white text-right">institutional-flow filter Grade A/B</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Public methodology</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">174,293 outcomes</span>
+                <span className="pb-editorial text-[14px] text-white text-right">OPRA + CBOE</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">GEX heatmap</span>
@@ -233,7 +233,7 @@ export default function VsPage() {
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does Barchart publish signal outcomes?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. Barchart provides flow data but doesn't grade signals or publish a verified track record. Profit Builders publishes every Grade A/B signal at /results — currently 174,293 verified outcomes.</p>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Which is cheaper for pure options flow?</h3>
@@ -262,7 +262,7 @@ export default function VsPage() {
                 Start Free 7-Day Trial
               </Link>
               <Link href="/results" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
-                See the public track record →
+                See the documented methodology →
               </Link>
             </div>
           </div>

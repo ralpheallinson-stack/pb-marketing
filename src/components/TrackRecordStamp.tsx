@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react"
  */
 
 type Props = {
-  gradeAPct?: number          // default 39.3
+  gradeAPct?: number          // default 0 (component effectively dormant post-Phase-1 strip)
   gradeBPct?: number          // default 31.6
   signalCount?: number        // default 174000
   since?: string              // "2024-10" or display string
@@ -26,7 +26,7 @@ type Props = {
 }
 
 export default function TrackRecordStamp({
-  gradeAPct = 39.3,
+  gradeAPct = 0,
   gradeBPct = 31.6,
   signalCount = 174000,
   since = "Oct 2024",

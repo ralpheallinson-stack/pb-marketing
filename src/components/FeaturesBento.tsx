@@ -106,14 +106,14 @@ export default function FeaturesBento() {
             <span className="text-[10px] font-mono text-emerald-400 tracking-[0.22em] uppercase">Conviction Grading</span>
           </div>
           <h3 className="text-[22px] font-bold text-white leading-[1.15] mb-2 tracking-tight">
-            9-filter <span className="text-emerald-400">Grade A</span> engine.
+            institutional-flow filter <span className="text-emerald-400">Grade A</span> engine.
           </h3>
           <p className="text-[13px] text-white/55 leading-relaxed mb-5">
             Every signal scored against 9 data-backed gates. Only A and B reach you — the rest filtered at the source.
           </p>
 
           <div className="mt-auto rounded-lg border border-white/[0.06] bg-[#0E1117] p-3 font-mono">
-            <div className="text-[10px] text-white/50 mb-2">Grade A · 9 / 9 PASS</div>
+            <div className="text-[10px] text-white/50 mb-2">Grade A · institutional-quality</div>
             <div className="flex gap-1 mb-3">
               {Array.from({ length: 9 }).map((_, i) => (
                 <span key={i} className="flex-1 h-[5px] rounded-sm bg-emerald-400 shadow-[0_0_6px_rgba(34,197,94,0.5)]" />

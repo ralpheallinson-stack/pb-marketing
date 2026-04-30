@@ -203,7 +203,7 @@ export default function CheatSheetView() {
           {/* ── FOOTER ── */}
           <footer style={{ borderTop: "1px solid #E5E7EB", paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "baseline", fontSize: 10, color: "#6B7280" }}>
             <div>
-              Real-time scanner + public track record: <strong style={{ color: "#F97316" }}>profitbuilders.io</strong>
+              Real-time scanner + documented methodology: <strong style={{ color: "#F97316" }}>profitbuilders.io</strong>
             </div>
             <div>
               Free 7-day trial at /free-scanner

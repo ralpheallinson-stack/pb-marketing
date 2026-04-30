@@ -429,7 +429,7 @@ export default async function OptionsFlowTickerPage(
             <div className="flex items-baseline gap-3 mb-10">
               <span className="pb-section-num">04 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Historical track record</span>
+              <span className="pb-mono text-[11px] text-[#3D4D63]">Recent flagged signals</span>
             </div>
             <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-8 max-w-3xl">
               {t.symbol} Grade A signal outcomes.
@@ -520,7 +520,7 @@ export default async function OptionsFlowTickerPage(
             <Link href="/blog/how-to-read-options-flow" className="text-[#A9B4C6] hover:text-white transition-colors">How to read options flow</Link>
             <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#A9B4C6] hover:text-white transition-colors">Grade A, B, and C explained</Link>
             <Link href="/blog/what-is-options-accumulation" className="text-[#A9B4C6] hover:text-white transition-colors">Options accumulation</Link>
-            <Link href="/results" className="text-[#A9B4C6] hover:text-white transition-colors">Public track record</Link>
+            <Link href="/results" className="text-[#A9B4C6] hover:text-white transition-colors">Documented methodology</Link>
           </div>
         </section>
 

@@ -142,10 +142,6 @@ export default function HeroSection() {
     return () => obs.disconnect()
   }, [])
 
-  const wr  = useCountUp(52, statsInView)
-  const ev  = useCountUp(218, statsInView)
-  const sig = useCountUp(174, statsInView)
-  const tr  = useCountUp(71, statsInView)
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#060810]">
@@ -235,9 +231,9 @@ export default function HeroSection() {
           className="flex items-center justify-center gap-12 flex-wrap border-t border-b border-white/[0.06] py-6 mb-16"
         >
           {[
-            { node: <><CountUp from={0} to={52.1} duration={2} />%</>, label: 'Strong Win Rate' },
-            { node: <><CountUp from={0} to={174} duration={2} />K+</>, label: 'Signals Tracked' },
-            { node: <>100%</>, label: 'Every Outcome Public' },
+            { node: <><CountUp from={0} to={220} duration={2} />+</>, label: 'Symbols Covered' },
+            { node: <>1-3s</>, label: 'Alert Latency' },
+            { node: <>OPRA</>, label: 'Live Tape Ingest' },
           ].map(({ node, label }) => (
             <div key={label} className="text-center">
               <div className="text-2xl font-bold text-white mb-1">{node}</div>

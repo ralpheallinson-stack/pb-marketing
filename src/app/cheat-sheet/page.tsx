@@ -6,11 +6,11 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Options Flow Cheat Sheet — Free Printable Reference",
-  description: "Free one-page cheat sheet covering the 9-filter conviction engine, Grade A/B thresholds, sweep vs block decoder, Vol/OI reference, and accumulation checklist.",
+  description: "Free one-page cheat sheet covering the institutional-flow filter pipeline, Grade A/B thresholds, sweep vs block decoder, Vol/OI reference, and accumulation checklist.",
   alternates: { canonical: "https://profitbuilders.io/cheat-sheet" },
   openGraph: {
     title: "Options Flow Cheat Sheet — Free Printable Reference",
-    description: "One page. The 9-filter conviction framework. Grade thresholds. Sweep vs block decoder. Free.",
+    description: "One page. The institutional-flow filter conviction framework. Grade thresholds. Sweep vs block decoder. Free.",
     url: "https://profitbuilders.io/cheat-sheet",
     type: "website",
     images: [{ url: "/images/og-card.png", width: 1200, height: 630, alt: "Profit Builders Options Flow Cheat Sheet" }],
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Options Flow Cheat Sheet",
-    description: "One page. The 9-filter conviction framework. Free printable reference.",
+    description: "One page. The institutional-flow filter conviction framework. Free printable reference.",
     images: ["/images/og-card.png"],
   },
 }
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 const FAQ_ITEMS = [
   {
     q: "What's on the cheat sheet?",
-    a: "One page covering six frameworks: the 9-filter conviction engine, Grade A/B premium and Vol/OI thresholds, the sweep vs block decoder, a Vol/OI reference table, the accumulation checklist, and the morning edge routine.",
+    a: "One page covering six frameworks: the institutional-flow filter pipeline, Grade A/B premium and Vol/OI thresholds, the sweep vs block decoder, a Vol/OI reference table, the accumulation checklist, and the morning edge routine.",
   },
   {
     q: "Is it free?",
@@ -47,7 +47,7 @@ const webpageSchema = {
   "@type": "WebPage",
   "name": "The Options Flow Cheat Sheet",
   "url": "https://profitbuilders.io/cheat-sheet",
-  "description": "Free printable one-page options flow reference covering the 9-filter conviction engine, grade thresholds, and key flow patterns.",
+  "description": "Free printable one-page options flow reference covering the institutional-flow filter pipeline, grade thresholds, and key flow patterns.",
   "publisher": {
     "@type": "Organization",
     "name": "Profit Builders",
@@ -93,7 +93,7 @@ export default function CheatSheetPage() {
             The Options Flow Cheat Sheet
           </h1>
           <p className="text-[18px] text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10">
-            Every filter the conviction engine uses to grade institutional options flow. The 9-filter framework, premium and Vol/OI thresholds, sweep vs block decoder, accumulation checklist, and the morning edge routine — on one printable page.
+            Every filter the conviction engine uses to grade institutional options flow. The institutional-flow filter framework, premium and Vol/OI thresholds, sweep vs block decoder, accumulation checklist, and the morning edge routine — on one printable page.
           </p>
 
           <div className="max-w-lg mx-auto">

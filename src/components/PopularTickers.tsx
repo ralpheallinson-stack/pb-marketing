@@ -56,7 +56,7 @@ function leanFor(call_pct: number): Lean {
 export default function PopularTickers({
   limit = 12,
   title = "Popular tickers by institutional flow",
-  subtitle = "Drill into per-ticker track records, call/put lean, and historical flow by symbol. Click any ticker for the full page.",
+  subtitle = "Drill into per-ticker flow leaderboards, call/put lean, and historical flow by symbol. Click any ticker for the full page.",
   variant = "dark",
 }: {
   limit?: number

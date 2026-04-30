@@ -92,7 +92,7 @@ const websiteSchema = JSON.stringify({
 const itemListSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "Featured Grade A Signals — Profit Builders Track Record",
+  "name": "Recent Grade A Examples — Profit Builders",
   "description": "Eight recent institutional-grade options flow signals with full thesis, entry, and verified outcome.",
   "url": "https://profitbuilders.io/results",
   "numberOfItems": 8,
@@ -210,7 +210,7 @@ export default function Home() {
       <PopularTickers
         limit={12}
         title="Popular tickers by institutional flow"
-        subtitle="Drill into per-ticker track records, call/put lean, and historical Grade A flow by symbol. Click any ticker for the full page."
+        subtitle="Drill into per-ticker flow leaderboards, call/put lean, and historical Grade A flow by symbol. Click any ticker for the full page."
       />
       {/* The Daily Flow Brief — canonical free-newsletter capture (consolidated v7.9.17) */}
       <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-20 px-6">

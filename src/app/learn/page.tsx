@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/learn"
 export const metadata: Metadata = {
   title: "The Library · Learn Options Flow | Profit Builders",
   description:
-    "A field guide to the way institutional money actually moves. 14 essays, 50,000+ words on options flow — what the prints mean, how the conviction engine grades them, and how to build a workflow around the public track record.",
+    "A field guide to the way institutional money actually moves. 14 essays, 50,000+ words on options flow — what the prints mean, how the conviction engine grades them, and how to build a workflow around the documented methodology.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "The Profit Builders Library · Learn Options Flow",
@@ -174,7 +174,7 @@ const itemListSchema = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "The Profit Builders Library — Learn Options Flow",
-  description: "Curated 14-essay library on reading institutional options flow, GEX, accumulation, and the 9-filter conviction engine.",
+  description: "Curated 14-essay library on reading institutional options flow, GEX, accumulation, and the institutional-flow filter pipeline.",
   url: CANON,
   numberOfItems: ALL_ENTRIES.length,
   itemListElement: ALL_ENTRIES.map((e, i) => ({
@@ -294,7 +294,7 @@ export default function LearnPage() {
               Fourteen essays — fifty thousand words — on what flow is, what the prints actually mean, and how the people who read it well separate signal from noise.
             </p>
             <p className="pb-editorial pb-drop-cap text-[17px] leading-[1.65] text-white/65 max-w-[660px]">
-              If you&apos;ve spent any time on trading Twitter, Discord, or YouTube, you&apos;ve seen the phrase &ldquo;institutional flow&rdquo; thrown around like gospel. A $5M NVDA call sweep hits the tape and a hundred people announce it as if the trade has already happened. But a lot of retail traders who try to follow flow lose money anyway — because reading flow well isn&apos;t about seeing big prints. It&apos;s about understanding which prints matter, which don&apos;t, and why. This library is the framework we use internally, the same one that drives our <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#60a5fa] border-b border-[#60a5fa]/40">9-filter conviction engine</Link> and our <Link href="/results" className="text-[#60a5fa] border-b border-[#60a5fa]/40">174,293-signal public track record</Link>.
+              If you&apos;ve spent any time on trading Twitter, Discord, or YouTube, you&apos;ve seen the phrase &ldquo;institutional flow&rdquo; thrown around like gospel. A $5M NVDA call sweep hits the tape and a hundred people announce it as if the trade has already happened. But a lot of retail traders who try to follow flow lose money anyway — because reading flow well isn&apos;t about seeing big prints. It&apos;s about understanding which prints matter, which don&apos;t, and why. This library is the framework we use internally, the same one that drives our <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#60a5fa] border-b border-[#60a5fa]/40">institutional-flow filter pipeline</Link> and our <Link href="/results" className="text-[#60a5fa] border-b border-[#60a5fa]/40">documented data methodology</Link>.
             </p>
             <div className="mt-11 pt-6 border-t pb-hairline pb-mono text-[11px] tracking-[0.18em] text-white/40 uppercase flex gap-8 max-md:gap-4 max-md:text-[10px] max-md:flex-wrap">
               <span className="border-r pb-hairline pr-8 max-md:pr-4">By the Profit Builders desk</span>

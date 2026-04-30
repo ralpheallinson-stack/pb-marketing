@@ -164,7 +164,7 @@ export default async function GradeAPage(
       `${t.symbol} grade a options`,
       `${t.symbol} unusual options win rate`,
       `${t.symbol} institutional options performance`,
-      `${t.symbol} options flow track record`,
+      `${t.symbol} options flow methodology`,
     ],
     "variableMeasured": [
       { "@type": "PropertyValue", "name": "Total Grade A signals", "value": ga.total },
@@ -412,7 +412,7 @@ export default async function GradeAPage(
 
         {/* ── METHODOLOGY STRIP ── */}
         <section className="max-w-5xl mx-auto px-6 py-10 border-t border-gray-100 text-[12px] text-gray-400 leading-relaxed">
-          <strong className="text-gray-500">Methodology.</strong> Grade A = all 9 filters passed: $500K+ premium, 20x+ Vol/OI, aggressive fill, non-market-maker classification, opening position, single-leg, not deep ITM, not closing LEAP, regime-aware threshold. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/results" className="text-[#F97316] hover:underline">track record methodology →</Link>.
+          <strong className="text-gray-500">Methodology.</strong> Grade A = all 9 filters passed: $500K+ premium, 20x+ Vol/OI, aggressive fill, non-market-maker classification, opening position, single-leg, not deep ITM, not closing LEAP, regime-aware threshold. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/results" className="text-[#F97316] hover:underline">data methodology →</Link>.
         </section>
       </main>
 
