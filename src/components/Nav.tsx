@@ -2,15 +2,14 @@
 import Link from "next/link"
 import { useState } from "react"
 
-const links: Array<{ href: string; label: string; bold?: boolean }> = [
+const links = [
   { href: "/#features",    label: "Features" },
-  { href: "/methodology",  label: "Methodology" },
+  { href: "/results",      label: "Methodology" },
   { href: "/#pricing",     label: "Pricing" },
   { href: "/vs",           label: "Compare" },
   { href: "/learn",        label: "Learn" },
   { href: "/community",    label: "Community" },
   { href: "/blog",         label: "Blog" },
-  { href: "/free-scanner", label: "Free Scanner", bold: true },
 ]
 
 export default function Nav() {

@@ -4,7 +4,6 @@ import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown, extractTickers } fr
 import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 import BlogPostHero from "@/components/BlogPostHero"
-import { PriceChartHydrator } from "@/components/PriceChart"
 import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
 
@@ -469,7 +468,6 @@ export default async function BlogPostPage({
           className="pb-prose"
           dangerouslySetInnerHTML={{ __html: post.content_html }}
         />
-        <PriceChartHydrator />
 
         {/* ── INLINE SCANNER CTA — only on flow-recap-style posts. Uses
             the first detected ticker as the destination when available.

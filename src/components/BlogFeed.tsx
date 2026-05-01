@@ -25,6 +25,7 @@ interface NewsItem {
   url: string
   ts: number
   image_url?: string
+  slug?: string
 }
 
 type FeedItem = BlogItem | NewsItem
@@ -165,9 +166,8 @@ export default function BlogFeed({ blogItems }: { blogItems: BlogItem[] }) {
           return (
             <BlurFade key={`n-${item.url}`} delay={Math.min(i * 0.03, 0.4)} className="flex">
               <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={item.slug ? `/news/${item.slug}` : item.url}
+                {...(item.slug ? {} : { target: "_blank", rel: "noopener noreferrer" })}
                 className="group flex flex-col flex-1 rounded-xl border border-gray-200 overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:border-blue-200 hover:-translate-y-0.5 transition-all duration-300"
               >
                 <div className="relative aspect-[1.91/1] overflow-hidden bg-gray-50">
@@ -205,7 +205,7 @@ export default function BlogFeed({ blogItems }: { blogItems: BlogItem[] }) {
                     </p>
                   )}
                   <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-blue-700 mt-auto group-hover:gap-2 transition-all">
-                    {item.source.charAt(0).toUpperCase() + item.source.slice(1)} →
+                    {item.slug ? "Read brief" : item.source.charAt(0).toUpperCase() + item.source.slice(1)} →
                   </span>
                 </div>
               </a>
