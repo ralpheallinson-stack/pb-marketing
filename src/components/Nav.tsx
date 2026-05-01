@@ -49,7 +49,7 @@ export default function Nav() {
   const close = () => setOpen(false)
 
   return (
-    <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#080C12]/85 backdrop-blur-xl">
+    <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#080C12] md:bg-[#080C12]/85 md:backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
 
         {/* Logo */}
