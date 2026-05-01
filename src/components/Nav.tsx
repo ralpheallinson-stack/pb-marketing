@@ -1,57 +1,121 @@
 "use client"
 import Link from "next/link"
 import { useState } from "react"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 
-const links = [
-  { href: "/#features",    label: "Features" },
-  { href: "/results",      label: "Methodology" },
-  { href: "/#pricing",     label: "Pricing" },
-  { href: "/vs",           label: "Compare" },
-  { href: "/learn",        label: "Learn" },
-  { href: "/community",    label: "Community" },
-  { href: "/blog",         label: "Blog" },
+type Item = { href: string; label: string; description: string }
+
+const productItems: Item[] = [
+  { href: "/#features",  label: "Features",    description: "Sweep + block detection, Greeks, conviction grading." },
+  { href: "/results",    label: "Methodology", description: "How signals are graded and outcomes audited." },
+  { href: "/vs",         label: "Compare",     description: "Profit Builders vs Cheddar, Unusual Whales, FlowAlgo." },
 ]
+
+const resourceItems: Item[] = [
+  { href: "/learn",      label: "Learn",     description: "Reading institutional flow, free 5-day course." },
+  { href: "/blog",       label: "Blog",      description: "Daily desk notes, recaps, and breakdowns." },
+  { href: "/community",  label: "Community", description: "Discord + Telegram for live flow discussion." },
+]
+
+function MenuPanel({ items }: { items: Item[] }) {
+  return (
+    <ul className="grid w-[420px] gap-1 p-3 md:w-[480px] md:grid-cols-1">
+      {items.map(it => (
+        <li key={it.href}>
+          <NavigationMenuLink asChild>
+            <Link
+              href={it.href}
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-white/5 focus:bg-white/5"
+            >
+              <div className="text-sm font-semibold text-white">{it.label}</div>
+              <p className="mt-1 text-[12px] leading-snug text-white/55">{it.description}</p>
+            </Link>
+          </NavigationMenuLink>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
 
   return (
-    <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pb-nav-floating transition-[top] duration-200">
-      <nav className="relative flex items-center justify-between gap-4 px-5 h-12 rounded-full bg-white md:bg-white/90 md:backdrop-blur-xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full max-w-4xl">
-        <Link href="/" className="flex-shrink-0" aria-label="Home">
-          <img src="/images/pb-logo.png" alt="Profit Builders" width={28} height={28} className="w-7 h-7 object-contain brightness-0" />
+    <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#080C12]/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Home">
+          <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="h-8 w-8 object-contain" />
+          <span className="hidden sm:inline text-base font-semibold tracking-tight text-white">Profit Builders</span>
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-4 text-sm whitespace-nowrap">
-          {links.map(l => (
-            <Link key={l.href} href={l.href} className="text-gray-500 hover:text-black transition-colors whitespace-nowrap">
-              {l.label}
-            </Link>
-          ))}
-          <a href="https://x.com/ProfitBldrs" target="_blank" rel="noopener noreferrer" aria-label="Follow on X" className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-black transition-colors flex-shrink-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.261 5.635zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          </a>
-          <Link href="/login" className="text-gray-500 hover:text-black transition-colors whitespace-nowrap">Login</Link>
-        </div>
+        {/* Desktop menu */}
+        <NavigationMenu className="hidden md:flex" viewport={false}>
+          <NavigationMenuList className="gap-1">
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="h-10 bg-transparent text-white/70 hover:text-white hover:bg-white/5 data-[state=open]:bg-white/5 data-[state=open]:text-white text-[15px]">
+                Product
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="border border-white/10 bg-[#0F1117] text-white shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+                <MenuPanel items={productItems} />
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="h-10 bg-transparent text-white/70 hover:text-white hover:bg-white/5 data-[state=open]:bg-white/5 data-[state=open]:text-white text-[15px]">
+                Resources
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="border border-white/10 bg-[#0F1117] text-white shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
+                <MenuPanel items={resourceItems} />
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link
+                  href="/#pricing"
+                  className="inline-flex h-10 items-center rounded-md px-4 text-[15px] font-medium text-white/70 transition-colors hover:text-white hover:bg-white/5"
+                >
+                  Pricing
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
 
         {/* Right cluster */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <a
-            href="/pricing"
-            className="bg-gray-900 hover:bg-black text-white text-xs font-semibold px-4 py-1.5 rounded-full transition-colors"
+          <Link
+            href="/login"
+            className="hidden md:inline-flex h-10 items-center rounded-md px-3 text-[15px] font-medium text-white/70 hover:text-white transition-colors"
           >
-            Get Started
-          </a>
+            Login
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex h-10 items-center rounded-md bg-white px-5 text-[15px] font-semibold text-[#0a0d12] hover:bg-white/90 transition-colors"
+          >
+            Start Trial
+          </Link>
+
+          {/* Mobile hamburger */}
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen(o => !o)}
-            className="md:hidden flex items-center justify-center w-9 h-9 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="md:hidden flex h-10 w-10 items-center justify-center rounded-md text-white/70 hover:text-white hover:bg-white/5 transition-colors"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-gray-700">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {open ? (
                 <path d="M18 6L6 18M6 6l12 12" />
               ) : (
@@ -64,48 +128,43 @@ export default function Nav() {
             </svg>
           </button>
         </div>
+      </div>
 
-        {/* Mobile dropdown */}
-        {open && (
-          <div className="md:hidden absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.12)] py-2 z-50">
-            {links.map(l => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={close}
-                className="block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
-              >
-                {l.label}
-              </Link>
-            ))}
-            <Link
-              href="/login"
-              onClick={close}
-              className="block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors border-t border-gray-100 mt-1 pt-3"
-            >
-              Login
-            </Link>
-            <a
-              href="https://x.com/ProfitBldrs"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={close}
-              className="block px-5 py-2.5 text-sm text-gray-500 hover:bg-gray-100 transition-colors"
-            >
-              Follow on X
-            </a>
-          </div>
-        )}
-      </nav>
-
+      {/* Mobile dropdown */}
       {open && (
-        <button
-          type="button"
-          aria-label="Close menu"
-          onClick={close}
-          className="md:hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] cursor-default"
-        />
+        <>
+          <div className="md:hidden border-t border-white/10 bg-[#0F1117]">
+            <div className="px-4 py-3">
+              <div className="text-[11px] uppercase tracking-widest text-white/40 font-mono mb-2">Product</div>
+              {productItems.map(it => (
+                <Link key={it.href} href={it.href} onClick={close}
+                  className="block py-2 text-sm text-white/80 hover:text-white">
+                  {it.label}
+                </Link>
+              ))}
+            </div>
+            <div className="px-4 py-3 border-t border-white/5">
+              <div className="text-[11px] uppercase tracking-widest text-white/40 font-mono mb-2">Resources</div>
+              {resourceItems.map(it => (
+                <Link key={it.href} href={it.href} onClick={close}
+                  className="block py-2 text-sm text-white/80 hover:text-white">
+                  {it.label}
+                </Link>
+              ))}
+            </div>
+            <div className="px-4 py-3 border-t border-white/5 flex items-center justify-between">
+              <Link href="/#pricing" onClick={close} className="text-sm text-white/80 hover:text-white">Pricing</Link>
+              <Link href="/login" onClick={close} className="text-sm text-white/60 hover:text-white">Login</Link>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={close}
+            className="md:hidden fixed inset-0 top-20 z-40 bg-black/40 backdrop-blur-[1px] cursor-default"
+          />
+        </>
       )}
-    </div>
+    </header>
   )
 }

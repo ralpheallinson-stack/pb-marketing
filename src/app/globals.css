@@ -161,9 +161,9 @@ input[type="range"]::-moz-range-thumb {
 }
 
 
-/* Promo banner offset — pushes the floating Nav pill down when banner is visible */
+/* Promo banner offset — pushes the sticky Nav header below the fixed banner (h-10 = 2.5rem) */
 html.has-promo-banner .pb-nav-floating {
-  top: 3.25rem;
+  top: 2.5rem;
 }
 
 /* Eye-popping promo banner — emerald gradient with subtle shimmer */
