@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
 import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
@@ -1461,48 +1462,74 @@ export default function ScannerPage() {
         )}
       </div>
 
-      {/* ── PAGINATION BAR ── */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
+      {/* ── PAGINATION BAR — shadcn-style numbered Pagination ── */}
+      <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
+        {/* Left: signal count + range label (replaces inline mid-bar text) */}
+        <div className="text-[11px] text-[#4A5A72] tabular-nums">
+          {timeRange === "today" ? (
+            <>Page <span className="text-[#7A8BA8] font-medium">{clientPage + 1}</span> of <span className="text-[#7A8BA8] font-medium">{totalClientPages}</span> · {filtered.length.toLocaleString()} signals</>
+          ) : (
+            page === 0
+              ? <>{filtered.length.toLocaleString()} signals</>
+              : <>Page <span className="text-[#7A8BA8] font-medium">{page + 1}</span> · {timeRange.replace("_", " ")}</>
+          )}
+        </div>
+
+        {/* Right: numbered Pagination component */}
         {timeRange === "today" ? (
-          <>
-            <button
-              onClick={() => { setClientPage(Math.max(0, clientPage - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
-              disabled={clientPage === 0}
-              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              ← Newer
-            </button>
-            <span className="text-[11px] text-[#4A5A72]">
-              Page {clientPage + 1} of {totalClientPages} · {filtered.length.toLocaleString()} signals
-            </span>
-            <button
-              onClick={() => { setClientPage(Math.min(totalClientPages - 1, clientPage + 1)); tableContainerRef.current?.scrollTo(0, 0) }}
-              disabled={clientPage >= totalClientPages - 1}
-              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              Older →
-            </button>
-          </>
+          <Pagination className="w-auto mx-0">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => { setClientPage(Math.max(0, clientPage - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+                  disabled={clientPage === 0}
+                />
+              </PaginationItem>
+              {getPageNumbers(clientPage, totalClientPages).map((n, i) =>
+                n === "ellipsis" ? (
+                  <PaginationItem key={`e-${i}`}><PaginationEllipsis /></PaginationItem>
+                ) : (
+                  <PaginationItem key={n}>
+                    <PaginationLink
+                      isActive={n === clientPage}
+                      size="icon"
+                      onClick={() => { setClientPage(n as number); tableContainerRef.current?.scrollTo(0, 0) }}
+                    >
+                      {(n as number) + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => { setClientPage(Math.min(totalClientPages - 1, clientPage + 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+                  disabled={clientPage >= totalClientPages - 1}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         ) : (
-          <>
-            <button
-              onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
-              disabled={page === 0}
-              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              ← Newer
-            </button>
-            <span className="text-[11px] text-[#4A5A72]">
-              {page === 0 ? `${filtered.length.toLocaleString()} signals` : `Page ${page + 1} · ${timeRange.replace("_", " ")}`}
-            </span>
-            <button
-              onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
-              disabled={trades.length < 2000 && page > 0}
-              className="px-3 py-1.5 text-xs text-[#7A8BA8] border border-[#252E3D] rounded hover:bg-[#1E2530] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              Older →
-            </button>
-          </>
+          // Server-side pagination — total pages unknown until the server
+          // returns < page_size rows. Show prev / current-page / next only.
+          <Pagination className="w-auto mx-0">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
+                  disabled={page === 0}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink isActive size="icon">{page + 1}</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
+                  disabled={trades.length < 2000 && page > 0}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
 
