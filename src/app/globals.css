@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --color-pb-navy: #0E1117;
   --color-pb-navy-mid: #161B24;
@@ -19,6 +21,13 @@
   --color-pb-border-dk: #252E3D;
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", "Menlo", monospace;
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning: var(--warning);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
+  --color-info-foreground: var(--info-foreground);
+  --color-info: var(--info);
+  --color-destructive-foreground: var(--destructive-foreground);
 }
 
 html {
@@ -31,7 +40,6 @@ body {
   background: #0E1117;
   color: #7A8BA8;
 }
-
 
 @keyframes shimmer-border {
   0% { background-position: 0% 50%; }
@@ -160,7 +168,6 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 0 2px rgba(72, 222, 255, 0.2);
 }
 
-
 /* Promo banner offset — pushes the sticky Nav header below the fixed banner (h-10 = 2.5rem) */
 html.has-promo-banner .pb-nav-floating {
   top: 2.5rem;
@@ -180,4 +187,24 @@ html.has-promo-banner .pb-nav-floating {
 }
 @media (prefers-reduced-motion: reduce) {
   .pb-promo-banner { animation: none; }
+}
+
+:root {
+  --destructive-foreground: var(--color-red-700);
+  --info: var(--color-blue-500);
+  --info-foreground: var(--color-blue-700);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-700);
+  --warning: var(--color-amber-500);
+  --warning-foreground: var(--color-amber-700);
+}
+
+.dark {
+  --destructive-foreground: var(--color-red-400);
+  --info: var(--color-blue-500);
+  --info-foreground: var(--color-blue-400);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-400);
+  --warning: var(--color-amber-500);
+  --warning-foreground: var(--color-amber-400);
 }

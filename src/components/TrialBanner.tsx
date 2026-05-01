@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Alert, AlertDescription, AlertAction } from "@/components/ui/alert";
+import { TriangleAlert, Info } from "lucide-react";
 
 interface SubStatus {
   is_trial: boolean;
@@ -22,51 +24,49 @@ export default function TrialBanner() {
 
   const { days_remaining } = status;
   const urgent = days_remaining <= 2;
+  const Icon = urgent ? TriangleAlert : Info;
+
+  const message =
+    days_remaining === 0
+      ? "Your free trial expires today."
+      : days_remaining === 1
+      ? "Only 1 day left on your free trial."
+      : `${days_remaining} days left on your free trial.`;
 
   return (
-    <div
-      className="w-full flex items-center justify-between px-5 py-2.5 text-sm"
-      style={{
-        background: urgent
-          ? "linear-gradient(90deg, #7c2d12, #9a3412)"
-          : "linear-gradient(90deg, #4c1d95, #6d28d9)",
-      }}
-    >
-      <div className="flex items-center gap-2.5 text-white">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-        <span>
-          {days_remaining === 0
-            ? "Your free trial expires today."
-            : "You have "}
-          {days_remaining > 0 && (
-            <strong>
-              {days_remaining} day{days_remaining !== 1 ? "s" : ""} left
-            </strong>
-          )}
-          {days_remaining > 0 && " on your free trial."}{" "}
-          Upgrade to keep full access.
-        </span>
-      </div>
-      <div className="flex items-center gap-3 flex-shrink-0">
-        <a
-          href="/pricing"
-          className="bg-white font-semibold rounded-md px-3 py-1 text-xs no-underline"
-          style={{ color: urgent ? "#9a3412" : "#6d28d9" }}
-        >
-          Upgrade Now
-        </a>
-        <button
-          onClick={() => setDismissed(true)}
-          className="text-white/50 hover:text-white text-lg leading-none"
-        >
-          ×
-        </button>
-      </div>
+    <div className="px-4 pt-3">
+      <Alert
+        variant={urgent ? "warning" : "info"}
+        className="border-2 bg-[var(--warning)]/15 [&]:bg-opacity-100 [&>svg]:size-4"
+        style={{
+          backgroundColor: urgent
+            ? "color-mix(in oklch, var(--warning) 15%, transparent)"
+            : "color-mix(in oklch, var(--info) 15%, transparent)",
+          borderColor: urgent
+            ? "color-mix(in oklch, var(--warning) 60%, transparent)"
+            : "color-mix(in oklch, var(--info) 60%, transparent)",
+        }}
+      >
+        <Icon />
+        <AlertDescription className="text-white/90">
+          <span>{message} Upgrade to keep full access.</span>
+        </AlertDescription>
+        <AlertAction>
+          <a
+            href="/pricing"
+            className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-[#0a0d12] hover:bg-white/90 transition-colors no-underline"
+          >
+            Upgrade Now
+          </a>
+          <button
+            onClick={() => setDismissed(true)}
+            aria-label="Dismiss"
+            className="ml-1 text-white/40 hover:text-white text-lg leading-none w-6 h-6 flex items-center justify-center"
+          >
+            ×
+          </button>
+        </AlertAction>
+      </Alert>
     </div>
   );
 }
