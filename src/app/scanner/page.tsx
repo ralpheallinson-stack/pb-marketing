@@ -6,6 +6,9 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
 import TrialBanner from "@/components/TrialBanner"
+import CommandPalette from "@/components/CommandPalette"
+import InfoTooltip from "@/components/InfoTooltip"
+import ReplayProgress from "@/components/ReplayProgress"
 
 import Link from "next/link"
 /* ── types ── */
@@ -106,7 +109,8 @@ function fmtPrem(v: number) {
 function fmtGex(v: number) {
   const abs = Math.abs(v)
   const sign = v < 0 ? "-" : ""
-  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(1)}B`
+  if (abs >= 1e12) return `${sign}$${(abs / 1e12).toFixed(2)}T`
+  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`
   if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`
   if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(0)}K`
   return `${sign}$${abs.toFixed(0)}`
@@ -194,6 +198,8 @@ const COLS = [
 ] as const
 
 /* ── page ── */
+const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
+
 export default function ScannerPage() {
   const router = useRouter()
   const [trades, setTrades] = useState<Trade[]>([])
@@ -209,9 +215,40 @@ export default function ScannerPage() {
   const [canAccessGamma, setCanAccessGamma] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [gexSymbol, setGexSymbol] = useState("SPY")
-  const [gexData, setGexData] = useState<{ symbol: string; spot: number; spot_fmt: string; expirations: string[]; strikes: number[]; matrix: Record<string, Record<string, { net_gex: number; call_oi: number; put_oi: number; has_greeks?: boolean }>>; max_abs_gex: number; zero_gamma_strike: number | null; top_cells: { strike: number; expiry: string; net_gex: number }[] } | null>(null)
+  const [liveGexSpot, setLiveGexSpot] = useState<number | null>(null)
+  const [gexData, setGexData] = useState<{ symbol: string; spot: number; spot_fmt: string; expirations: string[]; strikes: number[]; matrix: Record<string, Record<string, { net_gex: number; call_oi: number; put_oi: number; has_greeks?: boolean }>>; max_abs_gex: number; zero_gamma_strike: number | null; gamma_flip: number | null; total_net_gex: number; total_call_gex: number; total_put_gex: number; near_dte_gex: number; far_dte_gex: number; gamma_slope: number | null; slope_strike: number | null; max_plus_gex: { strike: number; gex: number } | null; max_minus_gex: { strike: number; gex: number } | null; prev_close: number | null; spot_change: number | null; spot_change_pct: number | null; top_cells: { strike: number; expiry: string; net_gex: number }[] } | null>(null)
   const [gexLoading, setGexLoading] = useState(false)
   const [gexError, setGexError] = useState("")
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  // Read ?view=heatmap on mount so /heatmap redirects (and any deep links)
+  // can land directly on the heatmap tab. Effect runs once after activePage
+  // is initialized so we don't fight the default "scanner".
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const v = params.get("view")
+    if (v === "heatmap") setActivePage("heatmap")
+    else if (v === "watchlist") setActivePage("watchlist")
+  }, [])
+
+  // S = open command palette. Bare-letter shortcut, focus-aware. Only active
+  // on the heatmap tab to avoid surprising users on the flow scanner.
+  useEffect(() => {
+    if (activePage !== "heatmap") return
+    const handler = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      const t = e.target as HTMLElement | null
+      if (t) {
+        const tag = t.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return
+        if (t.isContentEditable) return
+      }
+      if (e.key === "s" || e.key === "S") { e.preventDefault(); setPaletteOpen(true) }
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [activePage])
   const [watchlist, setWatchlist] = useState<string[]>(() => {
     if (typeof window === "undefined") return []
     try { return JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch { return [] }
@@ -276,6 +313,38 @@ export default function ScannerPage() {
       })
       .catch(() => { if (reqId === gexReqIdRef.current) setGexError("Failed to load") })
       .finally(() => { if (reqId === gexReqIdRef.current) setGexLoading(false) })
+  }, [activePage, canAccessGamma, gexSymbol])
+
+  // Live spot polling for the embedded heatmap (matches /heatmap page).
+  // OI is fixed intraday — only spot moves tick-to-tick. Cheap dedicated
+  // endpoint, 2s during market hours, 30s after close.
+  useEffect(() => {
+    if (activePage !== "heatmap" || !canAccessGamma) return
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | null = null
+    const isMarketHours = () => {
+      const now = new Date()
+      const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }))
+      const day = et.getDay()
+      if (day === 0 || day === 6) return false
+      const mins = et.getHours() * 60 + et.getMinutes()
+      return mins >= 9 * 60 + 30 && mins < 16 * 60
+    }
+    const tick = async () => {
+      if (cancelled) return
+      if (!document.hidden) {
+        try {
+          const r = await fetch(`/api/scanner/spot?symbol=${gexSymbol}`)
+          if (r.ok) {
+            const j = await r.json()
+            if (!cancelled && typeof j.spot === "number") setLiveGexSpot(j.spot)
+          }
+        } catch { /* network blip */ }
+      }
+      timer = setTimeout(tick, isMarketHours() ? 2000 : 30000)
+    }
+    tick()
+    return () => { cancelled = true; if (timer) clearTimeout(timer) }
   }, [activePage, canAccessGamma, gexSymbol])
 
   const addToWatchlist = useCallback((sym: string) => {
@@ -570,10 +639,22 @@ export default function ScannerPage() {
 
   const filtered = useMemo(() => trades.filter(matchesFilter), [trades, matchesFilter])
 
-  const calls = filtered.filter(t => t.opt_type === "C")
-  const puts = filtered.filter(t => t.opt_type === "P")
-  const callPrem = calls.reduce((s, t) => s + t.premium, 0)
-  const putPrem = puts.reduce((s, t) => s + t.premium, 0)
+  // Single-pass aggregation — replaces the 4 separate filter+reduce calls that
+  // ran on every render (every 3s). With ~10K filtered rows and unmemoized
+  // derived values upstream, the reductions alone showed up as a recurring
+  // long task in DevTools Performance every poll cycle.
+  const aggregates = useMemo(() => {
+    let callCount = 0, putCount = 0, callPrem = 0, putPrem = 0
+    for (const t of filtered) {
+      if (t.opt_type === "C") { callCount++; callPrem += t.premium }
+      else if (t.opt_type === "P") { putCount++; putPrem += t.premium }
+    }
+    return { callCount, putCount, callPrem, putPrem }
+  }, [filtered])
+  const callPrem = aggregates.callPrem
+  const putPrem = aggregates.putPrem
+  const calls = aggregates.callCount  // count, not array — only .length was ever used
+  const puts = aggregates.putCount
 
   // Client-side pagination for "today" — all data already loaded, just slice for display
   const CLIENT_PAGE_SIZE = 200
@@ -593,25 +674,30 @@ export default function ScannerPage() {
     getItemKey: (index) => pageRows[index]?.id ?? index,
   })
 
-  // Invalidate cached measurements when the filtered dataset changes identity
-  useEffect(() => {
-    rowVirtualizer.measure()
-  }, [pageRows, rowVirtualizer])
+  // (Previously called rowVirtualizer.measure() on every pageRows change. That
+  // forced a full remeasurement every 3s poll — the dominant client-side jank.
+  // The virtualizer already invalidates when count or getItemKey changes, so
+  // rows mounted via measureElement get re-measured naturally on identity change
+  // without a global re-measure cycle.)
 
   const hasLocalFilter = !!(search || focusTicker || filterGrade || filterType || filterOptType || filterSide || filterUnusualOnly || filterNoIndex || filterDte)
-  const displayStats = (() => {
-    const source = filtered
-    const cp = source.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
-    const pp = source.filter(t => t.opt_type === "P").reduce((s, t) => s + t.premium, 0)
-    const bull = source.filter(t => t.bullish).reduce((s, t) => s + t.premium, 0)
-    const bear = source.filter(t => !t.bullish).reduce((s, t) => s + t.premium, 0)
+  // Memoized + single-pass — was 4 chained filter+reduce passes running on
+  // every render. Recomputes only when filtered identity changes.
+  const displayStats = useMemo(() => {
+    let cp = 0, pp = 0, bull = 0, bear = 0
+    for (const t of filtered) {
+      if (t.opt_type === "C") cp += t.premium
+      else if (t.opt_type === "P") pp += t.premium
+      if (t.bullish) bull += t.premium
+      else bear += t.premium
+    }
     return {
-      count: source.length,
+      count: filtered.length,
       bull, bear,
       lean: cp > pp * 1.05 ? "BULL" : pp > cp * 1.05 ? "BEAR" : "MIXED",
       pc_ratio: cp > 0 ? +(pp / cp).toFixed(2) : 0,
     }
-  })()
+  }, [filtered])
 
   const iconCls = "w-[22px] h-[22px]"
   const sideBtn = (active: boolean) => `w-14 h-14 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${active ? "bg-white/[0.1] text-white" : "text-white/40 hover:text-white/80 hover:bg-white/[0.06]"}`
@@ -691,7 +777,7 @@ export default function ScannerPage() {
       <TrialBanner />
 
       {activePage === "heatmap" ? ((() => {
-  const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
+  // GEX_SYMBOLS hoisted to module scope so CommandPalette mount can use it.
   const netGex = gexData ? gexData.strikes.reduce((sum: number, strike: number) => {
     const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
     const row = gexData.matrix[sk] || {}
@@ -713,67 +799,193 @@ export default function ScannerPage() {
   return (
   <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F14" }}>
 
-    <div className="flex items-center px-5 h-12 gap-8 border-b border-white/[0.06] flex-shrink-0" style={{ background: "#10141B" }}>
-
-      <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
-        className="bg-transparent border border-white/[0.1] text-white text-[14px] rounded-md px-2.5 py-1 font-semibold cursor-pointer focus:outline-none focus:border-white/[0.25] font-mono">
-        {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
-      </select>
-
-      <div className="w-px h-5 bg-white/[0.08]" />
-
-      {gexData && (<>
-        <div>
-          <span className="text-[10px] text-white/30 mr-2">SPOT</span>
-          <span className="text-[14px] font-semibold text-white font-mono">{gexData.spot.toFixed(2)}</span>
-        </div>
-
-        {gexData.zero_gamma_strike != null && (
-          <div>
-            <span className="text-[10px] text-[#a855f7]/60 mr-2">ZERO &gamma;</span>
-            <span className="text-[14px] font-semibold text-[#a855f7] font-mono">{gexData.zero_gamma_strike.toFixed(0)}</span>
+    {/* SpotGamma-style header: instrument bar + metrics + chip strip */}
+    {(() => {
+      const SYMBOL_NAMES_INLINE: Record<string, string> = {
+        SPY: "State Street SPDR S&P 500 ETF Trust", QQQ: "Invesco QQQ Trust",
+        AAPL: "Apple Inc.", TSLA: "Tesla, Inc.", NVDA: "NVIDIA Corporation",
+        META: "Meta Platforms, Inc.", MSFT: "Microsoft Corporation",
+        AMZN: "Amazon.com, Inc.", GOOGL: "Alphabet Inc.",
+        AMD: "Advanced Micro Devices, Inc.", MU: "Micron Technology, Inc.",
+        COIN: "Coinbase Global, Inc.", PLTR: "Palantir Technologies Inc.",
+        NFLX: "Netflix, Inc.", CRM: "Salesforce, Inc.", BA: "The Boeing Company",
+        JPM: "JPMorgan Chase & Co.", GS: "Goldman Sachs Group, Inc.",
+        XOM: "Exxon Mobil Corporation", GLD: "SPDR Gold Trust",
+      }
+      const fmtGexLocal = (v: number) => {
+        const abs = Math.abs(v), sign = v < 0 ? "-" : ""
+        if (abs >= 1e12) return `${sign}$${(abs / 1e12).toFixed(2)}T`
+        if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`
+        if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`
+        if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(0)}K`
+        return `${sign}$${abs.toFixed(0)}`
+      }
+      const fmtCellLocal = (v: number) => {
+        const abs = Math.abs(v), sign = v < 0 ? "-" : ""
+        if (abs >= 1e12) return `${sign}${(abs / 1e12).toFixed(2)}T`
+        if (abs >= 1e9) return `${sign}${(abs / 1e9).toFixed(1)}B`
+        if (abs >= 1e6) return `${sign}${(abs / 1e6).toFixed(1)}M`
+        if (abs >= 1e3) return `${sign}${(abs / 1e3).toFixed(1)}K`
+        return `${sign}${abs.toFixed(0)}`
+      }
+      const fmtExpShort = (exp: string) => {
+        const p = exp.split("-")
+        if (p.length !== 3) return exp
+        const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
+        return `${months[parseInt(p[1]) - 1]} ${p[2]}`
+      }
+      const effSpot = liveGexSpot ?? gexData?.spot ?? 0
+      return (
+        <>
+          {/* Instrument bar */}
+          <div className="flex items-center px-5 py-2.5 gap-3 border-b border-white/[0.06] flex-shrink-0" style={{ background: "#10141B" }}>
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="text-[14px] font-semibold text-white tracking-tight truncate">{SYMBOL_NAMES_INLINE[gexSymbol] || gexSymbol}</span>
+              <span className="text-[9px] uppercase tracking-[0.18em] text-white/30 whitespace-nowrap">Gamma Exposure</span>
+            </div>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/60 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.08]">Gamma</span>
+              <button
+                onClick={() => setPaletteOpen(true)}
+                className="flex items-center gap-2 text-[11px] text-white/40 hover:text-white px-2.5 py-1 rounded border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] transition-colors"
+                aria-label="Open search"
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <span className="hidden sm:inline">to search</span>
+                <kbd className="font-mono text-[9px] px-1 py-0.5 rounded bg-black/40 border border-white/[0.08]">S</kbd>
+              </button>
+              <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
+                className="sm:hidden bg-transparent border border-white/[0.1] text-white text-[11px] rounded px-2 py-1 font-semibold cursor-pointer focus:outline-none">
+                {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
           </div>
-        )}
 
-        <div>
-          <span className="text-[10px] text-white/30 mr-2">NET</span>
-          <span className={`text-[14px] font-semibold font-mono ${netGex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
-            {netGex >= 0 ? "+" : ""}{fmtGex(netGex)}
-          </span>
-        </div>
+          {/* Metrics row */}
+          {gexData && (
+            <div className="flex items-center px-5 py-2.5 gap-x-9 gap-y-1 border-b border-white/[0.06] flex-shrink-0 overflow-x-auto flex-wrap" style={{ background: "#0B0F14" }}>
+              <div className="flex flex-col gap-0.5 min-w-[110px]">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[19px] font-mono tabular-nums font-bold text-white leading-none">${effSpot.toFixed(2)}</span>
+                  {liveGexSpot !== null && (
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-[#00E85A] animate-pulse" />
+                      <span className="text-[8px] font-bold tracking-[0.12em] text-[#00E85A]">LIVE</span>
+                    </span>
+                  )}
+                </div>
+                {(() => {
+                  const prev = gexData.prev_close ?? gexData.spot
+                  if (!prev) return null
+                  const delta = effSpot - prev
+                  const pct = (delta / prev) * 100
+                  if (Math.abs(delta) < 0.005) return <span className="text-[11px] font-mono tabular-nums text-white/30">unchanged</span>
+                  const positive = delta > 0
+                  return (
+                    <span className={`text-[11px] font-mono tabular-nums ${positive ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
+                      {positive ? "↗" : "↘"} {positive ? "+" : ""}{delta.toFixed(2)} · {positive ? "+" : ""}{pct.toFixed(2)}%
+                    </span>
+                  )
+                })()}
+              </div>
+              {[
+                { label: "Gamma Flip", value: gexData.gamma_flip != null ? `$${gexData.gamma_flip.toFixed(2)}` : "N/A", cls: gexData.gamma_flip != null ? "text-[#F5820A]" : "text-white/30" },
+                { label: "Total Net GEX", value: fmtGexLocal(gexData.total_net_gex), cls: gexData.total_net_gex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]" },
+                { label: "Gamma Slope", value: gexData.gamma_slope != null ? fmtGexLocal(gexData.gamma_slope) : "N/A", cls: gexData.gamma_slope != null ? "text-white" : "text-white/30" },
+                { label: "Slope Strike", value: gexData.slope_strike != null ? `$${gexData.slope_strike.toFixed(2)}` : "N/A", cls: gexData.slope_strike != null ? "text-white" : "text-white/30" },
+                { label: "Max +GEX", value: gexData.max_plus_gex ? fmtGexLocal(gexData.max_plus_gex.gex) : "N/A", cls: gexData.max_plus_gex ? "text-[#00E85A]" : "text-white/30", sub: gexData.max_plus_gex ? `@ $${gexData.max_plus_gex.strike.toFixed(2)}` : undefined },
+                { label: "Max -GEX", value: gexData.max_minus_gex ? fmtGexLocal(gexData.max_minus_gex.gex) : "N/A", cls: gexData.max_minus_gex ? "text-[#FF605D]" : "text-white/30", sub: gexData.max_minus_gex ? `@ $${gexData.max_minus_gex.strike.toFixed(2)}` : undefined },
+              ].map(s => (
+                <div key={s.label} className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-[9px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">{s.label}</span>
+                  <span className={`text-[13px] font-mono tabular-nums font-semibold leading-tight whitespace-nowrap ${s.cls}`}>{s.value}</span>
+                  {s.sub && <span className="text-[10px] font-mono tabular-nums text-white/40 whitespace-nowrap">{s.sub}</span>}
+                </div>
+              ))}
+            </div>
+          )}
 
-        <div className="w-px h-5 bg-white/[0.08]" />
+          {/* Total Net GEX breakout — call vs put, near vs far DTE */}
+          {gexData && (
+            <div className="flex items-center px-5 py-2 gap-3 border-b border-white/[0.04] flex-shrink-0 overflow-x-auto" style={{ background: "#0B0F14" }}>
+              <span className="text-[10px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">Composition</span>
+              <div className="w-px h-3 bg-white/[0.06]" />
+              {[
+                { label: "CALL γ", value: gexData.total_call_gex, color: "#00E85A" },
+                { label: "PUT γ", value: gexData.total_put_gex, color: "#FF605D" },
+                { label: "Near DTE", value: gexData.near_dte_gex, color: gexData.near_dte_gex >= 0 ? "#00E85A" : "#FF605D", note: "≤7d" },
+                { label: "Far DTE", value: gexData.far_dte_gex, color: gexData.far_dte_gex >= 0 ? "#00E85A" : "#FF605D", note: ">7d" },
+              ].map(b => (
+                <div key={b.label} className="flex items-baseline gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05] bg-white/[0.02]">
+                  <span className="font-bold tracking-[0.08em] uppercase text-white/60">{b.label}</span>
+                  {b.note && <span className="font-mono text-white/30 text-[9px]">{b.note}</span>}
+                  <span className="font-mono font-bold tabular-nums" style={{ color: b.color }}>
+                    {fmtGexLocal(b.value)}
+                  </span>
+                </div>
+              ))}
+              {(() => {
+                // Bias indicator: which side of the gamma book dominates.
+                const bias = gexData.total_call_gex + gexData.total_put_gex
+                const dominantSide = Math.abs(gexData.total_call_gex) > Math.abs(gexData.total_put_gex) ? "CALL" : "PUT"
+                const positive = bias >= 0
+                return (
+                  <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05]" style={{ background: positive ? "rgba(0,232,90,0.05)" : "rgba(255,96,93,0.05)" }}>
+                    <span className="font-bold tracking-[0.08em] uppercase text-white/40">Bias</span>
+                    <span className="font-mono font-bold tabular-nums" style={{ color: positive ? "#00E85A" : "#FF605D" }}>
+                      {positive ? "+" : ""}{fmtGexLocal(bias)} · {dominantSide}-led
+                    </span>
+                  </div>
+                )
+              })()}
+            </div>
+          )}
 
-        {callWall && (
-          <div>
-            <span className="text-[10px] text-[#00E85A]/50 mr-2">CALL WALL</span>
-            <span className="text-[14px] font-semibold text-[#00E85A] font-mono">{callWall.strike}</span>
-            <span className="text-[10px] text-white/20 ml-1.5 font-mono">{((callWall.strike - gexData.spot) / gexData.spot * 100).toFixed(1)}%</span>
-          </div>
-        )}
-
-        {putWall && (
-          <div>
-            <span className="text-[10px] text-[#FF605D]/50 mr-2">PUT WALL</span>
-            <span className="text-[14px] font-semibold text-[#FF605D] font-mono">{putWall.strike}</span>
-            <span className="text-[10px] text-white/20 ml-1.5 font-mono">-{((gexData.spot - putWall.strike) / gexData.spot * 100).toFixed(1)}%</span>
-          </div>
-        )}
-
-        <div className="w-px h-5 bg-white/[0.08]" />
-
-        <span className={`text-[12px] font-semibold ${netGex >= 0 ? "text-[#00E85A]/70" : "text-[#FF605D]/70"}`}>
-          {netGex >= 0 ? "POSITIVE" : "NEGATIVE"} &gamma;
-        </span>
-
-        <div className="ml-auto flex items-center gap-4 text-[10px] text-white/30">
-          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#00E85A]/40" /> Call</div>
-          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#FF605D]/40" /> Put</div>
-          <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-white/60" /> Spot</div>
-          <div className="flex items-center gap-1.5"><div className="w-2.5 h-0.5 bg-[#a855f7]" /> Zero &gamma;</div>
-        </div>
-      </>)}
-    </div>
+          {/* Chip strip */}
+          {gexData && gexData.top_cells && gexData.top_cells.length > 0 && (
+            <div className="flex items-center px-5 py-2 gap-3 border-b border-white/[0.06] flex-shrink-0 overflow-x-auto" style={{ background: "#0B0F14" }}>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60 whitespace-nowrap">Net GEX Heatmap</span>
+              <InfoTooltip content={<span>Net dollar gamma exposure per share-price move. Strike rows show wall structure; expiry columns reveal time decay. Spot row tinted in blue. Cells with a dashed amber top-border are OI-based estimates (live greeks unavailable, typically after-hours).</span>}>
+                <span className="text-[10px] text-white/40 cursor-help hover:text-white">ⓘ</span>
+              </InfoTooltip>
+              {(() => {
+                // Aggregate fallback indicator — when >50% of cells lack live
+                // greeks, surface an "estimate" pill so the user doesn't read
+                // synthetic numbers as Polygon greeks. Cheap O(n) scan; matrix
+                // is small (~50 strikes × 10 expiries).
+                let total = 0, missing = 0
+                for (const sk of Object.keys(gexData.matrix)) {
+                  for (const exp of Object.keys(gexData.matrix[sk])) {
+                    total++
+                    if (gexData.matrix[sk][exp].has_greeks === false) missing++
+                  }
+                }
+                if (total === 0 || missing / total < 0.5) return null
+                return (
+                  <InfoTooltip content={<span>Polygon greeks unavailable for &gt;50% of cells (typical after market hours). Values shown are OI-weighted Gaussian estimates centered on ATM. Wall direction is robust; magnitudes are approximate. Live greeks resume at 9:30 AM ET.</span>}>
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-[0.1em] uppercase border border-amber-500/40 text-amber-400 bg-amber-500/[0.08] cursor-help">Estimated</span>
+                  </InfoTooltip>
+                )
+              })()}
+              <div className="w-px h-3 bg-white/[0.08]" />
+              {gexData.top_cells.map(c => {
+                const positive = c.net_gex > 0
+                return (
+                  <div key={`${c.strike}-${c.expiry}`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono tabular-nums whitespace-nowrap border ${positive ? "bg-[#00E85A]/[0.06] border-[#00E85A]/25 text-[#00E85A]" : "bg-[#FF605D]/[0.06] border-[#FF605D]/25 text-[#FF605D]"}`}>
+                    <span className="font-semibold">{gexSymbol} {c.strike} {fmtExpShort(c.expiry)}</span>
+                    <span className="opacity-70">·</span>
+                    <span className="font-bold">{positive ? "+" : ""}{fmtCellLocal(c.net_gex)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
+      )
+    })()}
 
     <div className="flex-1 flex overflow-hidden">
 
@@ -823,11 +1035,17 @@ export default function ScannerPage() {
                     const putOi = cell?.put_oi ?? 0
                     const intensity = gexData.max_abs_gex > 0 ? Math.min(0.8, 0.06 + 0.74 * Math.abs(gex) / gexData.max_abs_gex) : 0
                     const bg = gex === 0 ? "transparent" : gex > 0 ? `rgba(0,232,90,${intensity})` : `rgba(255,96,93,${intensity})`
+                    // Synthetic-greeks marker: when has_greeks is explicitly false,
+                    // the cell value comes from the OI-based Gaussian fallback. Mark
+                    // these visually so users know which numbers are real Polygon
+                    // greeks vs estimates. Subtle dashed top-border keeps the grid
+                    // legible while flagging the cells honestly.
+                    const isFallback = cell?.has_greeks === false
                     return (
                       <div key={`${strike}-${exp}`}
-                        className="border-r border-b border-white/[0.04] flex items-center justify-center"
-                        style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24 }}
-                        title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
+                        className={`border-r border-b border-white/[0.04] flex items-center justify-center relative ${isFallback ? "opacity-75" : ""}`}
+                        style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
+                        title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
                         {gex !== 0 && (
                           <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#00E85A]/80" : "text-[#FF605D]/80"}`}>
                             {fmtGex(gex)}
@@ -876,6 +1094,9 @@ export default function ScannerPage() {
         </div>
       )}
     </div>
+
+    {/* Replay scrubber — locked progress until ≥3 sessions of snapshots */}
+    <ReplayProgress symbol={gexSymbol} />
   </div>
   )
 })()) : activePage === "watchlist" ? (
@@ -1012,9 +1233,9 @@ export default function ScannerPage() {
         const totalPrem = displayStats.bull + displayStats.bear
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
         const isBull = displayStats.lean === "BULL"
-        const totalCount = calls.length + puts.length
-        const callSharePct = Math.round((calls.length / (totalCount || 1)) * 100)
-        const putSharePct = Math.round((puts.length / (totalCount || 1)) * 100)
+        const totalCount = calls + puts
+        const callSharePct = Math.round((calls / (totalCount || 1)) * 100)
+        const putSharePct = Math.round((puts / (totalCount || 1)) * 100)
         return (
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
 
@@ -1071,7 +1292,7 @@ export default function ScannerPage() {
                   <span className="text-[12px] text-white/50">Call flow</span>
                   <span className="text-[13px] font-semibold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.length.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
               </div>
             </div>
 
@@ -1092,7 +1313,7 @@ export default function ScannerPage() {
                   <span className="text-[12px] text-white/50">Put flow</span>
                   <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.length.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString()}</div>
               </div>
             </div>
 
@@ -1603,6 +1824,15 @@ export default function ScannerPage() {
       )}
 
       </div>
+      {/* Command palette — reachable via S keypress on the heatmap tab */}
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        symbol={gexSymbol}
+        symbols={GEX_SYMBOLS.map((code: string) => ({ code, name: ({ SPY: "State Street SPDR S&P 500 ETF Trust", QQQ: "Invesco QQQ Trust", AAPL: "Apple Inc.", TSLA: "Tesla, Inc.", NVDA: "NVIDIA Corporation", META: "Meta Platforms, Inc.", MSFT: "Microsoft Corporation", AMZN: "Amazon.com, Inc.", GOOGL: "Alphabet Inc.", AMD: "Advanced Micro Devices, Inc.", MU: "Micron Technology, Inc.", COIN: "Coinbase Global, Inc.", PLTR: "Palantir Technologies Inc.", NFLX: "Netflix, Inc.", CRM: "Salesforce, Inc.", BA: "The Boeing Company", JPM: "JPMorgan Chase & Co.", GS: "Goldman Sachs Group, Inc.", XOM: "Exxon Mobil Corporation", GLD: "SPDR Gold Trust" } as Record<string, string>)[code] || code }))}
+        onSymbolChange={setGexSymbol}
+      />
+
     </div>
   )
 }

@@ -1,8 +1,69 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Nav from "@/components/Nav"
 import Footer from "@/components/Footer"
 import Link from "next/link"
 
 export const dynamic = "force-static"
+
+
+// Live wall-validation stat. Fetches the latest backtest result and
+// renders the hit-rate band table with an honest sample-size caveat.
+// Self-improving: the backtest cron runs weekly and the daily snapshot
+// cron grows the sample, so this stat strengthens over time without
+// any code changes.
+function WallValidationStat() {
+  const [data, setData] = useState<{ n: number; hit_pct_05?: number; hit_pct_1?: number; hit_pct_2?: number; median_distance_pct?: number; pending?: boolean } | null>(null)
+  useEffect(() => {
+    fetch("/api/scanner/wall-validation?symbol=SPY")
+      .then(r => r.ok ? r.json() : null)
+      .then(setData)
+      .catch(() => setData(null))
+  }, [])
+  if (!data) return null
+  if (data.pending || !data.n) {
+    return (
+      <div className="mt-6 rounded-md border border-[rgba(148,163,184,0.12)] bg-[rgba(148,163,184,0.03)] p-5">
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] mb-1">Validation pending</div>
+        <p className="text-sm text-[#94A3B8] leading-relaxed">
+          Wall-prediction backtest is collecting historical samples. First public stat publishes once we have ≥30 sessions.
+        </p>
+      </div>
+    )
+  }
+  return (
+    <div className="mt-6 rounded-md border border-[rgba(148,163,184,0.18)] bg-[rgba(15,21,32,0.6)] p-5">
+      <div className="flex items-baseline justify-between mb-3">
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B]">Wall validation — SPY</div>
+        <div className="text-[10px] text-[#475569] font-mono tabular-nums">n = {data.n}</div>
+      </div>
+      <p className="text-sm text-[#94A3B8] leading-relaxed mb-4">
+        Backtest method: for each historical EOD snapshot, take the Max +GEX
+        call wall strike, compare to the <em>following session&apos;s</em> close.
+        Distance is &vert;close − wall&vert; / spot.
+      </p>
+      <div className="grid grid-cols-3 gap-3 mb-3">
+        {[
+          { band: "≤ 0.5%", pct: data.hit_pct_05 },
+          { band: "≤ 1%", pct: data.hit_pct_1 },
+          { band: "≤ 2%", pct: data.hit_pct_2 },
+        ].map(r => (
+          <div key={r.band} className="rounded border border-[rgba(148,163,184,0.12)] p-3 text-center">
+            <div className="text-[9px] uppercase tracking-[0.14em] text-[#64748B] mb-1">close within</div>
+            <div className="text-[16px] font-mono tabular-nums font-bold text-white">{r.band}</div>
+            <div className="text-[20px] font-mono tabular-nums font-bold text-[#22C55E] mt-1">{r.pct ?? "—"}%</div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-[#475569] leading-relaxed italic">
+        Honest caveat: n = {data.n} is a small sample. The daily snapshot cron
+        and a weekly Polygon backtest grow the dataset; we re-run automatically
+        and these numbers update. Median distance: {data.median_distance_pct?.toFixed(2) ?? "—"}%.
+      </p>
+    </div>
+  )
+}
 
 export default function MethodologyPage() {
   return (
@@ -86,7 +147,39 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="7. Pipeline transparency" subtitle="What we will and won&apos;t claim">
+        <Section title="7. Gamma exposure (GEX) heatmap" subtitle="SqueezeMetrics-style convention, no proprietary adjustments">
+          <p>
+            The GEX heatmap surfaces dealer hedging walls strike-by-strike,
+            expiry-by-expiry. We compute net gamma exposure per cell as{' '}
+            <code className="text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">γ × OI × spot²</code>{' '}
+            — the public SqueezeMetrics dollar-gamma convention — assuming the
+            standard worst-case dealer position (short calls, long puts) when
+            no flow attribution is available.
+          </p>
+          <p className="mt-4">
+            What this means: <strong className="text-white">wall direction is robust</strong> —
+            the strikes our heatmap flags as Max +GEX (call wall) and Max -GEX
+            (put wall) are computed from real Polygon greeks during regular
+            trading hours, restricted to a ±3% band around spot for actionable
+            relevance, and align with the price levels where dealer delta-hedging
+            activity concentrates. <strong className="text-white">Wall magnitudes are convention-dependent</strong> —
+            tools that layer in retail-vs-institutional flow inference (e.g.,
+            SpotGamma&apos;s GEX 2.0) will report different absolute dollar
+            values for the same underlying chain. We use the public methodology
+            because it&apos;s reproducible from the Polygon greeks any user
+            can verify; we do not claim parity with proprietary models.
+          </p>
+          <p className="mt-4">
+            After-hours, when Polygon greeks aren&apos;t streaming, individual
+            cells fall back to a Gaussian-shaped gamma estimate centered on ATM.
+            Those cells are visually annotated (dashed amber border) and the
+            heatmap header surfaces an <code className="text-amber-400 bg-amber-500/[0.08] px-1.5 py-0.5 rounded text-[0.9em]">ESTIMATED</code> pill
+            so users can&apos;t mistake synthetic numbers for live greeks.
+          </p>
+          <WallValidationStat />
+        </Section>
+
+        <Section title="8. Pipeline transparency" subtitle="What we will and won&apos;t claim">
           <p>
             Every signal that enters the database carries a <code className="text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">scorer_version</code>{' '}
             stamp identifying which ruleset produced it. Conviction grading is
