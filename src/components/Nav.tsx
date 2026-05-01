@@ -130,38 +130,38 @@ export default function Nav() {
         </div>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* Mobile dropdown — relative z-50 so it stays above the backdrop overlay */}
       {open && (
         <>
-          <div className="md:hidden border-t border-white/10 bg-[#0F1117]">
+          <div className="md:hidden relative z-50 border-t border-white/10 bg-[#0F1117]">
             <div className="px-4 py-3">
-              <div className="text-[11px] uppercase tracking-widest text-white/40 font-mono mb-2">Product</div>
+              <div className="text-[11px] uppercase tracking-widest text-white/50 font-mono mb-2">Product</div>
               {productItems.map(it => (
                 <Link key={it.href} href={it.href} onClick={close}
-                  className="block py-2 text-sm text-white/80 hover:text-white">
+                  className="block py-2 text-sm text-white hover:text-white">
                   {it.label}
                 </Link>
               ))}
             </div>
             <div className="px-4 py-3 border-t border-white/5">
-              <div className="text-[11px] uppercase tracking-widest text-white/40 font-mono mb-2">Resources</div>
+              <div className="text-[11px] uppercase tracking-widest text-white/50 font-mono mb-2">Resources</div>
               {resourceItems.map(it => (
                 <Link key={it.href} href={it.href} onClick={close}
-                  className="block py-2 text-sm text-white/80 hover:text-white">
+                  className="block py-2 text-sm text-white hover:text-white">
                   {it.label}
                 </Link>
               ))}
             </div>
             <div className="px-4 py-3 border-t border-white/5 flex items-center justify-between">
-              <Link href="/#pricing" onClick={close} className="text-sm text-white/80 hover:text-white">Pricing</Link>
-              <Link href="/login" onClick={close} className="text-sm text-white/60 hover:text-white">Login</Link>
+              <Link href="/#pricing" onClick={close} className="text-sm text-white hover:text-white">Pricing</Link>
+              <Link href="/login" onClick={close} className="text-sm text-white/70 hover:text-white">Login</Link>
             </div>
           </div>
           <button
             type="button"
             aria-label="Close menu"
             onClick={close}
-            className="md:hidden fixed inset-0 top-20 z-40 bg-black/40 backdrop-blur-[1px] cursor-default"
+            className="md:hidden fixed inset-0 top-20 z-30 bg-black/40 cursor-default"
           />
         </>
       )}
