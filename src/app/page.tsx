@@ -94,7 +94,7 @@ const itemListSchema = JSON.stringify({
   "@type": "ItemList",
   "name": "Recent Grade A Examples — Profit Builders",
   "description": "Eight recent institutional-grade options flow signals with full thesis, entry, and verified outcome.",
-  "url": "https://profitbuilders.io/results",
+  "url": "https://profitbuilders.io/methodology",
   "numberOfItems": 8,
   "itemListElement": [
     {
@@ -104,7 +104,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "$170K sweep into AI capex — NVDA CALLS $177.50",
         "description": "Five fills across 3 exchanges, all bought at the ask. 7× vol/oi on near-the-money calls — clear accumulation signature ahead of hyperscaler capex commentary.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -114,7 +114,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "61× vol/oi miner sweep — RIOT CALLS $16",
         "description": "Aggressive 61× vol/oi sweep on short-dated OTM calls. Third hit on this strike intraday with persistent buying pressure across multiple exchanges.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -124,7 +124,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "Small-cap breakdown hedge — IWM PUTS $239",
         "description": "Deep OTM puts swept above the bid. Hedge or directional bear conviction with 14× vol/oi elevated on the small-cap technical breakdown.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -134,7 +134,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "$130K ITM block on Q2 catalyst — TSLA CALLS $355",
         "description": "ITM call sweep totaling $130K premium. Delta 0.52 — pure directional positioning into Q2 delivery numbers.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -144,7 +144,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "9× vol/oi block at the offer — META CALLS $580",
         "description": "Block print at the offer on a name that rarely sees this kind of single-print volume — likely tied to Reality Labs roadmap and ad targeting tailwinds.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -154,7 +154,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "$670K multi-leg accumulation — AMD CALLS $160",
         "description": "Multi-leg sweep across 3 strikes totaling $670K premium. Aggressive call-side accumulation 30 days out with dealer gamma supportive at this strike.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -164,7 +164,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "Unusual ATM put activity — AAPL PUTS $220",
         "description": "8.7× vol/oi on near-the-money puts. Possibly hedging into iPhone cycle uncertainty with IV ranking in the bottom decile.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     },
     {
@@ -174,7 +174,7 @@ const itemListSchema = JSON.stringify({
         "@type": "CreativeWork",
         "name": "BTC-correlated $500K sweep — COIN CALLS $280",
         "description": "Sweep at the ask, BTC correlation in play. $500K premium — crypto-leveraged equity playing the next leg up with asymmetric payoff.",
-        "url": "https://profitbuilders.io/results"
+        "url": "https://profitbuilders.io/methodology"
       }
     }
   ]

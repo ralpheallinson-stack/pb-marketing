@@ -399,7 +399,7 @@ export default function VsUnusualWhales() {
                   For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a documented methodology, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
                 </Faq>
                 <Faq q="Does Unusual Whales publish a documented methodology?">
-                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
+                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="Can I use both?">
                   Yes, they complement each other cleanly. Unusual Whales for breadth (Congress, dark pool heatmaps, screener). Profit Builders for filtered, graded, tracked signals. Many active traders run both.

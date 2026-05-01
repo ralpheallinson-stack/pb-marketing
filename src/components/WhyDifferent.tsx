@@ -100,7 +100,7 @@ export default function WhyDifferent() {
 
             <div className="pt-6">
               <a
-                href="/results"
+                href="/methodology"
                 className="text-blue-500 text-sm font-semibold hover:underline"
               >
                 See the full methodology →

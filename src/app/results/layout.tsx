@@ -1,33 +1,15 @@
 import type { Metadata } from "next"
 
+// /results is a deprecated URL — Flask 301-redirects to /methodology. This
+// layout exists so the static export builds; it sets noindex so search
+// engines don't index the redirect shell.
 export const metadata: Metadata = {
-  title: "Data Methodology — Profit Builders",
-  description: "How Profit Builders processes institutional options flow: OPRA tape ingest, Reg-NMS Intermarket Sweep detection, Black-Scholes-Merton Greeks, prior-day OI from Polygon EOD.",
-  alternates: { canonical: "https://profitbuilders.io/results" },
-  openGraph: {
-    title: "Data Methodology — Profit Builders",
-    description: "How Profit Builders processes institutional options flow.",
-    url: "https://profitbuilders.io/results",
-    images: [{ url: "/results/opengraph-image", width: 1200, height: 630, alt: "Profit Builders Data Methodology" }]
-  },
-  twitter: { card: "summary_large_image", images: ["/results/opengraph-image"] },
+  title: "Methodology — Profit Builders",
+  description: "Redirecting to /methodology…",
+  alternates: { canonical: "https://profitbuilders.io/methodology" },
+  robots: { index: false, follow: false },
 }
 
-const breadcrumbSchema = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://profitbuilders.io" },
-    { "@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://profitbuilders.io/results" },
-  ],
-})
-
 export default function ResultsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbSchema }} />
-      <h1 className="sr-only">Profit Builders Data Methodology — How We Process Institutional Options Flow</h1>
-      {children}
-    </>
-  )
+  return <>{children}</>
 }

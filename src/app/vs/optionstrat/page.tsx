@@ -260,7 +260,7 @@ export default function VsPage() {
               <Link href="/pricing" className="bg-[#F97316] hover:bg-[#F97316]/90 text-white font-bold px-8 py-3.5 rounded-full text-sm transition-colors">
                 Start Free 7-Day Trial
               </Link>
-              <Link href="/results" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
+              <Link href="/methodology" className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors">
                 See the documented methodology →
               </Link>
             </div>

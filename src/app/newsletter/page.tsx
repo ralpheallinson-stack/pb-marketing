@@ -197,7 +197,7 @@ export default function NewsletterPage() {
             <span className="text-gray-300">·</span>
             <Link href="/blog" className="text-[#F97316] hover:underline">Blog</Link>
             <span className="text-gray-300">·</span>
-            <Link href="/results" className="text-[#F97316] hover:underline">Data Methodology</Link>
+            <Link href="/methodology" className="text-[#F97316] hover:underline">Data Methodology</Link>
             <span className="text-gray-300">·</span>
             <Link href="/blog/how-to-read-options-flow" className="text-[#F97316] hover:underline">How to Read Options Flow</Link>
             <span className="text-gray-300">·</span>

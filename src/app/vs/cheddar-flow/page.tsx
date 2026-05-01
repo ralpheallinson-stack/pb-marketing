@@ -352,7 +352,7 @@ export default function VsCheddarFlow() {
                   Dark pool data and AI Power Alerts. Both features are Pro-only. The $85/mo Standard tier gives you flow, charting, and unusual volume but not the two features most comparison-shoppers are specifically evaluating the platform to get. Profit Builders gates nothing at $99.
                 </Faq>
                 <Faq q="Does Cheddar Flow publish a documented methodology?">
-                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/results" className="pb-link text-white">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
+                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
                 </Faq>
                 <Faq q="How does AI Power Alerts compare to Grade A signals?">
                   Different approaches. Cheddar Flow's AI applies machine learning to flag setups in real time, without publishing what qualifies a signal or the system's historical hit rate. Profit Builders runs every print through 9 documented filters and publishes outcomes per grade. Transparent methodology on one side, ML black-box on the other — both are legitimate product choices, only one is auditable.

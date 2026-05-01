@@ -444,7 +444,7 @@ export default async function OptionsFlowTickerPage(
             </div>
 
             <p className="text-[15px] leading-[1.7] text-[#A9B4C6] max-w-3xl mb-5">
-              All {t.symbol} signal outcomes are publicly auditable at <Link href="/results" className="pb-link text-white">/results</Link> — wins and losses, with no cherry-picking.
+              All {t.symbol} signal outcomes are publicly auditable at <Link href="/methodology" className="pb-link text-white">/results</Link> — wins and losses, with no cherry-picking.
             </p>
             <Link
               href={`/options-flow/${t.symbol}/grade-a`}
@@ -520,7 +520,7 @@ export default async function OptionsFlowTickerPage(
             <Link href="/blog/how-to-read-options-flow" className="text-[#A9B4C6] hover:text-white transition-colors">How to read options flow</Link>
             <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#A9B4C6] hover:text-white transition-colors">Grade A, B, and C explained</Link>
             <Link href="/blog/what-is-options-accumulation" className="text-[#A9B4C6] hover:text-white transition-colors">Options accumulation</Link>
-            <Link href="/results" className="text-[#A9B4C6] hover:text-white transition-colors">Documented methodology</Link>
+            <Link href="/methodology" className="text-[#A9B4C6] hover:text-white transition-colors">Documented methodology</Link>
           </div>
         </section>
 

@@ -229,7 +229,7 @@ export default async function GradeAPage(
           </h1>
 
           <p className="text-[18px] text-gray-600 leading-relaxed max-w-3xl mb-10">
-            <strong className="text-gray-900">{ga.total.toLocaleString()}</strong> Grade A institutional flow signals on {t.symbol}, captured via the live OPRA tape with CBOE Rule 6.11 sweep detection and Black-Scholes-Merton Greeks. Methodology at <Link href="/results" className="underline hover:text-[#F97316]">/results</Link>.
+            <strong className="text-gray-900">{ga.total.toLocaleString()}</strong> Grade A institutional flow signals on {t.symbol}, captured via the live OPRA tape with CBOE Rule 6.11 sweep detection and Black-Scholes-Merton Greeks. Methodology at <Link href="/methodology" className="underline hover:text-[#F97316]">/results</Link>.
           </p>
 
           {/* Key stats 4-col */}
@@ -403,7 +403,7 @@ export default async function GradeAPage(
 
         {/* ── METHODOLOGY STRIP ── */}
         <section className="max-w-5xl mx-auto px-6 py-10 border-t border-gray-100 text-[12px] text-gray-400 leading-relaxed">
-          <strong className="text-gray-500">Methodology.</strong> Grade A signals pass the institutional-flow filter pipeline: institutional premium floor, contract-level volume baseline, aggressive fill detection, market-maker filtering, opening-position classification. See /results for the full data methodology. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/results" className="text-[#F97316] hover:underline">data methodology →</Link>.
+          <strong className="text-gray-500">Methodology.</strong> Grade A signals pass the institutional-flow filter pipeline: institutional premium floor, contract-level volume baseline, aggressive fill detection, market-maker filtering, opening-position classification. See /results for the full data methodology. Exit rules are DTE-based: 0DTE +20%/-20%, 1-5 DTE +25%/-25%, 6-30 DTE +40%/-30%, 30+ DTE +30%/-30%. See the full <Link href="/methodology" className="text-[#F97316] hover:underline">data methodology →</Link>.
         </section>
       </main>
 

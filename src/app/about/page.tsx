@@ -26,7 +26,7 @@ export default function AboutPage() {
           <Link href="/#pricing" className="bg-[#F5820A] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#e57309] transition-colors">
             Start Free Trial &rarr;
           </Link>
-          <Link href="/results" className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
+          <Link href="/methodology" className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
             See Methodology
           </Link>
         </div>

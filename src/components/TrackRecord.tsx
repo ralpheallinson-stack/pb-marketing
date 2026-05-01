@@ -134,7 +134,7 @@ export default function TrackRecord() {
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 mt-4">
         <a
-          href="/results"
+          href="/methodology"
           className="text-[#60a5fa] hover:text-white text-sm font-semibold transition-colors duration-200"
         >
           See every published result →

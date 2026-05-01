@@ -96,7 +96,7 @@ export default function FAQ() {
               Start Free Trial
             </a>
             <a
-              href="/results"
+              href="/methodology"
               className="border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-semibold px-8 py-3 rounded-xl text-sm transition-colors"
             >
               View Results
