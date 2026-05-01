@@ -452,10 +452,18 @@ export default function ScannerPage() {
   const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number }) => {
     const pg = opts?.pageNum ?? page
     if (opts?.initial) setLoading(true)
+    // Hard 12s timeout via AbortController. Without this, a hung fetch (slow
+    // worker, network blip, edge cold cache) leaves the polling chain's
+    // `.finally(after)` never firing, which silently kills the chain. Wake
+    // handler revives it on tab-change, but a tab kept in foreground with no
+    // user interaction stays frozen until refresh. AbortController guarantees
+    // the Promise resolves/rejects within 12s.
+    const ac = new AbortController()
+    const timeoutId = setTimeout(() => ac.abort(), 12000)
     try {
       // Incremental polling — only on page 0 (live) after first load
       if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
-        const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }))
+        const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }), { signal: ac.signal })
         if (isAuthRedirect(res)) {
           setPollError("Session expired — redirecting to login…")
           router.push("/login")
@@ -474,7 +482,7 @@ export default function ScannerPage() {
       }
 
       // Full load (first time, page change, filter change)
-      const res = await fetch(buildUrl({ pageNum: pg }))
+      const res = await fetch(buildUrl({ pageNum: pg }), { signal: ac.signal })
       if (isAuthRedirect(res)) {
         setPollError("Session expired — redirecting to login…")
         router.push("/login")
@@ -496,14 +504,18 @@ export default function ScannerPage() {
       lastSuccessRef.current = Date.now()
       setPollError(null)
     } catch (err) {
-      // JSON parse error after a missed-auth redirect lands here. Distinguish
-      // "we got HTML" (likely auth) from "real network failure".
-      const msg = err instanceof SyntaxError
-        ? "Session may have expired — refresh to log in."
-        : "Connection lost — retrying"
-      setPollError(msg)
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setPollError("Slow connection — retrying")
+      } else if (err instanceof SyntaxError) {
+        // JSON parse error after a missed-auth redirect lands here.
+        setPollError("Session may have expired — refresh to log in.")
+      } else {
+        setPollError("Connection lost — retrying")
+      }
+    } finally {
+      clearTimeout(timeoutId)
+      setLoading(false)
     }
-    setLoading(false)
   }, [page, buildUrl, router])
 
   // Keep fetchDataRef in sync — decouples reset/polling effects from fetchData identity
