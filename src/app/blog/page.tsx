@@ -13,27 +13,25 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://profitbuilders.io/blog" },
 }
 
-// Slug → category mapping. Cheap rule-based classifier on existing
+// Slug → category mapping. Cheap rule-based classifier on the existing
 // filename pattern; lets us add visible category badges without a CMS
-// migration. Order matters: more specific first.
-function categoryFor(slug: string): { label: string; color: string } {
-  if (slug.startsWith("flow-recap-")) return { label: "Recap", color: "#F5820A" }
-  if (slug.endsWith("-vs-profit-builders")) return { label: "Comparison", color: "#A855F7" }
-  if (slug.startsWith("how-to-")) return { label: "Guide", color: "#22C55E" }
-  if (slug.startsWith("morning-routine") || slug.includes("first-15-minutes")) return { label: "Routine", color: "#22C55E" }
-  if (slug.includes("sweep") || slug.includes("block") || slug.includes("ruoa") || slug.includes("accumul")) return { label: "Setup", color: "#60A5FA" }
-  if (slug.includes("greek") || slug.includes("iv") || slug.includes("gamma")) return { label: "Greeks", color: "#60A5FA" }
-  if (slug.includes("scanner") || slug.includes("flow-scanner-2026")) return { label: "Tools", color: "#60A5FA" }
-  return { label: "Article", color: "#94A3B8" }
+// migration. Light-theme palette: muted brand variants of the dark accents
+// so badges sit calmly on a white card instead of vibrating against it.
+function categoryFor(slug: string): { label: string; color: string; bg: string; border: string } {
+  if (slug.startsWith("flow-recap-")) return { label: "Recap", color: "#B45309", bg: "#FEF3C7", border: "#FCD34D" }
+  if (slug.endsWith("-vs-profit-builders")) return { label: "Comparison", color: "#6D28D9", bg: "#EDE9FE", border: "#C4B5FD" }
+  if (slug.startsWith("how-to-")) return { label: "Guide", color: "#047857", bg: "#D1FAE5", border: "#6EE7B7" }
+  if (slug.startsWith("morning-routine") || slug.includes("first-15-minutes")) return { label: "Routine", color: "#047857", bg: "#D1FAE5", border: "#6EE7B7" }
+  if (slug.includes("sweep") || slug.includes("block") || slug.includes("ruoa") || slug.includes("accumul")) return { label: "Setup", color: "#1D4ED8", bg: "#DBEAFE", border: "#93C5FD" }
+  if (slug.includes("greek") || slug.includes("iv") || slug.includes("gamma")) return { label: "Greeks", color: "#1D4ED8", bg: "#DBEAFE", border: "#93C5FD" }
+  if (slug.includes("scanner") || slug.includes("flow-scanner-2026")) return { label: "Tools", color: "#1D4ED8", bg: "#DBEAFE", border: "#93C5FD" }
+  return { label: "Article", color: "#4B5563", bg: "#F3F4F6", border: "#D1D5DB" }
 }
 
 export default function BlogIndex() {
   const posts = getAllPosts()
   const featured = posts.find(p => !p.slug.endsWith("-vs-profit-builders")) ?? posts[0]
 
-  // Pre-compute the categorized blog post payload once on the server. The
-  // client component merges this with live news fetched at runtime so the
-  // grid renders instantly with blog content and news cards stream in.
   const blogItems = posts
     .filter(p => p.slug !== (featured?.slug ?? ""))
     .map(p => ({
@@ -73,89 +71,88 @@ export default function BlogIndex() {
   })
 
   return (
-    <div className="min-h-screen" style={{ background: "#0B0F1A" }}>
+    <div className="min-h-screen bg-white text-gray-900">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: itemListSchema }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbSchema }} />
       <Nav />
 
-      {/* ── Hero ── */}
-      <section className="relative text-center pt-24 pb-10 px-4 overflow-hidden">
+      {/* ── Hero — light, calm, editorial ── */}
+      <section className="relative text-center pt-28 pb-12 px-4 overflow-hidden border-b border-gray-100">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
-            backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
+            backgroundImage: "radial-gradient(circle, #94A3B8 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
         />
         <div className="relative z-10">
-          <div className="text-[11px] font-bold text-[#4A5A72] tracking-[0.2em] uppercase mb-4">
-            Learn
+          <div className="text-[11px] font-bold text-gray-400 tracking-[0.22em] uppercase mb-5">
+            Profit Builders Blog
           </div>
-          <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-            Blog &amp; Market News
+          <h1 className="text-[40px] md:text-[52px] font-extrabold text-gray-900 mb-4 tracking-tight leading-[1.05]">
+            Options flow, in context.
           </h1>
-          <p className="text-[#7A8BA8] max-w-xl mx-auto text-sm leading-relaxed mb-6">
+          <p className="text-gray-500 max-w-xl mx-auto text-[15px] leading-relaxed mb-7">
             Daily flow recaps, educational guides, and live news on the tickers
             moving institutional options flow today.
           </p>
           <div className="max-w-xl mx-auto">
             <EmailSignup source="blog-index" variant="banner" />
           </div>
-          <div className="text-[12px] text-[#4A5A72] mt-4">
+          <div className="text-[12px] text-gray-400 mt-4">
             Prefer a one-page printable reference?{" "}
-            <Link href="/cheat-sheet" className="text-[#F5820A] hover:text-white transition-colors font-semibold">
+            <Link href="/cheat-sheet" className="text-[#F5820A] hover:text-[#C2570A] transition-colors font-semibold">
               Get the free Options Flow Cheat Sheet →
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 pb-24">
+      <div className="max-w-6xl mx-auto px-6 py-14">
         {posts.length === 0 ? (
-          <div className="text-center py-10 text-[#3D4D63]">No articles yet.</div>
+          <div className="text-center py-10 text-gray-400">No articles yet.</div>
         ) : (
           <>
-            {/* Featured post — hero card with image */}
+            {/* Featured post — light hero card with soft shadow */}
             {featured && (
               <BlurFade>
                 <Link
                   href={`/blog/${featured.slug}`}
-                  className="group relative block rounded-2xl border border-[#2E3A4D] mb-10 overflow-hidden hover:border-[#F5820A]/40 transition-all"
-                  style={{ background: "#0F1520" }}
+                  className="group relative block rounded-2xl border border-gray-200 mb-12 overflow-hidden bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:border-gray-300 transition-all duration-300"
                 >
                   <div className="grid md:grid-cols-[1.2fr_1fr]">
-                    {/* Image side — uses the OG card we already render per post */}
-                    <div className="relative aspect-[1.91/1] md:aspect-auto md:min-h-[280px] overflow-hidden bg-[#080B12]">
+                    <div className="relative aspect-[1.91/1] md:aspect-auto md:min-h-[320px] overflow-hidden bg-gray-50">
                       <img
                         src={`/blog/${featured.slug}/opengraph-image`}
                         alt=""
                         className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
                         loading="eager"
                       />
-                      <div className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-[0.14em] uppercase bg-[#F5820A]/90 text-[#0B0F14] backdrop-blur">
+                      <div className="absolute top-4 left-4 px-2.5 py-1 rounded-md text-[9px] font-extrabold tracking-[0.14em] uppercase bg-[#F5820A] text-white shadow-md">
                         Featured
                       </div>
                     </div>
-                    {/* Body side */}
-                    <div className="p-6 md:p-8 flex flex-col justify-center">
-                      <div className="flex items-center gap-3 mb-3">
+                    <div className="p-7 md:p-9 flex flex-col justify-center">
+                      <div className="flex items-center gap-2.5 mb-3 flex-wrap">
                         {(() => {
                           const c = categoryFor(featured.slug)
                           return (
-                            <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: c.color }}>
+                            <span
+                              className="text-[9px] font-extrabold uppercase tracking-[0.14em] px-2 py-0.5 rounded border"
+                              style={{ color: c.color, background: c.bg, borderColor: c.border }}
+                            >
                               {c.label}
                             </span>
                           )
                         })()}
-                        <span className="text-[10px] text-[#4A5A72]">·</span>
-                        <span className="text-[10px] text-[#4A5A72]">{featured.date}</span>
-                        <span className="text-[10px] text-[#4A5A72]">·</span>
-                        <span className="text-[10px] text-[#4A5A72]">{featured.read_time} min read</span>
+                        <span className="text-[11px] text-gray-400">{featured.date}</span>
+                        <span className="text-[11px] text-gray-300">·</span>
+                        <span className="text-[11px] text-gray-400">{featured.read_time} min read</span>
                       </div>
-                      <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2 leading-tight tracking-tight group-hover:text-[#F5820A] transition-colors">
+                      <h2 className="text-[24px] md:text-[28px] font-extrabold text-gray-900 mb-3 leading-[1.15] tracking-tight group-hover:text-[#F5820A] transition-colors">
                         {featured.title}
                       </h2>
-                      <p className="text-sm text-[#94A3B8] leading-relaxed mb-4">
+                      <p className="text-[15px] text-gray-600 leading-relaxed mb-5">
                         {featured.description}
                       </p>
                       <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F5820A] group-hover:gap-2 transition-all">
@@ -168,7 +165,7 @@ export default function BlogIndex() {
               </BlurFade>
             )}
 
-            {/* Unified feed — blog posts + live news cards interleaved by date */}
+            {/* Unified feed — blog posts + news interleaved by date */}
             <BlogFeed blogItems={blogItems} />
           </>
         )}
