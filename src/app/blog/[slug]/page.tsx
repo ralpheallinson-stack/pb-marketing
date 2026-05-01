@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown } from "@/lib/blog"
+import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown, extractTickers } from "@/lib/blog"
 import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 import { EmailSignup } from "@/components/EmailSignup"
@@ -87,6 +87,17 @@ export default async function BlogPostPage({
   // Only surface the TOC when the post has 3+ sections, otherwise it's noise.
   const tocItems = tocFromMarkdown(post.body)
   const showToc = tocItems.length >= 3
+  const tickers = extractTickers(post)
+  // Flow-recap-style posts get hero image + scanner CTA. Detected by
+  // slug pattern; same classifier the index uses for category badges.
+  const isRecap = slug.startsWith("flow-recap-") || slug.startsWith("3-sweeps-") ||
+                  slug.includes("-block-") || /^\d+m-/.test(slug)
+  const heroImage = `/blog/${slug}/opengraph-image`
+  // Build a scanner deep-link with the post tickers comma-joined.
+  // The scanner reads ?symbols= but currently only a single symbol param;
+  // fall back to the first ticker for the deep-link target.
+  const scannerSymbol = tickers[0] || ""
+  const scannerHref = scannerSymbol ? `/options-flow/${scannerSymbol}` : "/scanner"
 
 
   // FAQ schema for comparison/high-intent posts (SEO rich snippets)
@@ -323,7 +334,24 @@ export default async function BlogPostPage({
           <span className="text-gray-600 truncate">{post.title}</span>
         </nav>
 
-        {/* ── HERO ── */}
+        {/* ── HERO IMAGE — uses the post's pre-rendered OG card. The dark
+            editorial card frame stamps the article visually before any
+            prose is read; matches Cheddar Flow's hero-image-first pattern.
+            Skipped on /vs/* comparison posts where the OG is the same
+            generic comparison card across all 8 routes. */}
+        {!slug.endsWith("-vs-profit-builders") && (
+          <div className="mb-10 -mx-6 md:mx-0 md:rounded-xl overflow-hidden border-y md:border md:border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={heroImage}
+              alt=""
+              className="w-full aspect-[1.91/1] object-cover bg-gray-50"
+              loading="eager"
+            />
+          </div>
+        )}
+
+        {/* ── HEADER ── */}
         <header className="mb-10">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-gray-400 mb-4">
             <time dateTime={post.date}>Published {dateFormatted}</time>
@@ -346,6 +374,26 @@ export default async function BlogPostPage({
           <p className="text-[18px] text-gray-500 leading-relaxed mb-6 font-normal blog-subtitle">
             {post.description}
           </p>
+
+          {/* Ticker pill row — extracted from title + opening of body,
+              filtered against a known-ticker allowlist. Each pill links
+              to the per-ticker /options-flow page (which already exists
+              and has its own static export). Mirrors Cheddar Flow's
+              "tickers covered" treatment. */}
+          {tickers.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400 mr-1">Tickers</span>
+              {tickers.map(t => (
+                <Link
+                  key={t}
+                  href={`/options-flow/${t}`}
+                  className="text-[11px] font-mono font-bold tracking-wider text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-[#F97316] border border-gray-200 hover:border-gray-300 rounded-md px-2 py-0.5 transition-colors"
+                >
+                  {t}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Author + share */}
           <div className="flex items-center justify-between py-4 border-t border-b border-gray-100">
@@ -419,6 +467,50 @@ export default async function BlogPostPage({
           className="pb-prose"
           dangerouslySetInnerHTML={{ __html: post.content_html }}
         />
+
+        {/* ── INLINE SCANNER CTA — only on flow-recap-style posts. Uses
+            the first detected ticker as the destination when available.
+            Cheddar Flow recaps end with a similar "see it live in the
+            scanner" call to action; same conversion pattern. */}
+        {isRecap && (
+          <aside className="mt-12 p-6 md:p-7 rounded-xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-orange-50">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F97316] flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F97316] mb-1">See it live</div>
+                <h3 className="text-[18px] md:text-[20px] font-bold text-gray-950 mb-2 leading-snug tracking-tight">
+                  {scannerSymbol
+                    ? `Track ${scannerSymbol} flow in real time`
+                    : "Track this flow in real time"}
+                </h3>
+                <p className="text-[14px] text-gray-600 leading-relaxed mb-4">
+                  Live OPRA tape, conviction grading, and gamma-wall context
+                  for {scannerSymbol || "every covered ticker"}. The same
+                  signals analyzed in this recap, surfaced the moment they
+                  hit the tape.
+                </p>
+                <div className="flex flex-wrap gap-2.5">
+                  <Link
+                    href={scannerHref}
+                    className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-white bg-[#F97316] hover:bg-[#EA580C] rounded-md px-4 py-2 transition-colors"
+                  >
+                    {scannerSymbol ? `Open ${scannerSymbol} flow` : "Open the scanner"} →
+                  </Link>
+                  <Link
+                    href="/methodology"
+                    className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-md px-4 py-2 transition-colors"
+                  >
+                    How we process flow
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </aside>
+        )}
 
         {/* ── AUTHOR BIO CARD ── */}
         {author.bio && (
