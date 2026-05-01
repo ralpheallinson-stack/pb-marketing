@@ -20,6 +20,7 @@ export const TIER_STYLES: Record<string, string> = {
   ruoa_heavy:    'bg-violet-500/40 text-violet-100 border-violet-400/50',   // Heavy RUOA — 5+ consecutive days
   iso:           'bg-cyan-500/25 text-cyan-200 border-cyan-400/40',         // Intermarket Sweep Order — directional aggression
   cross:         'bg-fuchsia-500/25 text-fuchsia-200 border-fuchsia-400/45', // Broker cross — options "dark pool" analog
+  rapid:         'bg-teal-500/25 text-teal-200 border-teal-400/45',           // Stealth-split — 3+ same-contract aggressive prints in 5min
 }
 
 export const BADGE_BASE = 'whitespace-nowrap inline-flex items-center px-[5px] py-[2px] rounded-sm text-[11px] font-bold tracking-[0.04em] uppercase leading-[1.4] border'
