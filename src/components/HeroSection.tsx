@@ -183,10 +183,10 @@ export default function HeroSection() {
             Start Free 7 Day Trial
           </Link>
           <Link
-            href="/free-scanner"
+            href="/pricing"
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-8 py-3.5 text-sm font-semibold text-white/60 hover:bg-white/[0.08] hover:text-white transition-all"
           >
-            Free Scanner →
+            See pricing →
           </Link>
         </motion.div>
 

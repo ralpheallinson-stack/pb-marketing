@@ -198,7 +198,7 @@ export default function ReferPage() {
               Go to my account →
             </Link>
             <Link
-              href="/free-scanner"
+              href="/pricing"
               className="inline-flex items-center gap-2 text-gray-700 hover:text-[#F97316] font-semibold text-[14px]"
             >
               Or start a free trial →

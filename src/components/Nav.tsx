@@ -2,9 +2,9 @@
 import Link from "next/link"
 import { useState } from "react"
 
-const links = [
+const links: Array<{ href: string; label: string; bold?: boolean }> = [
   { href: "/#features",    label: "Features" },
-  { href: "/results",      label: "Methodology" },
+  { href: "/methodology",  label: "Methodology" },
   { href: "/#pricing",     label: "Pricing" },
   { href: "/vs",           label: "Compare" },
   { href: "/learn",        label: "Learn" },
@@ -27,7 +27,7 @@ export default function Nav() {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-4 text-sm whitespace-nowrap">
           {links.map(l => (
-            <Link key={l.href} href={l.href} className={`text-gray-500 hover:text-black transition-colors whitespace-nowrap ${l.bold ? "font-semibold" : ""}`}>
+            <Link key={l.href} href={l.href} className="text-gray-500 hover:text-black transition-colors whitespace-nowrap">
               {l.label}
             </Link>
           ))}
@@ -74,7 +74,7 @@ export default function Nav() {
                 key={l.href}
                 href={l.href}
                 onClick={close}
-                className={`block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors ${l.bold ? "font-semibold" : ""}`}
+                className="block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
               >
                 {l.label}
               </Link>

@@ -79,9 +79,9 @@ export default function AccumulationSection() {
                 </div>
               </div>
 
-              <a href="/free-scanner"
+              <a href="/pricing"
                 className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors group w-fit">
-                See live accumulation
+                Start trial to see it live
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </a>
             </div>

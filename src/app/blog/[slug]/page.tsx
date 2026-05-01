@@ -4,6 +4,7 @@ import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown, extractTickers } fr
 import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 import BlogPostHero from "@/components/BlogPostHero"
+import { PriceChartHydrator } from "@/components/PriceChart"
 import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
 
@@ -319,7 +320,7 @@ export default async function BlogPostPage({
           </a>
           <div className="flex items-center gap-4">
             <Link href="/blog" className="text-[12px] text-gray-500 hover:text-gray-900 transition-colors">Blog</Link>
-            <a href="/free-scanner" className="text-[12px] font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">Try Scanner</a>
+            <a href="/pricing" className="text-[12px] font-semibold text-[#F97316] hover:text-[#EA580C] transition-colors">Start Trial</a>
           </div>
         </div>
       </nav>
@@ -468,6 +469,7 @@ export default async function BlogPostPage({
           className="pb-prose"
           dangerouslySetInnerHTML={{ __html: post.content_html }}
         />
+        <PriceChartHydrator />
 
         {/* ── INLINE SCANNER CTA — only on flow-recap-style posts. Uses
             the first detected ticker as the destination when available.
@@ -569,7 +571,7 @@ export default async function BlogPostPage({
             Every strike, every expiration, every accumulation pattern — tracked in real time.
           </p>
           <a
-            href="/free-scanner"
+            href="/pricing"
             className="inline-flex items-center gap-2 bg-[#F97316] text-white font-bold px-7 py-3 rounded-full hover:bg-[#EA580C] transition-colors text-[13px]"
           >
             Start Free 7-Day Trial

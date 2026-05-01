@@ -204,8 +204,8 @@ export default function MethodologyPage() {
             <Link href="/scanner" className="inline-flex items-center px-5 py-3 bg-[#F97316] text-black font-semibold rounded-md hover:bg-[#FB923C] transition-colors">
               Try the live scanner
             </Link>
-            <Link href="/free-scanner" className="inline-flex items-center px-5 py-3 bg-transparent border border-[rgba(148,163,184,0.2)] text-[#E5E7EB] font-medium rounded-md hover:border-[rgba(148,163,184,0.4)] transition-colors">
-              Free scanner (15-min delayed)
+            <Link href="/pricing" className="inline-flex items-center px-5 py-3 bg-transparent border border-[rgba(148,163,184,0.2)] text-[#E5E7EB] font-medium rounded-md hover:border-[rgba(148,163,184,0.4)] transition-colors">
+              See pricing
             </Link>
           </div>
         </div>

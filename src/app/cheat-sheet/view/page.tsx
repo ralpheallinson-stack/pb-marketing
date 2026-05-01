@@ -206,7 +206,7 @@ export default function CheatSheetView() {
               Real-time scanner + documented methodology: <strong style={{ color: "#F97316" }}>profitbuilders.io</strong>
             </div>
             <div>
-              Free 7-day trial at /free-scanner
+              Start your 7-day trial at /pricing
             </div>
           </footer>
         </div>

@@ -71,3 +71,6 @@ Three prints. Three exits. All from flow the scanner flagged before the move. Th
 Tuesday's tape had a thesis running underneath it — accumulated TSLA call exposure against a large put block, AMZN getting hit from two directions, and CAT seeing opposing institutional size in the same expiration. The full picture requires the full data.
 
 This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+
+<div class="pb-price-chart" data-symbol="SPY" data-days="30"></div>
+

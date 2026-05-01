@@ -246,7 +246,7 @@ export default async function GradeAPage(
               ← Back to {t.symbol} overview
             </Link>
             <Link
-              href="/free-scanner"
+              href="/pricing"
               className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold px-6 py-3 rounded-full text-[14px] transition-colors"
             >
               Get {t.symbol} Grade A alerts →

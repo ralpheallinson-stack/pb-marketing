@@ -201,7 +201,7 @@ export default function NewsletterPage() {
             <span className="text-gray-300">·</span>
             <Link href="/blog/how-to-read-options-flow" className="text-[#F97316] hover:underline">How to Read Options Flow</Link>
             <span className="text-gray-300">·</span>
-            <Link href="/free-scanner" className="text-[#F97316] hover:underline">Free Scanner</Link>
+            <Link href="/pricing" className="text-[#F97316] hover:underline">Start Trial</Link>
           </div>
         </section>
       </main>

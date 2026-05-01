@@ -1,7 +1,7 @@
 /**
  * Shared OG card renderer — Bloomberg-grade dark editorial design
  * used by /opengraph-image, /results/opengraph-image, /blog/opengraph-image,
- * /free-scanner/opengraph-image, and /blog/[slug]/opengraph-image.
+ * and /blog/[slug]/opengraph-image.
  *
  * One source of truth for the v2 OG aesthetic — change once, every card updates.
  */

@@ -237,7 +237,7 @@ export default async function OptionsFlowTickerPage(
     },
     {
       q: `How do I get real-time ${t.symbol} options flow alerts?`,
-      a: `The Profit Builders scanner delivers Grade A ${t.symbol} alerts in real time via web, Discord, and Telegram within 1-3 seconds of the trade hitting the tape. A free 7-day trial is available at profitbuilders.io/free-scanner.`,
+      a: `The Profit Builders scanner delivers Grade A ${t.symbol} alerts in real time via web, Discord, and Telegram within 1-3 seconds of the trade hitting the tape. A free 7-day trial is available at profitbuilders.io/pricing.`,
     },
   ]
 
@@ -348,7 +348,7 @@ export default async function OptionsFlowTickerPage(
 
             <div className="flex flex-wrap items-center gap-5">
               <Link
-                href="/free-scanner"
+                href="/pricing"
                 className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[12px] font-bold tracking-wider uppercase px-7 py-3.5 rounded-full transition-colors"
               >
                 Get {t.symbol} alerts →
