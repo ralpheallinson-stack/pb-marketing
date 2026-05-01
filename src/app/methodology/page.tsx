@@ -70,7 +70,7 @@ export default function MethodologyPage() {
     <div className="min-h-screen bg-[#080B12] text-[#E5E7EB]">
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+      <main className="max-w-7xl mx-auto px-6 py-16 md:py-24">
         <div className="text-[11px] uppercase tracking-[0.18em] text-[#F97316] font-semibold mb-4">
           Data Methodology
         </div>
@@ -83,7 +83,10 @@ export default function MethodologyPage() {
           microstructure research. No outcome claims — just the data plumbing.
         </p>
 
-        <Section title="1. Tape ingest" subtitle="OPRA via Polygon WebSocket">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-12">
+          <div>
+
+        <Section id="tape-ingest" title="1. Tape ingest" subtitle="OPRA via Polygon WebSocket">
           <p>
             Profit Builders consumes the live OPRA options tape over Polygon&apos;s
             WebSocket feed. Trades arrive in real time with sub-millisecond
@@ -93,7 +96,7 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="2. Sweep detection" subtitle="CBOE Rule 6.11 compliance">
+        <Section id="sweep-detection" title="2. Sweep detection" subtitle="CBOE Rule 6.11 compliance">
           <p>
             A trade is classified as a sweep when 2+ exchanges fill within a
             ≤500ms window — the threshold defined in CBOE Rulebook Section 6.11
@@ -104,7 +107,7 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="3. OPRA condition codes" subtitle="Per the Multi-listed Options Plan">
+        <Section id="opra-codes" title="3. OPRA condition codes" subtitle="Per the Multi-listed Options Plan">
           <p>
             Each tape print carries one or more OPRA condition codes. Profit
             Builders surfaces the institutional-aggression badges for prints
@@ -116,7 +119,7 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="4. Trade-side classification" subtitle="NBBO spread-relative aggression">
+        <Section id="trade-classification" title="4. Trade-side classification" subtitle="NBBO spread-relative aggression">
           <p>
             Aggression is computed against the NBBO snapshot at trade time
             (15-second staleness cutoff). The spread-relative methodology
@@ -127,7 +130,7 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="5. Greeks + implied volatility" subtitle="Black-Scholes-Merton with continuous dividend yield">
+        <Section id="greeks" title="5. Greeks + implied volatility" subtitle="Black-Scholes-Merton with continuous dividend yield">
           <p>
             For symbols where Polygon does not return live Greeks (typically
             index options like SPX/SPXW/NDX/RUT/VIX), Profit Builders computes
@@ -147,7 +150,7 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <Section title="7. Gamma exposure (GEX) heatmap" subtitle="SqueezeMetrics-style convention, no proprietary adjustments">
+        <Section id="gex" title="7. Gamma exposure (GEX) heatmap" subtitle="SqueezeMetrics-style convention, no proprietary adjustments">
           <p>
             The GEX heatmap surfaces dealer hedging walls strike-by-strike,
             expiry-by-expiry. We compute net gamma exposure per cell as{' '}
@@ -179,7 +182,7 @@ export default function MethodologyPage() {
           <WallValidationStat />
         </Section>
 
-        <Section title="8. Pipeline transparency" subtitle="What we will and won&apos;t claim">
+        <Section id="pipeline-transparency" title="8. Pipeline transparency" subtitle="What we will and won&apos;t claim">
           <p>
             Every signal that enters the database carries a <code className="text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">scorer_version</code>{' '}
             stamp identifying which ruleset produced it. Conviction grading is
@@ -206,6 +209,49 @@ export default function MethodologyPage() {
             </Link>
           </div>
         </div>
+          </div>
+
+          {/* Sticky TOC — desktop only */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-24">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#475569] mb-3">
+                On this page
+              </div>
+              <nav className="space-y-1.5 text-[12px]">
+                {[
+                  { id: "tape-ingest", label: "1. Tape ingest" },
+                  { id: "sweep-detection", label: "2. Sweep detection" },
+                  { id: "opra-codes", label: "3. OPRA condition codes" },
+                  { id: "trade-classification", label: "4. Trade classification" },
+                  { id: "greeks", label: "5. Greeks + IV" },
+                  { id: "open-interest", label: "6. Open interest" },
+                  { id: "gex", label: "7. GEX heatmap" },
+                  { id: "pipeline-transparency", label: "8. Pipeline transparency" },
+                ].map(s => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    className="block py-1 text-[#7A8BA8] hover:text-white border-l-2 border-transparent hover:border-[#F97316] pl-3 transition-colors"
+                  >
+                    {s.label}
+                  </a>
+                ))}
+              </nav>
+
+              <div className="mt-8 pt-6 border-t border-[rgba(148,163,184,0.1)]">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#475569] mb-2">
+                  Continue
+                </div>
+                <Link href="/blog" className="block text-[12px] text-[#7A8BA8] hover:text-white py-1 transition-colors">
+                  Blog &amp; guides →
+                </Link>
+                <Link href="/scanner" className="block text-[12px] text-[#7A8BA8] hover:text-white py-1 transition-colors">
+                  Live scanner →
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </div>
       </main>
 
       <Footer />
@@ -213,9 +259,9 @@ export default function MethodologyPage() {
   )
 }
 
-function Section({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+function Section({ id, title, subtitle, children }: { id?: string; title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <section className="mb-12">
+    <section id={id} className="mb-12 scroll-mt-24">
       <div className="flex items-baseline gap-3 mb-3 flex-wrap">
         <h2 className="text-xl md:text-2xl font-bold tracking-tight text-[#E5E7EB]">{title}</h2>
         <span className="text-sm text-[#94A3B8]">— {subtitle}</span>
