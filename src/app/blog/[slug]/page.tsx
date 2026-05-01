@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { getAllSlugs, getAllPosts, getPost, tocFromMarkdown, extractTickers } from "@/lib/blog"
 import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
+import BlogPostHero from "@/components/BlogPostHero"
 import { EmailSignup } from "@/components/EmailSignup"
 import type { Metadata } from "next"
 
@@ -334,22 +335,22 @@ export default async function BlogPostPage({
           <span className="text-gray-600 truncate">{post.title}</span>
         </nav>
 
-        {/* ── HERO IMAGE — uses the post's pre-rendered OG card. The dark
-            editorial card frame stamps the article visually before any
-            prose is read; matches Cheddar Flow's hero-image-first pattern.
-            Skipped on /vs/* comparison posts where the OG is the same
-            generic comparison card across all 8 routes. */}
-        {!slug.endsWith("-vs-profit-builders") && (
-          <div className="mb-10 -mx-6 md:mx-0 md:rounded-xl overflow-hidden border-y md:border md:border-gray-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroImage}
-              alt=""
-              className="w-full aspect-[1.91/1] object-cover bg-gray-50"
-              loading="eager"
-            />
-          </div>
-        )}
+        {/* ── HERO IMAGE — replaces a dark OG card with the actual company
+            logo via Polygon branding API when the post has a primary ticker.
+            Cheddar Flow uses Getty stock photos of company signage; we use
+            the official branding asset, which is the closest "real company
+            image" we can produce automatically across 220+ symbols.
+
+            Layout: logo centered on a soft gradient backdrop. The container
+            is the editorial frame; the logo is the focal point, scaled to
+            fit within ~50% width. Falls back to the OG card when there is
+            no primary ticker (vs pages, generic guides). */}
+        <BlogPostHero
+          showCard={!slug.endsWith("-vs-profit-builders")}
+          primaryTicker={tickers[0] || null}
+          totalTickers={tickers.length}
+          fallbackImage={heroImage}
+        />
 
         {/* ── HEADER ── */}
         <header className="mb-10">
@@ -574,6 +575,37 @@ export default async function BlogPostPage({
             Start Free 7-Day Trial
           </a>
         </div>
+      
+        {/* Inline trial CTA — Cheddar Flow ends every recap with this card.
+            Lower-friction than the orange scanner CTA above; the orange one
+            promotes the per-ticker live scanner, this one promotes the
+            full subscription / 7-day trial. */}
+        {isRecap && (
+          <div className="pb-trial-cta mt-12 py-6 border-t border-gray-200">
+            <p className="text-[15px] text-gray-700 leading-relaxed">
+              Want to see more of these trades?{" "}
+              <Link href="/#pricing" className="text-[#F97316] hover:underline font-semibold">
+                Try Profit Builders free for 7 days. Learn more →
+              </Link>
+            </p>
+          </div>
+        )}
+
+        {/* Disclaimer — required boilerplate at the bottom of every flow
+            recap. Italic small print matches the publishing convention used
+            by Cheddar Flow, Unusual Whales, FlowAlgo. */}
+        {isRecap && (
+          <p className="pb-disclaimer mt-8 text-[12px] text-gray-400 italic leading-relaxed">
+            Disclaimer: Options trading involves significant risk and is not
+            suitable for all investors. You may lose the entire investment, and
+            certain strategies may result in losses exceeding the initial
+            amount invested. Past performance does not guarantee future
+            results. This content is for informational purposes only and
+            should not be considered investment advice. Always consult a
+            financial or tax advisor before making investment decisions.
+          </p>
+        )}
+
       </article>
 
       {/* ── RELATED POSTS ── */}
@@ -590,13 +622,22 @@ export default async function BlogPostPage({
                   href={`/blog/${p.slug}`}
                   className="group block p-5 rounded-xl border border-gray-100 hover:border-gray-300 bg-white transition-all hover:-translate-y-0.5 hover:shadow-sm"
                 >
-                  <div className="text-[11px] text-gray-400 mb-3">
+                  <div className="aspect-[1.91/1] overflow-hidden bg-gray-50 rounded-md mb-4 -mx-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/blog/${p.slug}/opengraph-image`}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="text-[11px] text-gray-400 mb-2">
                     {p.date} · {p.read_time} min
                   </div>
-                  <div className="text-[15px] font-semibold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug tracking-tight">
+                  <div className="text-[16px] font-bold text-gray-900 group-hover:text-[#F97316] transition-colors leading-snug tracking-tight mb-2">
                     {p.title}
                   </div>
-                  <div className="text-[12px] text-gray-400 mt-2 line-clamp-2 leading-relaxed">
+                  <div className="text-[13px] text-gray-500 line-clamp-2 leading-relaxed">
                     {p.description}
                   </div>
                 </Link>
@@ -732,6 +773,65 @@ export default async function BlogPostPage({
         .pb-prose img {
           border-radius: 8px;
           margin: 1.5em 0;
+        }
+
+        /* Trade detail card — Cheddar Flow-style structured signal block.
+           Used inline in flow recap posts via a raw HTML <div class="pb-trade-card">
+           pattern. Renders the actual signal data (TICK | EXPIRY | STRIKE | etc.)
+           as a horizontally-scrolling table with a dark institutional header
+           band, the way a Bloomberg / SpotGamma trade printout looks. */
+        .pb-prose .pb-trade-card {
+          margin: 1.8em 0;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid #E5E7EB;
+          background: #FFFFFF;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .pb-prose .pb-trade-card-head {
+          display: grid;
+          grid-template-columns: repeat(13, minmax(0, 1fr));
+          background: linear-gradient(180deg, #1F2937 0%, #111827 100%);
+          padding: 10px 14px;
+          gap: 8px;
+        }
+        .pb-prose .pb-trade-card-head > span {
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #9CA3AF;
+          font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+        .pb-prose .pb-trade-card-row {
+          display: grid;
+          grid-template-columns: repeat(13, minmax(0, 1fr));
+          padding: 14px;
+          gap: 8px;
+          align-items: center;
+        }
+        .pb-prose .pb-trade-card-row > span {
+          font-size: 13px;
+          font-family: 'SF Mono', 'Fira Code', monospace;
+          font-weight: 600;
+          color: #111827;
+          letter-spacing: -0.01em;
+        }
+        .pb-prose .pb-trade-card-row .pb-tk {
+          color: #B45309;
+          font-weight: 800;
+        }
+        .pb-prose .pb-trade-card-row .pb-call { color: #047857; font-weight: 700; }
+        .pb-prose .pb-trade-card-row .pb-put  { color: #DC2626; font-weight: 700; }
+        .pb-prose .pb-trade-card-row .pb-buy  { color: #047857; }
+        .pb-prose .pb-trade-card-row .pb-sell { color: #DC2626; }
+        .pb-prose .pb-trade-card-row .pb-prem { color: #B45309; font-weight: 800; }
+        .pb-prose .pb-trade-card-row .pb-type { color: #6D28D9; font-weight: 700; text-transform: uppercase; font-size: 11px; }
+        .pb-prose .pb-trade-card-row .pb-side {
+          font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        @media (max-width: 720px) {
+          .pb-prose .pb-trade-card-head, .pb-prose .pb-trade-card-row { overflow-x: auto; grid-template-columns: repeat(13, minmax(64px, 1fr)); }
         }
 
         /* Tables — editorial comparison */

@@ -8,6 +8,28 @@ read_time: "4"
 
 Tech carried the tape Tuesday. TSLA absorbed more institutional premium than any other name on the board, and the structure underneath that number was anything but clean.
 
+<div class="pb-trade-card">
+  <div class="pb-trade-card-head">
+    <span>Tick</span><span>Expiry</span><span>Strike</span><span>C/P</span><span>Side</span><span>B/S</span><span>Spot</span><span>Size</span><span>Price</span><span>Prem</span><span>Type</span><span>Vol</span><span>OI</span>
+  </div>
+  <div class="pb-trade-card-row">
+    <span class="pb-tk">SNDK</span>
+    <span>05/02</span>
+    <span>165</span>
+    <span class="pb-call">C</span>
+    <span class="pb-side">Ask</span>
+    <span class="pb-buy">BUY</span>
+    <span>162.40</span>
+    <span>1,250</span>
+    <span>8.40</span>
+    <span class="pb-prem">$10.5M</span>
+    <span class="pb-type">Sweep</span>
+    <span>1,250</span>
+    <span>410</span>
+  </div>
+</div>
+
+
 ## The Tape
 
 $3.14B in total premium. 8,758 signals. 308 of those graded A. The buy side held the edge at 56% — $1.77B against $1.37B in sells. VIX sitting at 19.4, not panicked, not complacent.

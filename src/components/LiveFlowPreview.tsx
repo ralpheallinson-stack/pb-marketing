@@ -74,14 +74,14 @@ export default function LiveFlowPreview() {
 
   const loadPool = useCallback(async () => {
     try {
-      const res = await fetch('/api/free-scanner/live-flow?slim=true')
+      const res = await fetch('/api/public/live-flow?slim=true')
       if (!res.ok) throw new Error('failed')
       const data: ApiData = await res.json()
       let trades = Array.isArray(data.trades) ? data.trades : []
 
       // If today is empty (pre-market / after hours), fetch yesterday's data
       if (trades.length === 0) {
-        const hist = await fetch('/api/free-scanner/live-flow?slim=true&range=yesterday')
+        const hist = await fetch('/api/public/live-flow?slim=true&range=yesterday')
         if (hist.ok) {
           const histData: ApiData = await hist.json()
           trades = Array.isArray(histData.trades) ? histData.trades : []
