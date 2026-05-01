@@ -4,16 +4,16 @@ import { BlurFade } from "@/components/magicui/BlurFade"
 import { getAllPosts } from "@/lib/blog"
 import type { Metadata } from "next"
 import { EmailSignup } from "@/components/EmailSignup"
-import MarketNewsWidget from "@/components/MarketNewsWidget"
+import BlogFeed from "@/components/BlogFeed"
 
 export const metadata: Metadata = {
-  title: "Learn Options Flow Trading",
+  title: "Blog & Market News",
   description:
-    "Educational guides on reading institutional order flow, understanding the Greeks, and using conviction-graded analysis to find high-conviction setups.",
+    "Daily flow recaps, educational guides, methodology breakdowns, and the latest market news affecting institutional options flow — Benzinga headlines on the tickers actually moving today.",
   alternates: { canonical: "https://profitbuilders.io/blog" },
 }
 
-// Slug → category mapping. Cheap rule-based classifier on the existing
+// Slug → category mapping. Cheap rule-based classifier on existing
 // filename pattern; lets us add visible category badges without a CMS
 // migration. Order matters: more specific first.
 function categoryFor(slug: string): { label: string; color: string } {
@@ -29,16 +29,30 @@ function categoryFor(slug: string): { label: string; color: string } {
 
 export default function BlogIndex() {
   const posts = getAllPosts()
-  // Featured post = newest non-comparison post (recap or guide). Comparisons
-  // shouldn't dominate the hero; they're conversion-oriented, not editorial.
   const featured = posts.find(p => !p.slug.endsWith("-vs-profit-builders")) ?? posts[0]
-  const rest = posts.filter(p => p.slug !== (featured?.slug ?? ""))
+
+  // Pre-compute the categorized blog post payload once on the server. The
+  // client component merges this with live news fetched at runtime so the
+  // grid renders instantly with blog content and news cards stream in.
+  const blogItems = posts
+    .filter(p => p.slug !== (featured?.slug ?? ""))
+    .map(p => ({
+      kind: "blog" as const,
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+      date: p.date,
+      ts: Date.parse(p.date) / 1000 || 0,
+      readTime: p.read_time,
+      category: categoryFor(p.slug),
+      image: `/blog/${p.slug}/opengraph-image`,
+    }))
 
   const itemListSchema = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": "Profit Builders Options Flow Blog",
-    "description": "Educational guides and daily flow recaps covering institutional options flow, conviction grading, sweeps, blocks, accumulation, and gamma exposure.",
+    "name": "Profit Builders Options Flow Blog & Market News",
+    "description": "Educational guides, daily flow recaps, methodology breakdowns, and live market news on the tickers moving institutional options flow.",
     "numberOfItems": posts.length,
     "itemListElement": posts.slice(0, 20).map((p, i) => ({
       "@type": "ListItem",
@@ -78,11 +92,11 @@ export default function BlogIndex() {
             Learn
           </div>
           <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-            Learn Options Flow Trading
+            Blog &amp; Market News
           </h1>
           <p className="text-[#7A8BA8] max-w-xl mx-auto text-sm leading-relaxed mb-6">
-            Educational guides, daily flow recaps, and methodology breakdowns on
-            institutional order flow, the Greeks, and conviction-graded analysis.
+            Daily flow recaps, educational guides, and live news on the tickers
+            moving institutional options flow today.
           </p>
           <div className="max-w-xl mx-auto">
             <EmailSignup source="blog-index" variant="banner" />
@@ -96,138 +110,68 @@ export default function BlogIndex() {
         </div>
       </section>
 
-      {/* ── Two-column body: posts left, sidebar right ── */}
-      <div className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10">
-
-          {/* Posts column */}
-          <div>
-            {posts.length === 0 ? (
-              <div className="text-center py-10 text-[#3D4D63]">No articles yet.</div>
-            ) : (
-              <>
-                {/* Featured post — visually distinct hero card */}
-                {featured && (
-                  <BlurFade>
-                    <Link
-                      href={`/blog/${featured.slug}`}
-                      className="group relative block rounded-2xl border border-[#2E3A4D] p-8 mb-10 overflow-hidden hover:border-[#F5820A]/40 transition-all"
-                      style={{ background: "linear-gradient(135deg, #0F1520 0%, #161B24 100%)" }}
-                    >
-                      <div className="absolute top-0 right-0 w-64 h-64 opacity-[0.05] pointer-events-none"
-                           style={{ background: "radial-gradient(circle, #F5820A 0%, transparent 70%)" }} />
-                      <div className="relative">
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-[0.14em] uppercase bg-[#F5820A]/15 text-[#F5820A] border border-[#F5820A]/30">
-                            Featured
-                          </span>
-                          {(() => {
-                            const c = categoryFor(featured.slug)
-                            return (
-                              <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: c.color }}>
-                                {c.label}
-                              </span>
-                            )
-                          })()}
-                          <span className="text-[10px] text-[#4A5A72]">·</span>
-                          <span className="text-[10px] text-[#4A5A72]">{featured.date}</span>
-                          <span className="text-[10px] text-[#4A5A72]">·</span>
-                          <span className="text-[10px] text-[#4A5A72]">{featured.read_time} min read</span>
-                        </div>
-                        <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3 leading-tight tracking-tight group-hover:text-[#F5820A] transition-colors">
-                          {featured.title}
-                        </h2>
-                        <p className="text-[15px] text-[#94A3B8] leading-relaxed mb-5 max-w-2xl">
-                          {featured.description}
-                        </p>
-                        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F5820A] group-hover:gap-2 transition-all">
-                          Read article{" "}
-                          <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </span>
+      <div className="max-w-6xl mx-auto px-6 pb-24">
+        {posts.length === 0 ? (
+          <div className="text-center py-10 text-[#3D4D63]">No articles yet.</div>
+        ) : (
+          <>
+            {/* Featured post — hero card with image */}
+            {featured && (
+              <BlurFade>
+                <Link
+                  href={`/blog/${featured.slug}`}
+                  className="group relative block rounded-2xl border border-[#2E3A4D] mb-10 overflow-hidden hover:border-[#F5820A]/40 transition-all"
+                  style={{ background: "#0F1520" }}
+                >
+                  <div className="grid md:grid-cols-[1.2fr_1fr]">
+                    {/* Image side — uses the OG card we already render per post */}
+                    <div className="relative aspect-[1.91/1] md:aspect-auto md:min-h-[280px] overflow-hidden bg-[#080B12]">
+                      <img
+                        src={`/blog/${featured.slug}/opengraph-image`}
+                        alt=""
+                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                        loading="eager"
+                      />
+                      <div className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-[0.14em] uppercase bg-[#F5820A]/90 text-[#0B0F14] backdrop-blur">
+                        Featured
                       </div>
-                    </Link>
-                  </BlurFade>
-                )}
-
-                {/* Rest of posts — uniform 2-col grid (was 3-col, now 2 to match width with sidebar) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {rest.map((p, i) => {
-                    const cat = categoryFor(p.slug)
-                    return (
-                      <BlurFade key={p.slug} delay={i * 0.04} className="flex">
-                        <Link
-                          href={`/blog/${p.slug}`}
-                          className="group relative rounded-xl border border-[#1E2A3A] p-5 overflow-hidden hover:border-[#2E3A4D] transition-all hover:bg-[#161B24] flex flex-col flex-1"
-                          style={{ background: "#0F1520" }}
-                        >
-                          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent to-transparent group-hover:via-[#F5820A]/50 transition-all duration-500"
-                               style={{ ["--via-color" as string]: cat.color }} />
-                          <div className="flex items-center gap-2 mb-3">
-                            <span
-                              className="text-[9px] font-extrabold tracking-[0.14em] uppercase px-1.5 py-0.5 rounded"
-                              style={{ color: cat.color, background: `${cat.color}1A`, border: `1px solid ${cat.color}33` }}
-                            >
-                              {cat.label}
+                    </div>
+                    {/* Body side */}
+                    <div className="p-6 md:p-8 flex flex-col justify-center">
+                      <div className="flex items-center gap-3 mb-3">
+                        {(() => {
+                          const c = categoryFor(featured.slug)
+                          return (
+                            <span className="text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: c.color }}>
+                              {c.label}
                             </span>
-                            <span className="text-[10px] text-[#4A5A72]">{p.date}</span>
-                            <span className="text-[10px] text-[#4A5A72]">·</span>
-                            <span className="text-[10px] text-[#4A5A72]">{p.read_time}m</span>
-                          </div>
-                          <h3 className="text-[15px] font-bold text-white mb-2 leading-snug group-hover:text-[#E8EDF5] transition-colors">
-                            {p.title}
-                          </h3>
-                          <p
-                            className="text-[13px] text-[#7A8BA8] leading-relaxed mb-3"
-                            style={{
-                              display: "-webkit-box",
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
-                            {p.description}
-                          </p>
-                          <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#F5820A] group-hover:gap-2 transition-all mt-auto">
-                            Read{" "}
-                            <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                          </span>
-                        </Link>
-                      </BlurFade>
-                    )
-                  })}
-                </div>
-              </>
+                          )
+                        })()}
+                        <span className="text-[10px] text-[#4A5A72]">·</span>
+                        <span className="text-[10px] text-[#4A5A72]">{featured.date}</span>
+                        <span className="text-[10px] text-[#4A5A72]">·</span>
+                        <span className="text-[10px] text-[#4A5A72]">{featured.read_time} min read</span>
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2 leading-tight tracking-tight group-hover:text-[#F5820A] transition-colors">
+                        {featured.title}
+                      </h2>
+                      <p className="text-sm text-[#94A3B8] leading-relaxed mb-4">
+                        {featured.description}
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#F5820A] group-hover:gap-2 transition-all">
+                        Read article{" "}
+                        <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </BlurFade>
             )}
-          </div>
 
-          {/* Sidebar — sticky on desktop. Renders the live market-news widget
-              and a quick-link block to /methodology + /scanner. */}
-          <aside className="lg:sticky lg:top-24 lg:self-start space-y-5">
-            <MarketNewsWidget />
-
-            <div className="rounded-xl border border-[#1E2A3A] bg-[#0F1520] p-5">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4A5A72] mb-3">
-                See it live
-              </div>
-              <Link href="/scanner" className="block mb-3 group">
-                <div className="text-[13px] font-semibold text-white group-hover:text-[#F5820A] transition-colors">
-                  Open the scanner →
-                </div>
-                <div className="text-[11px] text-[#7A8BA8] leading-relaxed">
-                  Real-time institutional flow with grade A/B filters
-                </div>
-              </Link>
-              <Link href="/methodology" className="block group">
-                <div className="text-[13px] font-semibold text-white group-hover:text-[#F5820A] transition-colors">
-                  How we process the OPRA tape →
-                </div>
-                <div className="text-[11px] text-[#7A8BA8] leading-relaxed">
-                  Methodology, conventions, and validation
-                </div>
-              </Link>
-            </div>
-          </aside>
-        </div>
+            {/* Unified feed — blog posts + live news cards interleaved by date */}
+            <BlogFeed blogItems={blogItems} />
+          </>
+        )}
       </div>
     </div>
   )
