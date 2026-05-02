@@ -102,7 +102,7 @@ export default function Nav() {
           </Link>
           <Link
             href="/pricing"
-            className="hidden md:inline-flex h-10 items-center rounded-md bg-white px-5 text-[15px] font-semibold text-[#0a0d12] hover:bg-white/90 transition-colors"
+            className="inline-flex h-10 items-center rounded-md bg-white px-5 text-[15px] font-semibold text-[#0a0d12] hover:bg-white/90 transition-colors"
           >
             Start Trial
           </Link>
@@ -159,19 +159,6 @@ export default function Nav() {
             <div className="px-5 py-5 border-t border-white/5 flex items-center justify-between">
               <Link href="/#pricing" onClick={close} className="text-[15px] text-white">Pricing</Link>
               <Link href="/login" onClick={close} className="text-[15px] text-white/70">Login</Link>
-            </div>
-            {/* Primary CTA — full-width inside the menu, replacing the cramped top-bar pill */}
-            <div className="px-5 pt-2 pb-6 border-t border-white/5">
-              <Link
-                href="/pricing"
-                onClick={close}
-                className="flex items-center justify-center w-full h-12 rounded-full bg-[#F97316] hover:bg-[#EA580C] text-white text-[15px] font-semibold transition-colors"
-              >
-                Start 7-day Trial
-              </Link>
-              <p className="mt-3 text-center text-[11px] text-white/40 font-mono tracking-wide">
-                Card required · Cancel anytime before day 7
-              </p>
             </div>
           </div>
           <button
