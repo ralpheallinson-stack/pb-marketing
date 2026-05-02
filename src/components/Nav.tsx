@@ -50,12 +50,12 @@ export default function Nav() {
 
   return (
     <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#0a0d12] md:bg-[#0a0d12]/85 md:backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-14 md:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Home">
-          <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="h-8 w-8 object-contain" />
-          <span className="text-base font-semibold tracking-tight text-white">Profit Builders</span>
+          <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="h-7 w-7 md:h-8 md:w-8 object-contain" />
+          <span className="text-[13px] md:text-base font-semibold tracking-tight text-white">Profit Builders</span>
         </Link>
 
         {/* Desktop menu */}
@@ -174,7 +174,7 @@ export default function Nav() {
             type="button"
             aria-label="Close menu"
             onClick={close}
-            className="md:hidden fixed inset-0 top-20 z-30 bg-black/40 cursor-default"
+            className="md:hidden fixed inset-0 top-14 z-30 bg-black/40 cursor-default"
           />
         </>
       )}
