@@ -254,8 +254,9 @@ export default function ScannerPage() {
     if (typeof window === "undefined") return []
     try { return JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch { return [] }
   })
-  const [wlQuotes, setWlQuotes] = useState<Record<string, { spot: number | null; change: number | null; change_pct: number | null }>>({})
-  const [wlSort, setWlSort] = useState<{ key: "symbol" | "price" | "change" | "callFlow" | "putFlow" | "signals" | "lastSignal"; dir: "asc" | "desc" }>({ key: "callFlow", dir: "desc" })
+  const [wlQuotes, setWlQuotes] = useState<Record<string, { spot: number | null; change: number | null; change_pct: number | null; prev_close: number | null }>>({})
+  const [wlSparks, setWlSparks] = useState<Record<string, number[]>>({})
+  const [wlSort, setWlSort] = useState<{ key: "symbol" | "price" | "change" | "callFlow" | "putFlow" | "signals" | "lastSignal"; dir: "asc" | "desc" }>({ key: "change", dir: "desc" })
   const [wlInput, setWlInput] = useState("")
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [marketOpen, setMarketOpen] = useState(false)
@@ -341,6 +342,19 @@ export default function ScannerPage() {
     }
     tick()
     return () => { cancelled = true; if (timer) clearTimeout(timer) }
+  }, [activePage, watchlist])
+
+  // 5-day sparkline data — fetched once per watchlist change, cached server-
+  // side 1h. No tick polling needed; daily closes don't change intraday at
+  // bar resolution.
+  useEffect(() => {
+    if (activePage !== "watchlist" || watchlist.length === 0) return
+    let cancelled = false
+    fetch(`/api/scanner/watchlist-sparks?symbols=${watchlist.join(",")}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j && !cancelled) setWlSparks(j) })
+      .catch(() => {})
+    return () => { cancelled = true }
   }, [activePage, watchlist])
 
   // Live spot polling for the embedded heatmap (matches /heatmap page).
@@ -1147,44 +1161,35 @@ export default function ScannerPage() {
     <ReplayProgress symbol={gexSymbol} />
   </div>
   )
-})()      ) : activePage === "watchlist" ? (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
-          {/* Watchlist v2 — desk view header */}
-          <div className="px-5 py-3 border-b border-[#35343F] flex items-center gap-3 flex-shrink-0">
-            <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
-            <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
+})()            ) : activePage === "watchlist" ? (
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#1A1A22" }}>
+          {/* Compact TradingView-style watchlist header */}
+          <div className="px-4 py-2.5 border-b border-[#2D2C38] flex items-center gap-3 flex-shrink-0" style={{ background: "#212029" }}>
+            <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.18em] uppercase">Watchlist</div>
+            <div className="text-[10px] text-[#3D4D63] font-mono tabular-nums">{watchlist.length}</div>
             <div className="ml-auto flex items-center gap-2">
               <input
-                placeholder="Add — paste list ok (AAPL, MSFT)"
+                placeholder="Add ticker — paste list ok"
                 value={wlInput}
                 onChange={e => setWlInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
-                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[12px] text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-72"
+                className="bg-[#080C14] border border-[#1E2A3A] rounded px-2.5 py-1 text-[12px] text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-64"
               />
               {watchlist.length > 0 && (
                 <button
-                  onClick={() => {
-                    if (confirm(`Clear all ${watchlist.length} symbols?`)) {
-                      setWatchlist([])
-                      localStorage.setItem("pb_watchlist", "[]")
-                    }
-                  }}
-                  className="text-[11px] text-[#7A8BA8] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded-md px-2 py-1.5 transition-colors"
-                  title="Clear watchlist"
+                  onClick={() => { if (confirm(`Clear all ${watchlist.length} symbols?`)) { setWatchlist([]); localStorage.setItem("pb_watchlist", "[]") } }}
+                  className="text-[10px] text-[#7A8BA8] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded px-2 py-1 transition-colors"
                 >Clear</button>
               )}
             </div>
           </div>
-          {/* Watchlist body */}
+          {/* Body */}
           <div className="flex-1 overflow-y-auto">
             {watchlist.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center px-6 py-16">
-                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#3D4D63] mb-3">Empty watchlist</div>
-                <div className="text-base font-semibold text-white/80 mb-2">Add tickers to track institutional flow</div>
-                <div className="text-[12px] text-[#7A8BA8] max-w-sm leading-relaxed mb-5">
-                  Live price, today&apos;s call/put flow, top trade, and signal velocity — all in one row per symbol.
-                </div>
-                <div className="text-[10px] uppercase tracking-[0.14em] text-[#3D4D63] mb-2">Try popular tickers</div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#3D4D63] mb-3">Empty watchlist</div>
+                <div className="text-[14px] font-semibold text-white/80 mb-4">Track institutional flow on the tickers you trade</div>
+                <div className="text-[10px] uppercase tracking-[0.14em] text-[#3D4D63] mb-2">Quick add</div>
                 <div className="flex flex-wrap gap-1.5 max-w-md justify-center">
                   {["SPY","QQQ","NVDA","TSLA","AAPL","META","AMD","MSFT","GOOGL","COIN","PLTR","MSTR"].map(t => (
                     <button key={t}
@@ -1197,29 +1202,41 @@ export default function ScannerPage() {
               </div>
             ) : (() => {
               const fmtTime = (ts: number) => {
-                const diffSec = Math.floor((Date.now() / 1000) - ts)
-                if (diffSec < 60) return `${diffSec}s`
-                if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m`
-                if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`
-                return `${Math.floor(diffSec / 86400)}d`
+                const d = Math.floor((Date.now() / 1000) - ts)
+                if (d < 60) return `${d}s`
+                if (d < 3600) return `${Math.floor(d / 60)}m`
+                if (d < 86400) return `${Math.floor(d / 3600)}h`
+                return `${Math.floor(d / 86400)}d`
+              }
+              // Inline SVG sparkline — 60×20, no chart library.
+              const Spark = ({ pts, positive }: { pts: number[]; positive: boolean }) => {
+                if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
+                const W = 60, H = 18
+                const lo = Math.min(...pts), hi = Math.max(...pts)
+                const span = (hi - lo) || 1
+                const xs = pts.map((_, i) => (i / (pts.length - 1)) * W)
+                const ys = pts.map(p => H - ((p - lo) / span) * H)
+                const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
+                const color = positive ? "#00E85A" : "#FF605D"
+                return (
+                  <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+                    <path d={d} fill="none" stroke={color} strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" />
+                  </svg>
+                )
               }
               const rows = watchlist.map(sym => {
                 const symTrades = trades.filter(t => t.symbol === sym)
-                const calls = symTrades.filter(t => t.opt_type === "C")
-                const puts = symTrades.filter(t => t.opt_type === "P")
-                const callPrem = calls.reduce((s, t) => s + t.premium, 0)
-                const putPrem = puts.reduce((s, t) => s + t.premium, 0)
+                const callPrem = symTrades.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
+                const putPrem = symTrades.filter(t => t.opt_type === "P").reduce((s, t) => s + t.premium, 0)
                 const count = symTrades.length
                 const isBull = callPrem > putPrem * 1.3
                 const isBear = putPrem > callPrem * 1.3
-                const topTrade = symTrades.length
-                  ? symTrades.reduce((max, t) => t.premium > max.premium ? t : max, symTrades[0])
-                  : null
                 const lastSignalTs = symTrades.length
                   ? Math.max(...symTrades.map(t => Math.floor(new Date(t.date_time).getTime() / 1000)))
                   : 0
-                const quote = wlQuotes[sym] || { spot: null, change: null, change_pct: null }
-                return { sym, callPrem, putPrem, count, isBull, isBear, topTrade, lastSignalTs, quote }
+                const quote = wlQuotes[sym] || { spot: null, change: null, change_pct: null, prev_close: null }
+                const spark = wlSparks[sym] || []
+                return { sym, callPrem, putPrem, count, isBull, isBear, lastSignalTs, quote, spark }
               })
               const dirMul = wlSort.dir === "asc" ? 1 : -1
               rows.sort((a, b) => {
@@ -1240,97 +1257,93 @@ export default function ScannerPage() {
               const SortHead = ({ k, label, align = "left" }: { k: typeof wlSort.key; label: string; align?: "left" | "right" | "center" }) => (
                 <button
                   onClick={() => setWlSort(s => ({ key: k, dir: s.key === k && s.dir === "desc" ? "asc" : "desc" }))}
-                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase transition-colors flex items-center gap-1 ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#7A8BA8]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
+                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.12em] uppercase transition-colors flex items-center gap-1 w-full ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#7A8BA8]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
                   {label}
                   {wlSort.key === k && <span className="text-[8px]">{wlSort.dir === "desc" ? "▼" : "▲"}</span>}
                 </button>
               )
+              // Industry-standard column layout — TradingView/ToS pattern with
+              // our flow-specific columns appended. 32px rows.
+              // Symbol(70) Last(80) Chg(80) %Chg(80) Spark(80) Call$(90) Put$(90) Bias(70) Sig(60) Age(60) ×(28)
+              const cols = "70px 80px 80px 80px 80px 1fr 90px 90px 70px 60px 60px 28px"
               return (
                 <div>
-                  <div className="grid sticky top-0 z-10 border-b border-[#35343F]" style={{ gridTemplateColumns: "200px 110px 110px 1fr 100px 100px 90px 90px 110px", background: "#242428" }}>
+                  <div className="grid sticky top-0 z-10 border-b border-[#2D2C38]" style={{ gridTemplateColumns: cols, background: "#212029" }}>
                     <SortHead k="symbol" label="Symbol" />
-                    <SortHead k="price" label="Price" align="right" />
-                    <SortHead k="change" label="Δ %" align="right" />
-                    <div className="px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase text-[#3D4D63]">Top trade today</div>
-                    <SortHead k="callFlow" label="Call Flow" align="right" />
-                    <SortHead k="putFlow" label="Put Flow" align="right" />
-                    <SortHead k="signals" label="Signals" align="center" />
-                    <SortHead k="lastSignal" label="Last" align="center" />
-                    <div className="px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase text-[#3D4D63] text-right">Actions</div>
+                    <SortHead k="price" label="Last" align="right" />
+                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Chg</div>
+                    <SortHead k="change" label="% Chg" align="right" />
+                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">5D</div>
+                    <div />
+                    <SortHead k="callFlow" label="Call $" align="right" />
+                    <SortHead k="putFlow" label="Put $" align="right" />
+                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">Bias</div>
+                    <SortHead k="signals" label="Sig" align="center" />
+                    <SortHead k="lastSignal" label="Age" align="center" />
+                    <div />
                   </div>
                   {rows.map(r => {
-                    const { sym, callPrem, putPrem, count, isBull, isBear, topTrade, lastSignalTs, quote } = r
-                    const changeColor = (quote.change_pct ?? 0) > 0 ? "#00E85A" : (quote.change_pct ?? 0) < 0 ? "#FF605D" : "#7A8BA8"
+                    const { sym, callPrem, putPrem, count, isBull, isBear, lastSignalTs, quote, spark } = r
+                    const positive = (quote.change_pct ?? 0) > 0
+                    const negative = (quote.change_pct ?? 0) < 0
+                    const changeColor = positive ? "#00E85A" : negative ? "#FF605D" : "#7A8BA8"
+                    const change = quote.change ?? 0
                     return (
-                      <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.04] transition-colors group" style={{ gridTemplateColumns: "200px 110px 110px 1fr 100px 100px 90px 90px 110px", minHeight: 48 }}>
-                        <div className="px-5 flex items-center gap-2">
-                          <span className="text-sm font-bold text-white tracking-tight">{sym}</span>
-                          {count > 0 && (
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#7A8BA8]"}`}>
-                              {isBull ? "BULL" : isBear ? "BEAR" : "MIX"}
-                            </span>
-                          )}
-                        </div>
-                        <div className="px-3 flex items-center justify-end">
+                      <div key={sym}
+                           className="grid border-b border-[#2D2C38] hover:bg-white/[0.04] transition-colors cursor-pointer group"
+                           style={{ gridTemplateColumns: cols, minHeight: 32, alignItems: "center" }}
+                           onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}
+                           title={`Click to filter scanner to ${sym}`}>
+                        <div className="px-3"><span className="text-[12px] font-bold text-white font-mono">{sym}</span></div>
+                        <div className="px-3 text-right">
                           <span className="text-[12px] font-mono tabular-nums text-white">
-                            {quote.spot != null ? `$${quote.spot.toFixed(2)}` : <span className="text-[#3D4D63]">—</span>}
+                            {quote.spot != null ? quote.spot.toFixed(2) : <span className="text-[#3D4D63]">—</span>}
                           </span>
                         </div>
-                        <div className="px-3 flex items-center justify-end">
-                          {quote.change_pct != null ? (
-                            <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>
-                              {quote.change_pct > 0 ? "▲ +" : quote.change_pct < 0 ? "▼ " : ""}{quote.change_pct.toFixed(2)}%
+                        <div className="px-3 text-right">
+                          {change !== 0 && quote.change != null ? (
+                            <span className="text-[11px] font-mono tabular-nums" style={{ color: changeColor }}>
+                              {positive ? "+" : ""}{change.toFixed(2)}
                             </span>
                           ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
                         </div>
-                        <div className="px-3 flex items-center min-w-0">
-                          {topTrade ? (
-                            <div className="text-[11px] font-mono truncate text-white/70">
-                              <span className="font-bold" style={{ color: topTrade.opt_type === "C" ? "#00E85A" : "#FF605D" }}>{fmtPrem(topTrade.premium)}</span>
-                              {" "}{topTrade.opt_type === "C" ? "calls" : "puts"} · {topTrade.flow_type ?? ""}
-                              {topTrade.grade ? <span className={`ml-1 px-1 rounded ${topTrade.grade === "A" ? "bg-[#00E85A]/15 text-[#00E85A]" : "bg-[#48DEFF]/15 text-[#48DEFF]"}`}>Grade {topTrade.grade}</span> : null}
-                            </div>
-                          ) : <span className="text-[11px] text-[#3D4D63]">No flow today</span>}
+                        <div className="px-3 text-right">
+                          {quote.change_pct != null ? (
+                            <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>
+                              {positive ? "+" : ""}{quote.change_pct.toFixed(2)}%
+                            </span>
+                          ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
                         </div>
-                        <div className="px-3 flex items-center justify-end">
+                        <div className="px-3 flex items-center justify-center">
+                          <Spark pts={spark} positive={positive || (spark.length >= 2 && spark[spark.length-1] >= spark[0])} />
+                        </div>
+                        <div />
+                        <div className="px-3 text-right">
                           <span className={`text-[11px] font-mono tabular-nums font-semibold ${callPrem > 0 ? "text-[#00E85A]" : "text-[#3D4D63]"}`}>
                             {callPrem > 0 ? fmtPrem(callPrem) : "—"}
                           </span>
                         </div>
-                        <div className="px-3 flex items-center justify-end">
+                        <div className="px-3 text-right">
                           <span className={`text-[11px] font-mono tabular-nums font-semibold ${putPrem > 0 ? "text-[#FF605D]" : "text-[#3D4D63]"}`}>
                             {putPrem > 0 ? fmtPrem(putPrem) : "—"}
                           </span>
                         </div>
                         <div className="px-3 flex items-center justify-center">
+                          {count > 0 ? (
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#7A8BA8]"}`}>
+                              {isBull ? "BULL" : isBear ? "BEAR" : "MIX"}
+                            </span>
+                          ) : <span className="text-[10px] text-[#3D4D63]">—</span>}
+                        </div>
+                        <div className="px-3 text-center">
                           <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">{count || "—"}</span>
                         </div>
-                        <div className="px-3 flex items-center justify-center">
-                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">
-                            {lastSignalTs ? fmtTime(lastSignalTs) : "—"}
-                          </span>
+                        <div className="px-3 text-center">
+                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">{lastSignalTs ? fmtTime(lastSignalTs) : "—"}</span>
                         </div>
-                        <div className="px-3 flex items-center justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}
-                            title="Filter scanner to this symbol"
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
-                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
-                          <a
-                            href={`/options-flow/${sym}`}
-                            title="Open per-ticker page"
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
-                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-                          <button
-                            onClick={() => { setGexSymbol(sym); setActivePage("heatmap") }}
-                            title="View GEX heatmap"
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
-                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
-                          <button
-                            onClick={() => removeFromWatchlist(sym)}
-                            title="Remove"
-                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#FF605D]/15 text-[#3D4D63] hover:text-[#FF605D] transition-colors text-base leading-none"
-                          >×</button>
+                        <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }}
+                            className="text-[#3D4D63] hover:text-[#FF605D] text-base leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#FF605D]/15">×</button>
                         </div>
                       </div>
                     )
