@@ -49,7 +49,7 @@ export default function Nav() {
   const close = () => setOpen(false)
 
   return (
-    <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#080C12] md:bg-[#080C12]/85 md:backdrop-blur-xl">
+    <header className="pb-nav-floating sticky top-0 z-50 border-b border-white/5 bg-[#0a0d12] md:bg-[#0a0d12]/85 md:backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
 
         {/* Logo */}
@@ -133,7 +133,7 @@ export default function Nav() {
       {/* Mobile dropdown — relative z-50 so it stays above the backdrop overlay */}
       {open && (
         <>
-          <div className="md:hidden relative z-50 border-t border-white/10 bg-[#0F1117]">
+          <div className="md:hidden relative z-50 border-t border-white/10 bg-[#0a0d12]">
             <div className="px-5 py-5">
               <div className="text-[11px] uppercase tracking-[0.18em] text-white/45 font-mono mb-3">Product</div>
               <div className="space-y-1">
