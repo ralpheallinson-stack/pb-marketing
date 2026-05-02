@@ -55,7 +55,7 @@ export default function Nav() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Home">
           <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="h-8 w-8 object-contain" />
-          <span className="hidden sm:inline text-base font-semibold tracking-tight text-white">Profit Builders</span>
+          <span className="text-base font-semibold tracking-tight text-white">Profit Builders</span>
         </Link>
 
         {/* Desktop menu */}
@@ -102,7 +102,7 @@ export default function Nav() {
           </Link>
           <Link
             href="/pricing"
-            className="inline-flex h-10 items-center rounded-md bg-white px-5 text-[15px] font-semibold text-[#0a0d12] hover:bg-white/90 transition-colors"
+            className="hidden md:inline-flex h-10 items-center rounded-md bg-white px-5 text-[15px] font-semibold text-[#0a0d12] hover:bg-white/90 transition-colors"
           >
             Start Trial
           </Link>
@@ -134,27 +134,44 @@ export default function Nav() {
       {open && (
         <>
           <div className="md:hidden relative z-50 border-t border-white/10 bg-[#0F1117]">
-            <div className="px-4 py-3">
-              <div className="text-[11px] uppercase tracking-widest text-white/50 font-mono mb-2">Product</div>
-              {productItems.map(it => (
-                <Link key={it.href} href={it.href} onClick={close}
-                  className="block py-2 text-sm text-white hover:text-white">
-                  {it.label}
-                </Link>
-              ))}
+            <div className="px-5 py-5">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-white/45 font-mono mb-3">Product</div>
+              <div className="space-y-1">
+                {productItems.map(it => (
+                  <Link key={it.href} href={it.href} onClick={close}
+                    className="block py-2 text-[15px] text-white">
+                    {it.label}
+                  </Link>
+                ))}
+              </div>
             </div>
-            <div className="px-4 py-3 border-t border-white/5">
-              <div className="text-[11px] uppercase tracking-widest text-white/50 font-mono mb-2">Resources</div>
-              {resourceItems.map(it => (
-                <Link key={it.href} href={it.href} onClick={close}
-                  className="block py-2 text-sm text-white hover:text-white">
-                  {it.label}
-                </Link>
-              ))}
+            <div className="px-5 py-5 border-t border-white/5">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-white/45 font-mono mb-3">Resources</div>
+              <div className="space-y-1">
+                {resourceItems.map(it => (
+                  <Link key={it.href} href={it.href} onClick={close}
+                    className="block py-2 text-[15px] text-white">
+                    {it.label}
+                  </Link>
+                ))}
+              </div>
             </div>
-            <div className="px-4 py-3 border-t border-white/5 flex items-center justify-between">
-              <Link href="/#pricing" onClick={close} className="text-sm text-white hover:text-white">Pricing</Link>
-              <Link href="/login" onClick={close} className="text-sm text-white/70 hover:text-white">Login</Link>
+            <div className="px-5 py-5 border-t border-white/5 flex items-center justify-between">
+              <Link href="/#pricing" onClick={close} className="text-[15px] text-white">Pricing</Link>
+              <Link href="/login" onClick={close} className="text-[15px] text-white/70">Login</Link>
+            </div>
+            {/* Primary CTA — full-width inside the menu, replacing the cramped top-bar pill */}
+            <div className="px-5 pt-2 pb-6 border-t border-white/5">
+              <Link
+                href="/pricing"
+                onClick={close}
+                className="flex items-center justify-center w-full h-12 rounded-full bg-[#F97316] hover:bg-[#EA580C] text-white text-[15px] font-semibold transition-colors"
+              >
+                Start 7-day Trial
+              </Link>
+              <p className="mt-3 text-center text-[11px] text-white/40 font-mono tracking-wide">
+                Card required · Cancel anytime before day 7
+              </p>
             </div>
           </div>
           <button
