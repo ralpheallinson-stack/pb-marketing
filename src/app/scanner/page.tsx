@@ -254,6 +254,8 @@ export default function ScannerPage() {
     if (typeof window === "undefined") return []
     try { return JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch { return [] }
   })
+  const [wlQuotes, setWlQuotes] = useState<Record<string, { spot: number | null; change: number | null; change_pct: number | null }>>({})
+  const [wlSort, setWlSort] = useState<{ key: "symbol" | "price" | "change" | "callFlow" | "putFlow" | "signals" | "lastSignal"; dir: "asc" | "desc" }>({ key: "callFlow", dir: "desc" })
   const [wlInput, setWlInput] = useState("")
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [marketOpen, setMarketOpen] = useState(false)
@@ -316,6 +318,31 @@ export default function ScannerPage() {
       .finally(() => { if (reqId === gexReqIdRef.current) setGexLoading(false) })
   }, [activePage, canAccessGamma, gexSymbol])
 
+  // Batch live-quote polling for the watchlist tab. One HTTP call per
+  // refresh covers every symbol in the list. 15s cadence is plenty for a
+  // watchlist (vs 2s on the heatmap header) — these are reference quotes,
+  // not active trading data. Pauses when tab is hidden.
+  useEffect(() => {
+    if (activePage !== "watchlist" || watchlist.length === 0) return
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | null = null
+    const tick = async () => {
+      if (cancelled) return
+      if (!document.hidden) {
+        try {
+          const r = await fetch(`/api/scanner/watchlist-quotes?symbols=${watchlist.join(",")}`)
+          if (r.ok) {
+            const j = await r.json()
+            if (!cancelled) setWlQuotes(j)
+          }
+        } catch { /* network blip */ }
+      }
+      timer = setTimeout(tick, 15000)
+    }
+    tick()
+    return () => { cancelled = true; if (timer) clearTimeout(timer) }
+  }, [activePage, watchlist])
+
   // Live spot polling for the embedded heatmap (matches /heatmap page).
   // OI is fixed intraday — only spot moves tick-to-tick. Cheap dedicated
   // endpoint, 2s during market hours, 30s after close.
@@ -348,12 +375,20 @@ export default function ScannerPage() {
     return () => { cancelled = true; if (timer) clearTimeout(timer) }
   }, [activePage, canAccessGamma, gexSymbol])
 
-  const addToWatchlist = useCallback((sym: string) => {
-    const s = sym.toUpperCase().trim()
-    if (!s || watchlist.includes(s)) return
-    const updated = [...watchlist, s]
-    setWatchlist(updated)
-    localStorage.setItem("pb_watchlist", JSON.stringify(updated))
+  const addToWatchlist = useCallback((input: string) => {
+    // Accept single symbol OR comma/space-separated multi (e.g.
+    // "AAPL, MSFT, NVDA" pasted from a spreadsheet column).
+    const parts = input.toUpperCase().split(/[\s,;]+/).map(s => s.trim()).filter(Boolean)
+    if (!parts.length) return
+    const next = [...watchlist]
+    for (const s of parts) {
+      // Light validation — 1-6 alpha chars + optional .B-style suffix.
+      if (s.length > 6 || !/^[A-Z]+(\.[A-Z])?$/.test(s)) continue
+      if (!next.includes(s)) next.push(s)
+    }
+    if (next.length === watchlist.length) return
+    setWatchlist(next)
+    localStorage.setItem("pb_watchlist", JSON.stringify(next))
   }, [watchlist])
 
   const removeFromWatchlist = useCallback((sym: string) => {
@@ -1112,78 +1147,197 @@ export default function ScannerPage() {
     <ReplayProgress symbol={gexSymbol} />
   </div>
   )
-})()) : activePage === "watchlist" ? (
+})()      ) : activePage === "watchlist" ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#242428" }}>
-          {/* Watchlist header */}
+          {/* Watchlist v2 — desk view header */}
           <div className="px-5 py-3 border-b border-[#35343F] flex items-center gap-3 flex-shrink-0">
             <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.15em] uppercase">Watchlist</div>
             <div className="text-[10px] text-[#3D4D63]">{watchlist.length} symbols</div>
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
               <input
-                placeholder="Add symbol..."
+                placeholder="Add — paste list ok (AAPL, MSFT)"
                 value={wlInput}
-                onChange={e => setWlInput(e.target.value.toUpperCase())}
+                onChange={e => setWlInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && wlInput) { addToWatchlist(wlInput); setWlInput("") } }}
-                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[12px] text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-36"
+                className="bg-[#080C14] border border-[#1E2A3A] rounded-md px-3 py-1.5 text-[12px] text-white placeholder-[#3D4D63] focus:outline-none focus:border-[#FF8A00]/50 w-72"
               />
+              {watchlist.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (confirm(`Clear all ${watchlist.length} symbols?`)) {
+                      setWatchlist([])
+                      localStorage.setItem("pb_watchlist", "[]")
+                    }
+                  }}
+                  className="text-[11px] text-[#7A8BA8] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded-md px-2 py-1.5 transition-colors"
+                  title="Clear watchlist"
+                >Clear</button>
+              )}
             </div>
           </div>
           {/* Watchlist body */}
           <div className="flex-1 overflow-y-auto">
             {watchlist.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-40 text-[#3D4D63]">
-                <div className="text-sm">No symbols added</div>
-                <div className="text-[11px] mt-1">Type a symbol above and press Enter</div>
-              </div>
-            ) : (
-              <div>
-                {/* Column headers */}
-                <div className="grid sticky top-0 z-10 border-b border-[#35343F] text-[9px] font-bold text-[#3D4D63] tracking-[0.1em] uppercase" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", background: "#242428" }}>
-                  <div className="px-5 py-2">Symbol</div>
-                  <div className="px-3 py-2 text-right">Call Flow</div>
-                  <div className="px-3 py-2 text-right">Put Flow</div>
-                  <div className="px-3 py-2 text-center">Signals</div>
-                  <div />
+              <div className="flex flex-col items-center justify-center h-full text-center px-6 py-16">
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#3D4D63] mb-3">Empty watchlist</div>
+                <div className="text-base font-semibold text-white/80 mb-2">Add tickers to track institutional flow</div>
+                <div className="text-[12px] text-[#7A8BA8] max-w-sm leading-relaxed mb-5">
+                  Live price, today&apos;s call/put flow, top trade, and signal velocity — all in one row per symbol.
                 </div>
-                {watchlist.map(sym => {
-                  const symTrades = trades.filter(t => t.symbol === sym)
-                  const callPrem = symTrades.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
-                  const putPrem = symTrades.filter(t => t.opt_type === "P").reduce((s, t) => s + t.premium, 0)
-                  const count = symTrades.length
-                  const isBull = callPrem > putPrem * 1.3
-                  const isBear = putPrem > callPrem * 1.3
-                  return (
-                    <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.05] transition-colors cursor-pointer" style={{ gridTemplateColumns: "1fr 100px 100px 80px 32px", minHeight: 40 }}
-                      onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}>
-                      <div className="px-5 flex items-center gap-2">
-                        <span className="text-sm font-bold text-white">{sym}</span>
-                        {count > 0 && (
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#4A5A72]"}`}>
-                            {isBull ? "BULL" : isBear ? "BEAR" : "MIXED"}
-                          </span>
-                        )}
-                      </div>
-                      <div className="px-3 flex items-center justify-end">
-                        <span className={`text-[11px] font-mono font-semibold ${callPrem > 0 ? "text-[#00E85A]" : "text-[#3D4D63]"}`}>
-                          {callPrem > 0 ? fmtPrem(callPrem) : "—"}
-                        </span>
-                      </div>
-                      <div className="px-3 flex items-center justify-end">
-                        <span className={`text-[11px] font-mono font-semibold ${putPrem > 0 ? "text-[#FF605D]" : "text-[#3D4D63]"}`}>
-                          {putPrem > 0 ? fmtPrem(putPrem) : "—"}
-                        </span>
-                      </div>
-                      <div className="px-3 flex items-center justify-center">
-                        <span className="text-[11px] text-[#7A8BA8] font-mono">{count || "—"}</span>
-                      </div>
-                      <div className="flex items-center justify-center">
-                        <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }} className="text-[#3D4D63] hover:text-[#FF605D] transition-colors text-xs">×</button>
-                      </div>
-                    </div>
-                  )
-                })}
+                <div className="text-[10px] uppercase tracking-[0.14em] text-[#3D4D63] mb-2">Try popular tickers</div>
+                <div className="flex flex-wrap gap-1.5 max-w-md justify-center">
+                  {["SPY","QQQ","NVDA","TSLA","AAPL","META","AMD","MSFT","GOOGL","COIN","PLTR","MSTR"].map(t => (
+                    <button key={t}
+                      onClick={() => addToWatchlist(t)}
+                      className="text-[11px] font-mono font-bold text-[#7A8BA8] hover:text-white border border-[#1E2A3A] hover:border-[#FF8A00]/40 rounded px-2 py-1 transition-colors">
+                      {t}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
+            ) : (() => {
+              const fmtTime = (ts: number) => {
+                const diffSec = Math.floor((Date.now() / 1000) - ts)
+                if (diffSec < 60) return `${diffSec}s`
+                if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m`
+                if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`
+                return `${Math.floor(diffSec / 86400)}d`
+              }
+              const rows = watchlist.map(sym => {
+                const symTrades = trades.filter(t => t.symbol === sym)
+                const calls = symTrades.filter(t => t.opt_type === "C")
+                const puts = symTrades.filter(t => t.opt_type === "P")
+                const callPrem = calls.reduce((s, t) => s + t.premium, 0)
+                const putPrem = puts.reduce((s, t) => s + t.premium, 0)
+                const count = symTrades.length
+                const isBull = callPrem > putPrem * 1.3
+                const isBear = putPrem > callPrem * 1.3
+                const topTrade = symTrades.length
+                  ? symTrades.reduce((max, t) => t.premium > max.premium ? t : max, symTrades[0])
+                  : null
+                const lastSignalTs = symTrades.length
+                  ? Math.max(...symTrades.map(t => Math.floor(new Date(t.date_time).getTime() / 1000)))
+                  : 0
+                const quote = wlQuotes[sym] || { spot: null, change: null, change_pct: null }
+                return { sym, callPrem, putPrem, count, isBull, isBear, topTrade, lastSignalTs, quote }
+              })
+              const dirMul = wlSort.dir === "asc" ? 1 : -1
+              rows.sort((a, b) => {
+                let av: number | string = 0, bv: number | string = 0
+                switch (wlSort.key) {
+                  case "symbol":     av = a.sym; bv = b.sym; break
+                  case "price":      av = a.quote.spot ?? -Infinity; bv = b.quote.spot ?? -Infinity; break
+                  case "change":     av = a.quote.change_pct ?? -Infinity; bv = b.quote.change_pct ?? -Infinity; break
+                  case "callFlow":   av = a.callPrem; bv = b.callPrem; break
+                  case "putFlow":    av = a.putPrem; bv = b.putPrem; break
+                  case "signals":    av = a.count; bv = b.count; break
+                  case "lastSignal": av = a.lastSignalTs; bv = b.lastSignalTs; break
+                }
+                if (av < bv) return -1 * dirMul
+                if (av > bv) return  1 * dirMul
+                return 0
+              })
+              const SortHead = ({ k, label, align = "left" }: { k: typeof wlSort.key; label: string; align?: "left" | "right" | "center" }) => (
+                <button
+                  onClick={() => setWlSort(s => ({ key: k, dir: s.key === k && s.dir === "desc" ? "asc" : "desc" }))}
+                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase transition-colors flex items-center gap-1 ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#7A8BA8]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
+                  {label}
+                  {wlSort.key === k && <span className="text-[8px]">{wlSort.dir === "desc" ? "▼" : "▲"}</span>}
+                </button>
+              )
+              return (
+                <div>
+                  <div className="grid sticky top-0 z-10 border-b border-[#35343F]" style={{ gridTemplateColumns: "200px 110px 110px 1fr 100px 100px 90px 90px 110px", background: "#242428" }}>
+                    <SortHead k="symbol" label="Symbol" />
+                    <SortHead k="price" label="Price" align="right" />
+                    <SortHead k="change" label="Δ %" align="right" />
+                    <div className="px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase text-[#3D4D63]">Top trade today</div>
+                    <SortHead k="callFlow" label="Call Flow" align="right" />
+                    <SortHead k="putFlow" label="Put Flow" align="right" />
+                    <SortHead k="signals" label="Signals" align="center" />
+                    <SortHead k="lastSignal" label="Last" align="center" />
+                    <div className="px-3 py-2 text-[9px] font-bold tracking-[0.1em] uppercase text-[#3D4D63] text-right">Actions</div>
+                  </div>
+                  {rows.map(r => {
+                    const { sym, callPrem, putPrem, count, isBull, isBear, topTrade, lastSignalTs, quote } = r
+                    const changeColor = (quote.change_pct ?? 0) > 0 ? "#00E85A" : (quote.change_pct ?? 0) < 0 ? "#FF605D" : "#7A8BA8"
+                    return (
+                      <div key={sym} className="grid border-b border-[#2D2C38] hover:bg-white/[0.04] transition-colors group" style={{ gridTemplateColumns: "200px 110px 110px 1fr 100px 100px 90px 90px 110px", minHeight: 48 }}>
+                        <div className="px-5 flex items-center gap-2">
+                          <span className="text-sm font-bold text-white tracking-tight">{sym}</span>
+                          {count > 0 && (
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#7A8BA8]"}`}>
+                              {isBull ? "BULL" : isBear ? "BEAR" : "MIX"}
+                            </span>
+                          )}
+                        </div>
+                        <div className="px-3 flex items-center justify-end">
+                          <span className="text-[12px] font-mono tabular-nums text-white">
+                            {quote.spot != null ? `$${quote.spot.toFixed(2)}` : <span className="text-[#3D4D63]">—</span>}
+                          </span>
+                        </div>
+                        <div className="px-3 flex items-center justify-end">
+                          {quote.change_pct != null ? (
+                            <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>
+                              {quote.change_pct > 0 ? "▲ +" : quote.change_pct < 0 ? "▼ " : ""}{quote.change_pct.toFixed(2)}%
+                            </span>
+                          ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
+                        </div>
+                        <div className="px-3 flex items-center min-w-0">
+                          {topTrade ? (
+                            <div className="text-[11px] font-mono truncate text-white/70">
+                              <span className="font-bold" style={{ color: topTrade.opt_type === "C" ? "#00E85A" : "#FF605D" }}>{fmtPrem(topTrade.premium)}</span>
+                              {" "}{topTrade.opt_type === "C" ? "calls" : "puts"} · {topTrade.flow_type ?? ""}
+                              {topTrade.grade ? <span className={`ml-1 px-1 rounded ${topTrade.grade === "A" ? "bg-[#00E85A]/15 text-[#00E85A]" : "bg-[#48DEFF]/15 text-[#48DEFF]"}`}>Grade {topTrade.grade}</span> : null}
+                            </div>
+                          ) : <span className="text-[11px] text-[#3D4D63]">No flow today</span>}
+                        </div>
+                        <div className="px-3 flex items-center justify-end">
+                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${callPrem > 0 ? "text-[#00E85A]" : "text-[#3D4D63]"}`}>
+                            {callPrem > 0 ? fmtPrem(callPrem) : "—"}
+                          </span>
+                        </div>
+                        <div className="px-3 flex items-center justify-end">
+                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${putPrem > 0 ? "text-[#FF605D]" : "text-[#3D4D63]"}`}>
+                            {putPrem > 0 ? fmtPrem(putPrem) : "—"}
+                          </span>
+                        </div>
+                        <div className="px-3 flex items-center justify-center">
+                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">{count || "—"}</span>
+                        </div>
+                        <div className="px-3 flex items-center justify-center">
+                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">
+                            {lastSignalTs ? fmtTime(lastSignalTs) : "—"}
+                          </span>
+                        </div>
+                        <div className="px-3 flex items-center justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}
+                            title="Filter scanner to this symbol"
+                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
+                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+                          <a
+                            href={`/options-flow/${sym}`}
+                            title="Open per-ticker page"
+                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
+                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                          <button
+                            onClick={() => { setGexSymbol(sym); setActivePage("heatmap") }}
+                            title="View GEX heatmap"
+                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[#7A8BA8] hover:text-white transition-colors"
+                          ><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
+                          <button
+                            onClick={() => removeFromWatchlist(sym)}
+                            title="Remove"
+                            className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#FF605D]/15 text-[#3D4D63] hover:text-[#FF605D] transition-colors text-base leading-none"
+                          >×</button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </div>
         </div>
       ) : (<>
