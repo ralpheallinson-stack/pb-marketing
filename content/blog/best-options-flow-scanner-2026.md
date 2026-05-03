@@ -114,14 +114,14 @@ Yes, we built this. Here's what we did differently after trading on every platfo
 
 ## Comparison Table
 
-| Scanner | Price | Free Trial | Conviction Grading | Documented Methodology |
-|---------|-------|------------|-------------------|--------------------|
-| FlowAlgo | $149/mo | No | No | No |
-| BlackBoxStocks | $99.97/mo | No | No | No |
-| Cheddar Flow | $85-99/mo | No | No | No |
-| Unusual Whales | $35-48/mo | Limited | No | No |
-| Barchart | $39-199.95/mo | Limited tier | No | No |
-| **Profit Builders** | **$99/mo** | **7 days free** | **Yes (Grade A/B)** | **Yes (OPRA-grade flow)** |
+| Scanner | Price | Trial | Grading | Methodology |
+|---------|-------|-------|---------|-------------|
+| FlowAlgo | $149/mo | — | — | — |
+| BlackBoxStocks | $99.97/mo | — | — | — |
+| Cheddar Flow | $85–99/mo | — | — | — |
+| Unusual Whales | $35–48/mo | Limited | — | — |
+| Barchart | $39–199.95/mo | Limited | — | — |
+| **Profit Builders** | **$99/mo** | **7 days** | **Grade A/B** | **OPRA-grade** |
 
 ## Who Should Use What
 

@@ -70,7 +70,7 @@ export default function MethodologyPage() {
     <div className="min-h-screen bg-[#080B12] text-[#E5E7EB]">
       <Nav />
 
-      <main className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+      <main className="max-w-6xl mx-auto px-6 py-16 md:py-24">
         <div className="text-[11px] uppercase tracking-[0.18em] text-[#F97316] font-semibold mb-4">
           Data Methodology
         </div>
@@ -201,10 +201,10 @@ export default function MethodologyPage() {
             cherry-picked windows.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/scanner" className="inline-flex items-center px-5 py-3 bg-[#F97316] text-black font-semibold rounded-md hover:bg-[#FB923C] transition-colors">
+            <Link href="/scanner" className="inline-flex items-center px-8 py-3.5 bg-[#F97316] text-white font-bold rounded-full hover:bg-[#EA580C] transition-colors">
               Try the live scanner
             </Link>
-            <Link href="/pricing" className="inline-flex items-center px-5 py-3 bg-transparent border border-[rgba(148,163,184,0.2)] text-[#E5E7EB] font-medium rounded-md hover:border-[rgba(148,163,184,0.4)] transition-colors">
+            <Link href="/pricing" className="inline-flex items-center px-8 py-3.5 bg-transparent border border-[rgba(148,163,184,0.2)] text-[#E5E7EB] font-medium rounded-full hover:border-[rgba(148,163,184,0.4)] transition-colors">
               See pricing
             </Link>
           </div>

@@ -77,7 +77,7 @@ export default function BlogIndex() {
       <Nav />
 
       {/* ── Hero — light, calm, editorial ── */}
-      <section className="relative text-center pt-28 pb-12 px-4 overflow-hidden border-b border-gray-100">
+      <section className="relative text-center pt-28 pb-12 px-6 overflow-hidden border-b border-gray-100">
         <div
           className="absolute inset-0 opacity-[0.05]"
           style={{

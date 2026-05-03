@@ -364,20 +364,20 @@ export default async function OptionsFlowTickerPage(
         </section>
 
         {/* ── RECENT ACTIVITY (tease only) ── */}
-        {t.recent_teases.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
-            <div className="flex items-baseline gap-3 mb-10">
-              <span className="pb-section-num">02 / 07</span>
-              <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Last 14 days</span>
-            </div>
-            <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4 max-w-3xl">
-              Recent Grade A {t.symbol} prints.
-            </h2>
-            <p className="text-[15px] leading-[1.65] text-[#A9B4C6] mb-10 max-w-2xl">
-              Size-bucketed for public view. Exact strikes, expirations, and premium amounts are surfaced in the live scanner as they print.
-            </p>
+        <section className="max-w-6xl mx-auto px-6 py-16 border-b pb-hairline">
+          <div className="flex items-baseline gap-3 mb-10">
+            <span className="pb-section-num">02 / 07</span>
+            <span className="pb-rule h-px flex-1" />
+            <span className="pb-mono text-[11px] text-[#3D4D63]">Last 14 days</span>
+          </div>
+          <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4 max-w-3xl">
+            Recent Grade A {t.symbol} prints.
+          </h2>
+          <p className="text-[15px] leading-[1.65] text-[#A9B4C6] mb-10 max-w-2xl">
+            Size-bucketed for public view. Exact strikes, expirations, and premium amounts are surfaced in the live scanner as they print.
+          </p>
 
+          {t.recent_teases.length > 0 ? (
             <div className="border-t border-b pb-hairline">
               {t.recent_teases.map((tease, i) => (
                 <div
@@ -397,8 +397,23 @@ export default async function OptionsFlowTickerPage(
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="border-t border-b pb-hairline py-10 px-4 -mx-4 text-center">
+              <p className="text-[15px] text-[#A9B4C6] mb-2">
+                No Grade A {t.symbol} prints in the last 14 days.
+              </p>
+              <p className="text-[13px] text-[#7A8BA8] mb-6 max-w-xl mx-auto">
+                Grade A signals require minimum size, OPRA-compliant sweeps, and aggression at or above NBBO ask. {t.symbol} hasn&apos;t cleared that bar this fortnight — institutional positioning is quiet.
+              </p>
+              <Link
+                href="/scanner"
+                className="inline-block pb-mono text-[11px] uppercase tracking-[0.2em] text-[#34D399] hover:text-white transition-colors border-b border-[#34D399] pb-1"
+              >
+                Watch live in the scanner →
+              </Link>
+            </div>
+          )}
+        </section>
 
         {/* ── ACCUMULATION (if any) ── */}
         {t.accumulation && (
@@ -517,6 +532,7 @@ export default async function OptionsFlowTickerPage(
         <section className="max-w-6xl mx-auto px-6 py-12 border-b pb-hairline">
           <div className="pb-mono text-[10px] uppercase tracking-[0.22em] text-[#3D4D63] mb-4">Learn more</div>
           <div className="flex flex-wrap gap-x-6 gap-y-3 pb-mono text-[12px] uppercase tracking-[0.14em]">
+            <Link href={`/options-flow/${t.symbol}/grade-a`} className="text-[#A9B4C6] hover:text-white transition-colors">{t.symbol} Grade A track record</Link>
             <Link href="/blog/how-to-read-options-flow" className="text-[#A9B4C6] hover:text-white transition-colors">How to read options flow</Link>
             <Link href="/blog/options-flow-signals-grade-a-b-c" className="text-[#A9B4C6] hover:text-white transition-colors">Grade A, B, and C explained</Link>
             <Link href="/blog/what-is-options-accumulation" className="text-[#A9B4C6] hover:text-white transition-colors">Options accumulation</Link>
@@ -537,10 +553,10 @@ export default async function OptionsFlowTickerPage(
 
 function DataCell({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="p-5 md:p-6 border-r last:border-r-0 border-b md:border-b-0 pb-hairline">
-      <div className="pb-mono text-[10px] uppercase tracking-[0.2em] text-[#7A8BA8] mb-3">{label}</div>
+    <div className="p-4 sm:p-5 md:p-6 border-r last:border-r-0 border-b md:border-b-0 pb-hairline min-w-0">
+      <div className="pb-mono text-[10px] uppercase tracking-[0.2em] text-[#7A8BA8] mb-3 truncate">{label}</div>
       <div
-        className={`pb-num text-[28px] md:text-[32px] leading-none ${accent ? "text-[#34D399]" : "text-white"} font-bold tabular-nums`}
+        className={`pb-num text-[20px] sm:text-[24px] md:text-[32px] leading-none ${accent ? "text-[#34D399]" : "text-white"} font-bold tabular-nums break-words`}
       >
         {value}
       </div>

@@ -82,7 +82,7 @@ export default function Nav() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  href="/#pricing"
+                  href="/pricing"
                   className="inline-flex h-10 items-center rounded-md px-4 text-[15px] font-medium text-white/70 transition-colors hover:text-white hover:bg-white/5"
                 >
                   Pricing
@@ -157,7 +157,7 @@ export default function Nav() {
               </div>
             </div>
             <div className="px-5 py-5 border-t border-white/5 flex items-center justify-between">
-              <Link href="/#pricing" onClick={close} className="text-[15px] text-white">Pricing</Link>
+              <Link href="/pricing" onClick={close} className="text-[15px] text-white">Pricing</Link>
               <Link href="/login" onClick={close} className="text-[15px] text-white/70">Login</Link>
             </div>
             <div className="px-5 pt-4 pb-6 border-t border-white/5">

@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/vs/cheddar-flow"
 export const metadata: Metadata = {
   title: "Cheddar Flow vs Profit Builders · 2026 Options Flow Comparison",
   description:
-    "Honest 2026 comparison of Cheddar Flow and Profit Builders. Same $99/mo Pro tier — but Cheddar Flow gates dark pool + AI alerts behind Pro. Profit Builders includes everything and publishes a documented OPRA methodology.",
+    "Cheddar Flow vs Profit Builders for 2026 — both $99/mo Pro. Cheddar Flow gates dark-pool + AI behind Pro. PB includes everything plus documented OPRA methodology.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "Cheddar Flow vs Profit Builders · Options Flow Comparison",

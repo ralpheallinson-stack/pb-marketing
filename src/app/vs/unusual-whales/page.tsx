@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/vs/unusual-whales"
 export const metadata: Metadata = {
   title: "Unusual Whales vs Profit Builders · 2026 Options Flow Comparison",
   description:
-    "Honest 2026 comparison of Unusual Whales and Profit Builders for options flow. Pricing, data methodology, alerts, and who should pick which.",
+    "Unusual Whales vs Profit Builders for 2026 options flow. UW $50/mo, PB $99/mo. Pricing, data methodology, alerts, and a clear pick-which-when guide inside.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "Unusual Whales vs Profit Builders · Options Flow Comparison",

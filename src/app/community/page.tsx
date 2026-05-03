@@ -39,11 +39,11 @@ export default function CommunityPage() {
           A private Discord and Telegram community of active options traders reading the same institutional flow in real time — with Grade A signal alerts, live setup discussion, and documented data methodology at /results holding the scanner to institutional standards.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <ShimmerButton href="/#pricing" className="rounded-xl text-base">
+          <ShimmerButton href="/pricing" className="rounded-full text-base">
             Start 7-Day Free Trial
           </ShimmerButton>
           <a href="https://x.com/ProfitBldrs" target="_blank" rel="noopener noreferrer"
-            className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-xl hover:bg-[#1E2530] transition-colors">
+            className="bg-transparent border border-[#1E2A3A] text-[#E8EDF5] font-medium px-8 py-3.5 rounded-full hover:bg-[#1E2530] transition-colors">
             Follow @ProfitBldrs Free
           </a>
         </div>
@@ -179,7 +179,7 @@ export default function CommunityPage() {
       <section className="text-center py-16 px-4 border-t border-[#1E2A3A]">
         <div className="text-2xl font-bold text-white mb-2">Ready to see the flow?</div>
         <div className="text-sm text-[#7A8BA8] mb-8">Join a community of traders who stopped guessing and started reading the tape.</div>
-        <Link href="/#pricing" className="inline-block bg-[#34D399] text-black font-bold px-8 py-3.5 rounded-xl hover:bg-[#4ADE80] transition-colors">
+        <Link href="/pricing" className="inline-block bg-[#34D399] text-black font-bold px-8 py-3.5 rounded-full hover:bg-[#4ADE80] transition-colors">
           Start Free Trial &rarr;
         </Link>
         <div className="text-[10px] text-[#3D4D63] mt-2">$99/month after trial · Card required · Cancel anytime</div>

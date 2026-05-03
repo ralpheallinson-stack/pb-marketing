@@ -193,7 +193,7 @@ export default function Home() {
       <div className="border-t border-white/[0.05]"><GexSection /></div>
       <div className="border-t border-white/[0.05]"><Pricing /></div>
       {/* Mid-page CTA — single-button reinforcement immediately under Pricing */}
-      <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-12 px-6">
+      <section className="border-t border-white/[0.05] bg-[#0E1117] w-full py-20 px-6">
         <div className="max-w-lg mx-auto text-center">
           <p className="text-white/40 text-sm mb-4">
             Real-time institutional flow. Built on the OPRA tape. Free to start.

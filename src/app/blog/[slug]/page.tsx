@@ -30,11 +30,13 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.date,
       authors: ["Profit Builders"],
+      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: [`/blog/${slug}/opengraph-image`],
     },
   }
 }
@@ -584,7 +586,7 @@ export default async function BlogPostPage({
           <div className="pb-trial-cta mt-12 py-6 border-t border-gray-200">
             <p className="text-[15px] text-gray-700 leading-relaxed">
               Want to see more of these trades?{" "}
-              <Link href="/#pricing" className="text-[#F97316] hover:underline font-semibold">
+              <Link href="/pricing" className="text-[#F97316] hover:underline font-semibold">
                 Try Profit Builders free for 7 days. Learn more →
               </Link>
             </p>
@@ -746,6 +748,8 @@ export default async function BlogPostPage({
           padding: 2px 6px;
           border-radius: 4px;
           font-size: 15px;
+          word-break: break-word;
+          overflow-wrap: anywhere;
         }
         .pb-prose pre {
           background: #FAFAFA;
@@ -773,6 +777,8 @@ export default async function BlogPostPage({
         .pb-prose img {
           border-radius: 8px;
           margin: 1.5em 0;
+          max-width: 100%;
+          height: auto;
         }
 
         /* Trade detail card — Cheddar Flow-style structured signal block.
@@ -850,24 +856,26 @@ export default async function BlogPostPage({
           background: #FAFAFA;
         }
         .pb-prose thead th {
-          padding: 14px 18px;
+          padding: 14px 12px;
           text-align: left;
           font-weight: 700;
           font-size: 11px;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           color: #6B7280;
           border-bottom: 1px solid #E5E7EB;
           vertical-align: middle;
+          white-space: nowrap;
         }
         .pb-prose thead th:first-child {
-          width: 34%;
+          width: 26%;
         }
         .pb-prose tbody td {
-          padding: 14px 18px;
+          padding: 14px 12px;
           border-top: 1px solid #F3F4F6;
           vertical-align: middle;
           color: #1a1a1a;
+          word-break: break-word;
         }
         .pb-prose tbody tr:first-child td {
           border-top: none;

@@ -46,6 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description: ogDescription,
+      images: ["/opengraph-image"],
     },
   }
 }

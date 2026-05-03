@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/vs/flowalgo"
 export const metadata: Metadata = {
   title: "FlowAlgo vs Profit Builders · 2026 Options Flow Comparison",
   description:
-    "Honest 2026 comparison of FlowAlgo and Profit Builders for options flow. FlowAlgo is $149/mo with a $37 trial that auto-charges. Profit Builders is $99/mo with a 7-day free trial and a verified documented OPRA methodology.",
+    "FlowAlgo vs Profit Builders for 2026 options flow. FlowAlgo $149/mo with a $37 auto-charge trial. PB $99/mo, 7-day free trial, documented OPRA methodology.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "FlowAlgo vs Profit Builders · Options Flow Comparison",

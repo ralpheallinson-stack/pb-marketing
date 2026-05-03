@@ -1,33 +1,17 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Data Methodology — Profit Builders",
-  description: "How Profit Builders processes institutional options flow: OPRA tape ingest, Reg-NMS Intermarket Sweep detection, Black-Scholes-Merton Greeks, prior-day OI from Polygon EOD.",
+  title: "Methodology — How Profit Builders Grades Options Flow",
+  description: "How we classify Grade A/B/C signals: CBOE Rule 6.11 sweep detection, OPRA condition codes, NBBO aggression scoring, and 174,000+ verified outcomes since 2024.",
   alternates: { canonical: "https://profitbuilders.io/methodology" },
   openGraph: {
-    title: "Data Methodology — Profit Builders",
-    description: "How Profit Builders processes institutional options flow.",
+    title: "Methodology — How Profit Builders Grades Options Flow",
+    description: "CBOE-compliant sweep detection, OPRA condition codes, NBBO aggression scoring, 174K+ verified outcomes.",
     url: "https://profitbuilders.io/methodology",
-    images: [{ url: "/methodology/opengraph-image", width: 1200, height: 630, alt: "Profit Builders Data Methodology" }]
+    type: "article",
   },
-  twitter: { card: "summary_large_image", images: ["/methodology/opengraph-image"] },
 }
 
-const breadcrumbSchema = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://profitbuilders.io" },
-    { "@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://profitbuilders.io/methodology" },
-  ],
-})
-
-export default function ResultsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbSchema }} />
-      <h1 className="sr-only">Profit Builders Data Methodology — How We Process Institutional Options Flow</h1>
-      {children}
-    </>
-  )
+export default function MethodologyLayout({ children }: { children: React.ReactNode }) {
+  return children
 }
