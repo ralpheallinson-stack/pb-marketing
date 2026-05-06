@@ -5,6 +5,9 @@ import { getAuthor } from "@/lib/authors"
 import { CopyLinkButton } from "@/components/CopyLinkButton"
 import BlogPostHero from "@/components/BlogPostHero"
 import { EmailSignup } from "@/components/EmailSignup"
+import BlogTableOfContents from "@/components/BlogTableOfContents"
+import BlogPromoCTA from "@/components/BlogPromoCTA"
+import { FlickeringGrid } from "@/components/magicui/flickering-grid"
 import type { Metadata } from "next"
 
 export const dynamicParams = false
@@ -326,7 +329,25 @@ export default async function BlogPostPage({
         </div>
       </nav>
 
-      <article className="max-w-[680px] mx-auto px-6 pt-12 pb-16">
+      <div className="relative max-w-[1100px] mx-auto px-6 pt-12 pb-16">
+
+        {/* ── ATMOSPHERIC BACKDROP — animated grid behind hero, fades into body */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-0 left-0 z-0 w-full h-[280px] [mask-image:linear-gradient(to_bottom,black_15%,transparent_90%)]"
+        >
+          <FlickeringGrid
+            className="absolute inset-0 size-full"
+            squareSize={4}
+            gridGap={6}
+            color="#6B7280"
+            maxOpacity={0.16}
+            flickerChance={0.05}
+          />
+        </div>
+
+        {/* ── HEADER BLOCK ── centered narrow reading width */}
+        <div className="relative z-10 lg:max-w-[680px] lg:mx-auto">
 
         {/* Visible breadcrumbs (schema already emitted above) */}
         <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-[11px] text-gray-400 font-mono uppercase tracking-[0.12em]">
@@ -445,9 +466,11 @@ export default async function BlogPostPage({
             </div>
           </div>
 
-          {/* Table of contents for long-form posts (3+ H2 sections) */}
+          {/* TOC moved to sticky right rail. On mobile only, fall back to
+              an in-article pill so readers without a sidebar still get
+              navigation on long-form posts. */}
           {showToc && (
-            <div className="mt-8 p-5 border border-gray-200 rounded-lg bg-gray-50">
+            <div className="lg:hidden mt-8 p-5 border border-gray-200 rounded-lg bg-gray-50">
               <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500 mb-3">In this article</div>
               <ol className="space-y-2 text-[14px] text-gray-700">
                 {tocItems.map((item, i) => (
@@ -464,6 +487,13 @@ export default async function BlogPostPage({
             </div>
           )}
         </header>
+
+        </div>
+        {/* ── /HEADER BLOCK ── */}
+
+        {/* ── BODY GRID — main column + sticky right rail ── */}
+        <div className="lg:grid lg:grid-cols-[680px_280px] lg:gap-12 lg:justify-center">
+        <article className="lg:max-w-[680px] lg:min-w-0">
 
         {/* ── BODY ── */}
         <div
@@ -608,7 +638,21 @@ export default async function BlogPostPage({
           </p>
         )}
 
-      </article>
+        </article>
+
+        {/* ── STICKY RIGHT RAIL — TOC + scanner promo ── */}
+        <aside className="hidden lg:block lg:w-[280px]" aria-label="Article navigation and promotion">
+          <div className="sticky top-24 space-y-6">
+            <BlogTableOfContents />
+            <BlogPromoCTA ticker={tickers[0] || undefined} />
+          </div>
+        </aside>
+
+        </div>
+        {/* ── /BODY GRID ── */}
+
+      </div>
+      {/* ── /max-w-[1100px] container ── */}
 
       {/* ── RELATED POSTS ── */}
       {related.length > 0 && (

@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav"
 import Link from "next/link"
 import { BlurFade } from "@/components/magicui/BlurFade"
+import { FlickeringGrid } from "@/components/magicui/flickering-grid"
 import { getAllPosts } from "@/lib/blog"
 import type { Metadata } from "next"
 import { EmailSignup } from "@/components/EmailSignup"
@@ -78,13 +79,19 @@ export default function BlogIndex() {
 
       {/* ── Hero — light, calm, editorial ── */}
       <section className="relative text-center pt-28 pb-12 px-6 overflow-hidden border-b border-gray-100">
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: "radial-gradient(circle, #94A3B8 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
+        {/* Animated atmospheric backdrop. Fades from densest at top
+            to transparent at the body content below — see-through to the
+            white background so the H1 stays the focal point. */}
+        <div className="absolute top-0 left-0 z-0 w-full h-full [mask-image:linear-gradient(to_bottom,black_20%,transparent_85%)]">
+          <FlickeringGrid
+            className="absolute inset-0 size-full"
+            squareSize={4}
+            gridGap={6}
+            color="#6B7280"
+            maxOpacity={0.18}
+            flickerChance={0.05}
+          />
+        </div>
         <div className="relative z-10">
           <div className="text-[11px] font-bold text-gray-400 tracking-[0.22em] uppercase mb-5">
             Profit Builders Blog
