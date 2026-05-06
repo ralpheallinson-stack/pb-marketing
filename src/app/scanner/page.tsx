@@ -250,10 +250,7 @@ export default function ScannerPage() {
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
   }, [activePage])
-  const [watchlist, setWatchlist] = useState<string[]>(() => {
-    if (typeof window === "undefined") return []
-    try { return JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch { return [] }
-  })
+  const [watchlist, setWatchlist] = useState<string[]>([])
   const [wlQuotes, setWlQuotes] = useState<Record<string, { spot: number | null; change: number | null; change_pct: number | null; prev_close: number | null }>>({})
   const [wlSparks, setWlSparks] = useState<Record<string, number[]>>({})
   const [wlSort, setWlSort] = useState<{ key: "symbol" | "price" | "change" | "callFlow" | "putFlow" | "signals" | "lastSignal"; dir: "asc" | "desc" }>({ key: "change", dir: "desc" })
@@ -280,10 +277,65 @@ export default function ScannerPage() {
   const [filterMinPremium, setFilterMinPremium] = useState<string>("")
   const [filterMinContracts, setFilterMinContracts] = useState(0)
   const [filterMinVolOi, setFilterMinVolOi] = useState(0)
-  const [presets, setPresets] = useState<FilterPreset[]>(() => {
-    if (typeof window === "undefined") return []
-    try { return JSON.parse(localStorage.getItem("pb_filter_presets") || "[]") } catch { return [] }
-  })
+  const [presets, setPresets] = useState<FilterPreset[]>([])
+
+  // Hydrate from localStorage (instant) then reconcile with server (source of truth).
+  // Anonymous users get 302 from the API and stay on local-only — no regression.
+  // First-time logged-in users with empty server state get a one-time upload of
+  // whatever they had in localStorage, so existing presets aren't lost.
+  useEffect(() => {
+    try {
+      const cP = JSON.parse(localStorage.getItem("pb_filter_presets") || "[]")
+      const cW = JSON.parse(localStorage.getItem("pb_watchlist") || "[]")
+      if (Array.isArray(cP)) setPresets(cP)
+      if (Array.isArray(cW)) setWatchlist(cW)
+    } catch {}
+
+    fetch("/api/scanner/preferences", { credentials: "include" })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return
+        const sP = Array.isArray(d.filter_presets) ? d.filter_presets : []
+        const sW = Array.isArray(d.watchlist) ? d.watchlist : []
+        let cP: unknown[] = []
+        let cW: unknown[] = []
+        try { cP = JSON.parse(localStorage.getItem("pb_filter_presets") || "[]") } catch {}
+        try { cW = JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch {}
+
+        // Server empty + local has data → upload local once, keep using local.
+        const upload: { filter_presets?: unknown[]; watchlist?: string[] } = {}
+        if (sP.length === 0 && Array.isArray(cP) && cP.length > 0) upload.filter_presets = cP
+        if (sW.length === 0 && Array.isArray(cW) && cW.length > 0) upload.watchlist = cW as string[]
+        if (upload.filter_presets || upload.watchlist) {
+          fetch("/api/scanner/preferences", {
+            method: "PUT", credentials: "include",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(upload),
+          }).catch(() => {})
+          return
+        }
+
+        // Otherwise server wins — overwrite state + cache.
+        setPresets(sP)
+        setWatchlist(sW)
+        localStorage.setItem("pb_filter_presets", JSON.stringify(sP))
+        localStorage.setItem("pb_watchlist", JSON.stringify(sW))
+      })
+      .catch(() => {})
+  }, [])
+
+  // Debounced sync — 300ms after the last change, push to server.
+  const prefSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const syncPrefs = useCallback((patch: { filter_presets?: FilterPreset[]; watchlist?: string[] }) => {
+    if (prefSyncRef.current) clearTimeout(prefSyncRef.current)
+    prefSyncRef.current = setTimeout(() => {
+      fetch("/api/scanner/preferences", {
+        method: "PUT", credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(patch),
+      }).catch(() => {})
+    }, 300)
+  }, [])
   const [presetName, setPresetName] = useState("")
   const [showSavePreset, setShowSavePreset] = useState(false)
   const [filterDte, setFilterDte] = useState("")
@@ -403,13 +455,15 @@ export default function ScannerPage() {
     if (next.length === watchlist.length) return
     setWatchlist(next)
     localStorage.setItem("pb_watchlist", JSON.stringify(next))
-  }, [watchlist])
+    syncPrefs({ watchlist: next })
+  }, [watchlist, syncPrefs])
 
   const removeFromWatchlist = useCallback((sym: string) => {
     const updated = watchlist.filter(s => s !== sym)
     setWatchlist(updated)
     localStorage.setItem("pb_watchlist", JSON.stringify(updated))
-  }, [watchlist])
+    syncPrefs({ watchlist: updated })
+  }, [watchlist, syncPrefs])
 
   const playBlip = useCallback(() => {
     if (!soundEnabled) return
@@ -448,6 +502,7 @@ export default function ScannerPage() {
     const updated = [...presets.filter(p => p.name !== preset.name), preset]
     setPresets(updated)
     localStorage.setItem("pb_filter_presets", JSON.stringify(updated))
+    syncPrefs({ filter_presets: updated })
     setPresetName("")
     setShowSavePreset(false)
   }
@@ -464,6 +519,7 @@ export default function ScannerPage() {
     const updated = presets.filter(p => p.name !== name)
     setPresets(updated)
     localStorage.setItem("pb_filter_presets", JSON.stringify(updated))
+    syncPrefs({ filter_presets: updated })
   }
 
   const resetFilters = () => {
@@ -1177,7 +1233,7 @@ export default function ScannerPage() {
               />
               {watchlist.length > 0 && (
                 <button
-                  onClick={() => { if (confirm(`Clear all ${watchlist.length} symbols?`)) { setWatchlist([]); localStorage.setItem("pb_watchlist", "[]") } }}
+                  onClick={() => { if (confirm(`Clear all ${watchlist.length} symbols?`)) { setWatchlist([]); localStorage.setItem("pb_watchlist", "[]"); syncPrefs({ watchlist: [] }) } }}
                   className="text-[10px] text-[#7A8BA8] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded px-2 py-1 transition-colors"
                 >Clear</button>
               )}
