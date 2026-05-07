@@ -291,35 +291,25 @@ export default function ScannerPage() {
       if (Array.isArray(cW)) setWatchlist(cW)
     } catch {}
 
+    // Server preferences hydrate (read-only at mount). The upload-when-
+    // server-empty path was removed because legacy localStorage data was
+    // tripping server validation — and the upload isn't load-bearing
+    // anyway: any user-driven preset save / watchlist add fires syncPrefs
+    // which writes the canonical shape to the server.
     fetch("/api/scanner/preferences", { credentials: "include" })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) return
         const sP = Array.isArray(d.filter_presets) ? d.filter_presets : []
         const sW = Array.isArray(d.watchlist) ? d.watchlist : []
-        let cP: unknown[] = []
-        let cW: unknown[] = []
-        try { cP = JSON.parse(localStorage.getItem("pb_filter_presets") || "[]") } catch {}
-        try { cW = JSON.parse(localStorage.getItem("pb_watchlist") || "[]") } catch {}
-
-        // Server empty + local has data → upload local once, keep using local.
-        const upload: { filter_presets?: unknown[]; watchlist?: string[] } = {}
-        if (sP.length === 0 && Array.isArray(cP) && cP.length > 0) upload.filter_presets = cP
-        if (sW.length === 0 && Array.isArray(cW) && cW.length > 0) upload.watchlist = cW as string[]
-        if (upload.filter_presets || upload.watchlist) {
-          fetch("/api/scanner/preferences", {
-            method: "PUT", credentials: "include",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(upload),
-          }).catch(() => {})
-          return
+        if (sP.length > 0) {
+          setPresets(sP)
+          localStorage.setItem("pb_filter_presets", JSON.stringify(sP))
         }
-
-        // Otherwise server wins — overwrite state + cache.
-        setPresets(sP)
-        setWatchlist(sW)
-        localStorage.setItem("pb_filter_presets", JSON.stringify(sP))
-        localStorage.setItem("pb_watchlist", JSON.stringify(sW))
+        if (sW.length > 0) {
+          setWatchlist(sW)
+          localStorage.setItem("pb_watchlist", JSON.stringify(sW))
+        }
       })
       .catch(() => {})
   }, [])
@@ -488,6 +478,38 @@ export default function ScannerPage() {
   const lastSuccessRef = useRef<number>(Date.now())
   const [pollError, setPollError] = useState<string | null>(null)
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
+
+  // ── SSE doorbell — debounced fetchData on push events; polling fallback ──
+  const sseConnRef = useRef<EventSource | null>(null)
+  const sseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (page !== 0) return
+    const open = () => {
+      if (sseConnRef.current) return
+      try {
+        const es = new EventSource("/api/scanner/stream")
+        sseConnRef.current = es
+        es.addEventListener("signal", () => {
+          if (sseDebounceRef.current) return
+          sseDebounceRef.current = setTimeout(() => {
+            sseDebounceRef.current = null
+            if (!document.hidden) fetchDataRef.current?.({ pageNum: 0 })
+          }, 250)
+        })
+      } catch {}
+    }
+    const close = () => {
+      if (sseDebounceRef.current) { clearTimeout(sseDebounceRef.current); sseDebounceRef.current = null }
+      if (sseConnRef.current) { sseConnRef.current.close(); sseConnRef.current = null }
+    }
+    const onVis = () => { document.hidden ? close() : open() }
+    open()
+    document.addEventListener("visibilitychange", onVis)
+    return () => {
+      close()
+      document.removeEventListener("visibilitychange", onVis)
+    }
+  }, [page])
 
   const savePreset = (name: string) => {
     if (!name.trim()) return
