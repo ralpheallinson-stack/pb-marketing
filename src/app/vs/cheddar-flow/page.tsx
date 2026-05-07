@@ -110,31 +110,35 @@ export default function VsCheddarFlow() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
 
       <style>{`
-        .pb-grain {
-          background-image:
-            radial-gradient(ellipse at 20% 10%, rgba(37,99,235,0.10), transparent 50%),
-            radial-gradient(ellipse at 85% 40%, rgba(22,163,74,0.06), transparent 45%),
-            linear-gradient(180deg, #0E1117 0%, #0B0E13 100%);
-        }
-        .pb-rule { background: linear-gradient(90deg, transparent, rgba(122,139,168,0.22) 8%, rgba(122,139,168,0.22) 92%, transparent); }
-        .pb-hairline { border-color: rgba(122,139,168,0.14); }
+        .pb-grain { background: #ffffff; }
+        .pb-rule { background: linear-gradient(90deg, transparent, #E2E8F0 8%, #E2E8F0 92%, transparent); }
+        .pb-hairline { border-color: #E5E7EB; }
         .pb-mono { font-family: "IBM Plex Mono", "Menlo", monospace; letter-spacing: -0.01em; }
         .pb-display { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "ss01","ss02"; }
         .pb-num { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "tnum"; letter-spacing: -0.04em; }
         .pb-editorial { font-family: Georgia, "Times New Roman", serif; }
-        .pb-win { color: #34D399; }
-        .pb-lose { color: #7A8BA8; }
-        .pb-callout { background: linear-gradient(135deg, rgba(52,211,153,0.05), rgba(52,211,153,0.01)); border-left: 2px solid #34D399; }
-        .pb-section-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; color: #3D4D63; text-transform: uppercase; }
-        .pb-link { border-bottom: 1px solid rgba(52,211,153,0.4); transition: border-color 160ms ease; }
-        .pb-link:hover { border-color: #34D399; }
+        .pb-win { color: #F97316; }
+        .pb-lose { color: #9CA3AF; }
+        .pb-callout {
+          background: #FFF7ED;
+          border-left: 2px solid #F97316;
+        }
+        .pb-section-num {
+          font-family: "IBM Plex Mono", monospace;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          color: #9CA3AF;
+          text-transform: uppercase;
+        }
+        .pb-link { border-bottom: 1px solid rgba(249,115,22,0.4); transition: border-color 160ms ease; }
+        .pb-link:hover { border-color: #F97316; }
         @keyframes pbRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .pb-rise { animation: pbRise 700ms cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
       <Nav />
 
-      <main className="pb-grain text-[#E8EDF5] min-h-screen">
+      <main className="bg-white text-gray-950 min-h-screen">
         {/* HERO */}
         <section className="pt-32 pb-24 px-6 border-b pb-hairline">
           <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-x-8 gap-y-10 pb-rise">
@@ -142,13 +146,13 @@ export default function VsCheddarFlow() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-gray-400">Updated Apr 2026</span>
               </div>
-              <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8">
-                Cheddar Flow <span className="text-[#3D4D63]">vs</span> Profit Builders.
+              <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-gray-950 mb-8">
+                Cheddar Flow <span className="text-gray-400">vs</span> Profit Builders.
               </h1>
-              <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-xl">
-                Same <span className="pb-mono text-white">$99/mo</span> Pro-tier price. Different philosophies. Cheddar Flow gates dark pool + AI alerts behind its Pro plan. Profit Builders includes everything at one price and publishes its full data methodology to back it up.
+              <p className="text-[18px] md:text-[19px] leading-[1.55] text-gray-600 max-w-xl">
+                Same <span className="pb-mono text-gray-950">$99/mo</span> Pro-tier price. Different philosophies. Cheddar Flow gates dark pool + AI alerts behind its Pro plan. Profit Builders includes everything at one price and publishes its full data methodology to back it up.
               </p>
             </div>
           </div>
@@ -160,31 +164,31 @@ export default function VsCheddarFlow() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">02 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Verdict</span>
+              <span className="pb-mono text-[11px] text-gray-400">Verdict</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-12">
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick Cheddar Flow.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If you want 20+ customizable filter options to build your own detection rules, AI-assisted alerts for setup scanning, and the option to save 25% with an annual commitment you're confident in.
                 </p>
-                <div className="pb-mono text-[11px] text-[#7A8BA8] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-gray-600 uppercase tracking-wider">
                   $85–99/mo · $75/mo annual · Filter-heavy
                 </div>
               </div>
               <div className="md:col-span-2 flex md:justify-center items-start md:items-center">
-                <div className="pb-display text-[#3D4D63] text-[48px] font-light leading-none">/</div>
+                <div className="pb-display text-gray-400 text-[48px] font-light leading-none">/</div>
               </div>
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick Profit Builders.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If you want every feature included at one flat price, a documented documented data methodology, and a documented data methodology and CBOE-compliant sweep detection you can audit before you pay.
                 </p>
-                <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-[#F97316] uppercase tracking-wider">
                   $99/mo · Graded signals · Public methodology
                 </div>
               </div>
@@ -198,37 +202,37 @@ export default function VsCheddarFlow() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">03 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Side-by-side</span>
+              <span className="pb-mono text-[11px] text-gray-400">Side-by-side</span>
             </div>
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-10 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-10 max-w-3xl">
               Twelve dimensions that actually matter.
             </h2>
             <div className="overflow-x-auto -mx-6 px-6">
               <table className="w-full min-w-[640px]">
                 <thead>
-                  <tr className="border-b border-[#252E3D]">
-                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-[#3D4D63] font-medium">Dimension</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#A9B4C6] font-medium w-[34%]">Cheddar Flow</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#34D399] font-medium w-[34%]">Profit Builders</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-gray-400 font-medium">Dimension</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-gray-600 font-medium w-[34%]">Cheddar Flow</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#F97316] font-medium w-[34%]">Profit Builders</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <MRow label="Pro-tier monthly" a={<span className="pb-mono">$99/mo</span>} b={<span className="pb-mono text-white">$99/mo</span>} />
+                  <MRow label="Pro-tier monthly" a={<span className="pb-mono">$99/mo</span>} b={<span className="pb-mono text-gray-950">$99/mo</span>} />
                   <MRow label="Standard tier" a={<span className="pb-mono">$85/mo (limited)</span>} b={<span className="pb-mono pb-win">No tier-gating</span>} win />
                   <MRow label="Dark pool data" a={<span className="pb-lose">Pro tier only</span>} b={<span className="pb-win">Included in flow</span>} win />
                   <MRow label="AI / Power Alerts" a={<span className="pb-lose">Pro tier only</span>} b={<span className="pb-win">Grade A is the signal</span>} />
-                  <MRow label="Annual discount" a={<span className="text-white">$75/mo yearly (-25%)</span>} b={<span className="pb-lose">Monthly only</span>} />
+                  <MRow label="Annual discount" a={<span className="text-gray-950">$75/mo yearly (-25%)</span>} b={<span className="pb-lose">Monthly only</span>} />
                   <MRow label="Free trial" a="7 days, card required" b="7 days, card required" />
                   <MRow label="Conviction grading" a={<span className="pb-lose">Filters, no grade</span>} b={<span className="pb-win">Grade A / B, documented institutional-flow filter</span>} win />
                   <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
                   <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
-                  <MRow label="Filter customization" a={<span className="text-white">20+ filters</span>} b="Grade-based, pre-filtered" />
+                  <MRow label="Filter customization" a={<span className="text-gray-950">20+ filters</span>} b="Grade-based, pre-filtered" />
                   <MRow label="Telegram alerts" a={<span className="pb-lose">Limited</span>} b={<span className="pb-win">Native, mobile-first</span>} win />
                   <MRow label="GEX heatmap" a={<span className="pb-lose">No</span>} b={<span className="pb-win">220 symbols</span>} win />
                 </tbody>
               </table>
             </div>
-            <p className="pb-mono text-[10px] text-[#3D4D63] mt-6 uppercase tracking-wider">
+            <p className="pb-mono text-[10px] text-gray-400 mt-6 uppercase tracking-wider">
               Pricing and features verified April 2026 from each vendor's public documentation.
             </p>
           </div>
@@ -240,14 +244,14 @@ export default function VsCheddarFlow() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">04 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Honest</span>
+              <span className="pb-mono text-[11px] text-gray-400">Honest</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where Cheddar Flow is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#7A8BA8]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   Different product philosophy, legitimate wins. Here's where Cheddar Flow earns its price.
                 </p>
               </div>
@@ -262,19 +266,19 @@ export default function VsCheddarFlow() {
         </section>
 
         {/* WHERE PB WINS */}
-        <section className="py-20 px-6 border-b pb-hairline bg-[#0B0E13]">
+        <section className="py-20 px-6 border-b pb-hairline bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-baseline gap-3 mb-12">
-              <span className="pb-section-num" style={{ color: "#34D399" }}>05 / 07</span>
+              <span className="pb-section-num" style={{ color: "#F97316" }}>05 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#34D399]">Where we win</span>
+              <span className="pb-mono text-[11px] text-[#F97316]">Where we win</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where Profit Builders is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#A9B4C6]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   At the same monthly price, these are the categories that determine which tool pays off in practice.
                 </p>
               </div>
@@ -302,24 +306,24 @@ export default function VsCheddarFlow() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">06 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Deep dive</span>
+              <span className="pb-mono text-[11px] text-gray-400">Deep dive</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8">
               <aside className="md:col-span-3 md:sticky md:top-24 self-start mb-8 md:mb-0">
-                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-[#3D4D63] mb-4">In this section</div>
+                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-4">In this section</div>
                 <nav className="space-y-3">
-                  <a href="#philosophy" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Two philosophies</a>
-                  <a href="#gating" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">The Pro-tier trap</a>
-                  <a href="#filters-vs-grades" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Filters vs grades</a>
-                  <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#philosophy" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Two philosophies</a>
+                  <a href="#gating" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">The Pro-tier trap</a>
+                  <a href="#filters-vs-grades" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Filters vs grades</a>
+                  <a href="#who" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Who each is for</a>
                 </nav>
               </aside>
               <div className="md:col-span-9 space-y-16">
                 <Dive id="philosophy" heading="Two philosophies of the same job">
-                  Both platforms ingest the US options tape in real time. The split is what happens next. Cheddar Flow hands you <em className="pb-editorial text-white">tools</em> — 20+ filters, AI alerts, filter presets — and expects you to build your own detection system. Profit Builders hands you <em className="pb-editorial text-white">decisions</em> — Grade A means the engine's nine filters all agree, Grade B means most do, everything else never reaches you. Neither approach is objectively better. They target different users.
+                  Both platforms ingest the US options tape in real time. The split is what happens next. Cheddar Flow hands you <em className="pb-editorial text-gray-950">tools</em> — 20+ filters, AI alerts, filter presets — and expects you to build your own detection system. Profit Builders hands you <em className="pb-editorial text-gray-950">decisions</em> — Grade A means the engine's nine filters all agree, Grade B means most do, everything else never reaches you. Neither approach is objectively better. They target different users.
                 </Dive>
                 <Dive id="gating" heading="Feature gating at the same top price">
-                  Cheddar Flow runs two tiers. Standard at <span className="pb-mono text-white">$85/mo</span> gives you flow, charting, unusual volume, and filters. Pro at <span className="pb-mono text-white">$99/mo</span> adds dark pool data and AI Power Alerts — the two features most shoppers are specifically evaluating the platform for. Profit Builders has one tier at <span className="pb-mono text-white">$99/mo</span> that includes everything, plus a separate optional <span className="pb-mono text-white">$39/mo</span> GEX heatmap. If you're already paying $99, the question is what that $99 actually unlocks. The honest answer: more, on Profit Builders.
+                  Cheddar Flow runs two tiers. Standard at <span className="pb-mono text-gray-950">$85/mo</span> gives you flow, charting, unusual volume, and filters. Pro at <span className="pb-mono text-gray-950">$99/mo</span> adds dark pool data and AI Power Alerts — the two features most shoppers are specifically evaluating the platform for. Profit Builders has one tier at <span className="pb-mono text-gray-950">$99/mo</span> that includes everything, plus a separate optional <span className="pb-mono text-gray-950">$39/mo</span> GEX heatmap. If you're already paying $99, the question is what that $99 actually unlocks. The honest answer: more, on Profit Builders.
                 </Dive>
                 <Dive id="filters-vs-grades" heading="Twenty filters vs one grade">
                   Cheddar Flow's 20+ filters let you slice the flow by whatever characteristic you care about. That flexibility is real — and it's also work. Every filter you add is a hypothesis you have to test and maintain. Profit Builders runs nine specific filters documented publicly (closing-position detection, direction classification, delta screening, spread detection, market-maker ID, and the rest) and collapses them into a single output: Grade A, Grade B, or filtered out. You get fewer knobs but a documented methodology you can audit before you pay. The tradeoff is flexibility against evidence.
@@ -338,27 +342,27 @@ export default function VsCheddarFlow() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">07 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Questions</span>
+              <span className="pb-mono text-[11px] text-gray-400">Questions</span>
             </div>
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-12 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-12 max-w-3xl">
               The questions people actually ask.
             </h2>
             <div className="grid md:grid-cols-12 gap-x-8">
               <div className="md:col-span-12 space-y-10 max-w-3xl">
                 <Faq q="Is Cheddar Flow the same price as Profit Builders?">
-                  At the Pro tier, yes — both are <span className="pb-mono text-white">$99/mo</span>. Cheddar Flow's cheaper <span className="pb-mono text-white">$85/mo</span> Standard tier excludes dark pool data and AI Power Alerts. Profit Builders' $99/mo Flow Scanner includes every feature with no tier gating.
+                  At the Pro tier, yes — both are <span className="pb-mono text-gray-950">$99/mo</span>. Cheddar Flow's cheaper <span className="pb-mono text-gray-950">$85/mo</span> Standard tier excludes dark pool data and AI Power Alerts. Profit Builders' $99/mo Flow Scanner includes every feature with no tier gating.
                 </Faq>
                 <Faq q="What does Cheddar Flow gate behind Pro?">
                   Dark pool data and AI Power Alerts. Both features are Pro-only. The $85/mo Standard tier gives you flow, charting, and unusual volume but not the two features most comparison-shoppers are specifically evaluating the platform to get. Profit Builders gates nothing at $99.
                 </Faq>
                 <Faq q="Does Cheddar Flow publish a documented methodology?">
-                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
+                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-gray-950">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
                 </Faq>
                 <Faq q="How does AI Power Alerts compare to Grade A signals?">
                   Different approaches. Cheddar Flow's AI applies machine learning to flag setups in real time, without publishing what qualifies a signal or the system's historical hit rate. Profit Builders runs every print through 9 documented filters and publishes outcomes per grade. Transparent methodology on one side, ML black-box on the other — both are legitimate product choices, only one is auditable.
                 </Faq>
                 <Faq q="What's Cheddar Flow's annual pricing?">
-                  Cheddar Flow Pro is <span className="pb-mono text-white">$75/mo</span> when billed annually — 25% off monthly. Profit Builders is monthly-only at $99. If you're confident enough to commit for a full year and don't need the features Profit Builders adds, Cheddar Flow's annual plan is cheaper than Profit Builders' monthly subscription.
+                  Cheddar Flow Pro is <span className="pb-mono text-gray-950">$75/mo</span> when billed annually — 25% off monthly. Profit Builders is monthly-only at $99. If you're confident enough to commit for a full year and don't need the features Profit Builders adds, Cheddar Flow's annual plan is cheaper than Profit Builders' monthly subscription.
                 </Faq>
               </div>
             </div>
@@ -368,20 +372,20 @@ export default function VsCheddarFlow() {
         {/* CTA */}
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#34D399] mb-6">Start trial</div>
-            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-white mb-6">
+            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#F97316] mb-6">Start trial</div>
+            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-gray-950 mb-6">
               Same price. Nothing gated.
             </h2>
-            <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
+            <p className="text-[17px] leading-[1.6] text-gray-600 max-w-xl mx-auto mb-10">
               Seven days of full feature access — dark pool context, Grade A conviction, 220-symbol GEX heatmap, Telegram alerts, and the OPRA-grade processing pipeline you just read about.
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
+              className="inline-flex items-center gap-3 bg-[#F97316] hover:bg-[#EA580C] text-white pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
             >
               Start 7-Day Trial →
             </Link>
-            <p className="pb-mono text-[11px] text-[#3D4D63] uppercase tracking-wider mt-6">
+            <p className="pb-mono text-[11px] text-gray-400 uppercase tracking-wider mt-6">
               7-day free trial · Card required · Cancel anytime
             </p>
           </div>
@@ -395,11 +399,11 @@ export default function VsCheddarFlow() {
 
 function MRow({ label, a, b, win = false }: { label: string; a: React.ReactNode; b: React.ReactNode; win?: boolean }) {
   return (
-    <tr className="border-b border-[#1A1F2A]">
-      <td className="py-4 pr-4 pb-mono text-[13px] text-[#A9B4C6] align-top">{label}</td>
-      <td className="py-4 px-4 text-[14px] text-[#E8EDF5] align-top">{a}</td>
-      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-[rgba(52,211,153,0.03)]" : ""}`}>
-        <div className="text-[#E8EDF5]">{b}</div>
+    <tr className="border-b border-gray-100">
+      <td className="py-4 pr-4 pb-mono text-[13px] text-gray-600 align-top">{label}</td>
+      <td className="py-4 px-4 text-[14px] text-gray-950 align-top">{a}</td>
+      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-orange-50/40" : ""}`}>
+        <div className="text-gray-950">{b}</div>
       </td>
     </tr>
   )
@@ -409,11 +413,11 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
   return (
     <div className="grid grid-cols-12 gap-x-4 items-baseline">
       <div className="col-span-2 md:col-span-1">
-        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#34D399]" : "text-[#3D4D63]"}`}>{n}</div>
+        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#F97316]" : "text-gray-400"}`}>{n}</div>
       </div>
       <div className="col-span-10 md:col-span-11">
-        <h3 className="pb-editorial text-[22px] md:text-[24px] text-white leading-[1.2] tracking-[-0.015em] mb-2">{title}</h3>
-        <p className="text-[15px] leading-[1.65] text-[#A9B4C6]">{body}</p>
+        <h3 className="pb-editorial text-[22px] md:text-[24px] text-gray-950 leading-[1.2] tracking-[-0.015em] mb-2">{title}</h3>
+        <p className="text-[15px] leading-[1.65] text-gray-600">{body}</p>
       </div>
     </div>
   )
@@ -422,8 +426,8 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
 function Dive({ id, heading, children }: { id: string; heading: string; children: React.ReactNode }) {
   return (
     <div id={id}>
-      <h3 className="pb-editorial text-[26px] md:text-[30px] text-white leading-[1.15] tracking-[-0.015em] mb-5">{heading}</h3>
-      <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">{children}</p>
+      <h3 className="pb-editorial text-[26px] md:text-[30px] text-gray-950 leading-[1.15] tracking-[-0.015em] mb-5">{heading}</h3>
+      <p className="text-[16px] leading-[1.7] text-gray-600">{children}</p>
     </div>
   )
 }
@@ -431,8 +435,8 @@ function Dive({ id, heading, children }: { id: string; heading: string; children
 function Faq({ q, children }: { q: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="pb-editorial text-[20px] md:text-[22px] text-white leading-[1.25] mb-3">{q}</div>
-      <div className="text-[15px] leading-[1.7] text-[#A9B4C6]">{children}</div>
+      <div className="pb-editorial text-[20px] md:text-[22px] text-gray-950 leading-[1.25] mb-3">{q}</div>
+      <div className="text-[15px] leading-[1.7] text-gray-600">{children}</div>
     </div>
   )
 }

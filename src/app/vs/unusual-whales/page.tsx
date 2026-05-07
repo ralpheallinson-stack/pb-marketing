@@ -114,42 +114,35 @@ export default function VsUnusualWhales() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
 
       <style>{`
-        .pb-grain {
-          background-image:
-            radial-gradient(ellipse at 20% 10%, rgba(37,99,235,0.10), transparent 50%),
-            radial-gradient(ellipse at 85% 40%, rgba(22,163,74,0.06), transparent 45%),
-            linear-gradient(180deg, #0E1117 0%, #0B0E13 100%);
-        }
-        .pb-rule {
-          background: linear-gradient(90deg, transparent, rgba(122,139,168,0.22) 8%, rgba(122,139,168,0.22) 92%, transparent);
-        }
-        .pb-hairline { border-color: rgba(122,139,168,0.14); }
+        .pb-grain { background: #ffffff; }
+        .pb-rule { background: linear-gradient(90deg, transparent, #E2E8F0 8%, #E2E8F0 92%, transparent); }
+        .pb-hairline { border-color: #E5E7EB; }
         .pb-mono { font-family: "IBM Plex Mono", "Menlo", monospace; letter-spacing: -0.01em; }
         .pb-display { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "ss01","ss02"; }
         .pb-num { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "tnum"; letter-spacing: -0.04em; }
         .pb-editorial { font-family: Georgia, "Times New Roman", serif; }
-        .pb-win { color: #34D399; }
-        .pb-lose { color: #7A8BA8; }
+        .pb-win { color: #F97316; }
+        .pb-lose { color: #9CA3AF; }
         .pb-callout {
-          background: linear-gradient(135deg, rgba(52,211,153,0.05), rgba(52,211,153,0.01));
-          border-left: 2px solid #34D399;
+          background: #FFF7ED;
+          border-left: 2px solid #F97316;
         }
         .pb-section-num {
           font-family: "IBM Plex Mono", monospace;
           font-size: 10px;
           letter-spacing: 0.2em;
-          color: #3D4D63;
+          color: #9CA3AF;
           text-transform: uppercase;
         }
-        .pb-link { border-bottom: 1px solid rgba(52,211,153,0.4); transition: border-color 160ms ease; }
-        .pb-link:hover { border-color: #34D399; }
+        .pb-link { border-bottom: 1px solid rgba(249,115,22,0.4); transition: border-color 160ms ease; }
+        .pb-link:hover { border-color: #F97316; }
         @keyframes pbRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .pb-rise { animation: pbRise 700ms cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
       <Nav />
 
-      <main className="pb-grain text-[#E8EDF5] min-h-screen">
+      <main className="bg-white text-gray-950 min-h-screen">
         {/* ─────────────────────────────────────────────────
            HERO — editorial anchor, serif H1, big stat
            ───────────────────────────────────────────────── */}
@@ -160,14 +153,14 @@ export default function VsUnusualWhales() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-gray-400">Updated Apr 2026</span>
               </div>
               <h1
-                className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8"
+                className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-gray-950 mb-8"
               >
-                Unusual Whales <span className="text-[#3D4D63]">vs</span> Profit Builders.
+                Unusual Whales <span className="text-gray-400">vs</span> Profit Builders.
               </h1>
-              <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-xl">
+              <p className="text-[18px] md:text-[19px] leading-[1.55] text-gray-600 max-w-xl">
                 Two options flow platforms. One dumps the raw tape and lets you interpret. The other grades every print and publishes its outcomes. We'll show you when each wins — without pretending we're the answer every time.
               </p>
             </div>
@@ -183,34 +176,34 @@ export default function VsUnusualWhales() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">02 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Verdict</span>
+              <span className="pb-mono text-[11px] text-gray-400">Verdict</span>
             </div>
 
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-12">
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick Unusual Whales.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If your edge is Congressional trade data, or if you're an advanced trader who wants the largest raw-flow surface at the lowest price and prefers to do the interpretation yourself.
                 </p>
-                <div className="pb-mono text-[11px] text-[#7A8BA8] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-gray-600 uppercase tracking-wider">
                   $50/mo · Raw flow · Discord-centric
                 </div>
               </div>
 
               <div className="md:col-span-2 flex md:justify-center items-start md:items-center">
-                <div className="pb-display text-[#3D4D63] text-[48px] font-light leading-none">/</div>
+                <div className="pb-display text-gray-400 text-[48px] font-light leading-none">/</div>
               </div>
 
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick Profit Builders.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If you want flow already graded for conviction, a public documented OPRA methodology you can audit, and alerts that point to setups the engine actually vetted — not a firehose you filter alone.
                 </p>
-                <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-[#F97316] uppercase tracking-wider">
                   $99/mo · Graded signals · Telegram + Discord
                 </div>
               </div>
@@ -226,32 +219,32 @@ export default function VsUnusualWhales() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">03 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Side-by-side</span>
+              <span className="pb-mono text-[11px] text-gray-400">Side-by-side</span>
             </div>
 
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-10 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-10 max-w-3xl">
               Twelve dimensions that actually matter.
             </h2>
 
             <div className="overflow-x-auto -mx-6 px-6">
               <table className="w-full min-w-[640px]">
                 <thead>
-                  <tr className="border-b border-[#252E3D]">
-                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-[#3D4D63] font-medium">Dimension</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#A9B4C6] font-medium w-[34%]">Unusual Whales</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#34D399] font-medium w-[34%]">Profit Builders</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-gray-400 font-medium">Dimension</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-gray-600 font-medium w-[34%]">Unusual Whales</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#F97316] font-medium w-[34%]">Profit Builders</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <MRow label="Starting price" a={<span className="pb-mono">$29–50/mo</span>} b={<span className="pb-mono text-white">$99/mo</span>} />
+                  <MRow label="Starting price" a={<span className="pb-mono">$29–50/mo</span>} b={<span className="pb-mono text-gray-950">$99/mo</span>} />
                   <MRow label="Free trial" a="Money-back refund only" b="7 days, card required" win />
                   <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, institutional-flow filter engine</span>} win />
                   <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
                   <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
                   <MRow label="Discord alerts" a="Yes" b="Yes, 1–3s delivery" />
                   <MRow label="Telegram alerts" a={<span className="pb-lose">No</span>} b={<span className="pb-win">Native, mobile-first</span>} win />
-                  <MRow label="Dark pool data" a={<span className="text-white">Standalone feed</span>} b="Surfaced via flow" />
-                  <MRow label="Congress trades" a={<span className="text-white">Yes — unique</span>} b={<span className="pb-lose">Not offered</span>} />
+                  <MRow label="Dark pool data" a={<span className="text-gray-950">Standalone feed</span>} b="Surfaced via flow" />
+                  <MRow label="Congress trades" a={<span className="text-gray-950">Yes — unique</span>} b={<span className="pb-lose">Not offered</span>} />
                   <MRow label="GEX heatmap" a={<span className="pb-lose">No</span>} b={<span className="pb-win">220 symbols</span>} win />
                   <MRow label="Accumulation detection" a={<span className="pb-lose">Raw prints only</span>} b={<span className="pb-win">RAPID badges on repeat hits</span>} win />
                   <MRow label="Sector / IV / Greeks" a="Yes" b="Yes, inline on every signal" />
@@ -259,7 +252,7 @@ export default function VsUnusualWhales() {
               </table>
             </div>
 
-            <p className="pb-mono text-[10px] text-[#3D4D63] mt-6 uppercase tracking-wider">
+            <p className="pb-mono text-[10px] text-gray-400 mt-6 uppercase tracking-wider">
               Pricing and features verified April 2026 from each vendor's public documentation.
             </p>
           </div>
@@ -273,15 +266,15 @@ export default function VsUnusualWhales() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">04 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Honest</span>
+              <span className="pb-mono text-[11px] text-gray-400">Honest</span>
             </div>
 
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where Unusual Whales is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#7A8BA8]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   Fair is fair. There are real reasons Unusual Whales has the brand position it does.
                 </p>
               </div>
@@ -299,20 +292,20 @@ export default function VsUnusualWhales() {
         {/* ─────────────────────────────────────────────────
            WHERE PB WINS — the sales layer, but grounded
            ───────────────────────────────────────────────── */}
-        <section className="py-20 px-6 border-b pb-hairline bg-[#0B0E13]">
+        <section className="py-20 px-6 border-b pb-hairline bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-baseline gap-3 mb-12">
-              <span className="pb-section-num" style={{ color: "#34D399" }}>05 / 07</span>
+              <span className="pb-section-num" style={{ color: "#F97316" }}>05 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#34D399]">Where we win</span>
+              <span className="pb-mono text-[11px] text-[#F97316]">Where we win</span>
             </div>
 
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where Profit Builders is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#A9B4C6]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   The categories we were designed to own — quality over quantity, transparency over opacity.
                 </p>
               </div>
@@ -343,23 +336,23 @@ export default function VsUnusualWhales() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">06 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Deep dive</span>
+              <span className="pb-mono text-[11px] text-gray-400">Deep dive</span>
             </div>
 
             <div className="grid md:grid-cols-12 gap-x-8">
               <aside className="md:col-span-3 md:sticky md:top-24 self-start mb-8 md:mb-0">
-                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-[#3D4D63] mb-4">In this section</div>
+                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-4">In this section</div>
                 <nav className="space-y-3">
-                  <a href="#flow" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Flow detection</a>
-                  <a href="#alerts" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Alerts & latency</a>
-                  <a href="#pricing" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Pricing per outcome</a>
-                  <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#flow" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Flow detection</a>
+                  <a href="#alerts" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Alerts & latency</a>
+                  <a href="#pricing" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Pricing per outcome</a>
+                  <a href="#who" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Who each is for</a>
                 </nav>
               </aside>
 
               <div className="md:col-span-9 space-y-16">
                 <Dive id="flow" heading="Flow detection depth">
-                  Both platforms ingest the full US options tape in real time. The difference is what comes out the other side. Unusual Whales exposes more raw prints per day — higher volume, less filtering, you pick the ones that matter. Profit Builders runs every print through the conviction filter before it's surfaced. <em className="pb-editorial text-white">Grade A means the nine filters all agree; Grade B means most do.</em> Anything that fails multiple checks never reaches your feed. The tradeoff is clear: Unusual Whales gives you more. Profit Builders gives you fewer with a reason for each one.
+                  Both platforms ingest the full US options tape in real time. The difference is what comes out the other side. Unusual Whales exposes more raw prints per day — higher volume, less filtering, you pick the ones that matter. Profit Builders runs every print through the conviction filter before it's surfaced. <em className="pb-editorial text-gray-950">Grade A means the nine filters all agree; Grade B means most do.</em> Anything that fails multiple checks never reaches your feed. The tradeoff is clear: Unusual Whales gives you more. Profit Builders gives you fewer with a reason for each one.
                 </Dive>
 
                 <Dive id="alerts" heading="Alerts and latency">
@@ -367,7 +360,7 @@ export default function VsUnusualWhales() {
                 </Dive>
 
                 <Dive id="pricing" heading="Pricing, per outcome">
-                  On paper, Unusual Whales is cheaper: <span className="pb-mono text-white">$50/mo</span> vs <span className="pb-mono text-white">$99/mo</span>. The trade-off is curation. Unusual Whales is a firehose with extensive filter knobs — you process the flow yourself. Profit Builders runs every print through a documented methodology before it reaches your screen, surfacing pre-filtered institutional flow. Different value propositions; you pay more for less work.
+                  On paper, Unusual Whales is cheaper: <span className="pb-mono text-gray-950">$50/mo</span> vs <span className="pb-mono text-gray-950">$99/mo</span>. The trade-off is curation. Unusual Whales is a firehose with extensive filter knobs — you process the flow yourself. Profit Builders runs every print through a documented methodology before it reaches your screen, surfacing pre-filtered institutional flow. Different value propositions; you pay more for less work.
                 </Dive>
 
                 <Dive id="who" heading="Who each platform is actually for">
@@ -386,10 +379,10 @@ export default function VsUnusualWhales() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">07 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Questions</span>
+              <span className="pb-mono text-[11px] text-gray-400">Questions</span>
             </div>
 
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-12 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-12 max-w-3xl">
               The questions people actually ask.
             </h2>
 
@@ -399,13 +392,13 @@ export default function VsUnusualWhales() {
                   For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a documented methodology, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
                 </Faq>
                 <Faq q="Does Unusual Whales publish a documented methodology?">
-                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
+                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-gray-950">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="Can I use both?">
                   Yes, they complement each other cleanly. Unusual Whales for breadth (Congress, dark pool heatmaps, screener). Profit Builders for filtered, graded, tracked signals. Many active traders run both.
                 </Faq>
                 <Faq q="What's the catch on the 7-day free trial?">
-                  A credit card is required at signup through Stripe. You are <em className="pb-editorial text-white">not charged</em> during the 7 days. On day 7 the subscription auto-charges <span className="pb-mono text-white">$99/month</span> unless you've canceled from your dashboard before then. Cancellation is one click.
+                  A credit card is required at signup through Stripe. You are <em className="pb-editorial text-gray-950">not charged</em> during the 7 days. On day 7 the subscription auto-charges <span className="pb-mono text-gray-950">$99/month</span> unless you've canceled from your dashboard before then. Cancellation is one click.
                 </Faq>
                 <Faq q="Who should pick Unusual Whales over Profit Builders?">
                   Traders who need Congressional trade data, want the cheapest established tier, or prefer interpreting raw flow themselves over working from a pre-graded feed. All three are legitimate reasons.
@@ -420,22 +413,22 @@ export default function VsUnusualWhales() {
            ───────────────────────────────────────────────── */}
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#34D399] mb-6">
+            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#F97316] mb-6">
               Start trial
             </div>
-            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-white mb-6">
+            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-gray-950 mb-6">
               See graded signals in real time.
             </h2>
-            <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
+            <p className="text-[17px] leading-[1.6] text-gray-600 max-w-xl mx-auto mb-10">
               Seven days of full feature access. Real-time institutional flow, Grade A conviction, 220-symbol GEX heatmap, and the methodology you just read about.
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
+              className="inline-flex items-center gap-3 bg-[#F97316] hover:bg-[#EA580C] text-white pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
             >
               Start 7-Day Trial →
             </Link>
-            <p className="pb-mono text-[11px] text-[#3D4D63] uppercase tracking-wider mt-6">
+            <p className="pb-mono text-[11px] text-gray-400 uppercase tracking-wider mt-6">
               7-day free trial · Card required · Cancel anytime
             </p>
           </div>
@@ -460,11 +453,11 @@ function MRow({
   win?: boolean
 }) {
   return (
-    <tr className="border-b border-[#1A1F2A]">
-      <td className="py-4 pr-4 pb-mono text-[13px] text-[#A9B4C6] align-top">{label}</td>
-      <td className="py-4 px-4 text-[14px] text-[#E8EDF5] align-top">{a}</td>
-      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-[rgba(52,211,153,0.03)]" : ""}`}>
-        <div className="text-[#E8EDF5]">{b}</div>
+    <tr className="border-b border-gray-100">
+      <td className="py-4 pr-4 pb-mono text-[13px] text-gray-600 align-top">{label}</td>
+      <td className="py-4 px-4 text-[14px] text-gray-950 align-top">{a}</td>
+      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-orange-50/40" : ""}`}>
+        <div className="text-gray-950">{b}</div>
       </td>
     </tr>
   )
@@ -474,15 +467,15 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
   return (
     <div className="grid grid-cols-12 gap-x-4 items-baseline">
       <div className="col-span-2 md:col-span-1">
-        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#34D399]" : "text-[#3D4D63]"}`}>
+        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#F97316]" : "text-gray-400"}`}>
           {n}
         </div>
       </div>
       <div className="col-span-10 md:col-span-11">
-        <h3 className="pb-editorial text-[22px] md:text-[24px] text-white leading-[1.2] tracking-[-0.015em] mb-2">
+        <h3 className="pb-editorial text-[22px] md:text-[24px] text-gray-950 leading-[1.2] tracking-[-0.015em] mb-2">
           {title}
         </h3>
-        <p className="text-[15px] leading-[1.65] text-[#A9B4C6]">{body}</p>
+        <p className="text-[15px] leading-[1.65] text-gray-600">{body}</p>
       </div>
     </div>
   )
@@ -491,10 +484,10 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
 function Dive({ id, heading, children }: { id: string; heading: string; children: React.ReactNode }) {
   return (
     <div id={id}>
-      <h3 className="pb-editorial text-[26px] md:text-[30px] text-white leading-[1.15] tracking-[-0.015em] mb-5">
+      <h3 className="pb-editorial text-[26px] md:text-[30px] text-gray-950 leading-[1.15] tracking-[-0.015em] mb-5">
         {heading}
       </h3>
-      <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">{children}</p>
+      <p className="text-[16px] leading-[1.7] text-gray-600">{children}</p>
     </div>
   )
 }
@@ -502,8 +495,8 @@ function Dive({ id, heading, children }: { id: string; heading: string; children
 function Faq({ q, children }: { q: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="pb-editorial text-[20px] md:text-[22px] text-white leading-[1.25] mb-3">{q}</div>
-      <div className="text-[15px] leading-[1.7] text-[#A9B4C6]">{children}</div>
+      <div className="pb-editorial text-[20px] md:text-[22px] text-gray-950 leading-[1.25] mb-3">{q}</div>
+      <div className="text-[15px] leading-[1.7] text-gray-600">{children}</div>
     </div>
   )
 }

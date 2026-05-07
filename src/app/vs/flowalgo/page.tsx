@@ -114,31 +114,35 @@ export default function VsFlowAlgo() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
 
       <style>{`
-        .pb-grain {
-          background-image:
-            radial-gradient(ellipse at 20% 10%, rgba(37,99,235,0.10), transparent 50%),
-            radial-gradient(ellipse at 85% 40%, rgba(22,163,74,0.06), transparent 45%),
-            linear-gradient(180deg, #0E1117 0%, #0B0E13 100%);
-        }
-        .pb-rule { background: linear-gradient(90deg, transparent, rgba(122,139,168,0.22) 8%, rgba(122,139,168,0.22) 92%, transparent); }
-        .pb-hairline { border-color: rgba(122,139,168,0.14); }
+        .pb-grain { background: #ffffff; }
+        .pb-rule { background: linear-gradient(90deg, transparent, #E2E8F0 8%, #E2E8F0 92%, transparent); }
+        .pb-hairline { border-color: #E5E7EB; }
         .pb-mono { font-family: "IBM Plex Mono", "Menlo", monospace; letter-spacing: -0.01em; }
         .pb-display { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "ss01","ss02"; }
         .pb-num { font-family: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif; font-feature-settings: "tnum"; letter-spacing: -0.04em; }
         .pb-editorial { font-family: Georgia, "Times New Roman", serif; }
-        .pb-win { color: #34D399; }
-        .pb-lose { color: #7A8BA8; }
-        .pb-callout { background: linear-gradient(135deg, rgba(52,211,153,0.05), rgba(52,211,153,0.01)); border-left: 2px solid #34D399; }
-        .pb-section-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; color: #3D4D63; text-transform: uppercase; }
-        .pb-link { border-bottom: 1px solid rgba(52,211,153,0.4); transition: border-color 160ms ease; }
-        .pb-link:hover { border-color: #34D399; }
+        .pb-win { color: #F97316; }
+        .pb-lose { color: #9CA3AF; }
+        .pb-callout {
+          background: #FFF7ED;
+          border-left: 2px solid #F97316;
+        }
+        .pb-section-num {
+          font-family: "IBM Plex Mono", monospace;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          color: #9CA3AF;
+          text-transform: uppercase;
+        }
+        .pb-link { border-bottom: 1px solid rgba(249,115,22,0.4); transition: border-color 160ms ease; }
+        .pb-link:hover { border-color: #F97316; }
         @keyframes pbRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .pb-rise { animation: pbRise 700ms cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
       <Nav />
 
-      <main className="pb-grain text-[#E8EDF5] min-h-screen">
+      <main className="bg-white text-gray-950 min-h-screen">
         {/* HERO */}
         <section className="pt-32 pb-24 px-6 border-b pb-hairline">
           <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-x-8 gap-y-10 pb-rise">
@@ -146,12 +150,12 @@ export default function VsFlowAlgo() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-gray-400">Updated Apr 2026</span>
               </div>
-              <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8">
-                FlowAlgo <span className="text-[#3D4D63]">vs</span> Profit Builders.
+              <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-gray-950 mb-8">
+                FlowAlgo <span className="text-gray-400">vs</span> Profit Builders.
               </h1>
-              <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-xl">
+              <p className="text-[18px] md:text-[19px] leading-[1.55] text-gray-600 max-w-xl">
                 FlowAlgo is $149/mo and asks for $37 up front to try it. Profit Builders is $99/mo with a genuine 7-day free trial and a documented data methodology you can audit before paying a dollar. Here's the fair breakdown — including where FlowAlgo still wins.
               </p>
             </div>
@@ -164,31 +168,31 @@ export default function VsFlowAlgo() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">02 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Verdict</span>
+              <span className="pb-mono text-[11px] text-gray-400">Verdict</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-12">
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick FlowAlgo.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If voice alerts are a critical part of your workflow, you specifically want FlowAlgo's dark pool "Levels" feature, and you're fine paying a 50% premium for a tool whose publicly verifiable performance is unknown.
                 </p>
-                <div className="pb-mono text-[11px] text-[#7A8BA8] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-gray-600 uppercase tracking-wider">
                   $149/mo · Voice alerts · Legacy brand
                 </div>
               </div>
               <div className="md:col-span-2 flex md:justify-center items-start md:items-center">
-                <div className="pb-display text-[#3D4D63] text-[48px] font-light leading-none">/</div>
+                <div className="pb-display text-gray-400 text-[48px] font-light leading-none">/</div>
               </div>
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Pick Profit Builders.
                 </h2>
-                <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
+                <p className="text-[16px] leading-[1.6] text-gray-600 mb-4">
                   If you want to pay 33% less, try every feature free for a week without being charged, and work from a documented data methodology built on OPRA tape ingest and CBOE-compliant sweep detection.
                 </p>
-                <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
+                <div className="pb-mono text-[11px] text-[#F97316] uppercase tracking-wider">
                   $99/mo · Graded signals · 7-day free trial
                 </div>
               </div>
@@ -202,18 +206,18 @@ export default function VsFlowAlgo() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">03 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Side-by-side</span>
+              <span className="pb-mono text-[11px] text-gray-400">Side-by-side</span>
             </div>
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-10 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-10 max-w-3xl">
               Twelve dimensions that actually matter.
             </h2>
             <div className="overflow-x-auto -mx-6 px-6">
               <table className="w-full min-w-[640px]">
                 <thead>
-                  <tr className="border-b border-[#252E3D]">
-                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-[#3D4D63] font-medium">Dimension</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#A9B4C6] font-medium w-[34%]">FlowAlgo</th>
-                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#34D399] font-medium w-[34%]">Profit Builders</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 pr-4 pb-mono text-[11px] uppercase tracking-wider text-gray-400 font-medium">Dimension</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-gray-600 font-medium w-[34%]">FlowAlgo</th>
+                    <th className="text-left py-3 px-4 pb-mono text-[11px] uppercase tracking-wider text-[#F97316] font-medium w-[34%]">Profit Builders</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -222,8 +226,8 @@ export default function VsFlowAlgo() {
                   <MRow label="Conviction grading" a={<span className="pb-lose">None — raw flow</span>} b={<span className="pb-win">Grade A / B, institutional-flow filter engine</span>} win />
                   <MRow label="Public methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented methodology</span>} win />
                   <MRow label="Data methodology" a={<span className="pb-lose">Not published</span>} b={<span className="pb-win">Documented</span>} win />
-                  <MRow label="Voice alerts" a={<span className="text-white">Yes — unique</span>} b={<span className="pb-lose">Not offered</span>} />
-                  <MRow label="Dark pool Levels" a={<span className="text-white">Yes — support/resistance</span>} b="Partial (via flow)" />
+                  <MRow label="Voice alerts" a={<span className="text-gray-950">Yes — unique</span>} b={<span className="pb-lose">Not offered</span>} />
+                  <MRow label="Dark pool Levels" a={<span className="text-gray-950">Yes — support/resistance</span>} b="Partial (via flow)" />
                   <MRow label="Discord alerts" a="Yes" b="Yes, 1–3s delivery" />
                   <MRow label="Telegram alerts" a={<span className="pb-lose">No</span>} b={<span className="pb-win">Native, mobile-first</span>} win />
                   <MRow label="Historical flow data" a="Yes" b="Yes" />
@@ -232,7 +236,7 @@ export default function VsFlowAlgo() {
                 </tbody>
               </table>
             </div>
-            <p className="pb-mono text-[10px] text-[#3D4D63] mt-6 uppercase tracking-wider">
+            <p className="pb-mono text-[10px] text-gray-400 mt-6 uppercase tracking-wider">
               Pricing and features verified April 2026 from each vendor's public documentation.
             </p>
           </div>
@@ -244,14 +248,14 @@ export default function VsFlowAlgo() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">04 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Honest</span>
+              <span className="pb-mono text-[11px] text-gray-400">Honest</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where FlowAlgo is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#7A8BA8]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   FlowAlgo has been in the space longer than most. A few things it still does better.
                 </p>
               </div>
@@ -266,19 +270,19 @@ export default function VsFlowAlgo() {
         </section>
 
         {/* WHERE PB WINS */}
-        <section className="py-20 px-6 border-b pb-hairline bg-[#0B0E13]">
+        <section className="py-20 px-6 border-b pb-hairline bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-baseline gap-3 mb-12">
-              <span className="pb-section-num" style={{ color: "#34D399" }}>05 / 07</span>
+              <span className="pb-section-num" style={{ color: "#F97316" }}>05 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#34D399]">Where we win</span>
+              <span className="pb-mono text-[11px] text-[#F97316]">Where we win</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-16">
               <div className="md:col-span-4">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-4">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-4">
                   Where Profit Builders is stronger.
                 </h2>
-                <p className="text-[15px] leading-[1.6] text-[#A9B4C6]">
+                <p className="text-[15px] leading-[1.6] text-gray-600">
                   The categories that matter most for a trader picking a tool in 2026 — pricing transparency, evidence, and actionable signals.
                 </p>
               </div>
@@ -306,24 +310,24 @@ export default function VsFlowAlgo() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">06 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Deep dive</span>
+              <span className="pb-mono text-[11px] text-gray-400">Deep dive</span>
             </div>
             <div className="grid md:grid-cols-12 gap-x-8">
               <aside className="md:col-span-3 md:sticky md:top-24 self-start mb-8 md:mb-0">
-                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-[#3D4D63] mb-4">In this section</div>
+                <div className="pb-mono text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-4">In this section</div>
                 <nav className="space-y-3">
-                  <a href="#trial" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">The trial mechanics</a>
-                  <a href="#pricing" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Pricing per outcome</a>
-                  <a href="#levels" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Levels vs grading</a>
-                  <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#trial" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">The trial mechanics</a>
+                  <a href="#pricing" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Pricing per outcome</a>
+                  <a href="#levels" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Levels vs grading</a>
+                  <a href="#who" className="block text-[14px] text-gray-600 hover:text-gray-950 transition-colors">Who each is for</a>
                 </nav>
               </aside>
               <div className="md:col-span-9 space-y-16">
                 <Dive id="trial" heading="The trial mechanics, compared">
-                  FlowAlgo asks for <span className="pb-mono text-white">$37</span> upfront for a 14-day trial, then auto-charges <span className="pb-mono text-white">$149</span> on day 15 unless you cancel. That's a <em className="pb-editorial text-white">4x price step</em> most trialers don't fully register at signup. Profit Builders asks for a card at signup, charges nothing for 7 days, and auto-charges $99 on day 8 — a smaller commitment, clearer pricing, no hidden step-up. Both require cancellation to avoid the charge; only one pretends the trial itself is free when it isn't.
+                  FlowAlgo asks for <span className="pb-mono text-gray-950">$37</span> upfront for a 14-day trial, then auto-charges <span className="pb-mono text-gray-950">$149</span> on day 15 unless you cancel. That's a <em className="pb-editorial text-gray-950">4x price step</em> most trialers don't fully register at signup. Profit Builders asks for a card at signup, charges nothing for 7 days, and auto-charges $99 on day 8 — a smaller commitment, clearer pricing, no hidden step-up. Both require cancellation to avoid the charge; only one pretends the trial itself is free when it isn't.
                 </Dive>
                 <Dive id="pricing" heading="Pricing per outcome">
-                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-white">$99</span> vs <span className="pb-mono text-white">$149</span>. The processing matters too. Profit Builders runs CBOE-compliant sweep detection (Rule 6.11), OPRA condition-code parsing, and Black-Scholes-Merton Greeks — all documented at /results. FlowAlgo does not publish a methodology page describing how its scanner processes flow. Both are legitimate business models. Only one lets you audit the data pipeline before you pay.
+                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-gray-950">$99</span> vs <span className="pb-mono text-gray-950">$149</span>. The processing matters too. Profit Builders runs CBOE-compliant sweep detection (Rule 6.11), OPRA condition-code parsing, and Black-Scholes-Merton Greeks — all documented at /results. FlowAlgo does not publish a methodology page describing how its scanner processes flow. Both are legitimate business models. Only one lets you audit the data pipeline before you pay.
                 </Dive>
                 <Dive id="levels" heading="Dark pool Levels vs conviction grading">
                   FlowAlgo's Levels feature draws support and resistance zones based on dark pool print concentration — a real differentiator if you trade off those levels as primary decision points. Profit Builders takes a different approach: rather than visualize dark pool zones, it grades every print against nine filters and surfaces Grade A signals with the institutional context that explains them. Both strategies are defensible. Levels is visual and discretionary. Grading is rule-based and delegated. Pick the approach that matches how you actually trade.
@@ -342,21 +346,21 @@ export default function VsFlowAlgo() {
             <div className="flex items-baseline gap-3 mb-12">
               <span className="pb-section-num">07 / 07</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Questions</span>
+              <span className="pb-mono text-[11px] text-gray-400">Questions</span>
             </div>
-            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-white mb-12 max-w-3xl">
+            <h2 className="pb-editorial text-[36px] md:text-[44px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-12 max-w-3xl">
               The questions people actually ask.
             </h2>
             <div className="grid md:grid-cols-12 gap-x-8">
               <div className="md:col-span-12 space-y-10 max-w-3xl">
                 <Faq q="Is Profit Builders cheaper than FlowAlgo?">
-                  Yes. Profit Builders Flow Scanner is <span className="pb-mono text-white">$99/mo</span>. FlowAlgo is <span className="pb-mono text-white">$149/mo</span>. That's 33% cheaper, or roughly $600 saved per year on a like-for-like subscription.
+                  Yes. Profit Builders Flow Scanner is <span className="pb-mono text-gray-950">$99/mo</span>. FlowAlgo is <span className="pb-mono text-gray-950">$149/mo</span>. That's 33% cheaper, or roughly $600 saved per year on a like-for-like subscription.
                 </Faq>
                 <Faq q="What's wrong with FlowAlgo's $37 trial?">
-                  Nothing is "wrong" with it — it's just not what most people mean by a trial. FlowAlgo's 14-day trial costs $37 upfront, and if you don't cancel before day 14, the subscription auto-charges <span className="pb-mono text-white">$149</span>. That's a <em className="pb-editorial text-white">4x step</em> from the trial price. Profit Builders' trial costs $0, lasts 7 days, and auto-charges $99 — same mechanic, lower numbers, no surprise price escalation.
+                  Nothing is "wrong" with it — it's just not what most people mean by a trial. FlowAlgo's 14-day trial costs $37 upfront, and if you don't cancel before day 14, the subscription auto-charges <span className="pb-mono text-gray-950">$149</span>. That's a <em className="pb-editorial text-gray-950">4x step</em> from the trial price. Profit Builders' trial costs $0, lasts 7 days, and auto-charges $99 — same mechanic, lower numbers, no surprise price escalation.
                 </Faq>
                 <Faq q="Does FlowAlgo publish a documented methodology?">
-                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish a methodology page. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
+                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish a methodology page. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-gray-950">profitbuilders.io/results</Link> — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="What does FlowAlgo offer that Profit Builders doesn't?">
                   Three things. Voice alerts that speak activity aloud during market hours. The Levels feature for dark pool support/resistance zones. And a longer public archive of third-party reviews and tutorials because FlowAlgo has been in the space longer. If any of those are load-bearing for your workflow, FlowAlgo still wins that column.
@@ -372,20 +376,20 @@ export default function VsFlowAlgo() {
         {/* CTA */}
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#34D399] mb-6">Start trial</div>
-            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-white mb-6">
+            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#F97316] mb-6">Start trial</div>
+            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-gray-950 mb-6">
               Save $600/year. Keep the evidence.
             </h2>
-            <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
+            <p className="text-[17px] leading-[1.6] text-gray-600 max-w-xl mx-auto mb-10">
               Seven days of full feature access. Real-time institutional flow, Grade A conviction grading, the 220-symbol GEX heatmap, and the OPRA-grade processing pipeline you just read about.
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
+              className="inline-flex items-center gap-3 bg-[#F97316] hover:bg-[#EA580C] text-white pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
             >
               Start 7-Day Trial →
             </Link>
-            <p className="pb-mono text-[11px] text-[#3D4D63] uppercase tracking-wider mt-6">
+            <p className="pb-mono text-[11px] text-gray-400 uppercase tracking-wider mt-6">
               7-day free trial · Card required · Cancel anytime
             </p>
           </div>
@@ -399,11 +403,11 @@ export default function VsFlowAlgo() {
 
 function MRow({ label, a, b, win = false }: { label: string; a: React.ReactNode; b: React.ReactNode; win?: boolean }) {
   return (
-    <tr className="border-b border-[#1A1F2A]">
-      <td className="py-4 pr-4 pb-mono text-[13px] text-[#A9B4C6] align-top">{label}</td>
-      <td className="py-4 px-4 text-[14px] text-[#E8EDF5] align-top">{a}</td>
-      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-[rgba(52,211,153,0.03)]" : ""}`}>
-        <div className="text-[#E8EDF5]">{b}</div>
+    <tr className="border-b border-gray-100">
+      <td className="py-4 pr-4 pb-mono text-[13px] text-gray-600 align-top">{label}</td>
+      <td className="py-4 px-4 text-[14px] text-gray-950 align-top">{a}</td>
+      <td className={`py-4 px-4 text-[14px] align-top ${win ? "bg-orange-50/40" : ""}`}>
+        <div className="text-gray-950">{b}</div>
       </td>
     </tr>
   )
@@ -413,11 +417,11 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
   return (
     <div className="grid grid-cols-12 gap-x-4 items-baseline">
       <div className="col-span-2 md:col-span-1">
-        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#34D399]" : "text-[#3D4D63]"}`}>{n}</div>
+        <div className={`pb-mono text-[11px] tracking-widest ${win ? "text-[#F97316]" : "text-gray-400"}`}>{n}</div>
       </div>
       <div className="col-span-10 md:col-span-11">
-        <h3 className="pb-editorial text-[22px] md:text-[24px] text-white leading-[1.2] tracking-[-0.015em] mb-2">{title}</h3>
-        <p className="text-[15px] leading-[1.65] text-[#A9B4C6]">{body}</p>
+        <h3 className="pb-editorial text-[22px] md:text-[24px] text-gray-950 leading-[1.2] tracking-[-0.015em] mb-2">{title}</h3>
+        <p className="text-[15px] leading-[1.65] text-gray-600">{body}</p>
       </div>
     </div>
   )
@@ -426,8 +430,8 @@ function Pro({ n, title, body, win = false }: { n: string; title: string; body: 
 function Dive({ id, heading, children }: { id: string; heading: string; children: React.ReactNode }) {
   return (
     <div id={id}>
-      <h3 className="pb-editorial text-[26px] md:text-[30px] text-white leading-[1.15] tracking-[-0.015em] mb-5">{heading}</h3>
-      <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">{children}</p>
+      <h3 className="pb-editorial text-[26px] md:text-[30px] text-gray-950 leading-[1.15] tracking-[-0.015em] mb-5">{heading}</h3>
+      <p className="text-[16px] leading-[1.7] text-gray-600">{children}</p>
     </div>
   )
 }
@@ -435,8 +439,8 @@ function Dive({ id, heading, children }: { id: string; heading: string; children
 function Faq({ q, children }: { q: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="pb-editorial text-[20px] md:text-[22px] text-white leading-[1.25] mb-3">{q}</div>
-      <div className="text-[15px] leading-[1.7] text-[#A9B4C6]">{children}</div>
+      <div className="pb-editorial text-[20px] md:text-[22px] text-gray-950 leading-[1.25] mb-3">{q}</div>
+      <div className="text-[15px] leading-[1.7] text-gray-600">{children}</div>
     </div>
   )
 }

@@ -24,21 +24,21 @@ function WallValidationStat() {
   if (!data) return null
   if (data.pending || !data.n) {
     return (
-      <div className="mt-6 rounded-md border border-[rgba(148,163,184,0.12)] bg-[rgba(148,163,184,0.03)] p-5">
-        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B] mb-1">Validation pending</div>
-        <p className="text-sm text-[#94A3B8] leading-relaxed">
+      <div className="mt-6 rounded-md border border-gray-200 bg-gray-50 p-5">
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600 mb-1">Validation pending</div>
+        <p className="text-sm text-gray-600 leading-relaxed">
           Wall-prediction backtest is collecting historical samples. First public stat publishes once we have ≥30 sessions.
         </p>
       </div>
     )
   }
   return (
-    <div className="mt-6 rounded-md border border-[rgba(148,163,184,0.18)] bg-[rgba(15,21,32,0.6)] p-5">
+    <div className="mt-6 rounded-md border border-gray-200 bg-gray-50 p-5">
       <div className="flex items-baseline justify-between mb-3">
-        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748B]">Wall validation — SPY</div>
-        <div className="text-[10px] text-[#475569] font-mono tabular-nums">n = {data.n}</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-600">Wall validation — SPY</div>
+        <div className="text-[10px] text-gray-500 font-mono tabular-nums">n = {data.n}</div>
       </div>
-      <p className="text-sm text-[#94A3B8] leading-relaxed mb-4">
+      <p className="text-sm text-gray-600 leading-relaxed mb-4">
         Backtest method: for each historical EOD snapshot, take the Max +GEX
         call wall strike, compare to the <em>following session&apos;s</em> close.
         Distance is &vert;close − wall&vert; / spot.
@@ -49,14 +49,14 @@ function WallValidationStat() {
           { band: "≤ 1%", pct: data.hit_pct_1 },
           { band: "≤ 2%", pct: data.hit_pct_2 },
         ].map(r => (
-          <div key={r.band} className="rounded border border-[rgba(148,163,184,0.12)] p-3 text-center">
-            <div className="text-[9px] uppercase tracking-[0.14em] text-[#64748B] mb-1">close within</div>
-            <div className="text-[16px] font-mono tabular-nums font-bold text-white">{r.band}</div>
-            <div className="text-[20px] font-mono tabular-nums font-bold text-[#22C55E] mt-1">{r.pct ?? "—"}%</div>
+          <div key={r.band} className="rounded border border-gray-200 p-3 text-center">
+            <div className="text-[9px] uppercase tracking-[0.14em] text-gray-600 mb-1">close within</div>
+            <div className="text-[16px] font-mono tabular-nums font-bold text-gray-950">{r.band}</div>
+            <div className="text-[20px] font-mono tabular-nums font-bold text-[#F97316] mt-1">{r.pct ?? "—"}%</div>
           </div>
         ))}
       </div>
-      <p className="text-[11px] text-[#475569] leading-relaxed italic">
+      <p className="text-[11px] text-gray-500 leading-relaxed italic">
         Honest caveat: n = {data.n} is a small sample. The daily snapshot cron
         and a weekly Polygon backtest grow the dataset; we re-run automatically
         and these numbers update. Median distance: {data.median_distance_pct?.toFixed(2) ?? "—"}%.
@@ -67,7 +67,7 @@ function WallValidationStat() {
 
 export default function MethodologyPage() {
   return (
-    <div className="min-h-screen bg-[#080B12] text-[#E5E7EB]">
+    <div className="min-h-screen bg-white text-gray-950">
       <Nav />
 
       <main className="max-w-6xl mx-auto px-6 py-16 md:py-24">
@@ -77,7 +77,7 @@ export default function MethodologyPage() {
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] mb-6">
           How we process institutional options flow.
         </h1>
-        <p className="text-lg md:text-xl text-[#94A3B8] leading-relaxed mb-16 max-w-3xl">
+        <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-16 max-w-3xl">
           The dimensions of the pipeline that put Profit Builders in line with the
           institutional standards used by FINRA, OPRA, CBOE, and academic
           microstructure research. No outcome claims — just the data plumbing.
@@ -154,18 +154,18 @@ export default function MethodologyPage() {
           <p>
             The GEX heatmap surfaces dealer hedging walls strike-by-strike,
             expiry-by-expiry. We compute net gamma exposure per cell as{' '}
-            <code className="text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">γ × OI × spot²</code>{' '}
+            <code className="text-[#F97316] bg-[rgba(249,115,22,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">γ × OI × spot²</code>{' '}
             — the public SqueezeMetrics dollar-gamma convention — assuming the
             standard worst-case dealer position (short calls, long puts) when
             no flow attribution is available.
           </p>
           <p className="mt-4">
-            What this means: <strong className="text-white">wall direction is robust</strong> —
+            What this means: <strong className="text-gray-950">wall direction is robust</strong> —
             the strikes our heatmap flags as Max +GEX (call wall) and Max -GEX
             (put wall) are computed from real Polygon greeks during regular
             trading hours, restricted to a ±3% band around spot for actionable
             relevance, and align with the price levels where dealer delta-hedging
-            activity concentrates. <strong className="text-white">Wall magnitudes are convention-dependent</strong> —
+            activity concentrates. <strong className="text-gray-950">Wall magnitudes are convention-dependent</strong> —
             tools that layer in retail-vs-institutional flow inference (e.g.,
             SpotGamma&apos;s GEX 2.0) will report different absolute dollar
             values for the same underlying chain. We use the public methodology
@@ -184,7 +184,7 @@ export default function MethodologyPage() {
 
         <Section id="pipeline-transparency" title="8. Pipeline transparency" subtitle="What we will and won&apos;t claim">
           <p>
-            Every signal that enters the database carries a <code className="text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">scorer_version</code>{' '}
+            Every signal that enters the database carries a <code className="text-[#F97316] bg-[rgba(249,115,22,0.08)] px-1.5 py-0.5 rounded text-[0.9em]">scorer_version</code>{' '}
             stamp identifying which ruleset produced it. Conviction grading is
             an evolving internal layer — we will not publicize aggregate win
             rates that mix grader versions, since the metric is non-stationary
@@ -193,8 +193,8 @@ export default function MethodologyPage() {
           </p>
         </Section>
 
-        <div className="mt-20 pt-10 border-t border-[rgba(148,163,184,0.12)]">
-          <p className="text-sm text-[#64748B] mb-6 leading-relaxed">
+        <div className="mt-20 pt-10 border-t border-gray-100">
+          <p className="text-sm text-gray-600 mb-6 leading-relaxed">
             Built on real OPRA tape, Polygon market data, and standards
             published by CBOE, FINRA, and the academic microstructure
             literature. No proprietary aggregations, no smoothed numbers, no
@@ -204,7 +204,7 @@ export default function MethodologyPage() {
             <Link href="/scanner" className="inline-flex items-center px-8 py-3.5 bg-[#F97316] text-white font-bold rounded-full hover:bg-[#EA580C] transition-colors">
               Try the live scanner
             </Link>
-            <Link href="/pricing" className="inline-flex items-center px-8 py-3.5 bg-transparent border border-[rgba(148,163,184,0.2)] text-[#E5E7EB] font-medium rounded-full hover:border-[rgba(148,163,184,0.4)] transition-colors">
+            <Link href="/pricing" className="inline-flex items-center px-8 py-3.5 bg-transparent border border-gray-300 text-gray-900 font-medium rounded-full hover:border-gray-900 transition-colors">
               See pricing
             </Link>
           </div>
@@ -214,7 +214,7 @@ export default function MethodologyPage() {
           {/* Sticky TOC — desktop only */}
           <aside className="hidden lg:block">
             <div className="sticky top-24">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#475569] mb-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 mb-3">
                 On this page
               </div>
               <nav className="space-y-1.5 text-[12px]">
@@ -231,21 +231,21 @@ export default function MethodologyPage() {
                   <a
                     key={s.id}
                     href={`#${s.id}`}
-                    className="block py-1 text-[#7A8BA8] hover:text-white border-l-2 border-transparent hover:border-[#F97316] pl-3 transition-colors"
+                    className="block py-1 text-gray-500 hover:text-gray-900 border-l-2 border-transparent hover:border-[#F97316] pl-3 transition-colors"
                   >
                     {s.label}
                   </a>
                 ))}
               </nav>
 
-              <div className="mt-8 pt-6 border-t border-[rgba(148,163,184,0.1)]">
-                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#475569] mb-2">
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 mb-2">
                   Continue
                 </div>
-                <Link href="/blog" className="block text-[12px] text-[#7A8BA8] hover:text-white py-1 transition-colors">
+                <Link href="/blog" className="block text-[12px] text-gray-500 hover:text-gray-900 py-1 transition-colors">
                   Blog &amp; guides →
                 </Link>
-                <Link href="/scanner" className="block text-[12px] text-[#7A8BA8] hover:text-white py-1 transition-colors">
+                <Link href="/scanner" className="block text-[12px] text-gray-500 hover:text-gray-900 py-1 transition-colors">
                   Live scanner →
                 </Link>
               </div>
@@ -263,10 +263,10 @@ function Section({ id, title, subtitle, children }: { id?: string; title: string
   return (
     <section id={id} className="mb-12 scroll-mt-24">
       <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-[#E5E7EB]">{title}</h2>
-        <span className="text-sm text-[#94A3B8]">— {subtitle}</span>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-gray-950">{title}</h2>
+        <span className="text-sm text-gray-700">— {subtitle}</span>
       </div>
-      <div className="text-[15px] md:text-[16px] text-[#94A3B8] leading-[1.7] max-w-3xl">
+      <div className="text-[15px] md:text-[16px] text-gray-700 leading-[1.7] max-w-3xl">
         {children}
       </div>
     </section>

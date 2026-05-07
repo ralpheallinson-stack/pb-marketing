@@ -128,40 +128,35 @@ export default function VsIndex() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <style>{`
-        .pb-grain {
-          background-image:
-            radial-gradient(ellipse at 20% 10%, rgba(37,99,235,0.10), transparent 50%),
-            radial-gradient(ellipse at 85% 40%, rgba(22,163,74,0.06), transparent 45%),
-            linear-gradient(180deg, #0E1117 0%, #0B0E13 100%);
-        }
-        .pb-rule { background: linear-gradient(90deg, transparent, rgba(122,139,168,0.22) 8%, rgba(122,139,168,0.22) 92%, transparent); }
-        .pb-hairline { border-color: rgba(122,139,168,0.14); }
+        .pb-grain { background: #ffffff; }
+        .pb-rule { background: linear-gradient(90deg, transparent, #E2E8F0 8%, #E2E8F0 92%, transparent); }
+        .pb-hairline { border-color: #E5E7EB; }
         .pb-mono { font-family: "IBM Plex Mono", "Menlo", monospace; letter-spacing: -0.01em; }
         .pb-editorial { font-family: Georgia, "Times New Roman", serif; }
-        .pb-section-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; color: #3D4D63; text-transform: uppercase; }
+        .pb-section-num { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.2em; color: #9CA3AF; text-transform: uppercase; }
         @keyframes pbRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .pb-rise { animation: pbRise 700ms cubic-bezier(0.16,1,0.3,1) both; }
         .pb-row-arrow { transition: transform 220ms cubic-bezier(0.16,1,0.3,1); }
         .pb-row:hover .pb-row-arrow { transform: translateX(6px); }
         .pb-row { transition: background 200ms ease; }
-        .pb-row:hover { background: rgba(52,211,153,0.02); }
+        .pb-row:hover { background: rgba(249,115,22,0.02); }
       `}</style>
 
       <Nav />
 
-      <main className="pb-grain text-[#E8EDF5] min-h-screen">
+      <main className="bg-white text-gray-950 min-h-screen">
         {/* HERO */}
         <section className="pt-32 pb-20 px-6 border-b pb-hairline">
           <div className="max-w-6xl mx-auto pb-rise">
             <div className="flex items-baseline gap-3 mb-6">
               <span className="pb-section-num">Index</span>
               <span className="pb-rule h-px flex-1" />
-              <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+              <span className="pb-mono text-[11px] text-gray-400">Updated Apr 2026</span>
             </div>
-            <h1 className="pb-editorial text-[48px] sm:text-[64px] md:text-[76px] leading-[1.02] tracking-[-0.025em] text-white mb-8 max-w-4xl">
-              Profit Builders <span className="text-[#3D4D63]">compared to</span> the rest of the market.
+            <h1 className="pb-editorial text-[48px] sm:text-[64px] md:text-[76px] leading-[1.02] tracking-[-0.025em] text-gray-950 mb-8 max-w-4xl">
+              Profit Builders <span className="text-gray-400">compared to</span> the rest of the market.
             </h1>
-            <p className="text-[18px] md:text-[19px] leading-[1.55] text-[#A9B4C6] max-w-2xl">
+            <p className="text-[18px] md:text-[19px] leading-[1.55] text-gray-600 max-w-2xl">
               Three honest comparisons against the options flow scanners you're likely evaluating. We call out where each competitor wins, where we win, and the math on what's actually gated behind their tiers. Pick the tool that matches your workflow — not the one with the loudest marketing.
             </p>
           </div>
@@ -175,7 +170,7 @@ export default function VsIndex() {
               <span className="pb-rule h-px flex-1" />
             </div>
 
-            <div className="divide-y divide-[#1A1F2A]">
+            <div className="divide-y divide-gray-100">
               {COMPETITORS.map((c, i) => (
                 <Link
                   key={c.slug}
@@ -184,46 +179,46 @@ export default function VsIndex() {
                 >
                   <div className="grid md:grid-cols-12 gap-x-8 gap-y-4 items-start">
                     <div className="md:col-span-1">
-                      <div className="pb-mono text-[11px] text-[#3D4D63] tracking-widest">
+                      <div className="pb-mono text-[11px] text-gray-400 tracking-widest">
                         {String(i + 1).padStart(2, "0")}
                       </div>
                     </div>
 
                     <div className="md:col-span-7">
                       <div className="flex items-center gap-3 mb-3">
-                        <h2 className="pb-editorial text-[28px] md:text-[36px] leading-[1.1] tracking-[-0.02em] text-white">
+                        <h2 className="pb-editorial text-[28px] md:text-[36px] leading-[1.1] tracking-[-0.02em] text-gray-950">
                           vs {c.name}
                         </h2>
-                        <span className="pb-mono text-[11px] text-[#7A8BA8] uppercase tracking-widest">
+                        <span className="pb-mono text-[11px] text-gray-600 uppercase tracking-widest">
                           {c.theirPrice}
                         </span>
                       </div>
-                      <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-[0.18em] mb-3">
+                      <div className="pb-mono text-[11px] text-[#F97316] uppercase tracking-[0.18em] mb-3">
                         {c.ourAngle}
                       </div>
-                      <p className="text-[15px] leading-[1.65] text-[#A9B4C6] max-w-xl">
+                      <p className="text-[15px] leading-[1.65] text-gray-600 max-w-xl">
                         {c.tldr}
                       </p>
                     </div>
 
                     <div className="md:col-span-4 md:text-right">
-                      <div className="md:hidden h-px bg-[#1A1F2A] my-4" />
+                      <div className="md:hidden h-px bg-gray-100 my-4" />
                       <div className="space-y-3">
                         <div>
-                          <div className="pb-mono text-[9px] uppercase tracking-[0.22em] text-[#3D4D63] mb-1">
+                          <div className="pb-mono text-[9px] uppercase tracking-[0.22em] text-gray-400 mb-1">
                             They win
                           </div>
-                          <div className="text-[13px] text-[#A9B4C6] leading-[1.5]">{c.wins}</div>
+                          <div className="text-[13px] text-gray-600 leading-[1.5]">{c.wins}</div>
                         </div>
                         <div>
-                          <div className="pb-mono text-[9px] uppercase tracking-[0.22em] text-[#34D399]/70 mb-1">
+                          <div className="pb-mono text-[9px] uppercase tracking-[0.22em] text-[#F97316]/70 mb-1">
                             Where we win
                           </div>
-                          <div className="text-[13px] text-white leading-[1.5]">{c.losses}</div>
+                          <div className="text-[13px] text-gray-950 leading-[1.5]">{c.losses}</div>
                         </div>
                       </div>
 
-                      <div className="mt-5 md:mt-6 inline-flex items-center gap-2 pb-mono text-[11px] uppercase tracking-[0.16em] text-[#34D399] group-hover:text-white transition-colors">
+                      <div className="mt-5 md:mt-6 inline-flex items-center gap-2 pb-mono text-[11px] uppercase tracking-[0.16em] text-[#F97316] group-hover:text-gray-950 transition-colors">
                         Read comparison
                         <span className="pb-row-arrow">→</span>
                       </div>
@@ -245,19 +240,19 @@ export default function VsIndex() {
 
             <div className="grid md:grid-cols-12 gap-x-8 gap-y-8">
               <div className="md:col-span-5">
-                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-white mb-2">
+                <h2 className="pb-editorial text-[32px] md:text-[40px] leading-[1.1] tracking-[-0.02em] text-gray-950 mb-2">
                   Why these three.
                 </h2>
               </div>
               <div className="md:col-span-7 space-y-5">
-                <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">
+                <p className="text-[16px] leading-[1.7] text-gray-600">
                   These are the three platforms most people considering Profit Builders are also evaluating. Unusual Whales owns the most mindshare. FlowAlgo is the legacy incumbent. Cheddar Flow is the closest same-price competitor. If you're weighing any of them, one of these pages answers the real question.
                 </p>
-                <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">
+                <p className="text-[16px] leading-[1.7] text-gray-600">
                   Every claim on every comparison page was verified in April 2026 from each vendor's public pricing and product documentation. Where something is subjective, we say so. Where a competitor is genuinely better, we say that too — then show you the category where we move ahead.
                 </p>
-                <p className="text-[15px] leading-[1.6] text-[#7A8BA8]">
-                  Missing a competitor? Email <a href="mailto:support@profitbuilders.io" className="text-[#34D399] hover:underline">support@profitbuilders.io</a> and we'll add an honest comparison.
+                <p className="text-[15px] leading-[1.6] text-gray-600">
+                  Missing a competitor? Email <a href="mailto:support@profitbuilders.io" className="text-[#F97316] hover:underline">support@profitbuilders.io</a> and we'll add an honest comparison.
                 </p>
               </div>
             </div>
@@ -267,20 +262,20 @@ export default function VsIndex() {
         {/* CTA */}
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#34D399] mb-6">Start trial</div>
-            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-white mb-6">
+            <div className="pb-mono text-[10px] uppercase tracking-[0.3em] text-[#F97316] mb-6">Start trial</div>
+            <h2 className="pb-editorial text-[40px] md:text-[52px] leading-[1.05] tracking-[-0.025em] text-gray-950 mb-6">
               Stop comparing. Start auditing.
             </h2>
-            <p className="text-[17px] leading-[1.6] text-[#A9B4C6] max-w-xl mx-auto mb-10">
+            <p className="text-[17px] leading-[1.6] text-gray-600 max-w-xl mx-auto mb-10">
               Seven days of full feature access. See the institutional-grade flow, the documented data methodology, and the 220-symbol GEX heatmap up close before paying anything.
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-3 bg-[#34D399] hover:bg-[#4ADE80] text-[#0a0d12] pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
+              className="inline-flex items-center gap-3 bg-[#F97316] hover:bg-[#EA580C] text-white pb-mono text-[13px] font-bold tracking-wider uppercase px-9 py-4 rounded-full transition-colors"
             >
               Start 7-Day Trial →
             </Link>
-            <p className="pb-mono text-[11px] text-[#3D4D63] uppercase tracking-wider mt-6">
+            <p className="pb-mono text-[11px] text-gray-400 uppercase tracking-wider mt-6">
               7-day free trial · Card required · Cancel anytime
             </p>
           </div>
