@@ -448,6 +448,11 @@ export default function ScannerPage() {
   const lastTradeIdRef = useRef<number>(0)
   const isFirstLoadRef = useRef<boolean>(true)
   const tableContainerRef = useRef<HTMLDivElement>(null)
+  // Phase 2: topic_id from latest /api/scanner/feed snapshot drives the SSE
+  // subscription. State (not just ref) so the SSE effect re-runs when it
+  // changes — that's how filter-change reconnects (#6 path).
+  const [topicId, setTopicId] = useState<string | null>(null)
+  const feedColumnsRef = useRef<string[] | null>(null)
 
   useEffect(() => {
     fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
@@ -588,23 +593,74 @@ export default function ScannerPage() {
   const [pollError, setPollError] = useState<string | null>(null)
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
 
-  // ── SSE doorbell — debounced fetchData on push events; polling fallback ──
+  // ── SSE — Phase 2 row-push splicing when feed flag is on; legacy doorbell otherwise ──
+  //
+  // Feed mode (useFeedEndpoint() && topicId): subscribe to /api/scanner/stream?topic=<id>
+  // and splice each event:row directly into state. event:agg replaces the sidebar
+  // widget stats. The polling tick effect below short-circuits in this mode, so
+  // updates are push-only.
+  //
+  // Legacy mode: doorbell that debounces fetchData on event:signal — pre-Phase-2
+  // behavior, kept intact for the flag-off branch and as fallback when topicId
+  // hasn't resolved yet.
+  //
+  // Effect re-runs on topicId change → close + reopen with new topic. That
+  // covers Phase 2 #6 (filter change → new snapshot → new topic_id) for free.
   const sseConnRef = useRef<EventSource | null>(null)
   const sseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     if (page !== 0) return
+    const feedMode = useFeedEndpoint() && !!topicId
+
     const open = () => {
       if (sseConnRef.current) return
       try {
-        const es = new EventSource("/api/scanner/stream")
+        const url = feedMode
+          ? `/api/scanner/stream?topic=${encodeURIComponent(topicId!)}`
+          : "/api/scanner/stream"
+        const es = new EventSource(url)
         sseConnRef.current = es
-        es.addEventListener("signal", () => {
-          if (sseDebounceRef.current) return
-          sseDebounceRef.current = setTimeout(() => {
-            sseDebounceRef.current = null
-            if (!document.hidden) fetchDataRef.current?.({ pageNum: 0 })
-          }, 250)
-        })
+
+        if (feedMode) {
+          es.addEventListener("row", (ev) => {
+            const cols = feedColumnsRef.current
+            if (!cols) return
+            let row: RawRow
+            try { row = JSON.parse((ev as MessageEvent).data) as RawRow }
+            catch { return }
+            const incoming = rowsToTrades([row], cols)
+            if (incoming.length === 0) return
+            const t = incoming[0]
+            // Splice — dedupe by id (server may republish on reconnect),
+            // prepend, cap at the snapshot limit so the in-memory list
+            // doesn't grow unbounded over a long session.
+            setTrades(prev => {
+              if (prev.some(p => p.id === t.id)) return prev
+              return [t, ...prev].slice(0, 2000)
+            })
+            if (matchesFilterRef.current(t)) playBlipRef.current()
+            lastTradeIdRef.current = Math.max(lastTradeIdRef.current, t.id)
+            lastSuccessRef.current = Date.now()
+            setPollError(null)
+          })
+          es.addEventListener("agg", () => {
+            // Sidebar widgets read `displayStats` (useMemo over `filtered`),
+            // which is purely client-derived from the visible row set —
+            // including all client-only filters (search/grade/side/etc) the
+            // server topic doesn't know about. Server agg over the universe
+            // would clobber a TSLA-only display, so we don't write it.
+            // Handler stays alive as a heartbeat for the #5 stale guard.
+            lastSuccessRef.current = Date.now()
+          })
+        } else {
+          es.addEventListener("signal", () => {
+            if (sseDebounceRef.current) return
+            sseDebounceRef.current = setTimeout(() => {
+              sseDebounceRef.current = null
+              if (!document.hidden) fetchDataRef.current?.({ pageNum: 0 })
+            }, 250)
+          })
+        }
       } catch {}
     }
     const close = () => {
@@ -618,7 +674,7 @@ export default function ScannerPage() {
       close()
       document.removeEventListener("visibilitychange", onVis)
     }
-  }, [page])
+  }, [page, topicId])
 
   const savePreset = (name: string) => {
     if (!name.trim()) return
@@ -766,6 +822,8 @@ export default function ScannerPage() {
         const fd: FeedResponse = await res.json()
         if (fd.error) return
         feedMetaRef.current = fd.meta
+        feedColumnsRef.current = fd.meta.columns
+        setTopicId(fd.meta.topic_id)
         const incoming = rowsToTrades(fd.rows || [], fd.meta.columns)
         if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
           playBlipRef.current()
@@ -857,6 +915,11 @@ export default function ScannerPage() {
   // restart the timer fresh — don't trust whatever stale state Chrome left it in.
   useEffect(() => {
     if (page !== 0) return
+    // Phase 2: row-push SSE handles updates when feed flag is on AND we have
+    // a topic_id. Skip the 3s polling tick entirely. The wake handlers below
+    // are also skipped — #5 will add a 60s SSE-stale guard to handle the
+    // "EventSource silently dies" case that polling implicitly covered.
+    if (useFeedEndpoint() && topicId) return
 
     const tick = () => {
       if (page !== 0) return
@@ -920,7 +983,7 @@ export default function ScannerPage() {
       window.removeEventListener("pointerdown", wake)
       window.removeEventListener("keydown", wake)
     }
-  }, [page])
+  }, [page, topicId])
 
   // active filter count
   useEffect(() => {
