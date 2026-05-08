@@ -254,7 +254,7 @@ function fmtExpiry(exp: string) {
 function aggrColor(a: string | null | undefined) {
   // Industry-standard 5-bucket aggression: ABOVE/ASK aggressive buy (green),
   // BID/BELOW aggressive sell (red), MIDPOINT neutral (amber — no directional info).
-  if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#00E85A]"
+  if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#22C55E]"
   if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
   if (!a || a === "NEUTRAL") return "text-[#F59E0B]"   // MIDPOINT (industry standard)
   return "text-white/90"
@@ -270,7 +270,7 @@ function aggrLabel(a: string | null | undefined) {
 
 function bsColor(d: string | null | undefined) {
   if (!d || d === "NEUTRAL") return "text-white/30"
-  if (d === "BUY") return "text-[#00E85A]"
+  if (d === "BUY") return "text-[#22C55E]"
   if (d === "SELL") return "text-[#FF605D]"
   return "text-white/90"
 }
@@ -1149,7 +1149,7 @@ export default function ScannerPage() {
   const sideCircle = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.14] text-white" : "bg-white/[0.05] text-white/45 hover:text-white/90 hover:bg-white/[0.1]"}`
 
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1B23', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1C1E', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
       {pollError && (
         <div role="status" aria-live="polite" className="fixed top-2 right-2 z-50 px-3 py-1.5 rounded text-xs font-medium text-white shadow-lg" style={{ background: "rgba(217,119,6,0.92)" }}>
           {pollError}
@@ -1316,8 +1316,8 @@ export default function ScannerPage() {
                   <span className="text-[19px] font-mono tabular-nums font-bold text-white leading-none">${effSpot.toFixed(2)}</span>
                   {liveGexSpot !== null && (
                     <span className="inline-flex items-center gap-1">
-                      <span className="w-1 h-1 rounded-full bg-[#00E85A] animate-pulse" />
-                      <span className="text-[8px] font-bold tracking-[0.12em] text-[#00E85A]">LIVE</span>
+                      <span className="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse" />
+                      <span className="text-[8px] font-bold tracking-[0.12em] text-[#22C55E]">LIVE</span>
                     </span>
                   )}
                 </div>
@@ -1329,7 +1329,7 @@ export default function ScannerPage() {
                   if (Math.abs(delta) < 0.005) return <span className="text-[11px] font-mono tabular-nums text-white/30">unchanged</span>
                   const positive = delta > 0
                   return (
-                    <span className={`text-[11px] font-mono tabular-nums ${positive ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
+                    <span className={`text-[11px] font-mono tabular-nums ${positive ? "text-[#22C55E]" : "text-[#FF605D]"}`}>
                       {positive ? "↗" : "↘"} {positive ? "+" : ""}{delta.toFixed(2)} · {positive ? "+" : ""}{pct.toFixed(2)}%
                     </span>
                   )
@@ -1337,10 +1337,10 @@ export default function ScannerPage() {
               </div>
               {[
                 { label: "Gamma Flip", value: gexData.gamma_flip != null ? `$${gexData.gamma_flip.toFixed(2)}` : "N/A", cls: gexData.gamma_flip != null ? "text-[#F5820A]" : "text-white/30" },
-                { label: "Total Net GEX", value: fmtGexLocal(gexData.total_net_gex), cls: gexData.total_net_gex >= 0 ? "text-[#00E85A]" : "text-[#FF605D]" },
+                { label: "Total Net GEX", value: fmtGexLocal(gexData.total_net_gex), cls: gexData.total_net_gex >= 0 ? "text-[#22C55E]" : "text-[#FF605D]" },
                 { label: "Gamma Slope", value: gexData.gamma_slope != null ? fmtGexLocal(gexData.gamma_slope) : "N/A", cls: gexData.gamma_slope != null ? "text-white" : "text-white/30" },
                 { label: "Slope Strike", value: gexData.slope_strike != null ? `$${gexData.slope_strike.toFixed(2)}` : "N/A", cls: gexData.slope_strike != null ? "text-white" : "text-white/30" },
-                { label: "Max +GEX", value: gexData.max_plus_gex ? fmtGexLocal(gexData.max_plus_gex.gex) : "N/A", cls: gexData.max_plus_gex ? "text-[#00E85A]" : "text-white/30", sub: gexData.max_plus_gex ? `@ $${gexData.max_plus_gex.strike.toFixed(2)}` : undefined },
+                { label: "Max +GEX", value: gexData.max_plus_gex ? fmtGexLocal(gexData.max_plus_gex.gex) : "N/A", cls: gexData.max_plus_gex ? "text-[#22C55E]" : "text-white/30", sub: gexData.max_plus_gex ? `@ $${gexData.max_plus_gex.strike.toFixed(2)}` : undefined },
                 { label: "Max -GEX", value: gexData.max_minus_gex ? fmtGexLocal(gexData.max_minus_gex.gex) : "N/A", cls: gexData.max_minus_gex ? "text-[#FF605D]" : "text-white/30", sub: gexData.max_minus_gex ? `@ $${gexData.max_minus_gex.strike.toFixed(2)}` : undefined },
               ].map(s => (
                 <div key={s.label} className="flex flex-col gap-0.5 min-w-0">
@@ -1358,10 +1358,10 @@ export default function ScannerPage() {
               <span className="text-[10px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">Composition</span>
               <div className="w-px h-3 bg-white/[0.06]" />
               {[
-                { label: "CALL γ", value: gexData.total_call_gex, color: "#00E85A" },
+                { label: "CALL γ", value: gexData.total_call_gex, color: "#22C55E" },
                 { label: "PUT γ", value: gexData.total_put_gex, color: "#FF605D" },
-                { label: "Near DTE", value: gexData.near_dte_gex, color: gexData.near_dte_gex >= 0 ? "#00E85A" : "#FF605D", note: "≤7d" },
-                { label: "Far DTE", value: gexData.far_dte_gex, color: gexData.far_dte_gex >= 0 ? "#00E85A" : "#FF605D", note: ">7d" },
+                { label: "Near DTE", value: gexData.near_dte_gex, color: gexData.near_dte_gex >= 0 ? "#22C55E" : "#FF605D", note: "≤7d" },
+                { label: "Far DTE", value: gexData.far_dte_gex, color: gexData.far_dte_gex >= 0 ? "#22C55E" : "#FF605D", note: ">7d" },
               ].map(b => (
                 <div key={b.label} className="flex items-baseline gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05] bg-white/[0.02]">
                   <span className="font-bold tracking-[0.08em] uppercase text-white/60">{b.label}</span>
@@ -1379,7 +1379,7 @@ export default function ScannerPage() {
                 return (
                   <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05]" style={{ background: positive ? "rgba(0,232,90,0.05)" : "rgba(255,96,93,0.05)" }}>
                     <span className="font-bold tracking-[0.08em] uppercase text-white/40">Bias</span>
-                    <span className="font-mono font-bold tabular-nums" style={{ color: positive ? "#00E85A" : "#FF605D" }}>
+                    <span className="font-mono font-bold tabular-nums" style={{ color: positive ? "#22C55E" : "#FF605D" }}>
                       {positive ? "+" : ""}{fmtGexLocal(bias)} · {dominantSide}-led
                     </span>
                   </div>
@@ -1419,7 +1419,7 @@ export default function ScannerPage() {
                 const positive = c.net_gex > 0
                 return (
                   <div key={`${c.strike}-${c.expiry}`}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono tabular-nums whitespace-nowrap border ${positive ? "bg-[#00E85A]/[0.06] border-[#00E85A]/25 text-[#00E85A]" : "bg-[#FF605D]/[0.06] border-[#FF605D]/25 text-[#FF605D]"}`}>
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono tabular-nums whitespace-nowrap border ${positive ? "bg-[#22C55E]/[0.06] border-[#22C55E]/25 text-[#22C55E]" : "bg-[#FF605D]/[0.06] border-[#FF605D]/25 text-[#FF605D]"}`}>
                     <span className="font-semibold">{gexSymbol} {c.strike} {fmtExpShort(c.expiry)}</span>
                     <span className="opacity-70">·</span>
                     <span className="font-bold">{positive ? "+" : ""}{fmtCellLocal(c.net_gex)}</span>
@@ -1492,7 +1492,7 @@ export default function ScannerPage() {
                         style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
                         {gex !== 0 && (
-                          <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#00E85A]/80" : "text-[#FF605D]/80"}`}>
+                          <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
                             {fmtGex(gex)}
                           </span>
                         )}
@@ -1502,7 +1502,7 @@ export default function ScannerPage() {
 
                   <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.04]"
                     style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(isAtm ? { background: "rgba(255,255,255,0.035)" } : {}) }}>
-                    <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#00E85A]" : "text-[#FF605D]"}`}>
+                    <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#FF605D]"}`}>
                       {rowTotal !== 0 ? fmtGex(rowTotal) : ""}
                     </span>
                   </div>,
@@ -1561,7 +1561,7 @@ export default function ScannerPage() {
               {watchlist.length > 0 && (
                 <button
                   onClick={() => { if (confirm(`Clear all ${watchlist.length} symbols?`)) { setWatchlist([]); localStorage.setItem("pb_watchlist", "[]"); syncPrefs({ watchlist: [] }) } }}
-                  className="text-[10px] text-[#7A8BA8] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded px-2 py-1 transition-colors"
+                  className="text-[10px] text-[#E7E5E4] hover:text-[#FF605D] border border-[#1E2A3A] hover:border-[#FF605D]/40 rounded px-2 py-1 transition-colors"
                 >Clear</button>
               )}
             </div>
@@ -1577,7 +1577,7 @@ export default function ScannerPage() {
                   {["SPY","QQQ","NVDA","TSLA","AAPL","META","AMD","MSFT","GOOGL","COIN","PLTR","MSTR"].map(t => (
                     <button key={t}
                       onClick={() => addToWatchlist(t)}
-                      className="text-[11px] font-mono font-bold text-[#7A8BA8] hover:text-white border border-[#1E2A3A] hover:border-[#FF8A00]/40 rounded px-2 py-1 transition-colors">
+                      className="text-[11px] font-mono font-bold text-[#E7E5E4] hover:text-white border border-[#1E2A3A] hover:border-[#FF8A00]/40 rounded px-2 py-1 transition-colors">
                       {t}
                     </button>
                   ))}
@@ -1600,7 +1600,7 @@ export default function ScannerPage() {
                 const xs = pts.map((_, i) => (i / (pts.length - 1)) * W)
                 const ys = pts.map(p => H - ((p - lo) / span) * H)
                 const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
-                const color = positive ? "#00E85A" : "#FF605D"
+                const color = positive ? "#22C55E" : "#FF605D"
                 return (
                   <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
                     <path d={d} fill="none" stroke={color} strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" />
@@ -1640,7 +1640,7 @@ export default function ScannerPage() {
               const SortHead = ({ k, label, align = "left" }: { k: typeof wlSort.key; label: string; align?: "left" | "right" | "center" }) => (
                 <button
                   onClick={() => setWlSort(s => ({ key: k, dir: s.key === k && s.dir === "desc" ? "asc" : "desc" }))}
-                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.12em] uppercase transition-colors flex items-center gap-1 w-full ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#7A8BA8]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
+                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.12em] uppercase transition-colors flex items-center gap-1 w-full ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#E7E5E4]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
                   {label}
                   {wlSort.key === k && <span className="text-[8px]">{wlSort.dir === "desc" ? "▼" : "▲"}</span>}
                 </button>
@@ -1669,7 +1669,7 @@ export default function ScannerPage() {
                     const { sym, callPrem, putPrem, count, isBull, isBear, lastSignalTs, quote, spark } = r
                     const positive = (quote.change_pct ?? 0) > 0
                     const negative = (quote.change_pct ?? 0) < 0
-                    const changeColor = positive ? "#00E85A" : negative ? "#FF605D" : "#7A8BA8"
+                    const changeColor = positive ? "#22C55E" : negative ? "#FF605D" : "#E7E5E4"
                     const change = quote.change ?? 0
                     return (
                       <div key={sym}
@@ -1702,7 +1702,7 @@ export default function ScannerPage() {
                         </div>
                         <div />
                         <div className="px-3 text-right">
-                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${callPrem > 0 ? "text-[#00E85A]" : "text-[#3D4D63]"}`}>
+                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${callPrem > 0 ? "text-[#22C55E]" : "text-[#3D4D63]"}`}>
                             {callPrem > 0 ? fmtPrem(callPrem) : "—"}
                           </span>
                         </div>
@@ -1713,16 +1713,16 @@ export default function ScannerPage() {
                         </div>
                         <div className="px-3 flex items-center justify-center">
                           {count > 0 ? (
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#00E85A]/15 text-[#00E85A]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#7A8BA8]"}`}>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#22C55E]/15 text-[#22C55E]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#E7E5E4]"}`}>
                               {isBull ? "BULL" : isBear ? "BEAR" : "MIX"}
                             </span>
                           ) : <span className="text-[10px] text-[#3D4D63]">—</span>}
                         </div>
                         <div className="px-3 text-center">
-                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">{count || "—"}</span>
+                          <span className="text-[11px] text-[#E7E5E4] font-mono tabular-nums">{count || "—"}</span>
                         </div>
                         <div className="px-3 text-center">
-                          <span className="text-[11px] text-[#7A8BA8] font-mono tabular-nums">{lastSignalTs ? fmtTime(lastSignalTs) : "—"}</span>
+                          <span className="text-[11px] text-[#E7E5E4] font-mono tabular-nums">{lastSignalTs ? fmtTime(lastSignalTs) : "—"}</span>
                         </div>
                         <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }}
@@ -1800,7 +1800,7 @@ export default function ScannerPage() {
         const callSharePct = Math.round((calls / (totalCount || 1)) * 100)
         const putSharePct = Math.round((puts / (totalCount || 1)) * 100)
         return (
-          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1B23' }}>
+          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1C1E' }}>
 
             {/* Flow sentiment */}
             <div className="px-5 py-3 flex items-center gap-4">
@@ -1808,13 +1808,13 @@ export default function ScannerPage() {
                 value={Math.round(bullPct)}
                 max={100}
                 min={0}
-                gaugePrimaryColor={isBull ? "#00E85A" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
+                gaugePrimaryColor={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
                 gaugeSecondaryColor="rgba(255,255,255,0.06)"
                 className="!size-[52px] !text-[11px]"
               />
               <div>
                 <div className="text-[12px] text-white/50 mb-1">Flow sentiment</div>
-                <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
+                <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
                 <div className="text-[10px] text-white/30 mt-0.5 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
@@ -1847,14 +1847,14 @@ export default function ScannerPage() {
                 value={callSharePct}
                 max={100}
                 min={0}
-                gaugePrimaryColor="#00E85A"
+                gaugePrimaryColor="#22C55E"
                 gaugeSecondaryColor="rgba(255,255,255,0.06)"
                 className="!size-[52px] !text-[11px]"
               />
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[12px] text-white/50">Call flow</span>
-                  <span className="text-[13px] font-semibold text-[#00E85A] font-mono">{fmtPrem(callPrem)}</span>
+                  <span className="text-[13px] font-semibold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
                 </div>
                 <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
               </div>
@@ -1886,7 +1886,7 @@ export default function ScannerPage() {
       })()}
 
       {/* ── TABLE ── */}
-      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1B23' }}>
+      <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>
         {loading ? (
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10" style={{ background: '#252430' }}>
@@ -1969,7 +1969,7 @@ export default function ScannerPage() {
                         {t.strike_fmt ?? t.strike}
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-center text-[12px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-center text-[12px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#FF605D' }}>
                       {t.opt_type === "C" ? "Call" : "Put"}
                     </td>
                     <td className={`px-2 py-2 text-center text-[12px] ${aggrColor(t.aggression)}`}>
@@ -1981,7 +1981,7 @@ export default function ScannerPage() {
                     <td className="px-2 py-2 text-right text-white text-[13px] font-medium font-mono">{t.spot_fmt}</td>
                     <td className={`px-2 py-2 text-right text-[13px] font-medium font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
                     <td className="px-2 py-2 text-right text-white/90 text-[13px] font-medium font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-                    <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#00E85A' : '#FF605D' }}>
+                    <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#FF605D' }}>
                       {t.premium_fmt}
                     </td>
                     <td className={`px-2 py-2 text-center text-[12px] font-medium ${
@@ -2030,11 +2030,11 @@ export default function ScannerPage() {
         {/* Left: signal count + range label (replaces inline mid-bar text) */}
         <div className="text-[11px] text-[#4A5A72] tabular-nums">
           {timeRange === "today" ? (
-            <>Page <span className="text-[#7A8BA8] font-medium">{clientPage + 1}</span> of <span className="text-[#7A8BA8] font-medium">{totalClientPages}</span> · {filtered.length.toLocaleString()} signals</>
+            <>Page <span className="text-[#E7E5E4] font-medium">{clientPage + 1}</span> of <span className="text-[#E7E5E4] font-medium">{totalClientPages}</span> · {filtered.length.toLocaleString()} signals</>
           ) : (
             page === 0
               ? <>{filtered.length.toLocaleString()} signals</>
-              : <>Page <span className="text-[#7A8BA8] font-medium">{page + 1}</span> · {timeRange.replace("_", " ")}</>
+              : <>Page <span className="text-[#E7E5E4] font-medium">{page + 1}</span> · {timeRange.replace("_", " ")}</>
           )}
         </div>
 
@@ -2170,7 +2170,7 @@ export default function ScannerPage() {
                         className="flex-1 bg-white/[0.04] border border-white/[0.12] rounded-md px-2.5 py-1.5 text-[12px] text-white placeholder-white/25 focus:outline-none focus:border-[#48DEFF]/40"
                         autoFocus />
                       <button onClick={() => savePreset(presetName)}
-                        className="px-2.5 py-1.5 bg-[#48DEFF] text-[#1C1B23] rounded-md text-[11px] font-semibold hover:bg-[#6ee8ff]">Save</button>
+                        className="px-2.5 py-1.5 bg-[#48DEFF] text-[#1C1C1E] rounded-md text-[11px] font-semibold hover:bg-[#6ee8ff]">Save</button>
                       <button onClick={() => { setShowSavePreset(false); setPresetName("") }}
                         className="text-white/30 hover:text-white/60 text-[12px]">✕</button>
                     </div>
@@ -2187,7 +2187,7 @@ export default function ScannerPage() {
                       <div className="text-[14px] text-white font-medium">Calls only</div>
                       <div className="text-[12px] text-white/35">Show call options only</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "C" ? "bg-[#00E85A]" : "bg-white/[0.08]"}`}
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "C" ? "bg-[#22C55E]" : "bg-white/[0.08]"}`}
                       onClick={() => setFilterOptType(filterOptType === "C" ? "" : "C")}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterOptType === "C" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
                     </div>
@@ -2268,7 +2268,7 @@ export default function ScannerPage() {
                       <div className="text-[14px] text-white font-medium">Above ask only</div>
                       <div className="text-[12px] text-white/35">Most aggressive — paid above ask</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "ABOVE_ASK" ? "bg-[#00E85A]" : "bg-white/[0.08]"}`}
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "ABOVE_ASK" ? "bg-[#22C55E]" : "bg-white/[0.08]"}`}
                       onClick={() => setFilterSide(filterSide === "ABOVE_ASK" ? "" : "ABOVE_ASK")}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "ABOVE_ASK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
                     </div>
@@ -2383,7 +2383,7 @@ export default function ScannerPage() {
 
               {/* ── APPLY BUTTON ── */}
               <button onClick={() => setShowFilters(false)}
-                className="w-full py-2.5 bg-[#48DEFF] text-[#1C1B23] rounded-lg text-[13px] font-semibold hover:bg-[#6ee8ff] active:scale-[0.98] transition-all">
+                className="w-full py-2.5 bg-[#48DEFF] text-[#1C1C1E] rounded-lg text-[13px] font-semibold hover:bg-[#6ee8ff] active:scale-[0.98] transition-all">
                 Apply filters
               </button>
 
@@ -2400,13 +2400,13 @@ export default function ScannerPage() {
           <div className="border border-[#1E2A3A] rounded-xl p-8 max-w-sm w-full mx-4" style={{ background: "#0F1520" }} onClick={e => e.stopPropagation()}>
             <div className="text-[#FF8A00] text-[10px] font-bold tracking-[0.15em] uppercase mb-3">Pro Feature</div>
             <div className="text-xl font-bold text-white mb-2">Gamma Wall Scanner</div>
-            <div className="text-sm text-[#7A8BA8] mb-6 leading-relaxed">
+            <div className="text-sm text-[#E7E5E4] mb-6 leading-relaxed">
               Real-time GEX heatmaps, gamma wall detection, and squeeze identification are available on the Pro plan.
             </div>
             <Link href="/#pricing" className="block w-full text-center py-3 rounded-lg bg-[#FF8A00] text-black font-bold text-[15px] hover:bg-[#e57309] transition-colors">
               Upgrade to Pro
             </Link>
-            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-[15px] hover:text-[#7A8BA8] transition-colors">
+            <button onClick={() => setShowUpgradeModal(false)} className="block w-full text-center py-2 mt-3 text-[#4A5A72] text-[15px] hover:text-[#E7E5E4] transition-colors">
               Not now
             </button>
           </div>
