@@ -12,6 +12,7 @@ import InfoTooltip from "@/components/InfoTooltip"
 import ReplayProgress from "@/components/ReplayProgress"
 
 import Link from "next/link"
+import { decodeConds } from "./condCodes"
 /* ── types ── */
 interface Trade {
   id: number
@@ -81,6 +82,114 @@ interface ApiResponse {
   stats: Stats
   is_historical: boolean
   error?: string
+}
+
+/* ── /api/scanner/feed (Phase 1 wire format) ───────────────────────────
+ * Column-array shape, ~70% smaller payload than the legacy live-flow
+ * dict-per-row response. See trading-system/web/queries.py:
+ *   SCANNER_FEED_COLUMNS — column order (load-bearing).
+ *   _format_trade_columnar — projection.
+ *   _compute_feed_agg — agg block.
+ * The decoder lives client-side: rowsToTrades() rehydrates each row
+ * back into the existing Trade interface so render code is unchanged.
+ * The bandwidth win is captured at JSON.parse time; client-side dict
+ * allocation cost is identical to receiving dicts off the wire.
+ */
+type RawRow = unknown[];
+
+interface FeedMeta {
+  topic_id: string
+  trading_day: string
+  updated_at: string
+  filter_count: number
+  scorer_version: string
+  is_historical: boolean
+  columns: string[]
+}
+
+interface FeedAgg {
+  sentiment: { label: string; score: number; _sort_score: number }
+  pcr: number | null
+  call_flow: { premium: string; count: number; _sort_premium: number }
+  put_flow:  { premium: string; count: number; _sort_premium: number }
+}
+
+interface FeedResponse {
+  meta: FeedMeta
+  rows: RawRow[]
+  agg: FeedAgg
+  error?: string
+}
+
+/**
+ * Hydrate column-array rows back into the existing Trade interface.
+ * Single conversion site → all downstream render/filter/sort code keeps
+ * working unchanged.
+ *
+ * Two derived fields:
+ *   strike, premium, spot — backend ships precomputed _sort_* keys
+ *     (×100 cents/×100 spot). We divide back out so existing code that
+ *     reads t.premium etc. as dollars/raw values keeps working.
+ *   badges — decoded from the conds[] short-code array via condCodes.ts
+ *     into the {label, tier} shape badge-styles.ts expects.
+ */
+function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
+  const idx: Record<string, number> = {}
+  for (let i = 0; i < columns.length; i++) idx[columns[i]] = i
+  const out: Trade[] = []
+  for (const r of rows) {
+    const condCodes = (r[idx["conds"]] as string[] | null) ?? []
+    out.push({
+      id: r[idx["id"]] as number,
+      time: r[idx["time"]] as string,
+      date_time: r[idx["date_time"]] as string,
+      symbol: r[idx["symbol"]] as string,
+      sector: r[idx["sector"]] as string,
+      expiration: r[idx["expiration"]] as string,
+      strike: ((r[idx["_sort_strike"]] as number) || 0) / 100,
+      strike_fmt: r[idx["strike_fmt"]] as string,
+      opt_type: r[idx["opt_type"]] as string,
+      aggression: r[idx["side"]] as string | null,
+      trade_direction: r[idx["bs"]] as string | null,
+      direction: (r[idx["direction"]] as string) || undefined,
+      spot_fmt: r[idx["spot_fmt"]] as string,
+      contracts: r[idx["contracts"]] as number,
+      flow_type: r[idx["flow_type"]] as string,
+      premium: ((r[idx["_sort_premium"]] as number) || 0) / 100,
+      premium_fmt: r[idx["premium_fmt"]] as string,
+      day_volume: r[idx["day_volume"]] as number,
+      open_interest: r[idx["open_interest"]] as number,
+      iv: (r[idx["iv"]] as number | null) ?? null,
+      iv_rank: (r[idx["iv_rank"]] as number | null) ?? null,
+      ruoa_streak: (r[idx["ruoa_streak"]] as number | null) ?? null,
+      grade: r[idx["grade"]] as string,
+      bullish: !!(r[idx["bullish"]] as boolean),
+      whale: !!(r[idx["whale"]] as boolean),
+      mm_suspected: !!(r[idx["mm_suspected"]] as boolean),
+      high_conviction: !!(r[idx["high_conviction"]] as boolean),
+      structure: (r[idx["structure"]] as string | null) ?? null,
+      position_action: (r[idx["position_action"]] as string) || "",
+      row_color: (r[idx["row_color"]] as "bullish" | "bearish" | undefined) ?? undefined,
+      flow_highlight: (r[idx["flow_highlight"]] as "oi_multi" | "oi_single" | "late" | null) ?? null,
+      delta: (r[idx["delta"]] as number | null) ?? null,
+      vol_oi: (r[idx["vol_oi"]] as number | undefined) ?? undefined,
+      dte: (r[idx["dte"]] as number | undefined) ?? undefined,
+      money: (r[idx["money"]] as string) || "",
+      accum_hits: (r[idx["accum_hits"]] as number | null) ?? 0,
+      accum_premium: (r[idx["accum_premium"]] as number | undefined) ?? undefined,
+      adv_multiple: (r[idx["adv_multiple"]] as number | null) ?? null,
+      conviction_strength: (r[idx["conviction_strength"]] as string | null) ?? null,
+      is_event_driven: !!(r[idx["is_event_driven"]] as boolean),
+      contract_volume_multiple: (r[idx["contract_volume_multiple"]] as number | null) ?? null,
+      baseline_volume: (r[idx["baseline_volume"]] as number | null) ?? null,
+      today_volume: (r[idx["today_volume"]] as number | null) ?? null,
+      entry_price: (r[idx["entry_price"]] as number | null) ?? null,
+      outcome: (r[idx["outcome"]] as string | undefined) ?? undefined,
+      pnl_percent: (r[idx["pnl_percent"]] as number | undefined) ?? undefined,
+      badges: decodeConds(condCodes),
+    })
+  }
+  return out
 }
 
 interface FilterPreset {
