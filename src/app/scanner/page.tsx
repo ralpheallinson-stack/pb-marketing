@@ -1116,18 +1116,31 @@ export default function ScannerPage() {
   // Memoized + single-pass — was 4 chained filter+reduce passes running on
   // every render. Recomputes only when filtered identity changes.
   const displayStats = useMemo(() => {
-    let cp = 0, pp = 0, bull = 0, bear = 0
+    // Stage 2 (2026-05-08): volume-weighted sentiment + PCR. The label,
+    // gauge, and PC ratio all derive from contract counts, not premium
+    // dollars — matches _compute_global_agg / _compute_feed_agg on the
+    // server. Industry convention; what subscribers from Cheddar /
+    // Unusual Whales expect "Bullish" and "PCR" to mean. Removes the
+    // premium-weighted bullish skew that came from longer-dated, higher-
+    // time-value call premium dominating the score on otherwise put-heavy
+    // days. 0.65/0.35 cutoffs preserved (those were carried over from
+    // the premium-weighted era — recalibration is a separate decision).
+    let cv = 0, pv = 0, bullVol = 0, bearVol = 0
     for (const t of filtered) {
-      if (t.opt_type === "C") cp += t.premium
-      else if (t.opt_type === "P") pp += t.premium
-      if (t.bullish) bull += t.premium
-      else bear += t.premium
+      const qty = t.contracts || 0
+      if (t.opt_type === "C") cv += qty
+      else if (t.opt_type === "P") pv += qty
+      if (t.bullish) bullVol += qty
+      else bearVol += qty
     }
+    const total = bullVol + bearVol
+    const score = total > 0 ? bullVol / total : 0.5
     return {
       count: filtered.length,
-      bull, bear,
-      lean: cp > pp * 1.05 ? "BULL" : pp > cp * 1.05 ? "BEAR" : "MIXED",
-      pc_ratio: cp > 0 ? +(pp / cp).toFixed(2) : 0,
+      bull: bullVol,
+      bear: bearVol,
+      lean: score >= 0.65 ? "BULL" : score <= 0.35 ? "BEAR" : "MIXED",
+      pc_ratio: cv > 0 ? +(pv / cv).toFixed(2) : 0,
     }
   }, [filtered])
 
@@ -1804,6 +1817,7 @@ export default function ScannerPage() {
                 <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#00E85A]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
                   {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
                 </span>
+                <div className="text-[10px] text-white/30 mt-0.5 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
               </div>
             </div>
 
