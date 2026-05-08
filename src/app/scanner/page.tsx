@@ -673,6 +673,39 @@ export default function ScannerPage() {
     return `/api/scanner/live-flow?${p.toString()}`
   }, [timeRange, filterMinPremium, filterDte])
 
+  // Phase 1 feed-endpoint URL builder. Same filter shape as buildUrl, but
+  // hits /api/scanner/feed (column-array, ~70% smaller payload). No
+  // since_id or pagination yet — TODO when we either add since_id to the
+  // feed endpoint or move incremental updates onto SSE in Phase 2.
+  const buildFeedUrl = useCallback(() => {
+    const p = new URLSearchParams()
+    if (timeRange !== "today") p.set("range", timeRange)
+    if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
+    if (filterDte === "0dte") p.set("max_dte", "0")
+    else if (filterDte === "1-7") p.set("max_dte", "7")
+    else if (filterDte === "8-30") p.set("max_dte", "30")
+    p.set("limit", "2000")
+    return `/api/scanner/feed?${p.toString()}`
+  }, [timeRange, filterMinPremium, filterDte])
+
+  // Feature flag: opt-in via `localStorage.setItem('pb_scanner_feed','1')` on
+  // the browser DevTools console. Default OFF — existing live-flow path
+  // continues to serve every user. After visual-diff bake-in this becomes
+  // the default and the flag is removed. Read on each call so toggling
+  // doesn't require a page reload.
+  // TODO(Phase 1 frontend): remove flag + delete legacy live-flow branch
+  // after a soak. TODO(Phase 2): once SSE streams rows directly, the
+  // 'full load' branch becomes the only call path and polling disappears.
+  const useFeedEndpoint = (): boolean => {
+    if (typeof window === "undefined") return false
+    try { return window.localStorage.getItem("pb_scanner_feed") === "1" }
+    catch { return false }
+  }
+
+  // Latest snapshot meta — populated when fetchData uses the feed endpoint.
+  // Holds topic_id (for Phase 2 SSE subscription) and updated_at.
+  const feedMetaRef = useRef<FeedMeta | null>(null)
+
   // Detect a session-expired response. Flask's @subscriber_required returns a
   // 302 to /login (not 401/403). The browser fetch follows the redirect by
   // default, so res.status is 200 with res.redirected=true and res.url ending
@@ -717,7 +750,52 @@ export default function ScannerPage() {
         return
       }
 
-      // Full load (first time, page change, filter change)
+      // Full load (first time, page change, filter change).
+      // When the feed feature flag is on AND we're on page 0 (live), use
+      // /api/scanner/feed for the snapshot and hydrate. Page 1+ stays on
+      // live-flow because the feed endpoint doesn't yet support pagination
+      // — TODO when needed. Incremental polling (since_id branch above)
+      // also stays on live-flow.
+      if (pg === 0 && useFeedEndpoint()) {
+        const res = await fetch(buildFeedUrl(), { signal: ac.signal })
+        if (isAuthRedirect(res)) {
+          setPollError("Session expired — redirecting to login…")
+          router.push("/login")
+          return
+        }
+        const fd: FeedResponse = await res.json()
+        if (fd.error) return
+        feedMetaRef.current = fd.meta
+        const incoming = rowsToTrades(fd.rows || [], fd.meta.columns)
+        if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
+          playBlipRef.current()
+        }
+        prevTradeIdsRef.current = new Set(incoming.map(tr => tr.id))
+        if (incoming.length > 0) {
+          lastTradeIdRef.current = Math.max(...incoming.map((tr: Trade) => tr.id))
+        }
+        isFirstLoadRef.current = false
+        setTrades(incoming)
+        // Map feed agg → existing Stats shape. bull/bear are sentiment
+        // proxies derived from buy-call+sell-put vs buy-put+sell-call
+        // premium splits — close enough for the sidebar widget. Exact
+        // parity with live-flow's dashboard query lives in the legacy
+        // path below; flip the flag to compare.
+        const agg = fd.agg
+        const lean = (agg?.sentiment?.label || "MIXED").toUpperCase()
+        setStats({
+          count: incoming.length,
+          bull: (agg?.call_flow?._sort_premium ?? 0) / 100,
+          bear: (agg?.put_flow?._sort_premium ?? 0) / 100,
+          lean,
+          pc_ratio: agg?.pcr ?? 0,
+        })
+        lastSuccessRef.current = Date.now()
+        setPollError(null)
+        return
+      }
+
+      // Legacy path (default): /api/scanner/live-flow with full dict shape.
       const res = await fetch(buildUrl({ pageNum: pg }), { signal: ac.signal })
       if (isAuthRedirect(res)) {
         setPollError("Session expired — redirecting to login…")
