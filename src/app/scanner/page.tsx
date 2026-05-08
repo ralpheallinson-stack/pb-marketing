@@ -608,9 +608,34 @@ export default function ScannerPage() {
   // covers Phase 2 #6 (filter change → new snapshot → new topic_id) for free.
   const sseConnRef = useRef<EventSource | null>(null)
   const sseDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Phase 2 #5: 60s stale-connection guard. Watchdog interval inside the
+  // SSE effect refreshes only when feedMode is active.
+  const sseStaleCheckRef = useRef<ReturnType<typeof setInterval> | null>(null)
   useEffect(() => {
     if (page !== 0) return
     const feedMode = useFeedEndpoint() && !!topicId
+
+    // Stale-guard reconnect — closes the current ES, refetches the snapshot
+    // (forcing the feed-snapshot branch by resetting isFirstLoadRef), then
+    // reopens. If fetchData updates topicId, the effect re-runs and reopens
+    // with the new topic; the open() guard at the bottom is a no-op in that
+    // case. If topicId is unchanged, the explicit open() is what reconnects.
+    const reconnect = async () => {
+      setPollError("Connection stalled — reconnecting…")
+      if (sseStaleCheckRef.current) { clearInterval(sseStaleCheckRef.current); sseStaleCheckRef.current = null }
+      if (sseConnRef.current) { sseConnRef.current.close(); sseConnRef.current = null }
+      // Force fetchData onto the snapshot path. Without this, the since_id
+      // incremental branch fires and hits legacy live-flow — wrong target
+      // for feed-mode catch-up.
+      isFirstLoadRef.current = true
+      lastTradeIdRef.current = 0
+      const p = fetchDataRef.current?.({ pageNum: 0 })
+      if (p && typeof (p as Promise<void>).then === "function") {
+        try { await p } catch {}
+      }
+      if (!document.hidden) open()
+      setPollError(null)
+    }
 
     const open = () => {
       if (sseConnRef.current) return
@@ -620,6 +645,11 @@ export default function ScannerPage() {
           : "/api/scanner/stream"
         const es = new EventSource(url)
         sseConnRef.current = es
+        // Initialize heartbeat so the watchdog doesn't trip on the silence
+        // before the first event arrives. The server sends event:agg
+        // immediately on connect (Phase 2 #3), so this typically refreshes
+        // within ~100ms anyway.
+        lastSuccessRef.current = Date.now()
 
         if (feedMode) {
           es.addEventListener("row", (ev) => {
@@ -649,9 +679,20 @@ export default function ScannerPage() {
             // including all client-only filters (search/grade/side/etc) the
             // server topic doesn't know about. Server agg over the universe
             // would clobber a TSLA-only display, so we don't write it.
-            // Handler stays alive as a heartbeat for the #5 stale guard.
+            // Handler stays alive as a heartbeat for the stale guard below.
             lastSuccessRef.current = Date.now()
           })
+          // 60s stale-connection guard. Server-side keepalive is a 15s
+          // event:ping (already refreshes lastSuccessRef via the row/agg
+          // handlers in steady state, plus event:agg every 5–10s in #3).
+          // If 60s pass with nothing, the connection is dead — Cloudflare
+          // dropped the stream, server restarted, or the network blip
+          // outlasted keepalives. Reconnect.
+          sseStaleCheckRef.current = setInterval(() => {
+            if (document.hidden) return
+            if (Date.now() - lastSuccessRef.current < 60000) return
+            reconnect()
+          }, 15000)
         } else {
           es.addEventListener("signal", () => {
             if (sseDebounceRef.current) return
@@ -665,6 +706,7 @@ export default function ScannerPage() {
     }
     const close = () => {
       if (sseDebounceRef.current) { clearTimeout(sseDebounceRef.current); sseDebounceRef.current = null }
+      if (sseStaleCheckRef.current) { clearInterval(sseStaleCheckRef.current); sseStaleCheckRef.current = null }
       if (sseConnRef.current) { sseConnRef.current.close(); sseConnRef.current = null }
     }
     const onVis = () => { document.hidden ? close() : open() }
