@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from "@/components/ui/separator"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
@@ -1837,18 +1838,25 @@ export default function ScannerPage() {
       {/* ── HEADER ── */}
       <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white/[0.08] border-[1.5px] border-white/[0.15] rounded-xl px-3.5 gap-2 focus-within:border-white/[0.3] focus-within:shadow-none transition-all" style={{ maxWidth: 280 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input
+          <InputGroup
+            className="bg-stone-900/40 border-stone-800 focus-within:border-amber-600 rounded-xl h-[43px] transition-colors"
+            style={{ maxWidth: 280 }}
+          >
+            <InputGroupAddon align="inline-start" className="text-stone-500">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </InputGroupAddon>
+            <InputGroupInput
               type="text"
               placeholder="Search ticker..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value.toUpperCase())}
               onKeyDown={e => { if (e.key === "Enter") { setSearch(searchInput); setPage(0) } if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
-              className="bg-transparent border-none outline-none text-white text-[13px] font-mono tracking-wide py-2.5 w-full placeholder-white/40"
+              className="text-white text-[13px] font-mono tracking-wide placeholder-stone-500"
             />
-            <span className="text-[9px] text-white/40 border border-white/[0.15] rounded px-1.5 py-0.5 font-mono flex-shrink-0">ENTER</span>
-          </div>
+            <InputGroupAddon align="inline-end">
+              <kbd className="text-[9px] text-stone-400 bg-stone-800 border border-stone-700 rounded px-1.5 py-0.5 font-mono">ENTER</kbd>
+            </InputGroupAddon>
+          </InputGroup>
           <div className="w-px h-7 bg-white/[0.06]" />
           <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white border border-white/[0.15] hover:border-white/[0.3] hover:bg-white/[0.12] transition-all" style={{ background: "rgba(255,255,255,0.08)" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
