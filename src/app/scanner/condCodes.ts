@@ -67,7 +67,15 @@ export function decodeCond(code: string): Badge | null {
 
   // Position
   if (code === "o") return { label: "OPENING", tier: "position" };
-  if (code === "rh") return { label: "ROLL/HEDGE", tier: "warning" };
+  // 2026-05-09: ROLL/HEDGE renamed to MIXED — the underlying signal is
+  // position_action='ADJUSTING', PositionTracker._classify_action()'s residual
+  // [0.35, 0.65] mixed-signal bucket. Old 'rh' label implied an active
+  // roll-or-hedge classification; reality is "couldn't decide between OPENING
+  // and CLOSING." Both 'rh' (legacy/cached wire) and 'mx' (new wire after the
+  // queries.py producer rename ships) render the same MIXED label so deploy
+  // ordering doesn't create a badge-display gap. tier=warning preserved —
+  // mixed-signal trades are still anti-predictive per the original framing.
+  if (code === "rh" || code === "mx") return { label: "MIXED", tier: "warning" };
   if (code === "mm") return { label: "MM", tier: "warning" };
   if (code === "dt") return { label: "DEEP ITM", tier: "position" };
 
