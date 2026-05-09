@@ -71,6 +71,21 @@ export function decodeCond(code: string): Badge | null {
   if (code === "mm") return { label: "MM", tier: "warning" };
   if (code === "dt") return { label: "DEEP ITM", tier: "position" };
 
+  // OPRA condition-code passthrough — informational tape-level signals about
+  // how the print executed. Backend at queries.py:_detect_opra_badges emits
+  // these when corresponding OPRA codes appear in the trade's trade_conditions
+  // array. Pre-2026-05 these only landed on the legacy /api/scanner/live-flow
+  // path; Phase 2 streaming subscribers missed them. Tier strings align with
+  // badge-styles.ts: "iso" → cyan, "cross" → fuchsia get distinct colors;
+  // "auction", "floor" fall back to the neutral slate UNIFIED style — lower
+  // visual prominence than UNUSUAL/V/OI/ACCUM/conviction signals, which is
+  // the intended hierarchy. The "ml" short code is shared with the structure-
+  // detection path (STRUCT map below); both produce the MULTI-LEG label.
+  if (code === "iso") return { label: "ISO", tier: "iso" };
+  if (code === "cr") return { label: "CROSS", tier: "cross" };
+  if (code === "au") return { label: "AUCTION", tier: "auction" };
+  if (code === "fl") return { label: "FLOOR", tier: "floor" };
+
   // Multi-leg structures
   const STRUCT: Record<string, string> = {
     ca: "CALENDAR SPREAD",
