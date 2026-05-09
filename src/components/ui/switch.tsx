@@ -25,7 +25,14 @@ function Switch({
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "pointer-events-none block rounded-full bg-oklch(1 0 0) ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-oklch(0.985 0 0) dark:data-[state=unchecked]:bg-oklch(0.145 0 0) dark:bg-oklch(0.145 0 0) dark:dark:data-[state=checked]:bg-oklch(0.205 0 0) dark:dark:data-[state=unchecked]:bg-oklch(0.985 0 0)"
+          // 2026-05-10: shadcn's generated thumb className shipped bg-oklch(1 0 0)
+          // where the internal spaces in the arbitrary value broke Tailwind's
+          // parser; the class fell through to #000000 / unset, making thumbs
+          // invisible against stone-700 ON state. Replaced with bg-white as the
+          // canonical equivalent. Other oklch arbitrary values on this string
+          // remain — they target dark-mode states callers don't exercise; only
+          // the default thumb bg was rendering and broken.
+          "pointer-events-none block rounded-full bg-white ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-oklch(0.985 0 0) dark:data-[state=unchecked]:bg-oklch(0.145 0 0) dark:bg-oklch(0.145 0 0) dark:dark:data-[state=checked]:bg-oklch(0.205 0 0) dark:dark:data-[state=unchecked]:bg-oklch(0.985 0 0)"
         )}
       />
     </SwitchPrimitive.Root>
