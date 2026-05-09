@@ -10,7 +10,9 @@ import { Slider } from "@/components/ui/slider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from "@/components/ui/separator"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
+import { Card } from "@/components/ui/card"
+import { ChartContainer } from "@/components/ui/chart"
+import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
@@ -219,6 +221,37 @@ function fmtPrem(v: number) {
   if (v >= 1e6) return `$${(v / 1e6).toFixed(1)}M`
   if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`
   return `$${v}`
+}
+
+// Stat-strip KPI gauge — Recharts RadialBar wrapped in shadcn ChartContainer.
+// Replaces the magicui AnimatedCircularProgressBar that powered the four
+// stat-strip cards (Flow sentiment / Put-to-call / Call flow / Put flow)
+// pre-2026-05-10. Single-bar 0-100 gauge with a faint background ring.
+// Stays on the warm theme palette (Direction A scoping respected — palette
+// applies to filter panel only, not the stat strip).
+function KPIGaugeRing({ value, color }: { value: number; color: string }) {
+  const data = [{ name: "value", value: Math.max(0, Math.min(100, value)), fill: color }]
+  return (
+    <ChartContainer
+      config={{ value: { label: "value" } }}
+      className="!aspect-square !h-[52px] !w-[52px]"
+    >
+      <RadialBarChart
+        data={data}
+        startAngle={90}
+        endAngle={-270}
+        innerRadius="70%"
+        outerRadius="100%"
+      >
+        <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+        <RadialBar
+          dataKey="value"
+          cornerRadius={4}
+          background={{ fill: "rgba(255,255,255,0.06)" }}
+        />
+      </RadialBarChart>
+    </ChartContainer>
+  )
 }
 
 function fmtGex(v: number) {
@@ -1907,14 +1940,10 @@ export default function ScannerPage() {
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1C1E' }}>
 
             {/* Flow sentiment */}
-            <div className="px-5 py-3 flex items-center gap-4">
-              <AnimatedCircularProgressBar
+            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
+              <KPIGaugeRing
                 value={Math.round(bullPct)}
-                max={100}
-                min={0}
-                gaugePrimaryColor={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
-                gaugeSecondaryColor="rgba(255,255,255,0.06)"
-                className="!size-[52px] !text-[11px]"
+                color={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
               />
               <div>
                 <div className="text-[12px] text-white/50 mb-1">Flow sentiment</div>
@@ -1923,38 +1952,27 @@ export default function ScannerPage() {
                 </span>
                 <div className="text-[10px] text-white/30 mt-0.5 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
               </div>
-            </div>
+            </Card>
 
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
 
             {/* Put to call */}
-            <div className="px-5 py-3 flex items-center gap-4">
-              <AnimatedCircularProgressBar
+            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
+              <KPIGaugeRing
                 value={Math.min(Math.round(displayStats.pc_ratio * 50), 100)}
-                max={100}
-                min={0}
-                gaugePrimaryColor="#48DEFF"
-                gaugeSecondaryColor="rgba(255,255,255,0.06)"
-                className="!size-[52px] !text-[11px]"
+                color="#48DEFF"
               />
               <div>
                 <div className="text-[12px] text-white/50 mb-1">Put to call</div>
                 <div className="text-[24px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
               </div>
-            </div>
+            </Card>
 
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
 
             {/* Call flow */}
-            <div className="px-5 py-3 flex items-center gap-4">
-              <AnimatedCircularProgressBar
-                value={callSharePct}
-                max={100}
-                min={0}
-                gaugePrimaryColor="#22C55E"
-                gaugeSecondaryColor="rgba(255,255,255,0.06)"
-                className="!size-[52px] !text-[11px]"
-              />
+            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
+              <KPIGaugeRing value={callSharePct} color="#22C55E" />
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[12px] text-white/50">Call flow</span>
@@ -1962,20 +1980,13 @@ export default function ScannerPage() {
                 </div>
                 <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
               </div>
-            </div>
+            </Card>
 
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
 
             {/* Put flow */}
-            <div className="px-5 py-3 flex items-center gap-4">
-              <AnimatedCircularProgressBar
-                value={putSharePct}
-                max={100}
-                min={0}
-                gaugePrimaryColor="#FF605D"
-                gaugeSecondaryColor="rgba(255,255,255,0.06)"
-                className="!size-[52px] !text-[11px]"
-              />
+            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
+              <KPIGaugeRing value={putSharePct} color="#FF605D" />
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[12px] text-white/50">Put flow</span>
@@ -1983,7 +1994,7 @@ export default function ScannerPage() {
                 </div>
                 <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString()}</div>
               </div>
-            </div>
+            </Card>
 
           </div>
         )
