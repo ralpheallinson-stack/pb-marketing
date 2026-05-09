@@ -441,6 +441,19 @@ export default function ScannerPage() {
   const [filterSide, setFilterSide] = useState("")
   const [filterUnusualOnly, setFilterUnusualOnly] = useState(false)
   const [filterNoIndex, setFilterNoIndex] = useState(false)
+  // 2026-05-09: "Curated grades only" toggle. Default OFF = full coverage
+  // (Grade A/B/PASS) — subscribers see PB's institutional flow tape on par with
+  // Cheddar's coverage. Toggle ON = restore PB's traditional curated view
+  // (Grade A/B only), hiding graded-PASS flow that conviction_grader Rules 6-9
+  // route to PASS based on historical low-WR audits. Persists to localStorage
+  // under pb_curated_grades. See project_pb_stage3_dte_filter_investigation.md
+  // for the rationale (78.7% of 0-2 DTE flow gets PASS-graded; default-on
+  // exposes that flow without changing the grader).
+  const [filterCuratedOnly, setFilterCuratedOnly] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    try { return window.localStorage.getItem("pb_curated_grades") === "1" }
+    catch { return false }
+  })
   const [activeFilterCount, setActiveFilterCount] = useState(0)
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
   const [focusStrike, setFocusStrike] = useState<string | null>(null)
@@ -818,7 +831,7 @@ export default function ScannerPage() {
 
   const resetFilters = () => {
     setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterSide("")
-    setFilterDte(""); setFilterUnusualOnly(false); setFilterNoIndex(false)
+    setFilterDte(""); setFilterUnusualOnly(false); setFilterNoIndex(false); setFilterCuratedOnly(false)
     setFilterMinPremium(""); setFilterMinContracts(0); setFilterMinVolOi(0)
   }
 
@@ -847,9 +860,15 @@ export default function ScannerPage() {
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
     else if (filterDte === "8-30") p.set("max_dte", "30")
+    // grades default flipped 2026-05-09: full coverage (A,B,PASS) by default;
+    // toggle ON restores the curated A,B-only view. Backend at
+    // web/blueprints/scanner_sub.py accepts grades param and sanitizes to
+    // any subset of {A, B, PASS}; default-on-server is still A,B so the
+    // explicit param here is what produces the new default behavior.
+    p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
     p.set("limit", "2000")
     return `/api/scanner/feed?${p.toString()}`
-  }, [timeRange, filterMinPremium, filterDte])
+  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly])
 
   // Feature flag: opt-in via `localStorage.setItem('pb_scanner_feed','1')` on
   // the browser DevTools console. Default OFF — existing live-flow path
@@ -1010,7 +1029,7 @@ export default function ScannerPage() {
     lastTradeIdRef.current = 0
     setTrades([])
     fetchDataRef.current?.({ initial: true, pageNum: page })
-  }, [page, timeRange, filterMinPremium, filterDte])
+  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly])
 
   // auto-refresh every 3s on page 0 (live).
   //
@@ -1106,8 +1125,16 @@ export default function ScannerPage() {
     if (filterSide) c++
     if (filterUnusualOnly) c++
     if (filterNoIndex) c++
+    if (filterCuratedOnly) c++
     setActiveFilterCount(c)
-  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex, filterCuratedOnly])
+
+  // Persist curated-only toggle to localStorage on change.
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try { window.localStorage.setItem("pb_curated_grades", filterCuratedOnly ? "1" : "0") }
+    catch { /* localStorage unavailable */ }
+  }, [filterCuratedOnly])
 
   const matchesFilter = useCallback((t: Trade) => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
@@ -2311,7 +2338,7 @@ export default function ScannerPage() {
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterUnusualOnly ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between py-2.5">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
                       <div className="text-[14px] text-white font-medium">No index</div>
                       <div className="text-[12px] text-white/35">Hide SPX, SPXW, NDX, RUT, VIX</div>
@@ -2319,6 +2346,16 @@ export default function ScannerPage() {
                     <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterNoIndex ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
                       onClick={() => setFilterNoIndex(!filterNoIndex)}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterNoIndex ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-white font-medium">Curated grades only</div>
+                      <div className="text-[12px] text-white/35">Hide graded-PASS flow (lower-win-rate signals)</div>
+                    </div>
+                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterCuratedOnly ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
+                      onClick={() => setFilterCuratedOnly(!filterCuratedOnly)}>
+                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterCuratedOnly ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
                     </div>
                   </div>
                 </div>
