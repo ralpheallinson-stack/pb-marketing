@@ -10,7 +10,7 @@ export const TIER_STYLES: Record<string, string> = {
   accumulation:  UNIFIED,
   size:          UNIFIED,
   position:      UNIFIED,
-  warning:       'bg-amber-500/20 text-amber-300 border-amber-500/30',  // ROLL/HEDGE — fade signal
+  warning:       'bg-amber-500/20 text-amber-300 border-amber-500/30',  // MIXED — fade signal (was ROLL/HEDGE pre-2026-05-09 c4519ab)
   structure:     UNIFIED,
   strategy:      UNIFIED,
   iv_high:       'bg-red-500/20 text-red-300 border-red-500/30',        // IV rank >= 70 — vol expensive
