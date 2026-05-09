@@ -40,9 +40,9 @@ The color-coded alert system flags bullish and bearish prints visually. Green fo
 
 Yes, we built this. Here's what the same $99 buys on our side.
 
-**Conviction grading.** Every signal passes through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything below is filtered out entirely.
+**Conviction grading.** Every signal passes through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything below is labeled PASS — visible by default but clearly marked, or hidden behind the "curated grades only" toggle when you want the A/B-only view.
 
-On a typical day, 5,000+ institutional prints hit the tape. The grading system surfaces 200-400 that pass conviction scoring. That's the difference between staring at a wall of data and looking at a curated watchlist.
+On a typical day, 5,000+ institutional prints hit the tape. 200-400 earn an A or B grade; the rest carry PASS. The toggle lets you flip between the full institutional tape (everything labeled and visible) and the curated subset (high-conviction-only) without leaving the page.
 
 **Documented methodology.** Every signal gets documented with full processing methodology outcomes — wins and losses — at [profitbuilders.io/results](/results). That's documented OPRA processing methodology with CBOE Rule 6.11 sweep detection, auditable by anyone. No cherry-picked screenshots. No "look at this winner we called." Just the full data set.
 

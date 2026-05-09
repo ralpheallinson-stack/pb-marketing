@@ -49,7 +49,7 @@ There's also no documented methodology. Barchart shows you the flow; they don't 
 
 Yes, we built this. Here's what $99/month buys when you're not paying for breadth.
 
-**Conviction grading.** Every print runs through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, aggressive fill conditions, favorable Vol/OI ratios, and non-market-maker classification. Grade B is standard institutional flow. Everything below that threshold is filtered out entirely. You're not sorting 5,000 prints; you're looking at 200-400 that cleared the bar.
+**Conviction grading.** Every print runs through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, aggressive fill conditions, favorable Vol/OI ratios, and non-market-maker classification. Grade B is standard institutional flow. Everything below that threshold is labeled PASS — visible by default with the grading metadata exposed, or hidden behind a one-click "curated grades only" toggle if you want the high-conviction view. Out of ~5,000 daily institutional prints, 200-400 carry an A or B grade.
 
 **Documented methodology.** Every signal Profit Builders issues is documented with full processing methodology outcomes at [profitbuilders.io/results](/results) — documented OPRA processing methodology with CBOE Rule 6.11 sweep detection. You can audit every one. Barchart gives you data; we give you data plus proof the data means something.
 

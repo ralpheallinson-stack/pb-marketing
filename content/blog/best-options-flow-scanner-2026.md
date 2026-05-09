@@ -108,7 +108,7 @@ Yes, we built this. Here's what we did differently after trading on every platfo
 
 **GEX heatmap.** Gamma exposure visualization by strike and expiry. See where dealers are positioned, identify gamma walls, and find squeeze setups. No other scanner in this price range ships this.
 
-**Speed.** Signals deliver within 1-3 seconds of the trade hitting the tape via WebSocket. Discord and Telegram alerts fire simultaneously.
+**Speed.** Signals stream within ~1 second of the trade hitting the tape via push-based delivery (server-sent events). Discord and Telegram alerts fire simultaneously.
 
 **Free tier.** Try the [free scanner](/free-scanner) right now — 15-minute delayed data, no account required. The paid version ($99/month) includes real-time flow, full history, GEX heatmaps, and a 7-day free trial.
 
