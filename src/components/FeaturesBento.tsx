@@ -81,7 +81,7 @@ export default function FeaturesBento() {
             Slice the tape.<br /><span className="text-[#60a5fa]">Save the view.</span>
           </h3>
           <p className="text-[13px] text-white/55 leading-relaxed mb-5">
-            Direction, flow type, signal quality, side. Isolate Grade A sweeps, block-only flow, or above-ask aggression. Save custom presets and load them in one click.
+            Direction, flow type, signal quality, side. Full coverage by default with conviction grading layered on; one-click curation toggle restricts to Grade A/B when you want the high-conviction-only view. Save custom presets and load them in one click.
           </p>
 
           <div className="mt-auto rounded-lg border border-white/[0.06] bg-[#0E1117] p-3 font-mono">
@@ -90,7 +90,7 @@ export default function FeaturesBento() {
               <span className="text-[9px] font-bold px-2 py-0.5 rounded border bg-white/[0.06] text-white/70 border-white/10">Ralph1</span>
               <span className="text-[9px] font-bold px-2 py-0.5 rounded border bg-white/[0.06] text-white/70 border-white/10">Aggressive</span>
             </div>
-            <FilterRow label="Grade A only" on />
+            <FilterRow label="Curated grades only" />
             <FilterRow label="Above-ask only" on />
             <FilterRow label="Sweep only" />
           </div>

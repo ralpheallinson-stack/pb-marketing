@@ -183,7 +183,7 @@ export default function VsPage() {
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Conviction grading</span>
                 <span className="pb-editorial text-[14px] text-white/55 text-right">—</span>
-                <span className="pb-editorial text-[14px] text-white text-right">institutional-flow filter Grade A/B</span>
+                <span className="pb-editorial text-[14px] text-white text-right">Full institutional flow tape, Grade A/B labeled, curation toggle</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Public methodology</span>

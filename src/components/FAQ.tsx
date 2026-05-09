@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     q: "Is this real-time?",
-    a: "Yes. The web scanner auto-refreshes every 3 seconds. Discord and Telegram alerts fire the moment a signal passes our conviction filters. Every signal includes Greeks, IV, sector context, accumulation tracking, and 7-day flow history.",
+    a: "Yes. Signals stream live to the web scanner as they hit the OPRA tape — push-based delivery within ~1 second, no manual refresh required. Discord and Telegram alerts fire the moment a signal passes our conviction filters. Every signal includes Greeks, IV, sector context, accumulation tracking, and 7-day flow history.",
   },
   {
     q: "What tickers do you cover?",
