@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
+import { Switch } from "@/components/ui/switch"
+import { Slider } from "@/components/ui/slider"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Separator } from "@/components/ui/separator"
 import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
@@ -2191,7 +2195,7 @@ export default function ScannerPage() {
       {/* ── FILTER PANEL ── */}
       {showFilters && (
         <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowFilters(false)}>
-          <div className="w-[340px] h-full overflow-y-auto" style={{ background: '#23222D', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
+          <div className="w-[340px] h-full overflow-y-auto" style={{ background: '#232225', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
             onClick={e => e.stopPropagation()}>
 
             {/* Header */}
@@ -2219,27 +2223,30 @@ export default function ScannerPage() {
 
               {/* ── TIME RANGE ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Time range</div>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Time range</div>
+                <ToggleGroup
+                  type="single"
+                  value={timeRange}
+                  onValueChange={(v) => { if (v) { setTimeRange(v); setPage(0); setClientPage(0) } }}
+                  className="grid grid-cols-4 gap-1.5"
+                >
                   {TIME_RANGES.map(tr => (
-                    <button
+                    <ToggleGroupItem
                       key={tr.key}
-                      onClick={() => { setTimeRange(tr.key); setPage(0); setClientPage(0) }}
-                      className={`text-[11px] font-medium py-2 rounded-lg border transition-all ${
-                        timeRange === tr.key
-                          ? "bg-[#F97316]/15 border-[#F97316]/40 text-[#F97316]"
-                          : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:border-white/[0.15] hover:text-white/70"
-                      }`}
+                      value={tr.key}
+                      className="text-[11px] font-medium py-2 rounded-lg border bg-white/[0.04] border-white/[0.08] text-stone-400 hover:border-white/[0.15] hover:text-stone-200 data-[state=on]:bg-amber-700/15 data-[state=on]:border-amber-700/40 data-[state=on]:text-amber-500"
                     >
                       {tr.label}
-                    </button>
+                    </ToggleGroupItem>
                   ))}
-                </div>
+                </ToggleGroup>
               </div>
+
+              <Separator className="bg-stone-800" />
 
               {/* ── SAVED PRESETS ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Saved presets</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Saved presets</div>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {presets.map(p => (
                     <div key={p.name} className="group flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-2.5 py-1.5 cursor-pointer hover:border-[#48DEFF]/40 hover:bg-[#48DEFF]/5 transition-colors"
@@ -2270,154 +2277,174 @@ export default function ScannerPage() {
                 </div>
               </div>
 
+              <Separator className="bg-stone-800" />
+
               {/* ── DIRECTION ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Direction</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Direction</div>
                 <div className="space-y-0">
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Calls only</div>
-                      <div className="text-[12px] text-white/35">Show call options only</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Calls only</div>
+                      <div className="text-[12px] text-stone-400">Show call options only</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "C" ? "bg-[#22C55E]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterOptType(filterOptType === "C" ? "" : "C")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterOptType === "C" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterOptType === "C"}
+                      onCheckedChange={(v) => setFilterOptType(v ? "C" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Puts only</div>
-                      <div className="text-[12px] text-white/35">Show put options only</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Puts only</div>
+                      <div className="text-[12px] text-stone-400">Show put options only</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterOptType === "P" ? "bg-[#FF605D]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterOptType(filterOptType === "P" ? "" : "P")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterOptType === "P" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterOptType === "P"}
+                      onCheckedChange={(v) => setFilterOptType(v ? "P" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                 </div>
               </div>
+
+              <Separator className="bg-stone-800" />
 
               {/* ── FLOW TYPE ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Flow type</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Flow type</div>
                 <div className="space-y-0">
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Sweeps only</div>
-                      <div className="text-[12px] text-white/35">Multi-leg aggressive fills</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Sweeps only</div>
+                      <div className="text-[12px] text-stone-400">Multi-leg aggressive fills</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterType === "SWEEP" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterType(filterType === "SWEEP" ? "" : "SWEEP")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterType === "SWEEP" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterType === "SWEEP"}
+                      onCheckedChange={(v) => setFilterType(v ? "SWEEP" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Blocks only</div>
-                      <div className="text-[12px] text-white/35">Single-fill large orders</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Blocks only</div>
+                      <div className="text-[12px] text-stone-400">Single-fill large orders</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterType === "BLOCK" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterType(filterType === "BLOCK" ? "" : "BLOCK")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterType === "BLOCK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterType === "BLOCK"}
+                      onCheckedChange={(v) => setFilterType(v ? "BLOCK" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                 </div>
               </div>
+
+              <Separator className="bg-stone-800" />
 
               {/* ── SIGNAL QUALITY ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Signal quality</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Signal quality</div>
                 <div className="space-y-0">
 <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Unusual only</div>
-                      <div className="text-[12px] text-white/35">V/OI flagged activity</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Unusual only</div>
+                      <div className="text-[12px] text-stone-400">V/OI flagged activity</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterUnusualOnly ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterUnusualOnly(!filterUnusualOnly)}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterUnusualOnly ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterUnusualOnly}
+                      onCheckedChange={setFilterUnusualOnly}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">No index</div>
-                      <div className="text-[12px] text-white/35">Hide SPX, SPXW, NDX, RUT, VIX</div>
+                      <div className="text-[14px] text-stone-200 font-medium">No index</div>
+                      <div className="text-[12px] text-stone-400">Hide SPX, SPXW, NDX, RUT, VIX</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterNoIndex ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterNoIndex(!filterNoIndex)}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterNoIndex ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterNoIndex}
+                      onCheckedChange={setFilterNoIndex}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Curated grades only</div>
-                      <div className="text-[12px] text-white/35">Hide graded-PASS flow (lower-win-rate signals)</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Curated grades only</div>
+                      <div className="text-[12px] text-stone-400">Hide graded-PASS flow (lower-win-rate signals)</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterCuratedOnly ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterCuratedOnly(!filterCuratedOnly)}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterCuratedOnly ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterCuratedOnly}
+                      onCheckedChange={setFilterCuratedOnly}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                 </div>
               </div>
+
+              <Separator className="bg-stone-800" />
 
               {/* ── SIDE ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Side</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Side</div>
                 <div className="space-y-0">
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">Above ask only</div>
-                      <div className="text-[12px] text-white/35">Most aggressive — paid above ask</div>
+                      <div className="text-[14px] text-stone-200 font-medium">Above ask only</div>
+                      <div className="text-[12px] text-stone-400">Most aggressive — paid above ask</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "ABOVE_ASK" ? "bg-[#22C55E]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterSide(filterSide === "ABOVE_ASK" ? "" : "ABOVE_ASK")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "ABOVE_ASK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterSide === "ABOVE_ASK"}
+                      onCheckedChange={(v) => setFilterSide(v ? "ABOVE_ASK" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
                     <div>
-                      <div className="text-[14px] text-white font-medium">At ask only</div>
-                      <div className="text-[12px] text-white/35">Aggressive buys at the ask</div>
+                      <div className="text-[14px] text-stone-200 font-medium">At ask only</div>
+                      <div className="text-[12px] text-stone-400">Aggressive buys at the ask</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "AT_ASK" ? "bg-[#48DEFF]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterSide(filterSide === "AT_ASK" ? "" : "AT_ASK")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "AT_ASK" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterSide === "AT_ASK"}
+                      onCheckedChange={(v) => setFilterSide(v ? "AT_ASK" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
                     <div>
-                      <div className="text-[14px] text-white font-medium">At bid only</div>
-                      <div className="text-[12px] text-white/35">Sells hitting the bid</div>
+                      <div className="text-[14px] text-stone-200 font-medium">At bid only</div>
+                      <div className="text-[12px] text-stone-400">Sells hitting the bid</div>
                     </div>
-                    <div className={`w-[44px] h-[24px] rounded-full relative cursor-pointer transition-colors ${filterSide === "AT_BID" ? "bg-[#FF605D]" : "bg-white/[0.08]"}`}
-                      onClick={() => setFilterSide(filterSide === "AT_BID" ? "" : "AT_BID")}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] shadow transition-transform ${filterSide === "AT_BID" ? "translate-x-[20px]" : "translate-x-[2px]"}`} />
-                    </div>
+                    <Switch
+                      checked={filterSide === "AT_BID"}
+                      onCheckedChange={(v) => setFilterSide(v ? "AT_BID" : "")}
+                      className="data-[state=checked]:bg-stone-700"
+                    />
                   </div>
                 </div>
               </div>
 
+              <Separator className="bg-stone-800" />
+
               {/* ── RANGE FILTERS ── */}
               <div>
-                <div className="text-[10px] font-semibold tracking-[0.14em] uppercase text-white/30 mb-3">Range filters</div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Range filters</div>
 
                 {/* Min Premium */}
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-white/70 font-medium">Min premium</span>
-                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                    <span className="text-[13px] text-stone-200 font-medium">Min premium</span>
+                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
                       {({"": "Any", "50000": "$50K", "100000": "$100K", "200000": "$200K", "500000": "$500K", "1000000": "$1M", "5000000": "$5M+"} as Record<string, string>)[filterMinPremium] || "Any"}
                     </span>
                   </div>
-                  <input type="range" min={0} max={6} step={1}
-                    value={({"": 0, "50000": 1, "100000": 2, "200000": 3, "500000": 4, "1000000": 5, "5000000": 6} as Record<string, number>)[filterMinPremium] ?? 0}
-                    onChange={e => setFilterMinPremium(["", "50000", "100000", "200000", "500000", "1000000", "5000000"][Number(e.target.value)])}
-                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
-                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <Slider min={0} max={6} step={1}
+                    value={[({"": 0, "50000": 1, "100000": 2, "200000": 3, "500000": 4, "1000000": 5, "5000000": 6} as Record<string, number>)[filterMinPremium] ?? 0]}
+                    onValueChange={([v]) => setFilterMinPremium(["", "50000", "100000", "200000", "500000", "1000000", "5000000"][v])}
+                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
+                  />
                   <div className="flex justify-between mt-1">
                     {["Any", "$50K", "$100K", "$200K", "$500K", "$1M", "$5M+"].map(l => (
-                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
                     ))}
                   </div>
                 </div>
@@ -2425,19 +2452,19 @@ export default function ScannerPage() {
                 {/* Min Contracts */}
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-white/70 font-medium">Min contracts</span>
-                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                    <span className="text-[13px] text-stone-200 font-medium">Min contracts</span>
+                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
                       {filterMinContracts === 0 ? "Any" : filterMinContracts.toLocaleString()}
                     </span>
                   </div>
-                  <input type="range" min={0} max={2000} step={50}
-                    value={filterMinContracts}
-                    onChange={e => setFilterMinContracts(Number(e.target.value))}
-                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
-                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <Slider min={0} max={2000} step={50}
+                    value={[filterMinContracts]}
+                    onValueChange={([v]) => setFilterMinContracts(v)}
+                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
+                  />
                   <div className="flex justify-between mt-1">
                     {["0", "500", "1K", "1.5K", "2K"].map(l => (
-                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
                     ))}
                   </div>
                 </div>
@@ -2445,19 +2472,19 @@ export default function ScannerPage() {
                 {/* Max DTE */}
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-white/70 font-medium">Max DTE</span>
-                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                    <span className="text-[13px] text-stone-200 font-medium">Max DTE</span>
+                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
                       {filterDte === "0dte" ? "0DTE" : filterDte === "1-7" ? "7d" : filterDte === "8-30" ? "30d" : filterDte === "30+" ? "30d+" : "All"}
                     </span>
                   </div>
-                  <input type="range" min={0} max={4} step={1}
-                    value={({"": 0, "0dte": 1, "1-7": 2, "8-30": 3, "30+": 4} as Record<string, number>)[filterDte] ?? 0}
-                    onChange={e => setFilterDte(["", "0dte", "1-7", "8-30", "30+"][Number(e.target.value)])}
-                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
-                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <Slider min={0} max={4} step={1}
+                    value={[({"": 0, "0dte": 1, "1-7": 2, "8-30": 3, "30+": 4} as Record<string, number>)[filterDte] ?? 0]}
+                    onValueChange={([v]) => setFilterDte(["", "0dte", "1-7", "8-30", "30+"][v])}
+                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
+                  />
                   <div className="flex justify-between mt-1">
                     {["All", "0DTE", "1-7d", "8-30d", "30d+"].map(l => (
-                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
                     ))}
                   </div>
                 </div>
@@ -2465,19 +2492,19 @@ export default function ScannerPage() {
                 {/* Min V/OI Ratio */}
                 <div className="mb-3">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-white/70 font-medium">Min V/OI ratio</span>
-                    <span className="text-[13px] text-[#48DEFF] font-semibold font-mono">
+                    <span className="text-[13px] text-stone-200 font-medium">Min V/OI ratio</span>
+                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
                       {filterMinVolOi === 0 ? "Any" : (filterMinVolOi / 10).toFixed(1) + "x"}
                     </span>
                   </div>
-                  <input type="range" min={0} max={50} step={5}
-                    value={filterMinVolOi}
-                    onChange={e => setFilterMinVolOi(Number(e.target.value))}
-                    className="w-full h-1 rounded-full appearance-none cursor-pointer"
-                    style={{ background: 'rgba(255,255,255,0.06)', accentColor: '#48DEFF' }} />
+                  <Slider min={0} max={50} step={5}
+                    value={[filterMinVolOi]}
+                    onValueChange={([v]) => setFilterMinVolOi(v)}
+                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
+                  />
                   <div className="flex justify-between mt-1">
                     {["Any", "1x", "2x", "3x", "4x", "5x"].map(l => (
-                      <span key={l} className="text-[9px] text-white/20 font-mono">{l}</span>
+                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
                     ))}
                   </div>
                 </div>
