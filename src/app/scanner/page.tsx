@@ -583,6 +583,46 @@ export default function ScannerPage() {
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
+  // Pre-warm the HTMLAudioElement decoder via a silent play+pause under a
+  // user gesture. Without this, the first .play() after page load takes
+  // hundreds of ms while the decoder spins up — perceived as audio lag
+  // on the first signal even though the SSE event:row handler fired
+  // synchronously (Pattern A diagnostic, 2026-05-08: 8 rows / 8 plays,
+  // audio fires 15-20ms BEFORE DOM commit). Subsequent plays hit a warm
+  // decoder. Volume zeroed during warm-up so the user doesn't hear the
+  // warm play; restored after pause. Promise-awaited so pause runs AFTER
+  // play resolves — pausing before play settles cancels the warm-up.
+  const prewarmAudio = useCallback(() => {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
+        audioCtxRef.current.volume = 0.6
+        audioCtxRef.current.preload = "auto"
+      }
+      const a = audioCtxRef.current
+      const originalVolume = a.volume
+      a.volume = 0
+      a.play()
+        .then(() => {
+          a.pause()
+          a.currentTime = 0
+          a.volume = originalVolume
+        })
+        .catch(() => {
+          a.volume = originalVolume
+        })
+    } catch { /* audio unavailable */ }
+  }, [])
+
+  // Extracted from the inline JSX onClick so the off→on transition can
+  // fire prewarmAudio() under the same user gesture browsers require for
+  // autoplay-policy compliance.
+  const toggleSound = useCallback(() => {
+    const next = !soundEnabled
+    if (next) prewarmAudio()
+    setSoundEnabled(next)
+  }, [soundEnabled, prewarmAudio])
+
   // Refs to break dep churn — see plan: scanner live-update fix.
   // playBlip via ref so sound toggles don't rebuild fetchData.
   // fetchDataRef so polling/reset effects don't re-run on fetchData identity changes.
@@ -592,6 +632,31 @@ export default function ScannerPage() {
   const lastSuccessRef = useRef<number>(Date.now())
   const [pollError, setPollError] = useState<string | null>(null)
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
+
+  // soundEnabled defaults to true with no localStorage persistence, so
+  // most users land with sound on and never click the toggle. Without
+  // this, the toggleSound pre-warm fires for almost no one in practice.
+  // Register a one-shot listener on the first user gesture (click or
+  // keypress anywhere in the document) to fire prewarmAudio() under
+  // that gesture. { once: true } auto-removes per-event after firing;
+  // the manual removes inside `warm` cover the case where one event
+  // fires first and we want to drop the listener for the other event
+  // type too. Cleanup return covers component unmount before either
+  // event arrives.
+  useEffect(() => {
+    if (!soundEnabled) return
+    const warm = () => {
+      prewarmAudio()
+      document.removeEventListener("click", warm)
+      document.removeEventListener("keydown", warm)
+    }
+    document.addEventListener("click", warm, { once: true })
+    document.addEventListener("keydown", warm, { once: true })
+    return () => {
+      document.removeEventListener("click", warm)
+      document.removeEventListener("keydown", warm)
+    }
+  }, [soundEnabled, prewarmAudio])
 
   // ── SSE — Phase 2 row-push splicing when feed flag is on; legacy doorbell otherwise ──
   //
@@ -1204,7 +1269,7 @@ export default function ScannerPage() {
 
         {/* Bottom circle buttons */}
         <div className="flex flex-col items-center gap-2">
-          <button onClick={() => setSoundEnabled(!soundEnabled)} className={sideCircle(soundEnabled)} title={soundEnabled ? "Sound on" : "Sound off"}>
+          <button onClick={toggleSound} className={sideCircle(soundEnabled)} title={soundEnabled ? "Sound on" : "Sound off"}>
             {soundEnabled ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             ) : (
