@@ -2291,7 +2291,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterOptType === "C"}
                       onCheckedChange={(v) => setFilterOptType(v ? "C" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
@@ -2302,7 +2302,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterOptType === "P"}
                       onCheckedChange={(v) => setFilterOptType(v ? "P" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                 </div>
@@ -2322,7 +2322,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterType === "SWEEP"}
                       onCheckedChange={(v) => setFilterType(v ? "SWEEP" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
@@ -2333,7 +2333,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterType === "BLOCK"}
                       onCheckedChange={(v) => setFilterType(v ? "BLOCK" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                 </div>
@@ -2353,7 +2353,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterUnusualOnly}
                       onCheckedChange={setFilterUnusualOnly}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
@@ -2364,7 +2364,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterNoIndex}
                       onCheckedChange={setFilterNoIndex}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
@@ -2375,7 +2375,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterCuratedOnly}
                       onCheckedChange={setFilterCuratedOnly}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                 </div>
@@ -2395,7 +2395,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterSide === "ABOVE_ASK"}
                       onCheckedChange={(v) => setFilterSide(v ? "ABOVE_ASK" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
@@ -2406,7 +2406,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterSide === "AT_ASK"}
                       onCheckedChange={(v) => setFilterSide(v ? "AT_ASK" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                   <div className="flex items-center justify-between py-2.5">
@@ -2417,7 +2417,7 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterSide === "AT_BID"}
                       onCheckedChange={(v) => setFilterSide(v ? "AT_BID" : "")}
-                      className="data-[state=checked]:bg-stone-700"
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
                 </div>
