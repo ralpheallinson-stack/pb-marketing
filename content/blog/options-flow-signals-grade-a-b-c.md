@@ -1,10 +1,13 @@
 ---
-title: "Options Flow Signals Explained: What Grade A, B, and C Mean"
-description: "Understanding conviction grades in options flow trading — how AI analyzes sweep size, delta, DTE, volume ratios, and accumulation to separate high-probability setups from noise."
+title: "Options Flow Signals Explained: What Grade A, B, and PASS Mean"
+description: "Understanding conviction grades in options flow trading — how the rules-based filter pipeline scores sweep size, delta, DTE, volume ratios, and accumulation to separate high-probability setups from noise."
 date: "2026-02-12"
+updated: "2026-05-09"
 author: "Profit Builders"
 read_time: "8"
 ---
+
+Conviction grading is how Profit Builders separates institutional-quality flow from background noise. Every print that crosses the OPRA tape gets one of three labels — **Grade A**, **Grade B**, or **PASS** — based on a deterministic, rules-based scoring pipeline (no models, no black box). This guide walks through the six factors the engine measures, what each grade means, and how to use the labels for position sizing and discipline.
 
 ## The Signal-to-Noise Problem in Options Flow
 
@@ -89,7 +92,7 @@ A **Grade A** signal scores at or above the 80th percentile across the combined 
 
 Grade A signals are rare by design. On a typical trading day, the system may produce only a handful across the entire market. That scarcity is the point. These are the setups where multiple independent indicators of institutional conviction align simultaneously.
 
-Historically, **Grade A signals have delivered a win rate above 42%** — and because the average winner in leveraged options significantly outpaces the average loser when entries are well-timed, the overall expectancy is meaningfully positive.
+Every Grade A signal is tracked with full P&L outcomes — wins, losses, and average return — published openly at [/results](/results) so you can audit the methodology against the resolved trade ledger. We don't quote a single headline win-rate here because the number drifts month-to-month with regime changes; the live ledger is the source of truth.
 
 ## Grade B: Solid Conviction
 
@@ -103,27 +106,20 @@ Common Grade B profiles include:
 
 Grade B signals are **actionable and worth trading**, but the incomplete picture calls for more conservative position sizing. Many of the system's best trades start as Grade B signals that later see follow-through activity confirming the initial thesis.
 
-## Grade C: Moderate Conviction
+## PASS: Below the A/B Threshold
 
-A **Grade C** signal scores between the 45th and 65th percentile. These orders show enough characteristics of informed flow to warrant attention, but several factors are working against a strong conviction read.
-
-Typical Grade C scenarios:
-
-- Decent premium but passive execution — the urgency is not there
-- Aggressive sweep but on a relatively small dollar amount
-- Good positioning but low volume/OI, making it unclear if these are new or existing positions
-
-Grade C signals are best treated as **watchlist candidates** rather than immediate trade entries. They can serve as confirmation when combined with your own technical or fundamental analysis, but they should not be the sole basis for committing capital.
-
-## PASS: Filtered Out
-
-Signals that score below the 45th percentile receive a **PASS** grade and are filtered from the standard alert feed entirely. These include:
+Signals that score below the 65th percentile receive a **PASS** label. These are prints the engine evaluated and determined did not clear the conviction bar — typical patterns include:
 
 - **Closing positions** — the trader is exiting, not entering. No new information about future direction.
 - **ITM passive fills** — deep in-the-money options filled passively are almost always hedging or portfolio adjustment activity.
 - **Low volume/OI with passive execution** — no urgency, no indication of new positioning.
+- **Decent premium but passive execution** — sized capital without the timing aggression that flags directional intent.
+- **Aggressive sweep on small dollar amounts** — execution style suggests directional intent, but the size doesn't carry institutional weight.
+- **Good positioning but ambiguous volume/OI** — the engine can't tell whether the print represents new positioning or a roll.
 
-PASS-grade orders are not necessarily bad trades — they simply do not carry enough evidence of informed directional conviction to warrant an alert. The system still logs high-premium PASS signals for internal analysis, but they are deliberately kept out of the alert stream to protect signal quality.
+PASS prints are **visible by default in the scanner**, with the grading metadata exposed so you can see exactly why each print didn't earn an A or B. A "curated grades only" toggle hides PASS for an A/B-only view when you'd rather work the high-conviction subset. The Discord and Telegram alert streams fire only on Grade A and Grade B signals regardless of toggle state — alerts are protected from PASS-grade noise by default.
+
+PASS-grade orders are not necessarily bad trades — they simply do not carry enough evidence of informed directional conviction to warrant a real-time alert. Some traders use PASS prints as a watchlist input or as confirmation context for their own technical analysis; the data is there, labeled, and visible whenever you want it.
 
 ## How to Use Grades in Your Trading
 
@@ -133,15 +129,13 @@ The grading system gives you a built-in framework for **position sizing and risk
 
 **Grade B — Half position size.** The signal is solid but incomplete. Reduce your exposure accordingly. You can always add to the position if follow-through activity upgrades the conviction picture, but starting smaller protects you when the missing factors turn out to matter.
 
-**Grade C — Paper trade or minimal size.** Use these signals as learning opportunities. Track them in a journal. See how they resolve. Over time, you will develop an intuition for which Grade C signals in specific setups tend to outperform. Until you have that data, keep real capital exposure minimal.
-
-**PASS — No action.** Trust the filter. The temptation to override the system and trade a PASS-grade signal because "it feels right" is exactly the kind of subjective decision-making the methodology system is designed to eliminate.
+**PASS — Watchlist or skip.** Visible in the full-coverage view with the grading metadata exposed; hidden when the curated-grades-only toggle is on. Some traders use PASS prints as a watchlist input or as confirmation context for their own technical analysis. As a primary entry signal, the discipline is to trust the filter — the temptation to override the system and trade a PASS-grade print because "it feels right" is exactly the kind of subjective decision-making the methodology is designed to eliminate.
 
 ## The Discipline Advantage
 
 The real edge in flow trading is not access to data — that has been commoditized. The edge is in **systematic filtering and disciplined execution**. A conviction grading system removes the most dangerous variable in trading: inconsistent human judgment under pressure.
 
-When you know that every Grade A signal has been evaluated against six independent factors, weighted and scored without emotion, you can act with confidence. When you know that every PASS-grade signal has been filtered for a reason, you can ignore it without second-guessing yourself.
+When you know that every Grade A signal has been evaluated against six independent factors, weighted and scored without emotion, you can act with confidence. When you know that every PASS-grade print has been scored down to PASS for an auditable reason — visible in the metadata, one toggle away from being hidden entirely — you can step over it without second-guessing yourself.
 
 Over hundreds of trades, that consistency compounds. Fewer impulsive entries. Better position sizing. More capital allocated to the setups that actually have an edge. That is how a grading system translates into real P&L improvement — not by finding a magic indicator, but by enforcing the discipline that separates profitable traders from everyone else.
 
