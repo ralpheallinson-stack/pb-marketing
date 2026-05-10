@@ -163,6 +163,7 @@ The real edge, though, comes from understanding all three and knowing when each 
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [What Is Options Flow Trading?](/blog/what-is-options-flow-trading)
 - [That $14M MU Block](/blog/14m-mu-block-wednesday)

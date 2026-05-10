@@ -48,4 +48,4 @@ If you want to understand how those signals get graded before they move, [this b
 
 ---
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

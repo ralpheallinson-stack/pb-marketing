@@ -133,6 +133,7 @@ Every signal delivered by Profit Builders includes a Greeks summary — delta, g
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [What Is Options Flow Trading?](/blog/what-is-options-flow-trading)
 - [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [Scanner Color Guide](/blog/scanner-color-guide)

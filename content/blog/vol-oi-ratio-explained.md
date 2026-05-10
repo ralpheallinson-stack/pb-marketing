@@ -97,6 +97,7 @@ Our AI automatically calculates the Vol/OI ratio for every significant options o
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [Sweep vs Block vs Dark Pool](/blog/sweep-vs-block-vs-dark-pool)
 - [Options Flow Signals Explained](/blog/options-flow-signals-grade-a-b-c)

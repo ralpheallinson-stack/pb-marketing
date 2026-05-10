@@ -129,3 +129,11 @@ The pattern is always the same: same contract, multiple hits, tight window, aggr
 Whether you follow the trade is your decision. But knowing the position is being built — that's the edge.
 
 Open the [free scanner](/free-scanner) tomorrow at 9:30 AM ET, watch for RAPID badges stacking on the same contract, and count how many of those accumulation sequences moved by close. The 7-day trial opens up real-time alerts and full history when the pattern clicks.
+
+---
+
+## Related Reading
+
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
+- [How to Read Sweep and Block Trades](/blog/how-to-read-sweep-and-block-trades)
+- [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)

@@ -141,6 +141,7 @@ Pull up SPY on the heatmap tomorrow before the open. Find the nearest call wall 
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [What Is Options Flow Trading?](/blog/what-is-options-flow-trading)
 - [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [Options Greeks for Flow Trading](/blog/options-greeks-for-flow-trading)

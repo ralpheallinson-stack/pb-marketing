@@ -73,13 +73,14 @@ If you're new to options flow, here's a simple framework:
 
 Options flow trading gives you a window into what the largest, most informed participants in the market are doing — in real time. It doesn't replace fundamental or technical analysis, but it adds a powerful signal layer that most retail traders don't have.
 
-The key is having the right tools to filter the noise, grade the signals, and deliver them fast enough to act on. That's exactly what Profit Builders was built to do — and every signal outcome is published at [/results](/results) so you can verify the edge before you pay.
+The key is having the right tools to filter the noise, grade the signals, and deliver them fast enough to act on. That's exactly what Profit Builders was built to do — and [every signal outcome is published](/results) so you can verify the edge before you pay.
 
 
 ---
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [How to Read Sweep and Block Trades](/blog/how-to-read-sweep-and-block-trades)
 - [Understanding Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [Options Greeks for Flow Trading](/blog/options-greeks-for-flow-trading)

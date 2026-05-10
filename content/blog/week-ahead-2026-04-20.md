@@ -93,6 +93,6 @@ GOOGL printed a block call trade on Friday. Same name that logged 12 repeat entr
 
 TSM came in with a block call trade as well. Semis with that kind of print heading into a week this heavy on industrial and financial earnings means someone is looking across the tape, not just at the sector.
 
-## Closing
+## What to Watch Monday
 
 Three accumulation names, three Friday prints, and a calendar stacked with financials, industrials, and large-cap earnings through Tuesday. GOOGL is the thread that runs through both accumulation and Friday's flow — that kind of repetition across a week rarely happens without intent. The live scanner shows exactly how these positions are being built in real time, contract by contract, as new signals come in across the week. Every strike, every expiration, every accumulation pattern — tracked at /results. [Start your free 7-day trial](/free-scanner).

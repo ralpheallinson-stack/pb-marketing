@@ -96,7 +96,7 @@ At the same $99/mo, you're buying one of two jobs.
 
 CheddarFlow gives you raw flow plus dark pool prints and a clean feed. You're the analyst — you read the prints, decide what has conviction, and do the filtering in your head.
 
-Profit Builders runs that analysis for you. Market maker activity filtered out at the database layer. Accumulation patterns flagged automatically. Every signal labeled Grade A, Grade B, or PASS before it hits your screen — full coverage by default, A/B-only one toggle away — and every outcome documented at [/results](/results) so you can check whether the grade held up.
+Profit Builders runs that analysis for you. Market maker activity filtered out at the database layer. Accumulation patterns flagged automatically. Every signal labeled Grade A, Grade B, or PASS before it hits your screen — full coverage by default, A/B-only one toggle away — and every outcome documented on [the public results ledger](/results) so you can check whether the grade held up.
 
 If you already know how to read flow cold, CheddarFlow's raw feed plus dark pool data is a reasonable tool. If you'd rather skip the interpretation step and trade off a graded list with receipts, try Profit Builders.
 

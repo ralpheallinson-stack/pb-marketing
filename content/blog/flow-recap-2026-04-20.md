@@ -46,4 +46,4 @@ The rest of the tape told its own story. MRVL drew $22.3M across 66 signals. NFL
 
 Everything that moved on April 20 — every strike, every accumulation pattern, every Grade A print — ran through the scanner as it happened. This recap is the outline. The full picture is behind the live feed.
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

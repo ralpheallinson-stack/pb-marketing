@@ -180,6 +180,7 @@ The options market is the closest thing to a window into institutional thinking.
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [Volume/OI Ratio Explained](/blog/vol-oi-ratio-explained)
-- [Options Flow Signals: Grade A, B, and C](/blog/options-flow-signals-grade-a-b-c)
+- [Options Flow Signals: Grade A, B, and PASS](/blog/options-flow-signals-grade-a-b-c)
 - [How to Read Sweep and Block Trades](/blog/how-to-read-sweep-and-block-trades)

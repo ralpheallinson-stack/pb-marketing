@@ -50,4 +50,4 @@ Three different names. Three different directions. All flagged before the move.
 
 Today's tape had shape. TSLA absorbed capital from every angle — blocks, sweeps, and relentless accumulation across strikes. META saw an eight-figure structured print on the sell side. MU and NVDA held their own in the background while the broader tech sector commanded the day's dominant flow. The 58% buy lean, the VIX in the high teens, the Grade A count at 326 — it adds up to a market that's positioning, not drifting.
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

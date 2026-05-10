@@ -74,7 +74,7 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 
 **Choose Profit Builders if:**
 - You want signals pre-graded Grade A or Grade B before they hit the feed
-- You want a publicly documented methodology you can audit at [/results](/results)
+- You want a publicly documented methodology you can audit on [the resolved-trade ledger](/results)
 - You trade [Grade A setups](/blog/options-flow-signals-grade-a-b-c) and want GEX context for entries
 - You'd rather pay more for filtered signals than spend time filtering yourself
 
@@ -82,7 +82,7 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 
 The honest math: Unusual Whales is $35-48/mo. Profit Builders is $99/mo. That's roughly $50-64 more.
 
-What the extra buys: a conviction grading pipeline that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and OPRA-grade outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
+What the extra buys: a conviction grading pipeline that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and OPRA-grade outcomes you can audit on [the public results page](/results) to verify the edge is real before you commit.
 
 What you give up: congressional trade tracking and the cheapest raw data in the category.
 

@@ -62,7 +62,7 @@ The tool's job is to put the right 40 prints in front of you instead of the wron
 
 ## The receipts
 
-Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/results](https://profitbuilders.io/results) — **OPRA-grade resolved trades**, public, searchable.
+Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/results](/results) — **OPRA-grade resolved trades**, public, searchable.
 
 You don't have to take our word for any of this. Spend twenty minutes on `/results`. Sort by ticker. Sort by P&L. Find the cold streaks. Find the hot streaks. Do the math yourself.
 
@@ -82,6 +82,14 @@ The product is the filtering. As long as Profit Builders exists, it will:
 
 We don't promise win rates. We don't promise returns. We don't promise the next big move. We promise to keep throwing away the noise — and to keep proving, in public, that the signal we surface is the kind of signal worth seeing.
 
-The receipts are at [profitbuilders.io/results](https://profitbuilders.io/results). Spend twenty minutes there. See if the filtering holds.
+The receipts are at [profitbuilders.io/results](/results). Spend twenty minutes there. See if the filtering holds.
 
 — Ralph
+
+---
+
+## Related Reading
+
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
+- [Options Flow Signals Explained: What Grade A, B, and PASS Mean](/blog/options-flow-signals-grade-a-b-c)
+- [How to Read Options Flow](/blog/how-to-read-options-flow)

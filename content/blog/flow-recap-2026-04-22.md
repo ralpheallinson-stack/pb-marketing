@@ -48,4 +48,4 @@ Two separate AAPL call positions, both flagged by the scanner, both closed above
 
 April 22 was a tech-heavy, accumulation-driven session with one consumer giant sucking up more premium than most names see in a week. The Grade A flow was concentrated, the sweeps were aggressive, and the accumulation patterns ran all day.
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

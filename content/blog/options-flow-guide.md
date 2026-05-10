@@ -84,7 +84,7 @@ Profit Builders runs every options print through nine filters before anything re
 
 A **Grade A signal** is one where all nine filters agree the print is high-conviction directional flow. A **Grade B** has most of them agreeing. Everything else is labeled **PASS** — visible by default with the grading metadata exposed, or hidden behind the "curated grades only" toggle for an A/B-only view.
 
-The proof this actually works: every Grade A and Grade B signal is tracked with full P&L outcomes at [/results](/results) — wins, losses, average return, and resolved-trade reporting on every entry and exit. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
+The proof this actually works: every Grade A and Grade B signal is tracked with full P&L outcomes on [the resolved-trade ledger](/results) — wins, losses, average return, and entry/exit reporting on every signal. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
 
 ## The reading workflow
 
@@ -136,7 +136,7 @@ The short version of what to look for: **conviction grading, a documented method
 
 You have enough to read flow competently now. The highest-leverage next moves:
 
-1. **Audit our methodology.** Go to [/results](/results) and review the documented OPRA processing methodology. See the OPRA tape ingest, sweep detection, and Greeks math, see the monthly variance. This is the test for any flow scanner — do they show you what they're actually producing, or hide behind marketing?
+1. **Audit our methodology.** Visit [the documented resolved-trade outcomes](/results) and review the OPRA processing methodology. See the OPRA tape ingest, sweep detection, and Greeks math, see the monthly variance. This is the test for any flow scanner — do they show you what they're actually producing, or hide behind marketing?
 
 2. **Run a free trial.** We offer 7 days of full feature access at [/free-scanner](/free-scanner). Card required at signup, not charged for 7 days, one-click cancel from dashboard before day 7. Watch Grade A prints in real time — you'll learn flow interpretation faster by watching it live than by reading any guide.
 

@@ -26,7 +26,7 @@ The scanner flagged 489 Grade A signals on Friday. This recap covers three of th
 
 ## The Pattern
 
-Accumulation was the quieter story. [Options accumulation](https://profitbuilders.io/blog/what-is-options-accumulation) tends to show up when someone is building a position over time — same contract, repeated entries, spread across the session to avoid detection.
+Accumulation was the quieter story. [Options accumulation](/blog/what-is-options-accumulation) tends to show up when someone is building a position over time — same contract, repeated entries, spread across the session to avoid detection.
 
 One contract saw **61 repeat entries** on the same TSLA call strike, totaling $5.1M. That kind of hit count over a single session isn't organic order flow. Separately, a GOOGL call line got hit **17 times** for $6.5M total. A MSFT contract accumulated **$8.2M across 7 entries**. Each of those told a developing story throughout the day — the exact contracts are in the live feed.
 
@@ -44,4 +44,4 @@ MSTR appeared twice in the receipts and twice in Friday's live accumulation flow
 
 A balanced buy/sell split on $4.26B in premium doesn't mean nothing happened. It means the conviction was specific, not broad. The names that mattered showed up in size, in structure, and in repeat entries — the kind of footprints that don't show up in end-of-day summaries.
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

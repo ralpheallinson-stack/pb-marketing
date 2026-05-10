@@ -26,7 +26,7 @@ Two other eight-figure blocks fired on names active in the semiconductor space. 
 
 ## The Pattern
 
-SNDK showed [accumulation](https://profitbuilders.io/blog/what-is-options-accumulation) that runs deeper than a single print. One contract saw 9 repeat entries totaling $52.2M. A second contract saw 11 hits across the session, building to $45.5M. Those aren't accidents. That's a position being built in layers — same direction, same name, different entry points across the day. The exact contracts are in the live feed.
+SNDK showed [accumulation](/blog/what-is-options-accumulation) that runs deeper than a single print. One contract saw 9 repeat entries totaling $52.2M. A second contract saw 11 hits across the session, building to $45.5M. Those aren't accidents. That's a position being built in layers — same direction, same name, different entry points across the day. The exact contracts are in the live feed.
 
 TSLA ran a separate accumulation story. One contract collected 67 hits and $5.9M in total premium. 67 entries on a single contract is unusual. The hit count matters more than the dollar amount here — that's a pattern that takes time to build and doesn't happen without intention.
 
@@ -40,10 +40,10 @@ The scanner flagged AMD put flow. Here's what closed:
 - **AMD puts** — **+3,832%**
 - **AMD puts** — **+2,817%**
 
-Three separate closed positions. Same direction. Same name. If you want to understand [how to read options flow](https://profitbuilders.io/blog/how-to-read-options-flow) at the level that produces outcomes like these, the methodology isn't complicated — but you have to see the signals when they fire, not the next morning.
+Three separate closed positions. Same direction. Same name. If you want to understand [how to read options flow](/blog/how-to-read-options-flow) at the level that produces outcomes like these, the methodology isn't complicated — but you have to see the signals when they fire, not the next morning.
 
 ---
 
 April 24 was a semiconductor tape with a clear center of gravity. The accumulation was layered, the blocks were institutional-sized, and the receipts speak without needing commentary.
 
-This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](https://profitbuilders.io/free-scanner).
+This recap covers the surface. The scanner tracked every print, every strike, every accumulation pattern — in real time. [Start your free 7-day trial](/free-scanner).

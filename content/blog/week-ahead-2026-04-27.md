@@ -93,7 +93,7 @@ NVDA ended the week with block-level call buying. The accumulation that built th
 
 Understanding how to [read options flow](/blog/how-to-read-options-flow) matters here — Friday's prints often set the tone for Monday's open.
 
-## Closing
+## What to Watch Monday
 
 Three names absorbed over $53M in combined premium last week. TSLA's put-side concentration, NVDA's call-side repeats, and Friday's block activity on both names are all pointing toward a week with directional intent baked in before Monday's open. Add 60-plus earnings reports starting Monday and the setup is dense. The live scanner shows exactly how those positions are being built — size, structure, and repeat patterns in real time.
 

@@ -92,7 +92,7 @@ A **Grade A** signal scores at or above the 80th percentile across the combined 
 
 Grade A signals are rare by design. On a typical trading day, the system may produce only a handful across the entire market. That scarcity is the point. These are the setups where multiple independent indicators of institutional conviction align simultaneously.
 
-Every Grade A signal is tracked with full P&L outcomes — wins, losses, and average return — published openly at [/results](/results) so you can audit the methodology against the resolved trade ledger. We don't quote a single headline win-rate here because the number drifts month-to-month with regime changes; the live ledger is the source of truth.
+Every Grade A signal is tracked with full P&L outcomes — wins, losses, and average return — published openly on [the resolved-trade ledger](/results) so you can audit the methodology against actual outcomes. We don't quote a single headline win-rate here because the number drifts month-to-month with regime changes; the live ledger is the source of truth.
 
 ## Grade B: Solid Conviction
 
@@ -144,6 +144,7 @@ Over hundreds of trades, that consistency compounds. Fewer impulsive entries. Be
 
 ## Related Reading
 
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
 - [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
 - [Sweep vs Block vs Dark Pool](/blog/sweep-vs-block-vs-dark-pool)
 - [5 Signals That Looked Great and Went Nowhere](/blog/5-signals-that-looked-great-went-nowhere)

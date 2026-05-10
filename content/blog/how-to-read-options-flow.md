@@ -162,6 +162,14 @@ And always remember: not every Grade A signal wins. The edge is in the aggregate
 
 Options flow analysis is a skill. The more you watch, the more patterns you'll recognize. The difference between a trader who reads flow well and one who doesn't isn't intelligence — it's reps.
 
-Profit Builders gives you graded, conviction-scored flow in real time. Every print is labeled Grade A, Grade B, or PASS — full coverage by default, with a "curated grades only" toggle that hides PASS for the A/B-only view when you want it. Market maker noise is removed before it reaches you. Accumulation is tracked automatically. And we publish every outcome at [/results](/results) so you can verify the edge against documented OPRA-tape methodology before you pay.
+Profit Builders gives you graded, conviction-scored flow in real time. Every print is labeled Grade A, Grade B, or PASS — full coverage by default, with a "curated grades only" toggle that hides PASS for the A/B-only view when you want it. Market maker noise is removed before it reaches you. Accumulation is tracked automatically. And we publish every outcome on [the public results ledger](/results) so you can verify the edge against documented OPRA-tape methodology before you pay.
 
 Open the [free scanner](/free-scanner) tomorrow at 9:30 AM ET, filter to Grade A only, and watch a real session with the filters already in place. The 7-day trial unlocks real-time data, GEX, and the full history when you're ready.
+
+---
+
+## Related Reading
+
+- [The Options Flow Guide: Reading Institutional Flow in 2026](/blog/options-flow-guide)
+- [Options Flow Signals Explained: What Grade A, B, and PASS Mean](/blog/options-flow-signals-grade-a-b-c)
+- [How to Read Sweep and Block Trades](/blog/how-to-read-sweep-and-block-trades)
