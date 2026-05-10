@@ -55,7 +55,7 @@ Yes, we built this. Here's what a live flow-first scanner does differently.
 
 **Conviction grading before the print reaches your screen.** Every institutional sweep and block passes through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI ratio, fill aggression, market maker filtering, DTE window, accumulation pattern, spread detection, single-leg verification, regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, non-market-maker. Grade B is standard institutional flow. Below threshold, the print carries a PASS label and stays visible — the "curated grades only" toggle hides PASS for an A/B-only view. Market Chameleon hands you the firehose; we grade it inline.
 
-**Documented data methodology.** [institutional-grade flow](/results) logged with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression, closed outcomes. institutional-data-quality methodology across that sample. Market Chameleon publishes historical earnings data but no per-signal performance ledger on their UOA feed.
+**Documented data methodology.** [Institutional-grade flow](/results) logged with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression, and resolved-trade outcomes on every Grade A and Grade B signal. Market Chameleon publishes historical earnings data but no per-signal performance ledger on their UOA feed.
 
 **Accumulation pattern detection.** [RAPID badges](/blog/what-is-options-accumulation) fire automatically when the same contract is hit repeatedly across a session. Market Chameleon shows individual prints — connecting the accumulation story is on you.
 

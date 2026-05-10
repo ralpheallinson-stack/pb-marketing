@@ -1,6 +1,6 @@
 ---
 title: "Unusual Whales vs Profit Builders: Which Is Worth It?"
-description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, data methodologd transparency, and who each scanner is actually built for."
+description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, methodology and transparency, and who each scanner is actually built for."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "6"
@@ -40,11 +40,11 @@ There's also no documented methodology. UW doesn't track signal outcomes, so the
 
 Yes, we built this. Here's what the tradeoff looks like in practice.
 
-**Conviction grading.** Every signal runs through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else is filtered out.
+**Conviction grading.** Every signal runs through the conviction grading pipeline before it reaches your screen. Grade A requires $500K+ premium, favorable Vol/OI ratios, non-market-maker classification, and aggressive fill conditions. Grade B is standard institutional flow. Everything else is labeled PASS — visible by default, or hidden behind the "curated grades only" toggle for an A/B-only view.
 
-The result: instead of 5,000+ raw prints per day, you see the 200-400 that passed conviction scoring. Less time filtering. More time evaluating actual setups.
+The result: 5,000+ raw prints per day stream in with grading metadata exposed; 200-400 carry an A or B grade. Less time filtering. More time evaluating actual setups.
 
-**Documented methodology.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.io/results](/results). That's institutional-grade flow with win/loss data, average returns, and monthly breakdowns. Grade A signals carry a institutional-data-quality methodology across that sample. You can audit every one.
+**Documented methodology.** This is the feature no competitor matches. Every signal we issue gets tracked automatically with full P&L outcomes at [profitbuilders.io/results](/results). That's institutional-grade flow with win/loss data, average returns, and monthly breakdowns. Every Grade A and Grade B signal is auditable on the resolved-trade ledger.
 
 Most scanners ask you to trust their data quality on faith. We publish the receipts.
 

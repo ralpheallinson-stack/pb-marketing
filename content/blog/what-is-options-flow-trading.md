@@ -57,7 +57,7 @@ At Profit Builders, the filter pipeline evaluates every significant options orde
 - **Market maker detection** — Is this real directional flow or a hedge?
 - **Accumulation tracking** — Is this one print or part of a sequence?
 
-Every signal that passes earns Grade A (highest conviction) or Grade B (standard institutional flow). Everything below threshold is filtered out before the alert fires.
+Every signal earns one of three labels: Grade A (highest conviction), Grade B (standard institutional flow), or PASS (everything below the A/B threshold). Full coverage shows by default; a "curated grades only" toggle hides PASS when you want the A/B-only view. Discord and Telegram alerts fire only on Grade A and Grade B prints regardless of toggle state.
 
 ## Getting Started with Flow Trading
 

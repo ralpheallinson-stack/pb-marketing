@@ -47,7 +47,7 @@ Yes, we built this. Here's what the $50/mo savings actually delivers.
 
 Out of 5,000+ daily prints, the methodology surfaces 200-400 that pass all filters. That's the core value proposition: less noise, more signal.
 
-**Documented methodology.** institutional-grade flow tracked with full win/loss outcomes at [profitbuilders.io/results](/results). Grade A signals carry a institutional-data-quality methodology across that entire sample. Every signal is auditable. Before you spend $99/month — or $149 on FlowAlgo — you can see exactly how our graded signals perform.
+**Documented methodology.** Institutional-grade flow tracked with full win/loss outcomes at [profitbuilders.io/results](/results). Every Grade A and Grade B signal is on the resolved-trade ledger — wins, losses, average return, and entry/exit detail across the entire sample. Before you spend $99/month — or $149 on FlowAlgo — you can see exactly how our graded signals perform.
 
 No other scanner in the category publishes this data. It's our strongest differentiator and the reason we're comfortable being compared head-to-head.
 

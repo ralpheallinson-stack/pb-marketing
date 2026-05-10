@@ -82,9 +82,9 @@ Profit Builders runs every options print through nine filters before anything re
 8. **Aggression classification** — at-bid, at-ask, or mid-market; requires directional clarity
 9. **Sector / macro context** — sanity-checks the signal against broader market conditions
 
-A **Grade A signal** is one where all nine filters agree the print is high-conviction directional flow. A **Grade B** has most of them agreeing. Everything else is filtered.
+A **Grade A signal** is one where all nine filters agree the print is high-conviction directional flow. A **Grade B** has most of them agreeing. Everything else is labeled **PASS** — visible by default with the grading metadata exposed, or hidden behind the "curated grades only" toggle for an A/B-only view.
 
-The proof this actually works: our [documented methodology](/results) shows Grade A signals have a institutional-data-quality methodology across OPRA-grade resolved outcomes. Grade B runs baseline. The 25% spread between them is evidence the filter is doing real work — if it weren't, both grades would perform identically. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
+The proof this actually works: every Grade A and Grade B signal is tracked with full P&L outcomes at [/results](/results) — wins, losses, average return, and resolved-trade reporting on every entry and exit. Most flow platforms don't publish outcomes because once you do, you're accountable for them. We publish because we're confident in the methodology.
 
 ## The reading workflow
 

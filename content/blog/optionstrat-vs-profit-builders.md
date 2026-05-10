@@ -50,9 +50,9 @@ If your primary edge is reading which sweeps and blocks have institutional convi
 
 Yes, we built this. Here's what a flow-first scanner does differently.
 
-**Conviction grading before the print hits your screen.** Every signal passes through [data-derived PASS rules](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker detection, DTE, accumulation pattern, spread identification, single-leg check, and regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, and non-market-maker classification. Grade B is standard institutional flow. Everything below threshold is filtered out.
+**Conviction grading before the print hits your screen.** Every signal passes through [data-derived PASS rules](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker detection, DTE, accumulation pattern, spread identification, single-leg check, and regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, and non-market-maker classification. Grade B is standard institutional flow. Below threshold the print carries a PASS label and stays visible by default — the "curated grades only" toggle hides PASS for an A/B-only view.
 
-**Documented data methodology.** [institutional-grade flow](/results) tracked with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression. institutional-data-quality methodology across that sample. OptionStrat doesn't publish signal performance because flow isn't their core product; they don't own the outcomes.
+**Documented data methodology.** Every Grade A and Grade B signal is tracked with full P&L outcomes at [/results](/results) — OPRA tape ingest, sweep detection, NBBO aggression, and resolved-trade reporting on every entry and exit. OptionStrat doesn't publish signal performance because flow isn't their core product; they don't own the outcomes.
 
 **Accumulation pattern detection.** When the same contract gets hit repeatedly across a session, Profit Builders flags it automatically with RAPID badges. OptionStrat shows you individual prints — connecting the dots is on you.
 

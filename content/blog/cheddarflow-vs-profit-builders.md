@@ -32,7 +32,7 @@ This is the core philosophical difference.
 
 CheddarFlow shows you the flow and lets you interpret it. Their Power Alerts flag trades that meet certain criteria, but the scanner itself is primarily a raw feed with filters. You see the print, you decide what it means.
 
-Profit Builders grades every signal before it reaches your screen. Every print is scored Grade A or Grade B by the filter pipeline based on premium size, volume-to-open interest ratio, delta, DTE, market maker filtering, and whether the order was bought at or above the ask. [Grade A signals](/blog/options-flow-signals-grade-a-b-c) ($500K+ premium, 20x+ Vol/OI) represent the highest conviction. Grade B carries lower but still-tradable thresholds. Everything below that is filtered out before it reaches the scanner.
+Profit Builders grades every signal before it reaches your screen. Every print is scored Grade A, Grade B, or PASS by the conviction grading pipeline based on premium size, volume-to-open interest ratio, delta, DTE, market maker filtering, and whether the order was bought at or above the ask. [Grade A signals](/blog/options-flow-signals-grade-a-b-c) ($500K+ premium, 20x+ Vol/OI) represent the highest conviction. Grade B carries lower but still-tradable thresholds. Everything below that carries a PASS label and stays visible by default — the "curated grades only" toggle hides PASS for an A/B-only view.
 
 This isn't just a label — it's a filter. When you set the scanner to "Grade A only," you're looking at a handful of signals per day instead of hundreds. The grading does the work that most traders do manually on other platforms.
 
@@ -96,7 +96,7 @@ At the same $99/mo, you're buying one of two jobs.
 
 CheddarFlow gives you raw flow plus dark pool prints and a clean feed. You're the analyst — you read the prints, decide what has conviction, and do the filtering in your head.
 
-Profit Builders runs that analysis for you. Market maker activity filtered out at the database layer. Accumulation patterns flagged automatically. Every signal graded A or B before it hits your screen, and every outcome documented at /results so you can check whether the grade held up.
+Profit Builders runs that analysis for you. Market maker activity filtered out at the database layer. Accumulation patterns flagged automatically. Every signal labeled Grade A, Grade B, or PASS before it hits your screen — full coverage by default, A/B-only one toggle away — and every outcome documented at [/results](/results) so you can check whether the grade held up.
 
 If you already know how to read flow cold, CheddarFlow's raw feed plus dark pool data is a reasonable tool. If you'd rather skip the interpretation step and trade off a graded list with receipts, try Profit Builders.
 
