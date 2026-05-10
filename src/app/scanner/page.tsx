@@ -294,7 +294,7 @@ function aggrColor(a: string | null | undefined) {
   // BID/BELOW aggressive sell (red), MIDPOINT neutral (amber — no directional info).
   if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#22C55E]"
   if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
-  if (!a || a === "NEUTRAL") return "text-[#F59E0B]"   // MIDPOINT (industry standard)
+  if (!a || a === "NEUTRAL" || a === "MIDPOINT") return "text-[#F59E0B]"   // MIDPOINT (industry standard) — backend (queries.py:962-964) emits literal "MIDPOINT"
   return "text-white/90"
 }
 
