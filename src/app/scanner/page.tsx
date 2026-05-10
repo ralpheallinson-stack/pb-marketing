@@ -493,6 +493,26 @@ export default function ScannerPage() {
     try { return window.localStorage.getItem("pb_curated_grades") === "1" }
     catch { return false }
   })
+  // 2026-05-10: companion to backend f182f0a which added exclude_side +
+  // exclude_multi_leg query params on /api/scanner/feed and /live-flow.
+  // Default OFF — opt-in via filter drawer toggles. exclude_side="MIDPOINT"
+  // hides rows where the SIDE column would render "Mid" (NULL/NEUTRAL/MIDPOINT
+  // aggression). exclude_multi_leg hides rows where structure is non-SINGLE_LEG
+  // OR the OPRA badges include MULTI-LEG. Both filters apply both server-side
+  // (snapshot) and client-side (over the live SSE-fed `trades` buffer) so the
+  // toggle state is visually consistent regardless of which delivery path a
+  // row arrived on. Live SSE pushes from sse_scanner.py do not yet apply
+  // these predicates server-side — client-side filtering covers that gap.
+  const [filterExcludeMidpoint, setFilterExcludeMidpoint] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    try { return window.localStorage.getItem("pb_exclude_midpoint") === "1" }
+    catch { return false }
+  })
+  const [filterExcludeMultiLeg, setFilterExcludeMultiLeg] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    try { return window.localStorage.getItem("pb_exclude_multi_leg") === "1" }
+    catch { return false }
+  })
   const [activeFilterCount, setActiveFilterCount] = useState(0)
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
   const [focusStrike, setFocusStrike] = useState<string | null>(null)
@@ -870,7 +890,7 @@ export default function ScannerPage() {
 
   const resetFilters = () => {
     setFilterGrade(""); setFilterType(""); setFilterOptType(""); setFilterSide("")
-    setFilterDte(""); setFilterUnusualOnly(false); setFilterNoIndex(false); setFilterCuratedOnly(false)
+    setFilterDte(""); setFilterUnusualOnly(false); setFilterNoIndex(false); setFilterCuratedOnly(false); setFilterExcludeMidpoint(false); setFilterExcludeMultiLeg(false)
     setFilterMinPremium(""); setFilterMinContracts(0); setFilterMinVolOi(0)
   }
 
@@ -882,11 +902,13 @@ export default function ScannerPage() {
     else if (filterDte === "1-7") p.set("max_dte", "7")
     else if (filterDte === "8-30") p.set("max_dte", "30")
     p.set("slim", "true")
+    if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
+    if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
     const pg = opts?.pageNum ?? 0
     if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
     return `/api/scanner/live-flow?${p.toString()}`
-  }, [timeRange, filterMinPremium, filterDte])
+  }, [timeRange, filterMinPremium, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Phase 1 feed-endpoint URL builder. Same filter shape as buildUrl, but
   // hits /api/scanner/feed (column-array, ~70% smaller payload). No
@@ -905,9 +927,11 @@ export default function ScannerPage() {
     // any subset of {A, B, PASS}; default-on-server is still A,B so the
     // explicit param here is what produces the new default behavior.
     p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
+    if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
+    if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
     p.set("limit", "2000")
     return `/api/scanner/feed?${p.toString()}`
-  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly])
+  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Feature flag: opt-in via `localStorage.setItem('pb_scanner_feed','1')` on
   // the browser DevTools console. Default OFF — existing live-flow path
@@ -1068,7 +1092,7 @@ export default function ScannerPage() {
     lastTradeIdRef.current = 0
     setTrades([])
     fetchDataRef.current?.({ initial: true, pageNum: page })
-  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly])
+  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // auto-refresh every 3s on page 0 (live).
   //
@@ -1165,8 +1189,10 @@ export default function ScannerPage() {
     if (filterUnusualOnly) c++
     if (filterNoIndex) c++
     if (filterCuratedOnly) c++
+    if (filterExcludeMidpoint) c++
+    if (filterExcludeMultiLeg) c++
     setActiveFilterCount(c)
-  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex, filterCuratedOnly])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Persist curated-only toggle to localStorage on change.
   useEffect(() => {
@@ -1174,6 +1200,18 @@ export default function ScannerPage() {
     try { window.localStorage.setItem("pb_curated_grades", filterCuratedOnly ? "1" : "0") }
     catch { /* localStorage unavailable */ }
   }, [filterCuratedOnly])
+
+  // Persist exclude_midpoint + exclude_multi_leg toggles to localStorage.
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try { window.localStorage.setItem("pb_exclude_midpoint", filterExcludeMidpoint ? "1" : "0") }
+    catch { /* localStorage unavailable */ }
+  }, [filterExcludeMidpoint])
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try { window.localStorage.setItem("pb_exclude_multi_leg", filterExcludeMultiLeg ? "1" : "0") }
+    catch { /* localStorage unavailable */ }
+  }, [filterExcludeMultiLeg])
 
   const matchesFilter = useCallback((t: Trade) => {
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
@@ -1193,8 +1231,22 @@ export default function ScannerPage() {
     if (filterDte === "30+" && (t.dte ?? -1) < 30) return false
     if (filterMinContracts > 0 && (t.contracts ?? 0) < filterMinContracts) return false
     if (filterMinVolOi > 0 && ((t.vol_oi ?? 0) * 10) < filterMinVolOi) return false
+    // exclude_side / exclude_multi_leg — client-side mirror of the backend
+    // f182f0a predicates. Backend's snapshot already filters these out, but
+    // sse_scanner.py live row pushes don't apply the predicates yet — this
+    // catches the gap so the toggle state is visually consistent regardless
+    // of which delivery path a row arrived on. Aligned with aggrLabel logic
+    // (page.tsx:304): null/NEUTRAL/MIDPOINT all map to the "Mid" display.
+    if (filterExcludeMidpoint) {
+      const a = t.aggression
+      if (!a || a === "NEUTRAL" || a === "MIDPOINT") return false
+    }
+    if (filterExcludeMultiLeg) {
+      if (t.structure && t.structure !== "SINGLE_LEG") return false
+      if (t.badges?.some(b => b.label === "MULTI-LEG")) return false
+    }
     return true
-  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
+  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Ref so fetchData doesn't rebind on filter changes
   const matchesFilterRef = useRef(matchesFilter)
@@ -2395,6 +2447,37 @@ export default function ScannerPage() {
                     <Switch
                       checked={filterCuratedOnly}
                       onCheckedChange={setFilterCuratedOnly}
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="bg-stone-800" />
+
+              {/* ── EXCLUSIONS ── */}
+              <div>
+                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Exclusions</div>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
+                    <div>
+                      <div className="text-[14px] text-stone-200 font-medium">Exclude midpoint</div>
+                      <div className="text-[12px] text-stone-400">Hide rows where SIDE renders &ldquo;Mid&rdquo; (non-directional fills)</div>
+                    </div>
+                    <Switch
+                      checked={filterExcludeMidpoint}
+                      onCheckedChange={setFilterExcludeMidpoint}
+                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <div>
+                      <div className="text-[14px] text-stone-200 font-medium">Exclude multi-leg</div>
+                      <div className="text-[12px] text-stone-400">Hide straddles, strangles, verticals, and OPRA multi-leg prints</div>
+                    </div>
+                    <Switch
+                      checked={filterExcludeMultiLeg}
+                      onCheckedChange={setFilterExcludeMultiLeg}
                       className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
                     />
                   </div>
