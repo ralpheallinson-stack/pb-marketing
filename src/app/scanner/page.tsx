@@ -299,9 +299,10 @@ function aggrColor(a: string | null | undefined) {
 }
 
 function aggrLabel(a: string | null | undefined) {
-  // NULL/NEUTRAL = MIDPOINT — trade printed within ±35% of spread from mid,
-  // typically negotiated block, hedge leg, or non-directional flow.
-  if (!a || a === "NEUTRAL") return "Mid"
+  // NULL/NEUTRAL/MIDPOINT all map to "Mid" — backend (queries.py:962-964) emits the
+  // literal "MIDPOINT" string when bid_at_trade and ask_at_trade are present;
+  // null/NEUTRAL paths preserved for defensive handling of older feed shapes.
+  if (!a || a === "NEUTRAL" || a === "MIDPOINT") return "Mid"
   const map: Record<string, string> = { ABOVE_ASK: "Above", AT_ASK: "Ask", AT_BID: "Bid", BELOW_BID: "Below" }
   return map[a] || a
 }
