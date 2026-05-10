@@ -28,7 +28,7 @@ The direct comparison — Market Chameleon Total Access ($99) vs Profit Builders
 | **Free trial** | Limited free tier | 7 days, full access |
 | **Real-time data** | No — 15-minute delayed across all tiers | Yes |
 | **Unusual options activity** | Yes — but delayed | Yes — real-time |
-| **Conviction grading** | No | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | No | [Grade A / Grade B (conviction grading pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Earnings research** | Yes — flagship feature | No |
 | **Volatility studies** | Yes — deep | Basic IV context only |
 | **Backtesting** | Yes | No |
@@ -53,7 +53,7 @@ Yes, we built this. Here's what a live flow-first scanner does differently.
 
 **Real-time data, not delayed.** Every Grade A print hits the scanner within seconds of the exchange filing it. Market Chameleon's 15-minute delay is the single biggest difference between the two tools — at matching price points, you're paying $99 for a research library or $99 for a live tape. Not both.
 
-**Conviction grading before the print reaches your screen.** Every institutional sweep and block passes through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI ratio, fill aggression, market maker filtering, DTE window, accumulation pattern, spread detection, single-leg verification, regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, non-market-maker. Grade B is standard institutional flow. Below threshold, the print carries a PASS label and stays visible — the "curated grades only" toggle hides PASS for an A/B-only view. Market Chameleon hands you the firehose; we grade it inline.
+**Conviction grading before the print reaches your screen.** Every institutional sweep and block passes through a [conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI ratio, fill aggression, market maker filtering, DTE window, accumulation pattern, spread detection, single-leg verification, regime-aware thresholds. Grade A requires $500K+ premium, aggressive fill, 20x+ Vol/OI, non-market-maker. Grade B is standard institutional flow. Below threshold, the print carries a PASS label and stays visible — the "curated grades only" toggle hides PASS for an A/B-only view. Market Chameleon hands you the firehose; we grade it inline.
 
 **Documented data methodology.** [Institutional-grade flow](/results) logged with full data methodology — OPRA tape ingest, sweep detection, NBBO aggression, and resolved-trade outcomes on every Grade A and Grade B signal. Market Chameleon publishes historical earnings data but no per-signal performance ledger on their UOA feed.
 

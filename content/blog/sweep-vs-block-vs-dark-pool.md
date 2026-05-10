@@ -1,6 +1,6 @@
 ---
 title: "Sweep vs Block vs Dark Pool: Which Options Flow Matters Most?"
-description: "Not all options flow is created equal. Learn the key differences between sweep orders, block trades, and dark pool prints — and which ones actually predict price movement."
+description: "Not all options flow is equal. Differences between sweep orders, block trades, and dark pool prints — and which ones actually predict price movement."
 date: "2026-02-14"
 author: "Profit Builders"
 read_time: "9"

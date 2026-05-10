@@ -1,6 +1,6 @@
 ---
-title: "The Options Flow Guide: How to Read Institutional Flow in 2026 (Complete)"
-description: "A 2026 guide to options flow trading. What sweeps, blocks, and accumulation patterns actually mean, how conviction grading filters noise from signal, and how to build a workflow around institutional tape reading."
+title: "The Options Flow Guide: Reading Institutional Flow in 2026"
+description: "A 2026 guide to options flow: what sweeps, blocks, and accumulation patterns mean, how conviction grading separates signal from noise, and how to build a workflow."
 date: "2026-04-22"
 updated: "2026-04-22"
 author: "Profit Builders"
@@ -9,7 +9,7 @@ read_time: "22"
 
 If you've spent any time around trading Twitter, Discord, or YouTube, you've seen the phrase *"institutional flow"* thrown around. A $5M NVDA call sweep hits the tape and a hundred people announce it like gospel. But a lot of retail traders who try to follow flow lose money anyway — because reading flow well isn't about seeing big prints. It's about understanding which prints matter, which don't, and why.
 
-This guide is the canonical resource we use internally at Profit Builders. It's the same framework that drives our institutional-flow filter pipeline and the [documented OPRA methodology](/results) we keep. It covers what flow is, how to read it, how to avoid the common traps, and how to build a repeatable process around it.
+This guide is the canonical resource we use internally at Profit Builders. It's the same framework that drives our conviction grading pipeline and the [documented OPRA methodology](/results) we keep. It covers what flow is, how to read it, how to avoid the common traps, and how to build a repeatable process around it.
 
 Read this end-to-end the first time. Bookmark it as a reference after that.
 

@@ -1,6 +1,6 @@
 ---
 title: "FlowAlgo vs Profit Builders: Is $50 More Per Month Worth It?"
-description: "FlowAlgo costs $149/mo. Profit Builders costs $99/mo. Both track institutional options flow. Here's what you actually get for the extra $50 — and whether it's worth it."
+description: "FlowAlgo is $149/mo, Profit Builders is $99/mo. Both track institutional options flow. What you actually get for the extra $50 — and whether it's worth it."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "6"
@@ -16,7 +16,7 @@ Both platforms track institutional options flow in real time. Both show sweeps, 
 |---------|----------|-----------------|
 | **Price** | $149/mo | $99/mo |
 | **Free trial** | $37 for 2 weeks | 7-day free trial (free) |
-| **Conviction grading** | None | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | None | [Grade A / Grade B (conviction grading pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Documented methodology** | No | [OPRA-grade flow at /results](/results) |
 | **Alert speed** | Sub-second | Under 3 seconds |
 | **Voice alerts** | Yes | No |
@@ -43,7 +43,7 @@ And the trial costs $37. That's not trivial for a "try before you buy."
 
 Yes, we built this. Here's what the $50/mo savings actually delivers.
 
-**Conviction grading.** Every print runs through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c). Grade A requires $500K+ premium, aggressive fill conditions, non-market-maker classification, and favorable Vol/OI ratios. Grade B is standard institutional flow. The system doesn't just flag big trades — it identifies prints with institutional conviction characteristics and rejects the rest.
+**Conviction grading.** Every print runs through the [conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c). Grade A requires $500K+ premium, aggressive fill conditions, non-market-maker classification, and favorable Vol/OI ratios. Grade B is standard institutional flow. The system doesn't just flag big trades — it identifies prints with institutional conviction characteristics and rejects the rest.
 
 Out of 5,000+ daily prints, the methodology surfaces 200-400 that pass all filters. That's the core value proposition: less noise, more signal.
 

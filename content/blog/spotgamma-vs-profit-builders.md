@@ -32,7 +32,7 @@ The real price comparison:
 | **Free trial** | No | 7 days, full access |
 | **Dealer positioning (GEX)** | Yes — flagship product | Yes — included in Pro Bundle |
 | **Whale prints / sweep feed** | No | [CBOE-compliant flow processing](/results) |
-| **Conviction grading** | No | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | No | [Grade A / Grade B (conviction grading pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Accumulation detection** | No | [Yes — RAPID badges](/blog/what-is-options-accumulation) |
 | **Documented methodology** | Range-accuracy claim only (no data methodology published) | Documented methodology at /results |
 | **Best coverage** | Indices (SPX, SPY, QQQ, IWM) | 220+ single-name tickers |
@@ -52,7 +52,7 @@ It's also niche. If you don't already speak fluent GEX, the daily notes will fee
 
 Yes, we built this. Here's what a flow-first scanner does that a positioning-first tool doesn't.
 
-**Whale print tracking with conviction grading.** Every institutional sweep and block passes through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker filtering, DTE, accumulation logic, and more. Grade A prints on single-name tickers in real time. SpotGamma tells you *where the dealer is short gamma*. Profit Builders tells you *who just put $14M on TSLA calls three minutes ago*.
+**Whale print tracking with conviction grading.** Every institutional sweep and block passes through a [conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c) — premium size, Vol/OI, fill aggression, market maker filtering, DTE, accumulation logic, and more. Grade A prints on single-name tickers in real time. SpotGamma tells you *where the dealer is short gamma*. Profit Builders tells you *who just put $14M on TSLA calls three minutes ago*.
 
 **Documented data methodology.** [Data methodology published at /results](/results) with wins, losses, and closed P&L on every Grade A and Grade B signal — every row auditable, every entry and exit on the page. SpotGamma's track record is a quarterly report card on their range accuracy — useful, but not a per-trade ledger.
 

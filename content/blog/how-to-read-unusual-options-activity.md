@@ -145,7 +145,7 @@ Most unusual options activity leads nowhere. Market makers hedge. Funds roll pos
 - **Check the expiration.** Trades with 1-6 weeks to expiration carry more directional conviction than LEAPs (which are often portfolio hedges) or 0DTE (which are often day trades).
 - **Verify with OI the next day.** If open interest increases, the trades were opening transactions. If not, they were closes or rolls.
 - **Consider the context.** Is there an earnings report coming? An FDA decision? A macro event? Flow ahead of known catalysts is more actionable.
-- **Use a conviction grading system.** The sheer volume of options flow data makes manual filtering impractical. Rule-based engines that score signals against multiple filters — aggression, premium, volume-to-OI ratio, timing, market maker activity, and more — dramatically reduce the noise. This is the approach Profit Builders takes: every detected signal passes through a institutional-flow filter pipeline, and only Grade A and Grade B setups surface as alerts.
+- **Use a conviction grading system.** The sheer volume of options flow data makes manual filtering impractical. Rule-based engines that score signals against multiple filters — aggression, premium, volume-to-OI ratio, timing, market maker activity, and more — dramatically reduce the noise. This is the approach Profit Builders takes: every detected signal passes through a conviction grading pipeline, and only Grade A and Grade B setups surface as alerts.
 
 ## Common Mistakes Beginners Make
 

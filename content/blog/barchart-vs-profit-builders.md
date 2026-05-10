@@ -1,6 +1,6 @@
 ---
-title: "Barchart vs Profit Builders: Which Is Worth It?"
-description: "Barchart bundles options flow into a broad platform. Profit Builders focuses on graded signals and a documented data methodology and CBOE-compliant sweep detection. The tradeoff."
+title: "Barchart vs Profit Builders: Breadth or Focus?"
+description: "Barchart bundles options flow into a broad platform. Profit Builders focuses on graded signals + CBOE-compliant sweep detection. The tradeoff."
 date: "2026-04-19"
 author: "Profit Builders"
 read_time: "7"
@@ -26,7 +26,7 @@ The real comparison is Barchart Pro at $199.95 vs Profit Builders at $99. That's
 |---------|--------------|-----------------|
 | **Price** | $199.95/mo | $99/mo |
 | **Free trial** | Limited free tier | 7-day free trial (full access) |
-| **Conviction grading** | None | Grade A / Grade B (institutional-flow filter pipeline) |
+| **Conviction grading** | None | Grade A / Grade B (conviction grading pipeline) |
 | **Documented methodology** | No | [OPRA-grade flow at /results](/results) |
 | **Options flow focus** | One feature in a broader platform | Core product |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
@@ -49,7 +49,7 @@ There's also no documented methodology. Barchart shows you the flow; they don't 
 
 Yes, we built this. Here's what $99/month buys when you're not paying for breadth.
 
-**Conviction grading.** Every print runs through a [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, aggressive fill conditions, favorable Vol/OI ratios, and non-market-maker classification. Grade B is standard institutional flow. Everything below that threshold is labeled PASS — visible by default with the grading metadata exposed, or hidden behind a one-click "curated grades only" toggle if you want the high-conviction view. Out of ~5,000 daily institutional prints, 200-400 carry an A or B grade.
+**Conviction grading.** Every print runs through a [conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c) before it reaches your screen. Grade A requires $500K+ premium, aggressive fill conditions, favorable Vol/OI ratios, and non-market-maker classification. Grade B is standard institutional flow. Everything below that threshold is labeled PASS — visible by default with the grading metadata exposed, or hidden behind a one-click "curated grades only" toggle if you want the high-conviction view. Out of ~5,000 daily institutional prints, 200-400 carry an A or B grade.
 
 **Documented methodology.** Every signal Profit Builders issues is documented with full processing methodology outcomes at [profitbuilders.io/results](/results) — documented OPRA processing methodology with CBOE Rule 6.11 sweep detection. You can audit every one. Barchart gives you data; we give you data plus proof the data means something.
 

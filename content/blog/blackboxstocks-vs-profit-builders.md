@@ -1,6 +1,6 @@
 ---
 title: "BlackBoxStocks vs Profit Builders: The $99 Decision"
-description: "BlackBoxStocks and Profit Builders are both $99/mo. But one is a community platform with raw flow. The other is a signal engine with a documented methodology. Here's how to choose."
+description: "BlackBoxStocks and Profit Builders are both $99/mo — one is a community platform, the other a signal engine with documented methodology. How to choose."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "6"
@@ -18,7 +18,7 @@ Here's the honest comparison. (For a broader view including Unusual Whales, Flow
 |---------|---------------|-----------------|
 | **Price** | $99.97/mo | $99/mo |
 | **Free trial** | First month $29.95 | 7-day free trial (full access) |
-| **Conviction grading** | Color-coded alerts | [Grade A / Grade B (institutional-flow filter pipeline)](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | Color-coded alerts | [Grade A / Grade B (conviction grading pipeline)](/blog/options-flow-signals-grade-a-b-c) |
 | **Documented methodology** | No | [OPRA-grade flow at /results](/results) |
 | **Live trading rooms** | Yes | No (Discord community) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
@@ -40,7 +40,7 @@ The color-coded alert system flags bullish and bearish prints visually. Green fo
 
 Yes, we built this. Here's what the same $99 buys on our side.
 
-**Conviction grading.** Every signal passes through the [institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything below is labeled PASS — visible by default but clearly marked, or hidden behind the "curated grades only" toggle when you want the A/B-only view.
+**Conviction grading.** Every signal passes through the [conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c) before reaching your screen. Grade A requires $500K+ premium, favorable Vol/OI ratio, aggressive fill conditions (at ask or above), and non-market-maker classification. It's not just "big trade" — it's "big trade with institutional characteristics." Grade B is standard flow. Everything below is labeled PASS — visible by default but clearly marked, or hidden behind the "curated grades only" toggle when you want the A/B-only view.
 
 On a typical day, 5,000+ institutional prints hit the tape. 200-400 earn an A or B grade; the rest carry PASS. The toggle lets you flip between the full institutional tape (everything labeled and visible) and the curated subset (high-conviction-only) without leaving the page.
 

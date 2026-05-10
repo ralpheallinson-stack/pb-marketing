@@ -1,6 +1,6 @@
 ---
 title: "Most Options Flow Is Noise. Here's What Matters."
-description: "99% of options flow is noise. We built a scanner that filters tens of thousands of prints down to the 40 that actually matter — here's how, and why every outcome is published at /results."
+description: "99% of options flow is noise. Here's how we filter tens of thousands of prints down to the ~40 that matter — and why every outcome is published at /results."
 date: "2026-04-27"
 author: "Ralph"
 read_time: "7"

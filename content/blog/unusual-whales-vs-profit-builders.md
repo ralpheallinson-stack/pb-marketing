@@ -1,6 +1,6 @@
 ---
-title: "Unusual Whales vs Profit Builders: Which Is Worth It?"
-description: "A direct comparison of Unusual Whales and Profit Builders — pricing, signal quality, conviction grading, methodology and transparency, and who each scanner is actually built for."
+title: "Unusual Whales vs Profit Builders: Data Feed or Signal Engine?"
+description: "Unusual Whales vs Profit Builders — pricing, signal quality, conviction grading, methodology transparency, and who each scanner is actually built for."
 date: "2026-04-08"
 author: "Profit Builders"
 read_time: "6"
@@ -16,7 +16,7 @@ Here's the honest breakdown. (Looking at more than these two? The [2026 options 
 |---------|---------------|-----------------|
 | **Price** | $35-48/mo | $99/mo |
 | **Free tier** | Limited free access | 7-day free trial (full access) |
-| **Conviction grading** | None | Grade A / Grade B (institutional-flow filter pipeline) |
+| **Conviction grading** | None | Grade A / Grade B (conviction grading pipeline) |
 | **Documented methodology** | No | [CBOE-compliant flow processing](/results) |
 | **GEX heatmap** | No | [Yes](/blog/what-is-gamma-exposure-gex) |
 | **Signal filtering** | Basic size/type filters | 9 automated conviction filters |
@@ -82,7 +82,7 @@ If you're spending 2-3 hours per day manually filtering flow on your current sca
 
 The honest math: Unusual Whales is $35-48/mo. Profit Builders is $99/mo. That's roughly $50-64 more.
 
-What the extra buys: a institutional-flow filter pipeline that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and OPRA-grade outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
+What the extra buys: a conviction grading pipeline that grades every signal Grade A or B before you see it, market maker activity removed at the database layer, automatic accumulation tracking, GEX heatmap, and OPRA-grade outcomes you can audit at [/results](/results) to verify the edge is real before you commit.
 
 What you give up: congressional trade tracking and the cheapest raw data in the category.
 

@@ -1,6 +1,6 @@
 ---
 title: "Options Flow Signals Explained: What Grade A, B, and PASS Mean"
-description: "Understanding conviction grades in options flow trading — how the rules-based filter pipeline scores sweep size, delta, DTE, volume ratios, and accumulation to separate high-probability setups from noise."
+description: "How conviction grades work in options flow: a rules-based pipeline scoring sweep size, delta, DTE, volume ratios, and accumulation to separate signal from noise."
 date: "2026-02-12"
 updated: "2026-05-09"
 author: "Profit Builders"

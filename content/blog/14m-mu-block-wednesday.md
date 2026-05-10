@@ -1,5 +1,5 @@
 ---
-title: "That $14M MU Block on Wednesday — the Flow Told You Before the Chart Did"
+title: "$14M MU Block Wednesday: The Flow Told You Before the Chart"
 description: "$14M block trade on Micron hit the tape at 9:42 AM Wednesday. Here's what the scanner showed and what happened next."
 date: "2026-03-29"
 author: "Profit Builders"

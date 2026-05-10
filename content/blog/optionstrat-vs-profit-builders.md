@@ -8,7 +8,7 @@ read_time: "7"
 
 OptionStrat and Profit Builders are both options tools. They answer different questions.
 
-OptionStrat answers **"if I'm right about this thesis, what does the trade make?"** — a strategy builder with a payoff visualizer, Greeks, and probability distributions. Profit Builders answers **"what are the pros actually buying right now?"** — a scanner that surfaces institutional whale prints, graded by a institutional-flow filter pipeline.
+OptionStrat answers **"if I'm right about this thesis, what does the trade make?"** — a strategy builder with a payoff visualizer, Greeks, and probability distributions. Profit Builders answers **"what are the pros actually buying right now?"** — a scanner that surfaces institutional whale prints, graded by a conviction grading pipeline.
 
 One starts with your thesis. The other starts with the tape. (For a look at other direct flow scanners, see the [2026 comparison](/blog/best-options-flow-scanner-2026).)
 
@@ -27,7 +27,7 @@ The direct comparison is OptionStrat Live Flow ($49.99) vs Profit Builders Flow 
 | **Price** | $49.99/mo | $99/mo |
 | **Free trial** | 7 days | 7 days, full access |
 | **Real-time flow** | Yes (Live Flow tier only) | Yes |
-| **Conviction grading** | No | [Grade A / Grade B via institutional-flow filter pipeline](/blog/options-flow-signals-grade-a-b-c) |
+| **Conviction grading** | No | [Grade A / Grade B via conviction grading pipeline](/blog/options-flow-signals-grade-a-b-c) |
 | **Strategy payoff builder** | Yes — flagship feature | No |
 | **Multi-leg Optimizer** | Yes | No |
 | **Documented methodology** | No | [OPRA-grade flow at /results](/results) |

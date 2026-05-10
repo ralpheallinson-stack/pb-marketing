@@ -1,5 +1,5 @@
 ---
-title: "CheddarFlow vs Profit Builders: Which Is Worth It?"
+title: "CheddarFlow vs Profit Builders: Analyst or Operator?"
 description: "CheddarFlow and Profit Builders both track options flow at $99/mo. One shows raw data; the other grades every signal and publishes its full data methodology. How to choose."
 date: "2026-04-15"
 author: "Profit Builders"
