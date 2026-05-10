@@ -1871,7 +1871,7 @@ export default function ScannerPage() {
 
       {/* ── HEADER ── */}
       <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-auto">
           <InputGroup
             className="bg-stone-900/40 border-stone-800 focus-within:border-amber-600 rounded-xl h-[43px] transition-colors"
             style={{ maxWidth: 280 }}
@@ -1892,13 +1892,13 @@ export default function ScannerPage() {
             </InputGroupAddon>
           </InputGroup>
           <div className="w-px h-7 bg-white/[0.06]" />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white border border-white/[0.15] hover:border-white/[0.3] hover:bg-white/[0.12] transition-all" style={{ background: "rgba(255,255,255,0.08)" }}>
+          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white bg-stone-900/40 border border-stone-800 hover:border-amber-600 focus-visible:border-amber-600 transition-colors">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
             Filters
-            {activeFilterCount > 0 && <span className="bg-[#FF605D] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && <span className="bg-amber-600 text-stone-950 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
           </button>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex items-center gap-4 ml-6">
           <a href="/account" className="text-white/70 text-sm hover:text-white transition-colors">Account</a>
           <a href="/logout" className="text-white/70 text-sm hover:text-white transition-colors">Logout</a>
         </div>
