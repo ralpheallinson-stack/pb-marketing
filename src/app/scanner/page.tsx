@@ -1265,14 +1265,72 @@ export default function ScannerPage() {
   // ran on every render (every 3s). With ~10K filtered rows and unmemoized
   // derived values upstream, the reductions alone showed up as a recurring
   // long task in DevTools Performance every poll cycle.
+  // Bug 3 fix (2026-05-11) — range-agg snapshot for non-today stat strip.
+  // Backend /api/scanner/range-agg returns aggregates computed over the
+  // FULL range (not the paginated row slice), so stat-strip P/C / call $
+  // / put $ stop wobbling when subscribers paginate Month/Week. Today
+  // range keeps the client-side reduction since the 20000-row buffer
+  // IS the full set. See project_pb_scanner_time_range_investigation.md
+  // §Bug 3 for the full investigation.
+  const [rangeAgg, setRangeAgg] = useState<{
+    sentiment: { label: string; score: number; _sort_score: number }
+    pcr: number | null
+    call_flow: { premium: string; count: number; _sort_premium: number }
+    put_flow: { premium: string; count: number; _sort_premium: number }
+    raw: {
+      bull_vol: number; bear_vol: number
+      call_prem: number; put_prem: number
+      call_vol: number; put_vol: number
+      call_n: number; put_n: number
+    }
+  } | null>(null)
+
+  // Refetch range-agg whenever range or filter state changes. Today range
+  // clears the cached agg so a stale Month snapshot doesn't leak through
+  // when the user toggles back. Debounced 200ms so rapid filter clicks
+  // coalesce into one request; cache TTL on the server is 15s so
+  // pagination spam during the same range/filter combo lands on hot
+  // cache. Silent on failure — stat strip falls back to client-side
+  // reduction via the bifurcation below.
+  useEffect(() => {
+    if (timeRange === "today") {
+      setRangeAgg(null)
+      return
+    }
+    const handle = setTimeout(() => {
+      const p = new URLSearchParams()
+      p.set("range", timeRange)
+      if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
+      p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
+      fetch(`/api/scanner/range-agg?${p.toString()}`, { credentials: "include" })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && !data.error && data.raw) setRangeAgg(data)
+        })
+        .catch(() => {/* silent — fall back to client-side reduction */})
+    }, 200)
+    return () => clearTimeout(handle)
+  }, [timeRange, filterMinPremium, filterCuratedOnly])
+
   const aggregates = useMemo(() => {
+    // Bifurcation (2026-05-11, Bug 3): non-today ranges read range-wide
+    // aggregates from the server so paginating doesn't shift the strip.
+    // Today + (no-rangeAgg-yet || fetch failed) → client-side reduction.
+    if (timeRange !== "today" && rangeAgg?.raw) {
+      return {
+        callCount: rangeAgg.raw.call_n,
+        putCount:  rangeAgg.raw.put_n,
+        callPrem:  rangeAgg.raw.call_prem,
+        putPrem:   rangeAgg.raw.put_prem,
+      }
+    }
     let callCount = 0, putCount = 0, callPrem = 0, putPrem = 0
     for (const t of filtered) {
       if (t.opt_type === "C") { callCount++; callPrem += t.premium }
       else if (t.opt_type === "P") { putCount++; putPrem += t.premium }
     }
     return { callCount, putCount, callPrem, putPrem }
-  }, [filtered])
+  }, [filtered, timeRange, rangeAgg])
   const callPrem = aggregates.callPrem
   const putPrem = aggregates.putPrem
   const calls = aggregates.callCount  // count, not array — only .length was ever used
@@ -1310,11 +1368,26 @@ export default function ScannerPage() {
     // gauge, and PC ratio all derive from contract counts, not premium
     // dollars — matches _compute_global_agg / _compute_feed_agg on the
     // server. Industry convention; what subscribers from Cheddar /
-    // Unusual Whales expect "Bullish" and "PCR" to mean. Removes the
-    // premium-weighted bullish skew that came from longer-dated, higher-
-    // time-value call premium dominating the score on otherwise put-heavy
-    // days. 0.65/0.35 cutoffs preserved (those were carried over from
-    // the premium-weighted era — recalibration is a separate decision).
+    // Unusual Whales expect "Bullish" and "PCR" to mean. 0.65/0.35
+    // cutoffs preserved from the premium-weighted era.
+    //
+    // Bug 3 bifurcation (2026-05-11): non-today ranges source bull/bear
+    // contract volume + PCR from the server-side range-agg so the strip
+    // is stable across pagination. Today range keeps the client-side
+    // reduction since the 20000-row buffer IS the full set. count stays
+    // = filtered.length intentionally — that label reflects what's on
+    // screen ("1,234 signals" maps to the rendered row count, not the
+    // range total).
+    if (timeRange !== "today" && rangeAgg?.raw) {
+      const score = rangeAgg.sentiment.score
+      return {
+        count: filtered.length,
+        bull: rangeAgg.raw.bull_vol,
+        bear: rangeAgg.raw.bear_vol,
+        lean: score >= 0.65 ? "BULL" : score <= 0.35 ? "BEAR" : "MIXED",
+        pc_ratio: rangeAgg.pcr ?? 0,
+      }
+    }
     let cv = 0, pv = 0, bullVol = 0, bearVol = 0
     for (const t of filtered) {
       const qty = t.contracts || 0
@@ -1332,7 +1405,7 @@ export default function ScannerPage() {
       lean: score >= 0.65 ? "BULL" : score <= 0.35 ? "BEAR" : "MIXED",
       pc_ratio: cv > 0 ? +(pv / cv).toFixed(2) : 0,
     }
-  }, [filtered])
+  }, [filtered, timeRange, rangeAgg])
 
   const iconCls = "w-[22px] h-[22px]"
   const sideBtn = (active: boolean) => `w-14 h-14 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${active ? "bg-white/[0.1] text-white" : "text-white/40 hover:text-white/80 hover:bg-white/[0.06]"}`
