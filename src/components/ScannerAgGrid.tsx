@@ -7,7 +7,6 @@ import {
   AllCommunityModule,
   ModuleRegistry,
   themeAlpine,
-  colorSchemeDarkWarm,
   type ColDef,
   type GridApi,
   type GridReadyEvent,
@@ -383,7 +382,33 @@ export function ScannerAgGrid({
   onApiReady,
   enableSort,
 }: ScannerAgGridProps) {
-  const theme = useMemo(() => themeAlpine.withPart(colorSchemeDarkWarm), [])
+  // Phase 7 (2026-05-11): custom theme tokens matching PB warm theme.
+  // Tokens captured from page.tsx legacy chrome (#1C1C1E body, #252430
+  // header, #48DEFF cyan accent for hover, rgba(255,255,255,0.06)
+  // borders). Replaces the Phase 1 colorSchemeDarkWarm part which only
+  // got us into the right ballpark — withParams() pins specific values
+  // so the grid renders pixel-identical to the legacy table at every
+  // common state (empty / filtered / paginated / row-tinted / badged).
+  const theme = useMemo(
+    () =>
+      themeAlpine.withParams({
+        backgroundColor: "#1C1C1E",
+        foregroundColor: "rgba(255,255,255,0.95)",
+        headerBackgroundColor: "#252430",
+        headerTextColor: "rgba(255,255,255,0.30)",
+        headerFontFamily: "Inter, system-ui, -apple-system, sans-serif",
+        headerFontWeight: 500,
+        headerHeight: 36,
+        rowHeight: 44,
+        fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+        fontSize: 13,
+        borderColor: "rgba(255,255,255,0.06)",
+        rowHoverColor: "rgba(255,255,255,0.05)",
+        oddRowBackgroundColor: "transparent",
+        accentColor: "#48DEFF",
+      }),
+    [],
+  )
 
   // Phase 5: capture initial rowData ONCE at mount. Subsequent trades
   // changes are NOT propagated reactively through this prop — page.tsx
@@ -437,7 +462,24 @@ export function ScannerAgGrid({
   return (
     <div style={{ height: "100%", width: "100%" }}>
       <style>{`
-        /* Phase 2 cell classes (preserved). */
+        /* ── Phase 7 (2026-05-11): theme-param gap-fillers ──
+           AG Grid's withParams() covers colors, font, dimensions. These
+           rules fill the gaps that aren't exposed as theme params:
+           header text-transform / letter-spacing (legacy thead used
+           "uppercase tracking-[0.08em]"), row border-bottom (legacy
+           used "border-b border-white/[0.04]"), and the
+           tabular-numeric default. */
+        .ag-header-cell-text {
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-size: 12px;
+        }
+        .ag-row {
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          font-variant-numeric: tabular-nums;
+        }
+
+        /* ── Phase 2 cell classes (preserved) ── */
         .cf-bullish { color: #22C55E; }
         .cf-bearish { color: #FF605D; }
         .cf-mid { color: #F59E0B; }
@@ -458,12 +500,13 @@ export function ScannerAgGrid({
         .cf-iv-elevated { color: #FFA64D; }
         .cf-iv-null     { color: rgba(255,255,255,0.30); }
 
-        /* Row-level OI status tints (Phase 2). */
+        /* ── Row-level OI status tints (Phase 2) ──
+           border-left overrides AG Grid's row border on tinted rows. */
         .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.12); border-left: 3px solid rgba(234,179,8,0.7); }
         .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.14); border-left: 3px solid rgba(168,85,247,0.8); }
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
 
-        /* Phase 3 cellRenderer styling (matches SignalRow.tsx legacy). */
+        /* ── Phase 3 cellRenderer styling (matches SignalRow.tsx legacy) ── */
         .cf-tick-cell { padding: 0; }
         .cf-tick-btn {
           display: block;
