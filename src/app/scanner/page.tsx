@@ -940,6 +940,33 @@ export default function ScannerPage() {
     return `/api/scanner/feed?${p.toString()}`
   }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
+  // Phase 2 unified URL builder (2026-05-11). Single URL for page 0 +
+  // page 1+ + incremental — points at /api/scanner/feed?unified=1 which
+  // (per backend commit 0113d3f) now accepts page/page_size/since_id/
+  // include_dashboard/include_sectors. Mirrors buildFeedUrl's filter
+  // params + buildUrl's pagination params. include_dashboard=1 is sent
+  // only on page 0 (page>0 dashboard is null per Q1).
+  const buildScannerUrl = useCallback((opts?: { pageNum?: number; sinceId?: number }) => {
+    const pg = opts?.pageNum ?? 0
+    const p = new URLSearchParams()
+    p.set("unified", "1")
+    if (timeRange !== "today") p.set("range", timeRange)
+    if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
+    if (filterDte === "0dte") p.set("max_dte", "0")
+    else if (filterDte === "1-7") p.set("max_dte", "7")
+    else if (filterDte === "8-30") p.set("max_dte", "30")
+    p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
+    if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
+    if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
+    if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
+    if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
+    // Dashboard bundle is page-0 only (Q1 default). Skip on incremental
+    // polls — server already strips dashboard when since_id is set, this
+    // just saves a few URL bytes.
+    if (pg === 0 && !opts?.sinceId) p.set("include_dashboard", "1")
+    return `/api/scanner/feed?${p.toString()}`
+  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
+
   // Feature flag: opt-in via `localStorage.setItem('pb_scanner_feed','1')` on
   // the browser DevTools console. Default OFF — existing live-flow path
   // continues to serve every user. After visual-diff bake-in this becomes
@@ -953,6 +980,31 @@ export default function ScannerPage() {
     try { return window.localStorage.getItem("pb_scanner_feed") === "1" }
     catch { return false }
   }
+
+  // Phase 2 unification reader (2026-05-11):
+  //   - ?unified=0 in URL → false (Q7 kill-switch, always wins)
+  //   - ?unified=1 in URL → true (opt-in for this session, e.g. support
+  //     debugging)
+  //   - else: localStorage pb_scanner_unified === "1" → true
+  //   - else: false (default through Phases 1-3)
+  // See project_pb_scanner_endpoint_unification_design.md §Q7 for the
+  // triage-kill-switch runbook.
+  const useUnifiedEndpoint = (): boolean => {
+    if (typeof window === "undefined") return false
+    try {
+      const url = new URL(window.location.href)
+      const q = url.searchParams.get("unified")
+      if (q === "0") return false
+      if (q === "1") return true
+      return window.localStorage.getItem("pb_scanner_unified") === "1"
+    } catch { return false }
+  }
+
+  // In-memory kill-switch: any shape-mismatch / 5xx on the unified path
+  // flips this ref true for the rest of the session, so subsequent fetches
+  // bypass unified and go straight to the legacy split. Reset on page
+  // reload. Logged via console.warn so support can find it.
+  const unifiedDisabledRef = useRef(false)
 
   // Latest snapshot meta — populated when fetchData uses the feed endpoint.
   // Holds topic_id (for Phase 2 SSE subscription) and updated_at.
@@ -982,6 +1034,80 @@ export default function ScannerPage() {
     const ac = new AbortController()
     const timeoutId = setTimeout(() => ac.abort(), 12000)
     try {
+      // ── PHASE 2 UNIFIED PATH (2026-05-11) ──
+      // When the unified flag is on AND the in-memory kill-switch hasn't
+      // tripped, route ALL fetches (page 0, page 1+, incremental) through
+      // /api/scanner/feed?unified=1. On any shape mismatch or 5xx, flip
+      // unifiedDisabledRef true for the session and fall through to the
+      // legacy split branches below. Bug 2 endpoint unification —
+      // project_pb_scanner_endpoint_unification_design.md §Phase 2.
+      if (useUnifiedEndpoint() && !unifiedDisabledRef.current) {
+        const isIncrementalCall = pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0
+        const sinceId = isIncrementalCall ? lastTradeIdRef.current : undefined
+        try {
+          const url = buildScannerUrl({ pageNum: pg, sinceId })
+          const res = await fetch(url, { signal: ac.signal })
+          if (isAuthRedirect(res)) {
+            setPollError("Session expired — redirecting to login…")
+            router.push("/login")
+            return
+          }
+          if (!res.ok) throw new Error(`unified HTTP ${res.status}`)
+          const fd: FeedResponse = await res.json()
+          if (fd.error) throw new Error(`unified error: ${fd.error}`)
+          if (!fd.meta?.columns) throw new Error("unified shape mismatch: missing meta.columns")
+
+          feedMetaRef.current = fd.meta
+          feedColumnsRef.current = fd.meta.columns
+          setTopicId(fd.meta.topic_id)
+          const incoming = rowsToTrades(fd.rows || [], fd.meta.columns)
+
+          if (isIncrementalCall) {
+            if (incoming.length > 0) {
+              if (incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
+                playBlipRef.current()
+              }
+              lastTradeIdRef.current = Math.max(lastTradeIdRef.current, ...incoming.map(tr => tr.id))
+              setTrades(prev => [...incoming, ...prev].slice(0, 20000))
+            }
+          } else {
+            if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
+              playBlipRef.current()
+            }
+            prevTradeIdsRef.current = new Set(incoming.map(tr => tr.id))
+            if (incoming.length > 0) {
+              lastTradeIdRef.current = Math.max(...incoming.map(tr => tr.id))
+            }
+            isFirstLoadRef.current = false
+            setTrades(incoming)
+            if (fd.agg) {
+              const agg = fd.agg
+              const lean = (agg.sentiment?.label || "MIXED").toUpperCase()
+              setStats({
+                count: incoming.length,
+                bull: (agg.call_flow?._sort_premium ?? 0) / 100,
+                bear: (agg.put_flow?._sort_premium ?? 0) / 100,
+                lean,
+                pc_ratio: agg.pcr ?? 0,
+              })
+            }
+          }
+          lastSuccessRef.current = Date.now()
+          setPollError(null)
+          return
+        } catch (unifiedErr) {
+          // AbortError bubbles to the outer catch — let it through.
+          if (unifiedErr instanceof DOMException && unifiedErr.name === "AbortError") {
+            throw unifiedErr
+          }
+          // Any other failure (5xx, JSON parse error, shape mismatch) →
+          // flip the kill-switch and fall through to the legacy branches.
+          console.warn("[scanner] unified endpoint failed, falling back to legacy split:", unifiedErr)
+          unifiedDisabledRef.current = true
+          // continue to legacy branches below
+        }
+      }
+
       // Incremental polling — only on page 0 (live) after first load
       if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
         const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }), { signal: ac.signal })
@@ -1084,7 +1210,7 @@ export default function ScannerPage() {
       clearTimeout(timeoutId)
       setLoading(false)
     }
-  }, [page, buildUrl, router])
+  }, [page, buildUrl, buildScannerUrl, router])
 
   // Keep fetchDataRef in sync — decouples reset/polling effects from fetchData identity
   useEffect(() => { fetchDataRef.current = fetchData }, [fetchData])
@@ -1115,7 +1241,10 @@ export default function ScannerPage() {
     // a topic_id. Skip the 3s polling tick entirely. The wake handlers below
     // are also skipped — #5 will add a 60s SSE-stale guard to handle the
     // "EventSource silently dies" case that polling implicitly covered.
-    if (useFeedEndpoint() && topicId) return
+    // Phase 2 unification (2026-05-11): unified path also gets topicId from
+    // the feed response, so SSE serves the same role — skip polling under
+    // either flag when topicId is established.
+    if ((useFeedEndpoint() || useUnifiedEndpoint()) && topicId) return
 
     const tick = () => {
       if (page !== 0) return
