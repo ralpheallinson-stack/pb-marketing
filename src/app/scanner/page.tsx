@@ -902,13 +902,20 @@ export default function ScannerPage() {
     else if (filterDte === "1-7") p.set("max_dte", "7")
     else if (filterDte === "8-30") p.set("max_dte", "30")
     p.set("slim", "true")
+    // Bug 2 slice (grade-set unification, 2026-05-11): mirror buildFeedUrl's
+    // grades behavior so paginated live-flow pages match the feed snapshot.
+    // Without this, page 0 (feed, A,B,PASS) and pages 1+ (live-flow, A,B
+    // backend-default) returned different result sets and pagination was
+    // a discontinuity, not a continuation. Same toggle the user sees in
+    // the filter panel ("Curated grades only") now drives both endpoints.
+    p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
     if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
     if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
     const pg = opts?.pageNum ?? 0
     if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
     return `/api/scanner/live-flow?${p.toString()}`
-  }, [timeRange, filterMinPremium, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Phase 1 feed-endpoint URL builder. Same filter shape as buildUrl, but
   // hits /api/scanner/feed (column-array, ~70% smaller payload). No
