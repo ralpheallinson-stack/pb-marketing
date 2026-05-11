@@ -655,15 +655,9 @@ export default function ScannerPage() {
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
-  // Pre-warm the HTMLAudioElement decoder via a silent play+pause under a
-  // user gesture. Without this, the first .play() after page load takes
-  // hundreds of ms while the decoder spins up — perceived as audio lag
-  // on the first signal even though the SSE event:row handler fired
-  // synchronously (Pattern A diagnostic, 2026-05-08: 8 rows / 8 plays,
-  // audio fires 15-20ms BEFORE DOM commit). Subsequent plays hit a warm
-  // decoder. Volume zeroed during warm-up so the user doesn't hear the
-  // warm play; restored after pause. Promise-awaited so pause runs AFTER
-  // play resolves — pausing before play settles cancels the warm-up.
+  // Pre-warm the audio decoder under a user gesture so the first real
+  // .play() doesn't lag on cold-start. Volume zeroed during warm-up;
+  // promise-awaited so pause runs after play settles.
   const prewarmAudio = useCallback(() => {
     try {
       if (!audioCtxRef.current) {
