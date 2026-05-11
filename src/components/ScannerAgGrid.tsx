@@ -158,7 +158,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 100,
+    width: 120,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -166,7 +166,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Tick",
     field: "symbol",
     cellRenderer: TickCellRenderer,
-    width: 110,
+    width: 105,
     sortable: false,  // alphabetic sort during live tape is jarring
     cellClass: "cf-tick-cell",
   },
@@ -175,7 +175,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "expiration",
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
-    width: 110,
+    width: 95,
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
@@ -183,14 +183,14 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "strike",
     cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
-    width: 80,
+    width: 70,
     sortable: true,
     type: "rightAligned",
   },
   {
     headerName: "C/P",
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
-    width: 60,
+    width: 55,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
     cellClassRules: {
@@ -212,7 +212,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       }
       return map[a] ?? a
     },
-    width: 80,
+    width: 70,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
@@ -234,7 +234,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (!d || d === "NEUTRAL") return "—"
       return d
     },
-    width: 75,
+    width: 70,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -249,7 +249,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 110,
+    width: 115,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -259,7 +259,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "contracts",
     valueGetter: (p) => p.data?.contracts ?? 0,
     valueFormatter: (p) => (p.value as number).toLocaleString(),
-    width: 80,
+    width: 70,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -271,7 +271,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Price",
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
-    width: 100,
+    width: 90,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -281,7 +281,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
-    width: 115,
+    width: 85,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-bold",
@@ -294,7 +294,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Type",
     field: "flow_type",
     valueGetter: (p) => p.data?.flow_type || "—",
-    width: 90,
+    width: 80,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -308,7 +308,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Vol",
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 90,
+    width: 75,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -317,7 +317,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "OI",
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 90,
+    width: 75,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -326,7 +326,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "IV",
     field: "iv",
     valueFormatter: (p) => fmtIV(p.value),
-    width: 70,
+    width: 55,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-semibold",
@@ -343,7 +343,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
-    minWidth: 180,
+    minWidth: 165,
     sortable: false,
   },
 ]
