@@ -416,7 +416,7 @@ export default function ScannerPage() {
     const id = setInterval(check, 30000)
     return () => clearInterval(id)
   }, [])
-  const audioCtxRef = useRef<AudioContext | null>(null)
+  const audioCtxRef = useRef<HTMLAudioElement | null>(null)
   const prevTradeIdsRef = useRef<Set<number>>(new Set())
   const [showFilters, setShowFilters] = useState(false)
   const [filterGrade, setFilterGrade] = useState("")
@@ -641,75 +641,49 @@ export default function ScannerPage() {
     syncPrefs({ watchlist: updated })
   }, [watchlist, syncPrefs])
 
-  // Warmer-tone blip (2026-05-11): replaces the prior /static/audio/alert.mp3
-  // ding with a synthesized two-sine chime (C5 + perfect fifth G5) via Web
-  // Audio API. No external asset; envelope is a 5ms linear attack + 150ms
-  // exponential decay so the chime fits inside the 200ms Tier 2 flush cadence
-  // without acoustically overlapping the next batch under heavy flow.
-  // Peak gain 0.18 keeps it soft — pleasant Slack-DM-style notification
-  // rather than the alarming "ding" the user flagged.
-  const ensureAudioCtx = (): AudioContext | null => {
-    if (typeof window === "undefined") return null
-    if (audioCtxRef.current) return audioCtxRef.current
-    try {
-      const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-      if (!AC) return null
-      audioCtxRef.current = new AC()
-      return audioCtxRef.current
-    } catch {
-      return null
-    }
-  }
-
   const playBlip = useCallback(() => {
     if (!soundEnabled) return
-    const ctx = ensureAudioCtx()
-    if (!ctx) return
-    // Resume in case autoplay policy left the context suspended. No-op
-    // when already running; cheap to call on every blip.
-    if (ctx.state === "suspended") {
-      ctx.resume().catch(() => { /* user gesture not yet observed */ })
-    }
     try {
-      const now = ctx.currentTime
-      const PEAK_GAIN = 0.18
-      const ATTACK_S = 0.005
-      const DECAY_S = 0.15
-      // Master gain — both oscillators sum through one envelope so the
-      // chime has a single coherent attack/decay shape.
-      const gain = ctx.createGain()
-      gain.gain.setValueAtTime(0, now)
-      gain.gain.linearRampToValueAtTime(PEAK_GAIN, now + ATTACK_S)
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + ATTACK_S + DECAY_S)
-      gain.connect(ctx.destination)
-      // Fundamental (C5 523.25 Hz) + perfect fifth (G5 783.99 Hz). Pure
-      // sines have no high harmonics, so the "warmth" is intrinsic — no
-      // low-pass filter needed. Two voices give the chime a bell-like
-      // body without becoming a chord (the 3:2 ratio is consonant enough
-      // to read as a single timbre, not as two notes).
-      const FREQS = [523.25, 783.99]
-      for (const freq of FREQS) {
-        const osc = ctx.createOscillator()
-        osc.type = "sine"
-        osc.frequency.setValueAtTime(freq, now)
-        osc.connect(gain)
-        osc.start(now)
-        osc.stop(now + ATTACK_S + DECAY_S + 0.02)
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
+        audioCtxRef.current.volume = 0.6
+        audioCtxRef.current.preload = "auto"
       }
+      const a = audioCtxRef.current
+      a.currentTime = 0
+      a.play().catch(() => { /* autoplay blocked or asset missing */ })
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
-  // Pre-warm the AudioContext under a user gesture. The autoplay policy
-  // (Chrome / Safari) requires the first context resume to happen inside
-  // a click/tap/keydown handler; doing it here makes the very first blip
-  // play without needing the user to re-click. No-op if the context is
-  // already running.
+  // Pre-warm the HTMLAudioElement decoder via a silent play+pause under a
+  // user gesture. Without this, the first .play() after page load takes
+  // hundreds of ms while the decoder spins up — perceived as audio lag
+  // on the first signal even though the SSE event:row handler fired
+  // synchronously (Pattern A diagnostic, 2026-05-08: 8 rows / 8 plays,
+  // audio fires 15-20ms BEFORE DOM commit). Subsequent plays hit a warm
+  // decoder. Volume zeroed during warm-up so the user doesn't hear the
+  // warm play; restored after pause. Promise-awaited so pause runs AFTER
+  // play resolves — pausing before play settles cancels the warm-up.
   const prewarmAudio = useCallback(() => {
-    const ctx = ensureAudioCtx()
-    if (!ctx) return
-    if (ctx.state === "suspended") {
-      ctx.resume().catch(() => { /* user gesture not yet observed */ })
-    }
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
+        audioCtxRef.current.volume = 0.6
+        audioCtxRef.current.preload = "auto"
+      }
+      const a = audioCtxRef.current
+      const originalVolume = a.volume
+      a.volume = 0
+      a.play()
+        .then(() => {
+          a.pause()
+          a.currentTime = 0
+          a.volume = originalVolume
+        })
+        .catch(() => {
+          a.volume = originalVolume
+        })
+    } catch { /* audio unavailable */ }
   }, [])
 
   // Extracted from the inline JSX onClick so the off→on transition can
