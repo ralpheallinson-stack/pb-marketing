@@ -5,6 +5,24 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { SignalRow, type Trade } from "@/components/SignalRow"
+import dynamic from "next/dynamic"
+
+// AG Grid migration Phase 1 harness — dynamic import keeps the AG Grid
+// bundle (~250-300KB gzipped) out of the marketing-site critical bundle
+// and the scanner route's initial JS until ?ag=1 / pb_scanner_ag_grid
+// localStorage flag activates the harness. ssr:false because AG Grid is
+// client-only (uses ResizeObserver, MutationObserver, etc).
+const ScannerAgGrid = dynamic(
+  () => import("@/components/ScannerAgGrid").then(m => m.ScannerAgGrid),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex-1 flex items-center justify-center text-white/40 text-sm">
+        Loading AG Grid harness…
+      </div>
+    ),
+  },
+)
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
@@ -1008,6 +1026,26 @@ export default function ScannerPage() {
       if (q === "0") return false
       if (q === "1") return true
       return window.localStorage.getItem("pb_scanner_unified") !== "0"
+    } catch { return false }
+  }
+
+  // AG Grid migration Phase 1 reader (2026-05-11) — opt-in only.
+  //   - ?ag=0 in URL                              → false (kill-switch, wins)
+  //   - ?ag=1 in URL                              → true  (opt-in for this session)
+  //   - localStorage pb_scanner_ag_grid === "1"   → true  (per-browser opt-in)
+  //   - else                                      → false (legacy table is default
+  //                                                        through Phases 1-7)
+  // Phase 8 will flip the default to true and remove the legacy table.
+  // See project_pb_scanner_ag_grid_migration_design.md §D for the full
+  // phased plan and §F Q7 for the kill-switch runbook.
+  const useAgGridEndpoint = (): boolean => {
+    if (typeof window === "undefined") return false
+    try {
+      const url = new URL(window.location.href)
+      const q = url.searchParams.get("ag")
+      if (q === "0") return false
+      if (q === "1") return true
+      return window.localStorage.getItem("pb_scanner_ag_grid") === "1"
     } catch { return false }
   }
 
@@ -2274,6 +2312,15 @@ export default function ScannerPage() {
       })()}
 
       {/* ── TABLE ── */}
+      {/* AG Grid Phase 1 harness gate: when flag is on, render empty AG Grid
+          harness instead of the legacy table. tableContainerRef stays attached
+          to the legacy <div> only when the legacy path renders — the
+          rowVirtualizer's getScrollElement returns null gracefully when the
+          flag is on (the virtualizer simply doesn't activate). Pagination bar
+          stays outside the conditional so the layout below is unaffected. */}
+      {useAgGridEndpoint() ? (
+        <ScannerAgGrid />
+      ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>
         {loading ? (
           <table className="w-full text-sm">
@@ -2344,6 +2391,7 @@ export default function ScannerPage() {
           </table>
         )}
       </div>
+      )}
 
       {/* ── PAGINATION BAR — shadcn-style numbered Pagination ── */}
       <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
