@@ -981,14 +981,17 @@ export default function ScannerPage() {
     catch { return false }
   }
 
-  // Phase 2 unification reader (2026-05-11):
-  //   - ?unified=0 in URL → false (Q7 kill-switch, always wins)
-  //   - ?unified=1 in URL → true (opt-in for this session, e.g. support
-  //     debugging)
-  //   - else: localStorage pb_scanner_unified === "1" → true
-  //   - else: false (default through Phases 1-3)
-  // See project_pb_scanner_endpoint_unification_design.md §Q7 for the
-  // triage-kill-switch runbook.
+  // Phase 4 cutover reader (2026-05-11) — unified is the default.
+  //   - ?unified=0 in URL                       → false (Q7 kill-switch, always wins)
+  //   - ?unified=1 in URL                       → true  (explicit, redundant with default)
+  //   - localStorage pb_scanner_unified === "0" → false (per-browser opt-out)
+  //   - else                                    → true  (Phase 4 default)
+  // Recovery: any subscriber can revert to legacy via
+  // localStorage.setItem('pb_scanner_unified', '0') in DevTools, or per-
+  // request via ?unified=0. Global rollback by reverting this commit OR
+  // flipping SCANNER_UNIFIED=0 on the backend (legacy snapshot path is
+  // preserved on the unflagged feed handler). See
+  // project_pb_scanner_endpoint_unification_design.md §5 rollback.
   const useUnifiedEndpoint = (): boolean => {
     if (typeof window === "undefined") return false
     try {
@@ -996,7 +999,7 @@ export default function ScannerPage() {
       const q = url.searchParams.get("unified")
       if (q === "0") return false
       if (q === "1") return true
-      return window.localStorage.getItem("pb_scanner_unified") === "1"
+      return window.localStorage.getItem("pb_scanner_unified") !== "0"
     } catch { return false }
   }
 
