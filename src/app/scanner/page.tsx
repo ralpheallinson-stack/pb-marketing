@@ -1062,15 +1062,19 @@ export default function ScannerPage() {
     } catch { return false }
   }
 
-  // AG Grid migration Phase 1 reader (2026-05-11) — opt-in only.
+  // AG Grid migration Phase 8 cutover (2026-05-11) — AG Grid is the default.
   //   - ?ag=0 in URL                              → false (kill-switch, wins)
-  //   - ?ag=1 in URL                              → true  (opt-in for this session)
-  //   - localStorage pb_scanner_ag_grid === "1"   → true  (per-browser opt-in)
-  //   - else                                      → false (legacy table is default
-  //                                                        through Phases 1-7)
-  // Phase 8 will flip the default to true and remove the legacy table.
-  // See project_pb_scanner_ag_grid_migration_design.md §D for the full
-  // phased plan and §F Q7 for the kill-switch runbook.
+  //   - ?ag=1 in URL                              → true  (explicit, redundant)
+  //   - localStorage pb_scanner_ag_grid === "0"   → false (per-browser opt-out)
+  //   - else                                      → true  (Phase 8 default)
+  // Recovery: any subscriber can revert to legacy via
+  // localStorage.setItem('pb_scanner_ag_grid', '0') in DevTools, or per-
+  // request via ?ag=0. Global rollback by reverting this commit — legacy
+  // table path stays in the codebase for one trading day post-cutover
+  // per memo §F Q4. After soak window clears, a separate cleanup commit
+  // removes the legacy <table> rendering, deletes SignalRow.tsx, and
+  // drops @tanstack/react-virtual if no other surfaces use it.
+  // See project_pb_scanner_ag_grid_migration_design.md §H rollback.
   const useAgGridEndpoint = (): boolean => {
     if (typeof window === "undefined") return false
     try {
@@ -1078,7 +1082,7 @@ export default function ScannerPage() {
       const q = url.searchParams.get("ag")
       if (q === "0") return false
       if (q === "1") return true
-      return window.localStorage.getItem("pb_scanner_ag_grid") === "1"
+      return window.localStorage.getItem("pb_scanner_ag_grid") !== "0"
     } catch { return false }
   }
 
