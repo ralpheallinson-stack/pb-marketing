@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
-import { Progress } from "@/components/ui/progress"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -230,35 +229,28 @@ function fmtPrem(v: number) {
 // pre-2026-05-10. Single-bar 0-100 gauge with a faint background ring.
 // Stays on the warm theme palette (Direction A scoping respected — palette
 // applies to filter panel only, not the stat strip).
-function KPIGaugeRing({ value, color, label, size = 80 }: { value: number; color: string; label?: string; size?: number }) {
+function KPIGaugeRing({ value, color }: { value: number; color: string }) {
   const data = [{ name: "value", value: Math.max(0, Math.min(100, value)), fill: color }]
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <ChartContainer
-        config={{ value: { label: "value" } }}
-        className="!aspect-square !h-full !w-full"
+    <ChartContainer
+      config={{ value: { label: "value" } }}
+      className="!aspect-square !h-[52px] !w-[52px]"
+    >
+      <RadialBarChart
+        data={data}
+        startAngle={90}
+        endAngle={-270}
+        innerRadius="70%"
+        outerRadius="100%"
       >
-        <RadialBarChart
-          data={data}
-          startAngle={90}
-          endAngle={-270}
-          innerRadius="70%"
-          outerRadius="100%"
-        >
-          <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-          <RadialBar
-            dataKey="value"
-            cornerRadius={4}
-            background={{ fill: "rgba(255,255,255,0.06)" }}
-          />
-        </RadialBarChart>
-      </ChartContainer>
-      {label !== undefined && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[12px] font-bold tracking-tight" style={{ color }}>{label}</span>
-        </div>
-      )}
-    </div>
+        <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+        <RadialBar
+          dataKey="value"
+          cornerRadius={4}
+          background={{ fill: "rgba(255,255,255,0.06)" }}
+        />
+      </RadialBarChart>
+    </ChartContainer>
   )
 }
 
@@ -1989,22 +1981,7 @@ export default function ScannerPage() {
         </div>
       )}
 
-      {/* ── STATS BAR ──
-          Cheddar-template redesign 2026-05-10 (pass 16):
-            - Gauges 52px → 80px (Cheddar visual density parity)
-            - Percentage labels rendered inside rings via KPIGaugeRing.label prop
-            - Flow sentiment card: KPIGaugeRing → horizontal Progress bar
-              (red <40 / neutral 40-60 / green >60 thresholds on bullPct)
-            - Call/Put cards: signal count stays hero (28px), premium pinned
-              upper-right via justify-between — institutional positioning preserved
-            - Put-to-call gauge fills with call-dominance (callSharePct), label
-              shows callShare%, main number below stays pc_ratio.toFixed(3)
-            - "volume-weighted" subtext preserved on Flow sentiment
-            - Warm theme palette preserved (#22C55E / #FF605D / amber-600 / #1C1C1E)
-          NOTE: per-page aggregation (Bug 3 from time-range investigation memo)
-          NOT addressed here — stat strip still reduces over the visible page
-          slice, not the full range. Fix queued for the dedicated range-agg
-          endpoint session. */}
+      {/* ── STATS BAR ── */}
       {(() => {
         const totalPrem = displayStats.bull + displayStats.bear
         const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
@@ -2012,68 +1989,63 @@ export default function ScannerPage() {
         const totalCount = calls + puts
         const callSharePct = Math.round((calls / (totalCount || 1)) * 100)
         const putSharePct = Math.round((puts / (totalCount || 1)) * 100)
-        const callShareLabel = totalCount > 0 ? `${(calls / totalCount * 100).toFixed(1)}%` : "—"
-        const putShareLabel = totalCount > 0 ? `${(puts / totalCount * 100).toFixed(1)}%` : "—"
-        const sentimentFillCls =
-          bullPct < 40 ? "[&>div]:bg-[#FF605D]"
-          : bullPct > 60 ? "[&>div]:bg-[#22C55E]"
-          : "[&>div]:bg-stone-500"
         return (
           <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1C1E' }}>
 
-            {/* Flow sentiment — horizontal progress bar */}
-            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-col gap-2 justify-center">
-              <div className="text-[12px] text-white/50">Flow sentiment</div>
-              <span className={`text-[26px] font-bold leading-none ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
-                {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
-              </span>
-              <Progress
-                value={Math.round(bullPct)}
-                className={`h-2 bg-stone-800/60 [&>div]:transition-colors ${sentimentFillCls}`}
-              />
-              <div className="text-[10px] text-white/30 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
-            </Card>
-
-            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
-
-            {/* Put to call — gauge fills with call dominance, ratio as hero number */}
+            {/* Flow sentiment */}
             <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
               <KPIGaugeRing
-                value={callSharePct}
-                color="#D97706"
-                label={callShareLabel}
+                value={Math.round(bullPct)}
+                color={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
               />
-              <div className="flex-1">
-                <div className="text-[12px] text-white/50 mb-1">Put to call</div>
-                <div className="text-[28px] font-bold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+              <div>
+                <div className="text-[12px] text-white/50 mb-1">Flow sentiment</div>
+                <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
+                  {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
+                </span>
+                <div className="text-[10px] text-white/30 mt-0.5 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
               </div>
             </Card>
 
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-            {/* Call flow — count is hero, premium pinned upper-right */}
+            {/* Put to call */}
             <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing value={callSharePct} color="#22C55E" label={callShareLabel} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2 mb-1">
+              <KPIGaugeRing
+                value={Math.min(Math.round(displayStats.pc_ratio * 50), 100)}
+                color="#48DEFF"
+              />
+              <div>
+                <div className="text-[12px] text-white/50 mb-1">Put to call</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
+              </div>
+            </Card>
+
+            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
+
+            {/* Call flow */}
+            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
+              <KPIGaugeRing value={callSharePct} color="#22C55E" />
+              <div>
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-[12px] text-white/50">Call flow</span>
                   <span className="text-[13px] font-semibold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
                 </div>
-                <div className="text-[28px] font-bold text-white leading-none font-mono">{calls.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
               </div>
             </Card>
 
             <div style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-            {/* Put flow — count is hero, premium pinned upper-right */}
+            {/* Put flow */}
             <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing value={putSharePct} color="#FF605D" label={putShareLabel} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2 mb-1">
+              <KPIGaugeRing value={putSharePct} color="#FF605D" />
+              <div>
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-[12px] text-white/50">Put flow</span>
                   <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
                 </div>
-                <div className="text-[28px] font-bold text-white leading-none font-mono">{puts.toLocaleString()}</div>
+                <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString()}</div>
               </div>
             </Card>
 
