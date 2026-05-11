@@ -158,7 +158,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 120,
+    width: 119,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -166,7 +166,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Tick",
     field: "symbol",
     cellRenderer: TickCellRenderer,
-    width: 105,
+    width: 116,
     sortable: false,  // alphabetic sort during live tape is jarring
     cellClass: "cf-tick-cell",
   },
@@ -175,7 +175,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "expiration",
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
-    width: 95,
+    width: 108,
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
@@ -183,14 +183,14 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "strike",
     cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
-    width: 70,
+    width: 76,
     sortable: true,
     type: "rightAligned",
   },
   {
     headerName: "C/P",
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
-    width: 55,
+    width: 63,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
     cellClassRules: {
@@ -212,7 +212,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       }
       return map[a] ?? a
     },
-    width: 70,
+    width: 75,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
@@ -234,7 +234,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (!d || d === "NEUTRAL") return "—"
       return d
     },
-    width: 70,
+    width: 69,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -249,7 +249,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 115,
+    width: 94,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -259,7 +259,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "contracts",
     valueGetter: (p) => p.data?.contracts ?? 0,
     valueFormatter: (p) => (p.value as number).toLocaleString(),
-    width: 70,
+    width: 66,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -281,7 +281,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
-    width: 85,
+    width: 82,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-bold",
@@ -294,7 +294,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Type",
     field: "flow_type",
     valueGetter: (p) => p.data?.flow_type || "—",
-    width: 80,
+    width: 83,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -308,7 +308,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Vol",
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 75,
+    width: 71,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -317,7 +317,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "OI",
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 75,
+    width: 76,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -326,7 +326,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "IV",
     field: "iv",
     valueFormatter: (p) => fmtIV(p.value),
-    width: 55,
+    width: 65,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-semibold",
@@ -343,7 +343,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
-    minWidth: 165,
+    minWidth: 198,
     sortable: false,
   },
 ]
