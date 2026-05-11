@@ -23,6 +23,10 @@ const ScannerAgGrid = dynamic(
     ),
   },
 )
+
+// Phase 5 (2026-05-11): type-only GridApi import for the gridApi ref.
+// Type-only — no runtime cost, no entry into the critical bundle.
+import type { GridApi } from "ag-grid-community"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
@@ -654,6 +658,31 @@ export default function ScannerPage() {
   const fetchDataRef = useRef<((opts?: { initial?: boolean; pageNum?: number }) => Promise<void>) | null>(null)
   const lastSuccessRef = useRef<number>(Date.now())
   const [pollError, setPollError] = useState<string | null>(null)
+
+  // Phase 5 (2026-05-11): AG Grid migration. gridApi captured via
+  // ScannerAgGrid's onApiReady callback. Two helpers below paired with
+  // every setTrades site so the grid stays in sync without going through
+  // React's prop-diff path. agGridReplace fires for full snapshots
+  // (page/range/filter change); agGridAdd fires for SSE batched flushes
+  // and incremental polling.
+  const gridApiRef = useRef<GridApi<Trade> | null>(null)
+  const handleAgGridApiReady = useCallback((api: GridApi<Trade>) => {
+    gridApiRef.current = api
+  }, [])
+  const agGridReplace = useCallback((rows: Trade[]) => {
+    const api = gridApiRef.current
+    if (!api) return
+    api.setGridOption("rowData", rows.filter((t) => !t.mm_suspected))
+  }, [])
+  const agGridAdd = useCallback((rows: Trade[]) => {
+    const api = gridApiRef.current
+    if (!api) return
+    const fresh = rows.filter((t) => !t.mm_suspected)
+    if (fresh.length === 0) return
+    // getRowId on the grid de-dupes — re-adding an id already present
+    // is a no-op (returns an empty `add` transaction).
+    api.applyTransaction({ add: fresh, addIndex: 0 })
+  }, [])
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
 
   // soundEnabled defaults to true with no localStorage persistence, so
@@ -779,6 +808,9 @@ export default function ScannerPage() {
                 fresh.push(t)
               }
               if (fresh.length === 0) return prev
+              // Phase 5: dispatch same fresh batch to AG Grid. No-op when
+              // flag is off or gridApi not yet captured.
+              agGridAdd(fresh)
               return [...fresh, ...prev].slice(0, 2000)
             })
             // Blip is one-per-batch (was one-per-row pre-2026-05-11). The
@@ -872,6 +904,7 @@ export default function ScannerPage() {
             fresh.push(t)
           }
           if (fresh.length === 0) return prev
+          agGridAdd(fresh)
           return [...fresh, ...prev].slice(0, 2000)
         })
         if (shouldBlip) playBlipRef.current()
@@ -1118,6 +1151,7 @@ export default function ScannerPage() {
               }
               lastTradeIdRef.current = Math.max(lastTradeIdRef.current, ...incoming.map(tr => tr.id))
               setTrades(prev => [...incoming, ...prev].slice(0, 20000))
+              agGridAdd(incoming)
             }
           } else {
             if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
@@ -1129,6 +1163,7 @@ export default function ScannerPage() {
             }
             isFirstLoadRef.current = false
             setTrades(incoming)
+            agGridReplace(incoming)
             if (fd.agg) {
               const agg = fd.agg
               const lean = (agg.sentiment?.label || "MIXED").toUpperCase()
@@ -1170,6 +1205,7 @@ export default function ScannerPage() {
           const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
           lastTradeIdRef.current = newMaxId
           setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
+          agGridAdd(data.trades)
           if (data.trades.some(matchesFilterRef.current)) playBlipRef.current()
         }
         lastSuccessRef.current = Date.now()
@@ -1205,6 +1241,7 @@ export default function ScannerPage() {
         }
         isFirstLoadRef.current = false
         setTrades(incoming)
+        agGridReplace(incoming)
         // Map feed agg → existing Stats shape. bull/bear are sentiment
         // proxies derived from buy-call+sell-put vs buy-put+sell-call
         // premium splits — close enough for the sidebar widget. Exact
@@ -1243,6 +1280,7 @@ export default function ScannerPage() {
       }
       isFirstLoadRef.current = false
       setTrades(incoming)
+      agGridReplace(incoming)
       setStats(data.stats || { count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
       lastSuccessRef.current = Date.now()
       setPollError(null)
@@ -1273,6 +1311,7 @@ export default function ScannerPage() {
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
     setTrades([])
+    agGridReplace([])
     fetchDataRef.current?.({ initial: true, pageNum: page })
   }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
@@ -2324,6 +2363,7 @@ export default function ScannerPage() {
           setFocusTicker={setFocusTicker}
           setFocusStrike={setFocusStrike}
           setFocusExpiry={setFocusExpiry}
+          onApiReady={handleAgGridApiReady}
         />
       ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>

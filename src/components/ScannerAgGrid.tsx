@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import type { Dispatch, SetStateAction } from "react"
 import { AgGridReact } from "ag-grid-react"
 import {
@@ -9,6 +9,8 @@ import {
   themeAlpine,
   colorSchemeDarkWarm,
   type ColDef,
+  type GridApi,
+  type GridReadyEvent,
   type ICellRendererParams,
   type RowClassRules,
 } from "ag-grid-community"
@@ -358,6 +360,11 @@ interface ScannerAgGridProps {
   setFocusTicker: Dispatch<SetStateAction<string | null>>
   setFocusStrike: Dispatch<SetStateAction<string | null>>
   setFocusExpiry: Dispatch<SetStateAction<string | null>>
+  // Phase 5 (2026-05-11): page.tsx captures gridApi via this callback
+  // and dispatches imperative updates (setGridOption / applyTransaction)
+  // alongside its existing setTrades calls. Avoids React prop-diff
+  // overhead on every SSE batch flush.
+  onApiReady?: (api: GridApi<Trade>) => void
 }
 
 export function ScannerAgGrid({
@@ -365,13 +372,18 @@ export function ScannerAgGrid({
   setFocusTicker,
   setFocusStrike,
   setFocusExpiry,
+  onApiReady,
 }: ScannerAgGridProps) {
   const theme = useMemo(() => themeAlpine.withPart(colorSchemeDarkWarm), [])
 
-  const rowData = useMemo(
-    () => trades.filter((t) => !t.mm_suspected),
-    [trades],
-  )
+  // Phase 5: capture initial rowData ONCE at mount. Subsequent trades
+  // changes are NOT propagated reactively through this prop — page.tsx
+  // drives all updates imperatively via gridApi (setGridOption for
+  // snapshot replaces; applyTransaction for SSE incremental adds).
+  // The eslint-disable is intentional: we explicitly want a stale
+  // snapshot of trades captured at mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const initialRowData = useMemo(() => trades.filter((t) => !t.mm_suspected), [])
 
   // Stable context object for cellRenderer focus dispatch. setters from
   // useState are reference-stable across renders, so this memo never
@@ -381,9 +393,17 @@ export function ScannerAgGrid({
     [setFocusTicker, setFocusStrike, setFocusExpiry],
   )
 
-  useEffect(() => {
-    console.info("[scanner-ag] Phase 3 cellRenderers mounted with", rowData.length, "rows")
-  }, [rowData.length])
+  const handleGridReady = useCallback(
+    (event: GridReadyEvent<Trade>) => {
+      onApiReady?.(event.api)
+      console.info(
+        "[scanner-ag] Phase 5 grid ready —",
+        initialRowData.length,
+        "initial rows; subsequent updates via gridApi",
+      )
+    },
+    [onApiReady, initialRowData.length],
+  )
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -466,10 +486,11 @@ export function ScannerAgGrid({
       <AgGridReact<Trade>
         theme={theme}
         columnDefs={COLUMN_DEFS}
-        rowData={rowData}
+        rowData={initialRowData}
         rowClassRules={ROW_CLASS_RULES}
         getRowId={(p) => String(p.data.id)}
         context={context}
+        onGridReady={handleGridReady}
         suppressCellFocus
       />
     </div>
