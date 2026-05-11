@@ -9,6 +9,8 @@ read_time: "8"
 
 Conviction grading is how Profit Builders separates institutional-quality flow from background noise. Every print that crosses the OPRA tape gets one of three labels — **Grade A**, **Grade B**, or **PASS** — based on a deterministic, rules-based scoring pipeline (no models, no black box). This guide walks through the six factors the engine measures, what each grade means, and how to use the labels for position sizing and discipline.
 
+> **Updated 2026-05-09:** The default scanner view now shows **all three grades** (A, B, and PASS) so subscribers see the full institutional flow tape with conviction labels attached as metadata, not as a filter. The original "fewer signals, higher quality" experience described later in this post is preserved as a one-click view: toggle **"Curated grades only"** in the filter panel to restrict the table to A/B rows. Either way, the grading methodology below is unchanged.
+
 ## The Signal-to-Noise Problem in Options Flow
 
 On any given trading day, millions of options contracts change hands across U.S. exchanges. Tens of thousands of individual orders hit the tape — block trades, sweeps, spreads, hedges, rolls, and closing positions all mixed together in one undifferentiated stream. If you have ever tried to trade by watching a raw options flow feed, you already know the problem: **most of it is noise**.

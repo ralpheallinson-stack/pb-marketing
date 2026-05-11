@@ -1,65 +1,54 @@
 ---
 title: "Scanner Color Guide: What the Row Highlights Mean"
-description: "Understand the color-coded row highlights in the Profit Builders scanner — golden sweeps, whale trades, unusual activity, and market maker flags explained."
+description: "Understand the BlackBox-style OI-status row highlights in the Profit Builders scanner — single-trade and multi-trade open-interest exceedance, late prints, and market-maker filtering explained."
 date: "2026-03-05"
+updated: "2026-05-11"
 author: "Profit Builders"
 read_time: "3"
 ---
 
-The Profit Builders scanner uses color-coded row highlights to help you instantly identify the most significant trades on the tape. Here's what each color means and why it matters.
+The Profit Builders scanner uses color-coded row highlights to surface trades whose volume relative to existing open interest is doing something out of the ordinary. The system is BlackBox-style: the highlight tells you that a contract's trading volume has exceeded what's already been positioned in it, and whether that exceedance came from a single print or from accumulated activity. Here is what each color means and how to read it.
 
-## Gold / Yellow — Golden Sweep
+## Yellow — Single-Trade OI Exceedance
 
-**Trigger:** Sweep order + $1M+ premium + filled above the ask price
+**Trigger:** Volume / open interest ratio > 1.0 (single trade)
 
-This is the rarest and highest-conviction highlight in the scanner. A golden sweep means someone routed a million-dollar-plus order across multiple exchanges and paid *more* than the best available offer to get filled. That's maximum urgency — the buyer needed the position immediately and was willing to overpay for speed.
+A yellow row means a single trade just pushed today's contract volume above the contract's existing open interest. This is genuinely unusual: by definition, every option contract has a pool of existing positions (the open interest), and most days the trading volume stays well below that number. When one print is large enough to single-handedly exceed the OI, the trader on the other side is committing more capital to this contract than the entire prior position book represented.
 
-Golden sweeps are extremely rare. Most large sweeps fill at or near the ask. Most above-ask trades are smaller. When all three conditions align — sweep execution, seven-figure premium, and above-ask aggression — it signals genuine institutional urgency.
+**What to watch for:** Direction (call vs put) and DTE. Yellow on short-dated calls during a market pullback is informed speculation. Yellow on far-dated puts on a name you don't otherwise see flow on is often portfolio protection at scale.
 
-**What to watch for:** The direction (calls vs puts) and the expiration. A golden sweep on short-dated calls is an aggressive directional bet. On longer-dated puts, it could be portfolio protection at scale.
+## Purple — Multi-Trade OI Exceedance with Accumulation
 
-## Orange — Whale
+**Trigger:** Volume / open interest ratio > 1.0 AND ≥ 2 accumulated trades on the same contract within the rolling window
 
-**Trigger:** Premium >= $10M
+Purple is the higher-conviction tier of OI exceedance. The volume / OI threshold is the same as yellow, but purple additionally requires that the exceedance is being built up by multiple prints — at least two trades have hit the same contract recently. That pattern indicates someone is actively accumulating a position rather than placing a single bet and walking away.
 
-Any single trade with $10 million or more in premium gets an orange highlight. At this size, you're looking at major institutional positioning — hedge funds, pension funds, or bank proprietary desks. These trades are too large for most market participants and represent significant capital commitment.
+Purple rows are the most actionable highlight for trend-following setups. Repeat institutional accumulation across multiple prints is harder to explain away as a hedge or a one-off, and the pattern often precedes meaningful directional movement on the underlying.
 
-**What to watch for:** Whether it's an opening or closing position. A $10M+ opening trade is a major new bet. A $10M+ closing trade is someone taking profits or cutting losses on an existing position.
+**What to watch for:** When purple appears on the same ticker repeatedly within a single session, the cumulative thesis is usually worth a closer look. Cross-reference with the conviction grade (Grade A is the strongest confirmation) and the spot price action on the underlying.
 
-## Purple — Unusual Activity
+## Orange — Late Print
 
-**Trigger:** Any one of these conditions:
-- **Volume/OI ratio >= 20x** — Today's trading volume is 20 times the existing open interest. This means the contract is seeing explosive activity relative to its history.
-- **Premium >= $5M** — Large but below the whale threshold.
-- **Contracts >= 2,000** — High contract count regardless of premium (some contracts trade at low per-unit prices but represent significant notional exposure).
+**Trigger:** Trade flagged as out-of-sequence (late report from the exchange)
 
-Purple rows flag trades where something abnormal is happening. The V/OI ratio is particularly useful — when a contract that normally trades 50 contracts a day suddenly sees 1,000, that's institutional activity that hasn't shown up in the open interest yet.
+Orange highlights trades that arrived on the tape after a more recent print had already been recorded for the same or adjacent contracts. These prints are real institutional trades; they just got reported with a delay due to exchange-side sequencing.
 
-**What to watch for:** V/OI spikes on near-term expirations are often the most actionable. Check whether the aggression is at the ask (bullish intent for calls) or at the bid (bearish for puts).
+Late prints are not necessarily a directional signal on their own — the delay is a reporting artifact, not a trader behavior. But they are worth knowing about because the actual execution happened earlier than the timestamp suggests. If you're reconstructing intraday context (e.g., "what triggered the move at 10:42?"), an orange print appearing at 10:44 may have actually executed at 10:41.
 
-## Dimmed (Lower Opacity) — Market Maker Hedge
+## Dimmed / Filtered — Market Maker Activity
 
-**Trigger:** Trade flagged as a suspected market maker hedge
+**Behavior:** MM-suspected trades are filtered out of the default scanner view entirely
 
-These rows appear at reduced opacity to visually de-emphasize them. Our market maker detection system identifies trades that are likely delta-neutral hedges rather than directional bets — for example, when a call buy and put buy on the same symbol happen within seconds at similar premium levels (a conversion or reversal).
+The scanner's market-maker detection identifies trades that are likely delta-neutral hedges rather than directional bets — for example, when a call buy and put buy on the same symbol happen within seconds at similar premium levels (a conversion or reversal). Market-maker flow is real volume, but it is not directional information, and including it in the tape skews sentiment readings and clutters the view.
 
-Market maker flow is real volume, but it's not directional. These trades exist to manage risk on existing inventory, not to express a view on where the stock is going. By dimming them, the scanner keeps your focus on trades that represent genuine directional conviction.
+By default, the scanner drops these rows from the rendered table so subscribers focus on flow that actually represents conviction. This is a behavior change from older guides that described MM rows as "dimmed" — the current scanner removes them outright.
 
-**What to watch for:** If you're analyzing total flow for a symbol, you may want to toggle the "No MM" filter to exclude these entirely. They can skew sentiment readings if included.
+**What to watch for:** If you are doing total-volume reconciliation (e.g., comparing PB's surfaced flow to an external feed), be aware that MM-suspected trades are excluded. The grading and OI-exceedance highlights apply only to the directional flow that survives the MM filter.
 
-## No Highlight — Standard Flow
+## No Highlight — Standard Graded Flow
 
-Trades without a highlight are graded signals that passed all quality filters but don't meet the elevated thresholds above. These are still institutional-scale trades (minimum $200K premium) with confirmed direction — they just don't have the extreme size or urgency markers.
+Rows without any highlight color are trades that passed all quality filters but did not exceed the contract's open interest and were not flagged as late prints. They still carry a conviction grade (A, B, or PASS) shown in the dedicated grade column and remain the bulk of what the scanner displays — institutional-scale activity with confirmed direction, just without the additional OI-status badge.
 
 ---
 
-Understanding these highlights helps you prioritize your attention. When a gold row appears, stop and look. When the tape is full of purple, something is developing. And when rows are dimmed, the market makers are hedging — not betting.
-
-
----
-
-## Related Reading
-
-- [Morning Routine: First 15 Minutes](/blog/morning-routine-first-15-minutes)
-- [Options Flow Signals Explained](/blog/options-flow-signals-grade-a-b-c)
-- [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
+Understanding these highlights helps you prioritize your attention on a fast-moving tape. **Yellow** is a single large print exceeding open interest. **Purple** is repeat accumulation pushing the same exceedance through multiple prints — the strongest near-term signal. **Orange** is a delayed report worth knowing about for intraday timing reconstruction. Everything else is the standard graded flow, with conviction labels explaining what the engine thinks of each row.

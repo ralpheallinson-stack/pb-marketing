@@ -182,7 +182,7 @@ export default function VsCheddarFlow() {
                   Pick Profit Builders.
                 </h2>
                 <p className="text-[16px] leading-[1.6] text-[#A9B4C6] mb-4">
-                  If you want every feature included at one flat price, a documented documented data methodology, and a documented data methodology and CBOE-compliant sweep detection you can audit before you pay.
+                  If you want every feature included at one flat price, a documented data methodology, and CBOE-compliant sweep detection you can audit before you pay.
                 </p>
                 <div className="pb-mono text-[11px] text-[#34D399] uppercase tracking-wider">
                   $99/mo · Graded signals · Public methodology
