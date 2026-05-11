@@ -158,7 +158,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 119,
+    width: 128,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -175,7 +175,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "expiration",
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
-    width: 108,
+    width: 118,
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
@@ -249,7 +249,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 94,
+    width: 110,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -271,7 +271,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Price",
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
-    width: 90,
+    width: 100,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
