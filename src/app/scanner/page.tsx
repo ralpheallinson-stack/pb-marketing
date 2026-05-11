@@ -1563,6 +1563,15 @@ export default function ScannerPage() {
   // Reset client page when filters change
   useEffect(() => { setClientPage(0) }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
 
+  // Phase 6 (2026-05-11): scroll AG Grid to row 0 on pagination changes.
+  // Today range uses clientPage (200-row chunks over the 20K trades
+  // buffer); non-Today uses page (server-side 2000-row fetches).
+  // ensureIndexVisible is a no-op when gridApi isn't yet captured
+  // (flag off, or pre-onApiReady).
+  useEffect(() => {
+    gridApiRef.current?.ensureIndexVisible(0, "top")
+  }, [page, clientPage])
+
   const rowVirtualizer = useVirtualizer({
     count: pageRows.length,
     getScrollElement: () => tableContainerRef.current,
@@ -2364,6 +2373,7 @@ export default function ScannerPage() {
           setFocusStrike={setFocusStrike}
           setFocusExpiry={setFocusExpiry}
           onApiReady={handleAgGridApiReady}
+          enableSort={timeRange === "today"}
         />
       ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>

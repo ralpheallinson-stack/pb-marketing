@@ -13,6 +13,7 @@ import {
   type GridReadyEvent,
   type ICellRendererParams,
   type RowClassRules,
+  type SortChangedEvent,
 } from "ag-grid-community"
 import type { Trade } from "./SignalRow"
 import { badgeClass } from "@/lib/badge-styles"
@@ -153,14 +154,13 @@ function CondsCellRenderer(params: TradeCellParams) {
 }
 
 // ── Column definitions ──
-const COLUMN_DEFS: ColDef<Trade>[] = [
+const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
     width: 80,
-    sortable: true,
-    sort: "desc",
+    sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
   {
@@ -168,7 +168,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
     field: "symbol",
     cellRenderer: TickCellRenderer,
     width: 110,
-    sortable: true,
+    sortable: false,  // alphabetic sort during live tape is jarring
     cellClass: "cf-tick-cell",
   },
   {
@@ -177,7 +177,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
     width: 110,
-    sortable: true,
+    sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
     headerName: "Strike",
@@ -192,7 +192,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "C/P",
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
     width: 60,
-    sortable: true,
+    sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
     cellClassRules: {
       "cf-bullish": (p) => p.data?.row_color === "bullish",
@@ -214,7 +214,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
       return map[a] ?? a
     },
     width: 80,
-    sortable: true,
+    sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
       "cf-bullish": (p) =>
@@ -236,7 +236,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
       return d
     },
     width: 60,
-    sortable: true,
+    sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
       "cf-bullish": (p) => p.data?.trade_direction === "BUY",
@@ -296,7 +296,7 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
     field: "flow_type",
     valueGetter: (p) => p.data?.flow_type || "—",
     width: 90,
-    sortable: true,
+    sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
       "cf-sweep": (p) => p.data?.flow_type === "SWEEP",
@@ -365,6 +365,14 @@ interface ScannerAgGridProps {
   // alongside its existing setTrades calls. Avoids React prop-diff
   // overhead on every SSE batch flush.
   onApiReady?: (api: GridApi<Trade>) => void
+  // Phase 6 (2026-05-11): when false, sort is disabled on every column
+  // regardless of per-column sortable settings. Page.tsx sets this to
+  // (timeRange === "today") so sort only works when the full result set
+  // is in memory. For non-Today ranges, sorting would scope to the
+  // current 2K-row server page — misleading subscribers expecting a
+  // multi-page sort. Phase 7 / future may revisit with a backend-driven
+  // multi-page sort. See memo §C5 + §F Q3.
+  enableSort: boolean
 }
 
 export function ScannerAgGrid({
@@ -373,6 +381,7 @@ export function ScannerAgGrid({
   setFocusStrike,
   setFocusExpiry,
   onApiReady,
+  enableSort,
 }: ScannerAgGridProps) {
   const theme = useMemo(() => themeAlpine.withPart(colorSchemeDarkWarm), [])
 
@@ -404,6 +413,26 @@ export function ScannerAgGrid({
     },
     [onApiReady, initialRowData.length],
   )
+
+  // Phase 6 (2026-05-11): apply enableSort gate. When enableSort is
+  // false (non-Today ranges), force sortable: false on every column —
+  // overrides each ColDef's per-column setting. This is the lighter-
+  // weight UX-trap mitigation per memo §C5 option (a): disable sort
+  // entirely on ranges where the current server page is only a slice
+  // of the full result. Phase 7 may revisit with backend multi-page
+  // sort if the user wants the feature.
+  const columnDefs = useMemo<ColDef<Trade>[]>(
+    () =>
+      enableSort
+        ? BASE_COLUMN_DEFS
+        : BASE_COLUMN_DEFS.map((c) => ({ ...c, sortable: false })),
+    [enableSort],
+  )
+
+  const handleSortChanged = useCallback((event: SortChangedEvent<Trade>) => {
+    const active = event.api.getColumnState().filter((c) => c.sort)
+    console.info("[scanner-ag] sort changed:", active)
+  }, [])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -485,12 +514,14 @@ export function ScannerAgGrid({
       `}</style>
       <AgGridReact<Trade>
         theme={theme}
-        columnDefs={COLUMN_DEFS}
+        columnDefs={columnDefs}
         rowData={initialRowData}
         rowClassRules={ROW_CLASS_RULES}
         getRowId={(p) => String(p.data.id)}
         context={context}
         onGridReady={handleGridReady}
+        onSortChanged={handleSortChanged}
+        pagination={false}
         suppressCellFocus
       />
     </div>
