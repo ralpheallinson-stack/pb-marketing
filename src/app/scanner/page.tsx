@@ -416,7 +416,10 @@ export default function ScannerPage() {
     const id = setInterval(check, 30000)
     return () => clearInterval(id)
   }, [])
-  const audioCtxRef = useRef<HTMLAudioElement | null>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const audioBufferRef = useRef<AudioBuffer | null>(null)
+  const currentSourceRef = useRef<AudioBufferSourceNode | null>(null)
+  const gainNodeRef = useRef<GainNode | null>(null)
   const prevTradeIdsRef = useRef<Set<number>>(new Set())
   const [showFilters, setShowFilters] = useState(false)
   const [filterGrade, setFilterGrade] = useState("")
@@ -641,43 +644,78 @@ export default function ScannerPage() {
     syncPrefs({ watchlist: updated })
   }, [watchlist, syncPrefs])
 
+  // Blip latency enhancement (2026-05-11): pre-decoded AudioBuffer played
+  // via BufferSource. Sub-ms .start()-to-audible vs the prior
+  // HTMLAudioElement ~10-30ms decoder cold-start. Same alert.mp3 sample,
+  // same 0.6 volume (set on the persistent gain node), same single-voice
+  // truncate-on-replay behavior (stop prior source before starting new).
+  const ensureAudioCtx = (): AudioContext | null => {
+    if (typeof window === "undefined") return null
+    if (audioCtxRef.current) return audioCtxRef.current
+    try {
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (!AC) return null
+      const ctx = new AC()
+      const gain = ctx.createGain()
+      gain.gain.value = 0.6
+      gain.connect(ctx.destination)
+      audioCtxRef.current = ctx
+      gainNodeRef.current = gain
+      return ctx
+    } catch { return null }
+  }
+
+  const ensureAudioBuffer = (ctx: AudioContext) => {
+    if (audioBufferRef.current) return
+    // decodeAudioData doesn't require a user gesture — safe to fire as
+    // soon as we have the context. Silent on failure; playBlip will
+    // simply no-op until the buffer arrives.
+    fetch("/static/audio/alert.mp3")
+      .then(r => r.arrayBuffer())
+      .then(buf => ctx.decodeAudioData(buf))
+      .then(decoded => { audioBufferRef.current = decoded })
+      .catch(() => { /* network/decode failure — bail silently */ })
+  }
+
   const playBlip = useCallback(() => {
     if (!soundEnabled) return
+    const ctx = audioCtxRef.current
+    const buffer = audioBufferRef.current
+    const gain = gainNodeRef.current
+    if (!ctx || !buffer || !gain) return
+    // Suspended context (autoplay policy not yet satisfied) → skip; the
+    // first-gesture listener below will resume and subsequent blips fire.
+    if (ctx.state === "suspended") return
     try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
-        audioCtxRef.current.volume = 0.6
-        audioCtxRef.current.preload = "auto"
+      // Truncate-on-replay: stop the prior source if it's still playing,
+      // matching the previous HTMLAudio `currentTime = 0` semantics so
+      // rapid blips don't acoustically stack.
+      if (currentSourceRef.current) {
+        try { currentSourceRef.current.stop() } catch { /* already ended */ }
+        currentSourceRef.current.disconnect()
       }
-      const a = audioCtxRef.current
-      a.currentTime = 0
-      a.play().catch(() => { /* autoplay blocked or asset missing */ })
+      const source = ctx.createBufferSource()
+      source.buffer = buffer
+      source.connect(gain)
+      source.start(0)
+      currentSourceRef.current = source
+      source.onended = () => {
+        if (currentSourceRef.current === source) currentSourceRef.current = null
+      }
     } catch { /* audio unavailable */ }
   }, [soundEnabled])
 
-  // Pre-warm the audio decoder under a user gesture so the first real
-  // .play() doesn't lag on cold-start. Volume zeroed during warm-up;
-  // promise-awaited so pause runs after play settles.
+  // Pre-warm under the first user gesture: creates the AudioContext +
+  // GainNode, kicks off the MP3 fetch+decode (async, ~50-200ms), and
+  // resumes the context. By the time the first SSE batch arrives, the
+  // buffer is decoded and BufferSource.start() is sub-ms.
   const prewarmAudio = useCallback(() => {
-    try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new Audio("/static/audio/alert.mp3")
-        audioCtxRef.current.volume = 0.6
-        audioCtxRef.current.preload = "auto"
-      }
-      const a = audioCtxRef.current
-      const originalVolume = a.volume
-      a.volume = 0
-      a.play()
-        .then(() => {
-          a.pause()
-          a.currentTime = 0
-          a.volume = originalVolume
-        })
-        .catch(() => {
-          a.volume = originalVolume
-        })
-    } catch { /* audio unavailable */ }
+    const ctx = ensureAudioCtx()
+    if (!ctx) return
+    ensureAudioBuffer(ctx)
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => { /* user gesture not yet observed */ })
+    }
   }, [])
 
   // Extracted from the inline JSX onClick so the off→on transition can
