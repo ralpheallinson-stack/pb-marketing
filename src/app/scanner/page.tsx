@@ -748,6 +748,15 @@ export default function ScannerPage() {
   // Phase 2 #5: 60s stale-connection guard. Watchdog interval inside the
   // SSE effect refreshes only when feedMode is active.
   const sseStaleCheckRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Tier 2 SSE batching (2026-05-11): coalesce row-push events into ~200ms
+  // flushes so heavy flow (5-10 sigs/sec) produces 3-5 renders/sec instead
+  // of one render per row. sseBufferRef accumulates incoming rows;
+  // sseFlushTimerRef schedules the next flush; sseBufferBlipRef tracks
+  // whether any buffered row matched the active filter (so the blip
+  // fires once per batch instead of once per row).
+  const sseFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const sseBufferRef = useRef<Trade[]>([])
+  const sseBufferBlipRef = useRef(false)
   useEffect(() => {
     if (page !== 0) return
     const feedMode = useFeedEndpoint() && !!topicId
@@ -789,6 +798,45 @@ export default function ScannerPage() {
         lastSuccessRef.current = Date.now()
 
         if (feedMode) {
+          // Tier 2 SSE batching parameters. 200ms is the perception floor —
+          // user reads continuous, server keeps pace; 50-row escape valve
+          // bounds worst-case wait under extreme flow (e.g. open auction).
+          // Tunable; current values land at the "smooth tape" point per
+          // perf-tab observation. See commit message for the before/after.
+          const FLUSH_INTERVAL_MS = 200
+          const FLUSH_MAX_BUFFER = 50
+
+          const flushSseBuffer = () => {
+            if (sseFlushTimerRef.current) {
+              clearTimeout(sseFlushTimerRef.current)
+              sseFlushTimerRef.current = null
+            }
+            const batch = sseBufferRef.current
+            if (batch.length === 0) return
+            sseBufferRef.current = []
+            const shouldBlip = sseBufferBlipRef.current
+            sseBufferBlipRef.current = false
+            setTrades(prev => {
+              // Dedupe across both directions: the server may republish on
+              // reconnect AND the buffer may contain repeats. Build a seen
+              // set from existing rows + batch, then prepend only fresh.
+              const seen = new Set(prev.map(p => p.id))
+              const fresh: Trade[] = []
+              for (const t of batch) {
+                if (seen.has(t.id)) continue
+                seen.add(t.id)
+                fresh.push(t)
+              }
+              if (fresh.length === 0) return prev
+              return [...fresh, ...prev].slice(0, 2000)
+            })
+            // Blip is one-per-batch (was one-per-row pre-2026-05-11). The
+            // UX delta is intentional: per-row dinging on heavy flow was
+            // itself part of the choppy feel. Batched matches the smoother
+            // tape this commit ships.
+            if (shouldBlip) playBlipRef.current()
+          }
+
           es.addEventListener("row", (ev) => {
             const cols = feedColumnsRef.current
             if (!cols) return
@@ -798,17 +846,19 @@ export default function ScannerPage() {
             const incoming = rowsToTrades([row], cols)
             if (incoming.length === 0) return
             const t = incoming[0]
-            // Splice — dedupe by id (server may republish on reconnect),
-            // prepend, cap at the snapshot limit so the in-memory list
-            // doesn't grow unbounded over a long session.
-            setTrades(prev => {
-              if (prev.some(p => p.id === t.id)) return prev
-              return [t, ...prev].slice(0, 2000)
-            })
-            if (matchesFilterRef.current(t)) playBlipRef.current()
+            sseBufferRef.current.push(t)
+            if (matchesFilterRef.current(t)) sseBufferBlipRef.current = true
             lastTradeIdRef.current = Math.max(lastTradeIdRef.current, t.id)
             lastSuccessRef.current = Date.now()
             setPollError(null)
+            // Heavy-flow escape valve: flush immediately if the buffer
+            // exceeds the threshold so worst-case wait stays bounded.
+            // Otherwise, coalesce by scheduling a single flush.
+            if (sseBufferRef.current.length >= FLUSH_MAX_BUFFER) {
+              flushSseBuffer()
+            } else if (!sseFlushTimerRef.current) {
+              sseFlushTimerRef.current = setTimeout(flushSseBuffer, FLUSH_INTERVAL_MS)
+            }
           })
           es.addEventListener("agg", () => {
             // Sidebar widgets read `displayStats` (useMemo over `filtered`),
@@ -850,6 +900,31 @@ export default function ScannerPage() {
     open()
     document.addEventListener("visibilitychange", onVis)
     return () => {
+      // Tier 2 cleanup: flush any pending buffered SSE rows before tear-down
+      // so rows arriving in the last ~200ms before topic/page change or
+      // unmount aren't dropped on the floor.
+      if (sseFlushTimerRef.current) {
+        clearTimeout(sseFlushTimerRef.current)
+        sseFlushTimerRef.current = null
+      }
+      if (sseBufferRef.current.length > 0) {
+        const batch = sseBufferRef.current
+        sseBufferRef.current = []
+        const shouldBlip = sseBufferBlipRef.current
+        sseBufferBlipRef.current = false
+        setTrades(prev => {
+          const seen = new Set(prev.map(p => p.id))
+          const fresh: Trade[] = []
+          for (const t of batch) {
+            if (seen.has(t.id)) continue
+            seen.add(t.id)
+            fresh.push(t)
+          }
+          if (fresh.length === 0) return prev
+          return [...fresh, ...prev].slice(0, 2000)
+        })
+        if (shouldBlip) playBlipRef.current()
+      }
       close()
       document.removeEventListener("visibilitychange", onVis)
     }
