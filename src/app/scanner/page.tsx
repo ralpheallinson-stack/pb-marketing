@@ -2319,7 +2319,7 @@ export default function ScannerPage() {
           flag is on (the virtualizer simply doesn't activate). Pagination bar
           stays outside the conditional so the layout below is unaffected. */}
       {useAgGridEndpoint() ? (
-        <ScannerAgGrid />
+        <ScannerAgGrid trades={trades} />
       ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>
         {loading ? (
