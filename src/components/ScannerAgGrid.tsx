@@ -158,7 +158,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 80,
+    width: 100,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -234,7 +234,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (!d || d === "NEUTRAL") return "—"
       return d
     },
-    width: 60,
+    width: 75,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -249,7 +249,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 90,
+    width: 110,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -271,7 +271,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Price",
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
-    width: 80,
+    width: 100,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -281,7 +281,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
-    width: 100,
+    width: 115,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-bold",
