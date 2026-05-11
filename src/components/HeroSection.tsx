@@ -204,8 +204,8 @@ export default function HeroSection() {
           <Image
             src="/images/scanner-preview.png"
             alt="Profit Builders Live Options Flow Scanner"
-            width={1920}
-            height={1440}
+            width={2938}
+            height={1566}
             className="w-full"
             priority
           />
