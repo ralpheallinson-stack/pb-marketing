@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { AgGridReact } from "ag-grid-react"
 import {
   AllCommunityModule,
@@ -8,37 +9,37 @@ import {
   themeAlpine,
   colorSchemeDarkWarm,
   type ColDef,
+  type ICellRendererParams,
   type RowClassRules,
 } from "ag-grid-community"
 import type { Trade } from "./SignalRow"
+import { badgeClass } from "@/lib/badge-styles"
 
 /**
- * ScannerAgGrid — Phase 2: column definitions + rowData binding.
+ * ScannerAgGrid — Phase 3: custom cellRenderers restore visual richness.
  *
- * Builds on the Phase 1 harness (cd29729): same flag gating, same
- * dynamic-import boundary, same v35 JS Theming API. Adds 16 ColDef
- * entries matching the legacy SignalRow columns, cellClassRules for
- * color encoding (matching legacy logic verbatim — NOT the Cheddar
- * redesign; that's Phase 7), and rowClassRules for the BlackBox-style
- * OI row tints (oi_single yellow, oi_multi purple, late orange).
+ * Builds on Phase 2 (e5b14e6). Same 16 ColDef structure, same
+ * rowClassRules, same cellClassRules. Adds 4 React cellRenderer
+ * components that replace Phase 2's plain-text rendering:
  *
- * No custom cellRenderers yet — TICK/EXPIRY/STRIKE focus-click handlers,
- * CONDS badge pills, and the sector subtext on TICK all land in Phase 3.
+ *   TICK   — ticker on top + sector subtext below + focus-click
+ *   EXPIRY — focus-click (sets expiry + ticker if unset)
+ *   STRIKE — focus-click (sets strike + ticker if unset)
+ *   CONDS  — pill-styled badges via badgeClass(tier) from
+ *            @/lib/badge-styles (shared with legacy SignalRow)
  *
- * mm_suspected rows are filtered out via useMemo before reaching
- * rowData, mirroring the legacy SignalRow's per-render
- * `if (!t || t.mm_suspected) return null` skip.
+ * Focus setters flow through AG Grid's context prop, typed via
+ * ScannerGridContext. Cleaner than per-renderer prop drilling
+ * and avoids ColDef recreation on every render.
  *
- * Theming uses themeAlpine + colorSchemeDarkWarm. Phase 7 will
- * replace with a custom withParams() override matching PB's warm
- * theme tokens exactly.
+ * Theming, SSE wiring, pagination, and final styling polish are
+ * all deferred to later phases per
+ * project_pb_scanner_ag_grid_migration_design.md §D.
  */
 
-// Register Community modules once at module load. Required in v33+;
-// without this the grid logs "Module not registered" warnings.
 ModuleRegistry.registerModules([AllCommunityModule])
 
-// ── Formatters (local copies — Phase 7 will consolidate if needed) ──
+// ── Formatters (local copies; Phase 7 will consolidate if useful) ──
 function fmtExpiry(exp: string | null | undefined): string {
   if (!exp) return "—"
   const [year, month, day] = exp.split("-")
@@ -62,10 +63,91 @@ function fmtIV(v: number | null | undefined): string {
 }
 
 function fmtCondsLabels(badges: Trade["badges"]): string {
-  // Phase 2: plain comma-joined string. Phase 3 cellRenderer will
-  // restore the pill-styled badges via badgeClass(tier).
+  // Kept for export / accessibility / sort. cellRenderer below produces
+  // the actual visual output for the grid display.
   if (!badges || badges.length === 0) return ""
   return badges.slice(0, 4).map((b) => b.label).join(" · ")
+}
+
+// ── cellRenderer context (typed) ──
+interface ScannerGridContext {
+  setFocusTicker: Dispatch<SetStateAction<string | null>>
+  setFocusStrike: Dispatch<SetStateAction<string | null>>
+  setFocusExpiry: Dispatch<SetStateAction<string | null>>
+}
+
+type TradeCellParams = ICellRendererParams<Trade, unknown, ScannerGridContext>
+
+// ── cellRenderers (match SignalRow.tsx legacy JSX byte-faithfully) ──
+
+function TickCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t) return null
+  const ctx = params.context
+  // Legacy semantics (SignalRow.tsx): direct setter on TICK click —
+  // replaces the focused ticker AND clears strike/expiry focus.
+  const onClick = () => {
+    ctx.setFocusTicker(t.symbol)
+    ctx.setFocusStrike(null)
+    ctx.setFocusExpiry(null)
+  }
+  return (
+    <button onClick={onClick} className="cf-tick-btn">
+      <div className="cf-tick-symbol">{t.symbol}</div>
+      {t.sector ? <div className="cf-tick-sector">{t.sector}</div> : null}
+    </button>
+  )
+}
+
+function ExpiryCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t) return null
+  const ctx = params.context
+  // Legacy semantics: setFocusExpiry direct, setFocusTicker functional
+  // updater (only sets ticker if not already focused).
+  const onClick = () => {
+    ctx.setFocusExpiry(t.expiration)
+    ctx.setFocusTicker((cur) => cur ?? t.symbol)
+  }
+  return (
+    <button onClick={onClick} className="cf-focus-btn">
+      {fmtExpiry(t.expiration)}
+    </button>
+  )
+}
+
+function StrikeCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t) return null
+  const ctx = params.context
+  // Legacy semantics: setFocusStrike with RAW String(t.strike), NOT
+  // strike_fmt; same functional updater on setFocusTicker as EXPIRY.
+  const onClick = () => {
+    ctx.setFocusStrike(String(t.strike))
+    ctx.setFocusTicker((cur) => cur ?? t.symbol)
+  }
+  return (
+    <button onClick={onClick} className="cf-focus-btn">
+      {t.strike_fmt ?? t.strike}
+    </button>
+  )
+}
+
+function CondsCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t?.badges?.length) return null
+  // Match SignalRow.tsx: slice(0, 4) + badgeClass(tier). badgeClass
+  // returns Tailwind classes already (bg-slate-500/60, etc.) so the
+  // styling is inherited from the shared @/lib/badge-styles module.
+  return (
+    <div className="cf-conds-wrap">
+      {t.badges.slice(0, 4).map((b, i) => (
+        <span key={i} className={badgeClass(b.tier)}>
+          {b.label}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 // ── Column definitions ──
@@ -82,26 +164,27 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Tick",
     field: "symbol",
+    cellRenderer: TickCellRenderer,
     width: 110,
     sortable: true,
-    cellClass: "cf-bold",
+    cellClass: "cf-tick-cell",
   },
   {
     headerName: "Expiry",
     field: "expiration",
+    cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
     width: 110,
     sortable: true,
-    cellClass: "cf-mono",
   },
   {
     headerName: "Strike",
     field: "strike",
+    cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
     width: 80,
     sortable: true,
     type: "rightAligned",
-    cellClass: "cf-mono",
   },
   {
     headerName: "C/P",
@@ -256,11 +339,11 @@ const COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Conds",
     field: "badges",
+    cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
     minWidth: 180,
     sortable: false,
-    cellClass: "cf-conds",
   },
 ]
 
@@ -272,30 +355,40 @@ const ROW_CLASS_RULES: RowClassRules<Trade> = {
 
 interface ScannerAgGridProps {
   trades: Trade[]
+  setFocusTicker: Dispatch<SetStateAction<string | null>>
+  setFocusStrike: Dispatch<SetStateAction<string | null>>
+  setFocusExpiry: Dispatch<SetStateAction<string | null>>
 }
 
-export function ScannerAgGrid({ trades }: ScannerAgGridProps) {
+export function ScannerAgGrid({
+  trades,
+  setFocusTicker,
+  setFocusStrike,
+  setFocusExpiry,
+}: ScannerAgGridProps) {
   const theme = useMemo(() => themeAlpine.withPart(colorSchemeDarkWarm), [])
 
-  // mm_suspected filter — mirrors the legacy SignalRow per-render skip
-  // (page.tsx :2331 `if (!t || t.mm_suspected) return null`). Done at
-  // the rowData boundary so AG Grid never sees MM rows.
   const rowData = useMemo(
     () => trades.filter((t) => !t.mm_suspected),
     [trades],
   )
 
+  // Stable context object for cellRenderer focus dispatch. setters from
+  // useState are reference-stable across renders, so this memo never
+  // recreates after first render.
+  const context = useMemo<ScannerGridContext>(
+    () => ({ setFocusTicker, setFocusStrike, setFocusExpiry }),
+    [setFocusTicker, setFocusStrike, setFocusExpiry],
+  )
+
   useEffect(() => {
-    console.info("[scanner-ag] Phase 2 grid mounted with", rowData.length, "rows")
+    console.info("[scanner-ag] Phase 3 cellRenderers mounted with", rowData.length, "rows")
   }, [rowData.length])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
       <style>{`
-        /* Phase 2 minimal cell classes. Match legacy SignalRow color logic
-           verbatim; Cheddar redesign lands in Phase 7. Phase 2 keeps these
-           inline in the component so the styling surface stays bounded to
-           this file. */
+        /* Phase 2 cell classes (preserved). */
         .cf-bullish { color: #22C55E; }
         .cf-bearish { color: #FF605D; }
         .cf-mid { color: #F59E0B; }
@@ -316,13 +409,59 @@ export function ScannerAgGrid({ trades }: ScannerAgGridProps) {
         .cf-iv-elevated { color: #FFA64D; }
         .cf-iv-null     { color: rgba(255,255,255,0.30); }
 
-        .cf-conds { color: rgba(255,255,255,0.70); font-size: 11px; }
-
-        /* Row-level OI status tints — matches legacy getRowStyle in
-           SignalRow.tsx. Phase 7 refines to scoped theme tokens. */
+        /* Row-level OI status tints (Phase 2). */
         .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.12); border-left: 3px solid rgba(234,179,8,0.7); }
         .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.14); border-left: 3px solid rgba(168,85,247,0.8); }
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
+
+        /* Phase 3 cellRenderer styling (matches SignalRow.tsx legacy). */
+        .cf-tick-cell { padding: 0; }
+        .cf-tick-btn {
+          display: block;
+          text-align: left;
+          background: none;
+          border: none;
+          padding: 4px 0;
+          cursor: pointer;
+          width: 100%;
+          line-height: 1;
+        }
+        .cf-tick-symbol {
+          font-weight: 600;
+          font-size: 15px;
+          color: #ffffff;
+          line-height: 1;
+          transition: color 120ms ease;
+        }
+        .cf-tick-btn:hover .cf-tick-symbol { color: #48DEFF; }
+        .cf-tick-sector {
+          color: rgba(255,255,255,0.25);
+          font-size: 10px;
+          margin-top: 2px;
+          line-height: 1.2;
+        }
+
+        .cf-focus-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 500;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-variant-numeric: tabular-nums;
+          transition: color 120ms ease;
+        }
+        .cf-focus-btn:hover { color: #48DEFF; }
+
+        .cf-conds-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          align-items: center;
+          height: 100%;
+        }
       `}</style>
       <AgGridReact<Trade>
         theme={theme}
@@ -330,6 +469,7 @@ export function ScannerAgGrid({ trades }: ScannerAgGridProps) {
         rowData={rowData}
         rowClassRules={ROW_CLASS_RULES}
         getRowId={(p) => String(p.data.id)}
+        context={context}
         suppressCellFocus
       />
     </div>
