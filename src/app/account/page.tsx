@@ -231,7 +231,7 @@ export default function AccountPage() {
         <div className="rounded-3xl border border-white/10 bg-stone-950/85 backdrop-blur-xl p-5 sm:p-10">
 
           {/* 2-col inner grid: Security (left) + Plan (right) */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 items-start">
 
             {/* SECURITY card */}
             <div className="rounded-2xl border border-white/10 bg-stone-900/45 backdrop-blur p-6">
