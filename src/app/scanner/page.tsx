@@ -741,6 +741,15 @@ export default function ScannerPage() {
     const api = gridApiRef.current
     if (!api) return
     api.setGridOption("rowData", rows.filter((t) => !t.mm_suspected))
+    // CONDS autoHeight stale-height workaround (2026-05-12): after a
+    // full snapshot replace, AG Grid v35 occasionally retains prior
+    // measured row heights for the new content, causing phantom empty
+    // bands where a tall (wrapped-badges) row is replaced by a short
+    // one. resetRowHeights forces re-measure on next render — cheap,
+    // ~25 visible rows via virtualization regardless of total rowData
+    // size. Bug is upstream behavior of autoHeight + bulk rowData
+    // swaps; documented AG Grid workaround.
+    api.resetRowHeights()
   }, [])
   const agGridAdd = useCallback((rows: Trade[]) => {
     const api = gridApiRef.current
@@ -750,6 +759,13 @@ export default function ScannerPage() {
     // getRowId on the grid de-dupes — re-adding an id already present
     // is a no-op (returns an empty `add` transaction).
     api.applyTransaction({ add: fresh, addIndex: 0 })
+    // CONDS autoHeight stale-height workaround (2026-05-12): freshly
+    // inserted rows can render with mis-measured heights when
+    // CondsCellRenderer mounts after AG Grid's first height read.
+    // Force re-measure after the transaction; ~25 visible rows so
+    // cost is negligible per batched SSE flush (already throttled
+    // to 200ms / 50-row escape in flushSseBuffer).
+    api.resetRowHeights()
   }, [])
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
 
