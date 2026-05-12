@@ -361,6 +361,12 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     minWidth: 280,
     maxWidth: 400,
     sortable: false,
+    // AG Grid v35 autoHeight (colDef.d.ts:632): cell content drives
+    // row height. Single-badge rows stay ~44px; 3-4 badge rows that
+    // wrap to a second line grow to ~66-72px. Other cells in the row
+    // stretch to match — they keep their standard top/center alignment.
+    // Fixes multi-badge clipping by giving wrapped badges actual room.
+    autoHeight: true,
   },
 ]
 
@@ -568,7 +574,10 @@ export function ScannerAgGrid({
           flex-wrap: wrap;
           gap: 4px;
           align-items: center;
-          height: 100%;
+          padding: 4px 0;
+          /* No height constraint — natural content height (1 line of
+             badges = ~28px, 2 lines = ~56px) drives the cell, which
+             with autoHeight on the ColDef drives the row height. */
         }
       `}</style>
       <AgGridReact<Trade>
