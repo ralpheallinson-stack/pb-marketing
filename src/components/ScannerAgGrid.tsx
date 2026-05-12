@@ -413,7 +413,7 @@ export function ScannerAgGrid({
         headerHeight: 36,
         rowHeight: 44,
         fontFamily: "var(--font-barlow), Inter, system-ui, sans-serif",
-        fontSize: 13,
+        fontSize: 14,
         borderColor: "rgba(255,255,255,0.06)",
         rowHoverColor: "rgba(255,255,255,0.05)",
         oddRowBackgroundColor: "transparent",
@@ -485,7 +485,7 @@ export function ScannerAgGrid({
           text-transform: uppercase;
           /* Density refinement: removed letter-spacing 0.08em (= 0.96px
              at 12px font-size). Compact headers feel tabular. */
-          font-size: 12px;
+          font-size: 13px;
         }
         /* Custom — not built-in v35 (ag-right-aligned-header IS built-in
            but ag-center-aligned-header has no first-party definition). */
