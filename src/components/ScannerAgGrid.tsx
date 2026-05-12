@@ -368,25 +368,25 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     minWidth: 220,
     maxWidth: 380,
     sortable: false,
-    // TODO (2026-05-12): implement "+N" overflow badge when CONDS
-    // row content exceeds maxWidth (375-380px). 5+ badge rows are
-    // signal-of-signals territory and clip silently at present —
-    // small inline pill showing "+N more" preserves info density.
-    // Companion investigation: flex:1 does not appear to expand
-    // CONDS into available viewport headroom at runtime (DOM-measured
+    // 2026-05-12: autoHeight re-enabled to let CONDS cell grow to
+    // ~60px (capped via .cf-conds-wrap max-height) when 4+ badges
+    // wrap to a second line. Reverses f1c4f85's single-line lock.
+    // User accepted the variable-row-height tradeoff: 4+ badge rows
+    // become ~70px while 1-2 badge rows stay 44px.
+    //
+    // TODO: implement "+N" overflow badge when CONDS row content
+    // would exceed 2 wrap lines (max-height: 60px cap). Hidden 3rd-
+    // line badges are clipped invisibly today — small inline pill
+    // showing "+N more" preserves info density.
+    //
+    // Standing diagnosis: flex:1 still appears not to expand CONDS
+    // into available viewport headroom at runtime (DOM-measured
     // scrollWidth tracks CONDS at minWidth not effective width).
-    // Candidates: gridApi.sizeColumnsToFit() on onGridReady + window
-    // resize handler, OR replace flex with static width ~290 to
-    // guarantee 4-badge fit. Track in separate commit.
-    // Row height stays uniform at theme rowHeight (44px) regardless of
-    // CONDS content. Prior autoHeight: true (7a5ecee) let wrapping
-    // badges stretch individual rows to ~66-72px while neighbors
-    // stayed 44px — visual chaos on streaming flow tape. Combined
-    // with .cf-conds-wrap { flex-wrap: nowrap; overflow: hidden }
-    // below, badges render single-line, any horizontal overflow
-    // clips, every row locks to 44px. Adding future badge tiers
-    // (EARNINGS_PROX, etc.) can no longer break row uniformity.
-    autoHeight: false,
+    // With wrap re-enabled, this matters less for 4-badge clipping
+    // (vertical room replaces horizontal) but a wider CONDS column
+    // would still reduce wrap frequency. Candidates: sizeColumnsToFit
+    // on onGridReady + resize, OR static width ~290. Track separately.
+    autoHeight: true,
   },
 ]
 
@@ -639,16 +639,30 @@ export function ScannerAgGrid({
 
         .cf-conds-wrap {
           display: flex;
-          flex-wrap: nowrap;
+          flex-wrap: wrap;
           gap: 4px;
+          align-content: flex-start;
           align-items: center;
           padding: 4px 0;
           overflow: hidden;
-          /* Single-line render. Pairs with autoHeight: false on the
-             CONDS ColDef so row height is theme-driven (44px), not
-             content-driven. Horizontal overflow clips — acceptable
-             tradeoff; CONDS column already has minWidth 175 + flex 1
-             which gives ~175-320px, room for 2-3 typical badges. */
+          max-height: 60px;
+          /* 2026-05-12: reversed f1c4f85's single-line lock. 4+
+             badge rows wrap to a second line; row grows to ~70px
+             via CONDS autoHeight: true while single/double-badge
+             rows stay at theme rowHeight 44px. User accepted the
+             variable-row-height tradeoff for not clipping 4-badge
+             content.
+
+             Bounded safety net:
+               - max-height: 60px caps wrap at ~2 lines (~70px
+                 total row including 8px padding/border) so a
+                 hypothetical 6+ badge row can never grow unbounded
+               - overflow: hidden clips anything beyond the cap
+               - align-content: flex-start anchors wrapped rows to
+                 top of cell so the short line doesn't float
+                 centered when the full line is below it
+               - align-items: center keeps badges mid-aligned
+                 within each wrap row */
         }
       `}</style>
       <AgGridReact<Trade>
