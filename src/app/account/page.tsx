@@ -88,6 +88,34 @@ const ShieldIcon = () => (
   </svg>
 )
 
+// AccountCard — Option A card-shell upgrade (2026-05-11). Each /account
+// section wraps in this shell; the shell provides outer chrome (zinc-950
+// gradient bg, zinc-800 border, hover corner-squares + opacity-fade
+// gradient overlay). Sections keep their inner content + content-level
+// styling (padding, status bars, etc); only the outer bg/border/radius
+// is delegated to this shell. No framer-motion — Tailwind-only.
+function AccountCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`group relative w-full max-w-[480px] mx-auto ${className}`}>
+      {/* corner squares on hover — sit OUTSIDE the card border */}
+      <div className="pointer-events-none absolute inset-0 hidden group-hover:block z-20">
+        <div className="absolute -left-[6px] -top-[6px] h-3 w-3 bg-white" />
+        <div className="absolute -right-[6px] -top-[6px] h-3 w-3 bg-white" />
+        <div className="absolute -left-[6px] -bottom-[6px] h-3 w-3 bg-white" />
+        <div className="absolute -right-[6px] -bottom-[6px] h-3 w-3 bg-white" />
+      </div>
+      {/* card chrome — overflow-hidden so inner gradient bars clip to radius */}
+      <div className="relative rounded-[14px] border border-zinc-800 bg-gradient-to-b from-zinc-950/60 to-zinc-950/30 overflow-hidden transition-colors duration-300 group-hover:border-zinc-700">
+        {/* hover gradient overlay */}
+        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent" />
+        </div>
+        <div className="relative z-10">{children}</div>
+      </div>
+    </div>
+  )
+}
+
 export default function AccountPage() {
   const router = useRouter()
   const [account, setAccount] = useState<AccountData | null>(null)
@@ -225,16 +253,8 @@ export default function AccountPage() {
       </div>
 
       {/* Plan card */}
-      <div style={{
-        width: "100%", maxWidth: 480,
-        background: "#0F1520",
-        border: "1px solid #1E2A3A",
-        borderRadius: 14,
-        overflow: "hidden",
-        marginBottom: 24,
-        position: "relative",
-      }}>
-        {/* Gradient left bar */}
+      <AccountCard className="mb-6">
+        {/* Gradient left bar — preserved inner status indicator */}
         <div style={{
           position: "absolute", left: 0, top: 0, bottom: 0,
           width: 4, background: gradientBar,
@@ -317,24 +337,18 @@ export default function AccountPage() {
             </div>
           </div>
         </div>
-      </div>
+      </AccountCard>
 
       {/* Security section */}
-      <div style={{
-        width: "100%", maxWidth: 480,
-        background: "#0F1520",
-        border: "1px solid #1E2A3A",
-        borderRadius: 14,
-        padding: "20px 24px",
-        marginBottom: 24,
-      }}>
-        <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
-          color: "#4A5A72", marginBottom: 14,
-          fontFamily: "JetBrains Mono, monospace",
-        }}>
-          SECURITY
-        </div>
+      <AccountCard className="mb-6">
+        <div style={{ padding: "20px 24px" }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
+            color: "#4A5A72", marginBottom: 14,
+            fontFamily: "JetBrains Mono, monospace",
+          }}>
+            SECURITY
+          </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <input
             type="password"
@@ -394,17 +408,14 @@ export default function AccountPage() {
           <div style={{ fontSize: 10, color: "#3D4D63", lineHeight: 1.5 }}>
             Set a password to log in without your claim code.
           </div>
+          </div>
         </div>
-      </div>
+      </AccountCard>
 
       {/* Referral panel */}
       {referral && (
+        <AccountCard className="mb-6">
         <div style={{
-          width: "100%", maxWidth: 480,
-          marginBottom: 24,
-          background: "rgba(249,115,22,0.04)",
-          border: "1px solid rgba(249,115,22,0.22)",
-          borderRadius: 12,
           padding: 22,
           color: "#D9E2F0",
           boxSizing: "border-box",
@@ -525,14 +536,12 @@ export default function AccountPage() {
             $99 Stripe credit applies automatically on each converted paid referral. No cap.
           </div>
         </div>
+        </AccountCard>
       )}
 
       {/* Billing section */}
       {billingUrl && (
-        <div style={{
-          width: "100%", maxWidth: 480,
-          marginBottom: 24,
-        }}>
+        <AccountCard className="mb-6">
           <a
             href={billingUrl}
             style={{
@@ -550,26 +559,20 @@ export default function AccountPage() {
           >
             MANAGE BILLING &rarr;
           </a>
-        </div>
+        </AccountCard>
       )}
 
       {/* Danger zone */}
-      <div style={{
-        width: "100%", maxWidth: 480,
-        background: "#0F1520",
-        border: "1px solid #1E2A3A",
-        borderRadius: 14,
-        padding: "20px 24px",
-        marginBottom: 32,
-      }}>
-        <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
-          color: "#EF4444", marginBottom: 14,
-          fontFamily: "JetBrains Mono, monospace",
-          opacity: 0.7,
-        }}>
-          DANGER ZONE
-        </div>
+      <AccountCard className="mb-8">
+        <div style={{ padding: "20px 24px" }}>
+          <div style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
+            color: "#EF4444", marginBottom: 14,
+            fontFamily: "JetBrains Mono, monospace",
+            opacity: 0.7,
+          }}>
+            DANGER ZONE
+          </div>
         <div style={{ display: "flex", gap: 10 }}>
           {!isCancelling && (
             <a
@@ -606,8 +609,9 @@ export default function AccountPage() {
           >
             LOG OUT
           </a>
+          </div>
         </div>
-      </div>
+      </AccountCard>
 
       {/* Footer trust signal */}
       <div style={{
