@@ -60,10 +60,6 @@ function fmtCount(v: number | null | undefined): string {
   return v != null && v > 0 ? v.toLocaleString() : "—"
 }
 
-function fmtIV(v: number | null | undefined): string {
-  return v == null ? "—" : `${v}%`
-}
-
 function fmtCondsLabels(badges: Trade["badges"]): string {
   // Kept for export / accessibility / sort. cellRenderer below produces
   // the actual visual output for the grid display.
@@ -320,8 +316,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Vol",
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 71,
-    minWidth: 71,
+    width: 88,
+    minWidth: 88,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -330,27 +326,11 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "OI",
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 76,
-    minWidth: 76,
+    width: 88,
+    minWidth: 88,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
-  },
-  {
-    headerName: "IV",
-    field: "iv",
-    valueFormatter: (p) => fmtIV(p.value),
-    width: 65,
-    minWidth: 65,
-    sortable: true,
-    type: "rightAligned",
-    cellClass: "cf-mono cf-semibold",
-    cellClassRules: {
-      "cf-iv-extreme": (p) => p.data?.iv != null && p.data.iv >= 100,
-      "cf-iv-elevated": (p) =>
-        p.data?.iv != null && p.data.iv >= 60 && p.data.iv < 100,
-      "cf-iv-null": (p) => p.data?.iv == null,
-    },
   },
   {
     headerName: "Conds",
@@ -358,8 +338,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
-    minWidth: 280,
-    maxWidth: 400,
+    minWidth: 220,
+    maxWidth: 320,
     sortable: false,
     // AG Grid v35 autoHeight (colDef.d.ts:632): cell content drives
     // row height. Single-badge rows stay ~44px; 3-4 badge rows that
@@ -517,10 +497,6 @@ export function ScannerAgGrid({
         .cf-sweep { color: #F2C94C; }
         .cf-block { color: #48DEFF; }
         .cf-block-bold { color: #48DEFF; font-weight: 700; }
-
-        .cf-iv-extreme  { color: #FF605D; }
-        .cf-iv-elevated { color: #FFA64D; }
-        .cf-iv-null     { color: rgba(255,255,255,0.30); }
 
         /* ── Row-level OI status tints (Phase 2) ──
            border-left overrides AG Grid's row border on tinted rows. */
