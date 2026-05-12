@@ -76,7 +76,7 @@ const orgSchema = JSON.stringify({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${teko.variable} ${bricolage.variable} ${barlow.variable} ${bebasNeue.variable} ${inter.variable}`}>
+    <html lang="en" className={`dark ${teko.variable} ${bricolage.variable} ${barlow.variable} ${bebasNeue.variable} ${inter.variable}`}>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: orgSchema }} />
       </head>
