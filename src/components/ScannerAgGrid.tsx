@@ -301,8 +301,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Type",
     field: "flow_type",
     valueGetter: (p) => p.data?.flow_type || "—",
-    width: 83,
-    minWidth: 83,
+    width: 100,
+    minWidth: 100,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
