@@ -483,7 +483,8 @@ export function ScannerAgGrid({
            tabular-numeric default. */
         .ag-header-cell-text {
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          /* Density refinement: removed letter-spacing 0.08em (= 0.96px
+             at 12px font-size). Compact headers feel tabular. */
           font-size: 12px;
         }
         /* Custom — not built-in v35 (ag-right-aligned-header IS built-in
@@ -492,8 +493,29 @@ export function ScannerAgGrid({
           justify-content: center;
         }
         .ag-row {
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          /* Density refinement: removed border-bottom rgba(0.04). Pure
+             vertical spacing rhythm separates rows (Cheddar pattern). */
           font-variant-numeric: tabular-nums;
+        }
+        /* Edit 1: cell horizontal padding 15px → 9px. Frees ~180px
+           across the row. AG Grid sets cell padding inline; !important
+           is required to override. */
+        .ag-cell {
+          padding-left: 9px !important;
+          padding-right: 9px !important;
+        }
+        /* Edit 2: badge tightening via scoped descendant selector —
+           targets badges inside CondsCellRenderer only, not legacy
+           SignalRow path (which doesn't wrap in cf-conds-wrap).
+           Overrides BADGE_BASE Tailwind classes from
+           @/lib/badge-styles.ts (which stays untouched per single-file
+           constraint). */
+        .cf-conds-wrap > span {
+          height: 16px;
+          font-size: 12px;
+          letter-spacing: normal;
+          padding: 1px 4px;
+          border-radius: 2px;
         }
 
         /* ── Phase 2 cell classes (preserved) ── */
@@ -502,16 +524,16 @@ export function ScannerAgGrid({
         .cf-mid { color: #F59E0B; }
         .cf-muted { color: rgba(255,255,255,0.55); }
         .cf-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
-        .cf-bold { font-weight: 700; }
-        .cf-semibold { font-weight: 600; }
-        .cf-medium { font-weight: 500; }
+        .cf-bold { font-weight: 400; }  /* density: normalized to 400 (color carries hierarchy) */
+        .cf-semibold { font-weight: 400; }  /* density: normalized to 400 */
+        .cf-medium { font-weight: 400; }  /* density: normalized to 400 */
         .cf-center { text-align: center; }
 
-        .cf-size-big { color: #22d3ee; font-weight: 600; }
+        .cf-size-big { color: #22d3ee; }  /* density: dropped font-weight 600; color carries hierarchy */
 
         .cf-sweep { color: #F2C94C; }
         .cf-block { color: #48DEFF; }
-        .cf-block-bold { color: #48DEFF; font-weight: 700; }
+        .cf-block-bold { color: #48DEFF; }  /* density: dropped font-weight 700; color carries hierarchy */
 
         /* ── Row-level OI status tints (Phase 2) ──
            border-left overrides AG Grid's row border on tinted rows. */
@@ -553,7 +575,7 @@ export function ScannerAgGrid({
           cursor: pointer;
           color: #ffffff;
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 400;
           font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
           font-variant-numeric: tabular-nums;
           transition: color 120ms ease;
