@@ -159,6 +159,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
     width: 128,
+    minWidth: 128,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -167,6 +168,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "symbol",
     cellRenderer: TickCellRenderer,
     width: 116,
+    minWidth: 116,
     sortable: false,  // alphabetic sort during live tape is jarring
     cellClass: "cf-tick-cell",
   },
@@ -176,6 +178,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
     width: 118,
+    minWidth: 118,
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
@@ -184,6 +187,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
     width: 76,
+    minWidth: 76,
     sortable: true,
     type: "rightAligned",
   },
@@ -191,6 +195,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "C/P",
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
     width: 63,
+    minWidth: 63,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
     cellClassRules: {
@@ -213,6 +218,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       return map[a] ?? a
     },
     width: 75,
+    minWidth: 75,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
@@ -235,6 +241,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       return d
     },
     width: 69,
+    minWidth: 69,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -250,6 +257,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Spot",
     field: "spot_fmt",
     width: 110,
+    minWidth: 110,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -260,6 +268,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     valueGetter: (p) => p.data?.contracts ?? 0,
     valueFormatter: (p) => (p.value as number).toLocaleString(),
     width: 66,
+    minWidth: 66,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -272,6 +281,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
     width: 100,
+    minWidth: 100,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -282,6 +292,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
     width: 82,
+    minWidth: 82,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-bold",
@@ -295,6 +306,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "flow_type",
     valueGetter: (p) => p.data?.flow_type || "—",
     width: 83,
+    minWidth: 83,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -309,6 +321,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
     width: 71,
+    minWidth: 71,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -318,6 +331,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
     width: 76,
+    minWidth: 76,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -327,6 +341,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "iv",
     valueFormatter: (p) => fmtIV(p.value),
     width: 65,
+    minWidth: 65,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-semibold",
@@ -566,6 +581,7 @@ export function ScannerAgGrid({
         onSortChanged={handleSortChanged}
         pagination={false}
         suppressCellFocus
+        suppressHorizontalScroll={false}
       />
     </div>
   )
