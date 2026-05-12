@@ -171,8 +171,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 128,
-    minWidth: 128,
+    width: 104,
+    minWidth: 104,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -180,8 +180,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Tick",
     field: "symbol",
     cellRenderer: TickCellRenderer,
-    width: 116,
-    minWidth: 116,
+    width: 104,
+    minWidth: 104,
     sortable: false,  // alphabetic sort during live tape is jarring
     cellClass: "cf-tick-cell",
   },
@@ -190,8 +190,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "expiration",
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
-    width: 118,
-    minWidth: 118,
+    width: 100,
+    minWidth: 100,
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
@@ -272,8 +272,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 110,
-    minWidth: 110,
+    width: 96,
+    minWidth: 96,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
