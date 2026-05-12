@@ -88,27 +88,49 @@ const ShieldIcon = () => (
   </svg>
 )
 
-// AccountCard — Option A card-shell upgrade (2026-05-11). Each /account
-// section wraps in this shell; the shell provides outer chrome (zinc-950
-// gradient bg, zinc-800 border, hover corner-squares + opacity-fade
-// gradient overlay). Sections keep their inner content + content-level
-// styling (padding, status bars, etc); only the outer bg/border/radius
-// is delegated to this shell. No framer-motion — Tailwind-only.
-function AccountCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+// AccountCard — palette swap to PB warm stone + cyan-400 brand accent
+// (2026-05-11). Replaces the generic zinc theme from the prior
+// commit. tone="default" emits stone-950 bg + stone-800 border +
+// cyan-400 hover accents (corners, overlay, border tint); tone="danger"
+// keeps the cyan corners (brand-consistent across all cards) but
+// swaps border to red-900/40 + bg gradient to red-950/40 → stone-950/30
+// for the destructive-section signal. No framer-motion — Tailwind-only.
+function AccountCard({
+  children,
+  className = "",
+  tone = "default",
+}: {
+  children: React.ReactNode
+  className?: string
+  tone?: "default" | "danger"
+}) {
+  const borderClass = tone === "danger" ? "border-red-900/40" : "border-stone-800"
+  const bgClass =
+    tone === "danger"
+      ? "bg-gradient-to-b from-red-950/40 to-stone-950/30"
+      : "bg-gradient-to-b from-stone-950/60 to-stone-950/30"
+  const hoverBorder =
+    tone === "danger" ? "group-hover:border-red-700/60" : "group-hover:border-cyan-400/30"
   return (
     <div className={`group relative w-full max-w-[480px] mx-auto ${className}`}>
-      {/* corner squares on hover — sit OUTSIDE the card border */}
+      {/* corner squares on hover — sit OUTSIDE the card border. cyan-400
+          for both tones (the corners are the brand-accent marker; the
+          tone variation lives in the chrome itself). */}
       <div className="pointer-events-none absolute inset-0 hidden group-hover:block z-20">
-        <div className="absolute -left-[6px] -top-[6px] h-3 w-3 bg-white" />
-        <div className="absolute -right-[6px] -top-[6px] h-3 w-3 bg-white" />
-        <div className="absolute -left-[6px] -bottom-[6px] h-3 w-3 bg-white" />
-        <div className="absolute -right-[6px] -bottom-[6px] h-3 w-3 bg-white" />
+        <div className="absolute -left-[6px] -top-[6px] h-3 w-3 bg-cyan-400" />
+        <div className="absolute -right-[6px] -top-[6px] h-3 w-3 bg-cyan-400" />
+        <div className="absolute -left-[6px] -bottom-[6px] h-3 w-3 bg-cyan-400" />
+        <div className="absolute -right-[6px] -bottom-[6px] h-3 w-3 bg-cyan-400" />
       </div>
       {/* card chrome — overflow-hidden so inner gradient bars clip to radius */}
-      <div className="relative rounded-[14px] border border-zinc-800 bg-gradient-to-b from-zinc-950/60 to-zinc-950/30 overflow-hidden transition-colors duration-300 group-hover:border-zinc-700">
-        {/* hover gradient overlay */}
+      <div
+        className={`relative rounded-[14px] border ${borderClass} ${bgClass} overflow-hidden transition-colors duration-300 ${hoverBorder}`}
+      >
+        {/* hover gradient overlay — cyan-tinted for default, slightly
+            stronger near top-left then fading. Replaces prior generic
+            white/4-2-0 with cyan/10-5-0 for brand emphasis. */}
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-cyan-400/5 to-transparent" />
         </div>
         <div className="relative z-10">{children}</div>
       </div>
@@ -563,7 +585,7 @@ export default function AccountPage() {
       )}
 
       {/* Danger zone */}
-      <AccountCard className="mb-8">
+      <AccountCard tone="danger" className="mb-8">
         <div style={{ padding: "20px 24px" }}>
           <div style={{
             fontSize: 10, fontWeight: 700, letterSpacing: "0.14em",
@@ -599,9 +621,9 @@ export default function AccountPage() {
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: "10px 20px",
               fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-              color: "#4A5A72",
+              color: "#d6d3d1",
               background: "transparent",
-              border: "1px solid #1E2A3A",
+              border: "1px solid #44403c",
               borderRadius: 8, textDecoration: "none", cursor: "pointer",
               fontFamily: "JetBrains Mono, monospace",
               textTransform: "uppercase",
@@ -632,7 +654,7 @@ export default function AccountPage() {
         input::placeholder { color: #3D4D63; }
         button:hover { background: #252E3D !important; }
         a[href="/account/cancel"]:hover { background: rgba(239,68,68,0.15) !important; }
-        a[href="/logout"]:hover { color: #7A8BA8 !important; background: #1E2530 !important; }
+        a[href="/logout"]:hover { color: #f5f5f4 !important; background: rgba(41,37,36,0.6) !important; }
       `}</style>
     </div>
   )
