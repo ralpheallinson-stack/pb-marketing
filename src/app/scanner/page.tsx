@@ -5,6 +5,73 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { SignalRow, type Trade } from "@/components/SignalRow"
+
+// AccountMenu — sidebar profile dropdown. Replaces the top-bar
+// Account/Logout links per Cheddar-parity UX (2026-05-11). Custom
+// useState + mousedown click-outside; zero new deps (Radix
+// DropdownMenu not installed and not worth adding for two items).
+// Module-scope so React preserves popover state across parent
+// re-renders.
+function AccountMenu({
+  buttonClassName,
+  children,
+}: {
+  buttonClassName: string
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [open])
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={buttonClassName}
+        aria-label="Profile and settings"
+        aria-expanded={open}
+        title="Profile"
+      >
+        {children}
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          className="absolute left-full ml-2 bottom-0 z-50 min-w-[140px] rounded-md border border-white/[0.08] bg-stone-900 shadow-lg py-1"
+        >
+          <a
+            href="/account"
+            role="menuitem"
+            className="block px-3 py-2 text-sm text-white/80 hover:bg-white/[0.05] hover:text-white transition-colors"
+          >
+            Account
+          </a>
+          <a
+            href="/logout"
+            role="menuitem"
+            className="block px-3 py-2 text-sm text-white/80 hover:bg-white/[0.05] hover:text-white transition-colors"
+          >
+            Logout
+          </a>
+        </div>
+      ) : null}
+    </div>
+  )
+}
 import dynamic from "next/dynamic"
 
 // AG Grid migration Phase 1 harness — dynamic import keeps the AG Grid
@@ -1704,9 +1771,9 @@ export default function ScannerPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
             )}
           </button>
-          <a href="/account" className={sideCircle(false)} title="Account">
+          <AccountMenu buttonClassName={sideCircle(false)}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-          </a>
+          </AccountMenu>
         </div>
       </nav>
 
@@ -2259,10 +2326,6 @@ export default function ScannerPage() {
             Filters
             {activeFilterCount > 0 && <span className="bg-amber-600 text-stone-950 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
           </button>
-        </div>
-        <div className="flex items-center gap-4 ml-6">
-          <a href="/account" className="text-white/70 text-sm hover:text-white transition-colors">Account</a>
-          <a href="/logout" className="text-white/70 text-sm hover:text-white transition-colors">Logout</a>
         </div>
       </header>
 
