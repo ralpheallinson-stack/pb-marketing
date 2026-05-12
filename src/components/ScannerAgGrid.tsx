@@ -17,6 +17,8 @@ import {
 } from "ag-grid-community"
 import type { Trade } from "./SignalRow"
 import { badgeClass } from "@/lib/badge-styles"
+import { Button } from "@/components/ui/button-pill"
+import { cn } from "@/lib/utils"
 
 /**
  * ScannerAgGrid — Phase 3: custom cellRenderers restore visual richness.
@@ -135,15 +137,29 @@ function StrikeCellRenderer(params: TradeCellParams) {
 function CondsCellRenderer(params: TradeCellParams) {
   const t = params.data
   if (!t?.badges?.length) return null
-  // Match SignalRow.tsx: slice(0, 4) + badgeClass(tier). badgeClass
-  // returns Tailwind classes already (bg-slate-500/60, etc.) so the
-  // styling is inherited from the shared @/lib/badge-styles module.
+  // Option 3 hybrid (2026-05-11): Button-Pill type="custom" emits no color
+  // classes; badgeClass(tier) from @/lib/badge-styles supplies the 11
+  // semantic tier colors (warning amber, iv_high red, iv_low cyan,
+  // directional emerald, ruoa violet, ruoa_heavy bright violet, iso cyan,
+  // cross fuchsia, rapid teal, plus unified slate for the 10 neutral
+  // tiers). cursor-default + pointer-events-none neutralize Button's
+  // hover/focus interactivity for badge use.
   return (
     <div className="cf-conds-wrap">
       {t.badges.slice(0, 4).map((b, i) => (
-        <span key={i} className={badgeClass(b.tier)}>
+        <Button
+          key={i}
+          size="tiny"
+          type="custom"
+          shape="rounded"
+          className={cn(
+            badgeClass(b.tier),
+            "text-[11px] font-medium uppercase tracking-[0.04em]",
+            "cursor-default pointer-events-none",
+          )}
+        >
           {b.label}
-        </span>
+        </Button>
       ))}
     </div>
   )
