@@ -171,8 +171,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 112,
-    minWidth: 112,
+    width: 124,
+    minWidth: 124,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -368,6 +368,16 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     minWidth: 220,
     maxWidth: 380,
     sortable: false,
+    // TODO (2026-05-12): implement "+N" overflow badge when CONDS
+    // row content exceeds maxWidth (375-380px). 5+ badge rows are
+    // signal-of-signals territory and clip silently at present —
+    // small inline pill showing "+N more" preserves info density.
+    // Companion investigation: flex:1 does not appear to expand
+    // CONDS into available viewport headroom at runtime (DOM-measured
+    // scrollWidth tracks CONDS at minWidth not effective width).
+    // Candidates: gridApi.sizeColumnsToFit() on onGridReady + window
+    // resize handler, OR replace flex with static width ~290 to
+    // guarantee 4-badge fit. Track in separate commit.
     // Row height stays uniform at theme rowHeight (44px) regardless of
     // CONDS content. Prior autoHeight: true (7a5ecee) let wrapping
     // badges stretch individual rows to ~66-72px while neighbors
