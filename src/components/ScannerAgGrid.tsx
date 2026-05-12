@@ -358,7 +358,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
-    minWidth: 198,
+    minWidth: 280,
+    maxWidth: 400,
     sortable: false,
   },
 ]
