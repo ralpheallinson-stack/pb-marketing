@@ -128,7 +128,7 @@ export default function LiveFlowPreview() {
     <div className="min-w-[640px]">
     <div
       className="relative w-full overflow-hidden rounded-xl border border-[#1E2A3A]"
-      style={{ background: '#0E1117', fontFamily: 'var(--font-barlow), "Barlow Condensed", system-ui, sans-serif' }}
+      style={{ background: '#0E1117', fontFamily: 'var(--font-inter), system-ui, -apple-system, sans-serif' }}
     >
       {/* Header */}
       <div className="flex items-center gap-4 border-b border-[#1E2A3A] px-4 py-2">

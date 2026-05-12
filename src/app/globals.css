@@ -19,7 +19,7 @@
   --color-pb-dim: #3D4D63;
   --color-pb-border: #252E3D;
   --color-pb-border-dk: #252E3D;
-  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "IBM Plex Mono", "Menlo", monospace;
   --color-warning-foreground: var(--warning-foreground);
   --color-warning: var(--warning);
