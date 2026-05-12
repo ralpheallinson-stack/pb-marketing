@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo } from "react"
-import type { Dispatch, SetStateAction } from "react"
+import type { Dispatch, RefObject, SetStateAction } from "react"
 import { AgGridReact } from "ag-grid-react"
 import {
   AllCommunityModule,
@@ -11,6 +11,7 @@ import {
   type GridApi,
   type GridReadyEvent,
   type ICellRendererParams,
+  type IRowNode,
   type RowClassRules,
   type SortChangedEvent,
 } from "ag-grid-community"
@@ -371,6 +372,13 @@ interface ScannerAgGridProps {
   setFocusTicker: Dispatch<SetStateAction<string | null>>
   setFocusStrike: Dispatch<SetStateAction<string | null>>
   setFocusExpiry: Dispatch<SetStateAction<string | null>>
+  // External-filter ref (2026-05-11): page.tsx owns matchesFilter
+  // (the canonical client-side predicate that mirrors server-side
+  // filters + adds client-only filters search/focus/grade/etc).
+  // Wired to AG Grid via isExternalFilterPresent / doesExternalFilterPass
+  // so client-side filter state changes apply WITHOUT a refetch —
+  // page.tsx calls gridApi.onFilterChanged() to trigger re-evaluation.
+  matchesFilterRef: RefObject<(t: Trade) => boolean>
   // Phase 5 (2026-05-11): page.tsx captures gridApi via this callback
   // and dispatches imperative updates (setGridOption / applyTransaction)
   // alongside its existing setTrades calls. Avoids React prop-diff
@@ -391,6 +399,7 @@ export function ScannerAgGrid({
   setFocusTicker,
   setFocusStrike,
   setFocusExpiry,
+  matchesFilterRef,
   onApiReady,
   enableSort,
 }: ScannerAgGridProps) {
@@ -449,6 +458,19 @@ export function ScannerAgGrid({
       )
     },
     [onApiReady, initialRowData.length],
+  )
+
+  // External-filter API (canonical AG Grid since v22). Always present —
+  // matchesFilter is a single closure over every client + mirrored
+  // server predicate; returning true for "filter present" lets AG Grid
+  // evaluate doesExternalFilterPass on every row, and a row that
+  // matches every predicate falls through to `return true` so it
+  // renders. matchesFilterRef.current is the live closure (kept fresh
+  // by page.tsx's useEffect that syncs ref → callback identity).
+  const isExternalFilterPresent = useCallback(() => true, [])
+  const doesExternalFilterPass = useCallback(
+    (node: IRowNode<Trade>) => (node.data ? matchesFilterRef.current(node.data) : true),
+    [matchesFilterRef],
   )
 
   // Phase 6 (2026-05-11): apply enableSort gate. When enableSort is
@@ -602,6 +624,8 @@ export function ScannerAgGrid({
         context={context}
         onGridReady={handleGridReady}
         onSortChanged={handleSortChanged}
+        isExternalFilterPresent={isExternalFilterPresent}
+        doesExternalFilterPass={doesExternalFilterPass}
         pagination={false}
         suppressCellFocus
         suppressHorizontalScroll={false}

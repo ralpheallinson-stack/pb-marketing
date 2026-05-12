@@ -1567,6 +1567,24 @@ export default function ScannerPage() {
   const matchesFilterRef = useRef(matchesFilter)
   useEffect(() => { matchesFilterRef.current = matchesFilter }, [matchesFilter])
 
+  // AG Grid external-filter trigger (2026-05-11). matchesFilterRef is
+  // wired into ScannerAgGrid via doesExternalFilterPass; AG Grid
+  // re-evaluates row visibility only when gridApi.onFilterChanged()
+  // is called. Server-side filters (timeRange, filterMinPremium,
+  // filterDte, filterCuratedOnly, filterExclude*) fire the reset
+  // useEffect at page.tsx:1383 which agGridReplace([])s the grid and
+  // re-fetches — no onFilterChanged needed there. Only client-side
+  // state changes need this nudge.
+  useEffect(() => {
+    gridApiRef.current?.onFilterChanged()
+  }, [
+    search,
+    focusTicker, focusStrike, focusExpiry,
+    filterGrade, filterType, filterOptType, filterSide,
+    filterUnusualOnly, filterNoIndex,
+    filterMinContracts, filterMinVolOi,
+  ])
+
   const filtered = useMemo(() => trades.filter(matchesFilter), [trades, matchesFilter])
 
   // Single-pass aggregation — replaces the 4 separate filter+reduce calls that
@@ -2459,6 +2477,7 @@ export default function ScannerPage() {
           setFocusTicker={setFocusTicker}
           setFocusStrike={setFocusStrike}
           setFocusExpiry={setFocusExpiry}
+          matchesFilterRef={matchesFilterRef}
           onApiReady={handleAgGridApiReady}
           enableSort={timeRange === "today"}
         />
