@@ -368,12 +368,15 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     minWidth: 175,
     maxWidth: 320,
     sortable: false,
-    // AG Grid v35 autoHeight (colDef.d.ts:632): cell content drives
-    // row height. Single-badge rows stay ~44px; 3-4 badge rows that
-    // wrap to a second line grow to ~66-72px. Other cells in the row
-    // stretch to match — they keep their standard top/center alignment.
-    // Fixes multi-badge clipping by giving wrapped badges actual room.
-    autoHeight: true,
+    // Row height stays uniform at theme rowHeight (44px) regardless of
+    // CONDS content. Prior autoHeight: true (7a5ecee) let wrapping
+    // badges stretch individual rows to ~66-72px while neighbors
+    // stayed 44px — visual chaos on streaming flow tape. Combined
+    // with .cf-conds-wrap { flex-wrap: nowrap; overflow: hidden }
+    // below, badges render single-line, any horizontal overflow
+    // clips, every row locks to 44px. Adding future badge tiers
+    // (EARNINGS_PROX, etc.) can no longer break row uniformity.
+    autoHeight: false,
   },
 ]
 
@@ -622,13 +625,16 @@ export function ScannerAgGrid({
 
         .cf-conds-wrap {
           display: flex;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
           gap: 4px;
           align-items: center;
           padding: 4px 0;
-          /* No height constraint — natural content height (1 line of
-             badges = ~28px, 2 lines = ~56px) drives the cell, which
-             with autoHeight on the ColDef drives the row height. */
+          overflow: hidden;
+          /* Single-line render. Pairs with autoHeight: false on the
+             CONDS ColDef so row height is theme-driven (44px), not
+             content-driven. Horizontal overflow clips — acceptable
+             tradeoff; CONDS column already has minWidth 175 + flex 1
+             which gives ~175-320px, room for 2-3 typical badges. */
         }
       `}</style>
       <AgGridReact<Trade>
