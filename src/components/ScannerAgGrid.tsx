@@ -207,8 +207,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "C/P",
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
-    width: 50,
-    minWidth: 50,
+    width: 64,
+    minWidth: 64,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
     headerClass: "ag-center-aligned-header",
@@ -232,8 +232,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       }
       return map[a] ?? a
     },
-    width: 60,
-    minWidth: 60,
+    width: 76,
+    minWidth: 76,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
@@ -256,8 +256,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (!d || d === "NEUTRAL") return "—"
       return d
     },
-    width: 52,
-    minWidth: 52,
+    width: 68,
+    minWidth: 68,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -272,8 +272,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
-    width: 92,
-    minWidth: 92,
+    width: 104,
+    minWidth: 104,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
