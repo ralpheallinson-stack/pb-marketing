@@ -283,7 +283,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellClass: "cf-mono",
   },
   {
-    headerName: "Value",
+    headerName: "Prem",
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
