@@ -99,6 +99,7 @@ import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Card } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
@@ -2359,34 +2360,55 @@ export default function ScannerPage() {
             </InputGroupAddon>
           </InputGroup>
           <div className="w-px h-7 bg-white/[0.06]" />
-          <button onClick={() => setShowFilters(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-medium text-white bg-stone-900/40 border border-stone-800 hover:border-amber-600 focus-visible:border-amber-600 transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-            Filters
-            {activeFilterCount > 0 && <span className="bg-amber-600 text-stone-950 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
-          </button>
+          <Button variant="outline" size="sm" onClick={() => setShowFilters(true)} className="gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-60"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+            <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">{activeFilterCount}</span>
+            )}
+          </Button>
         </div>
       </header>
 
       {/* ── FOCUS BAR ── */}
       {focusTicker && (
         <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#23222D' }}>
-          <button onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
-            className="group flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-md px-2.5 py-1 text-white text-[11px] font-mono font-semibold tracking-wider hover:border-white/[0.2] transition-colors">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/40"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
+          <Button
+            variant="secondary"
+            size="sm"
+            // CASCADE-CLEAR (load-bearing invariant — see
+            // project_pb_scanner_focus_pill_cascade_clear.md):
+            // clicking the ticker pill clears ticker + strike +
+            // expiry. Strike/expiry without a ticker is invalid
+            // state (the parent FOCUS BAR is gated on focusTicker).
+            onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
+            className="gap-2 font-mono font-semibold tracking-wider text-[11px]"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="opacity-50"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
             <span>{focusTicker}</span>
-            <span className="text-white/30 group-hover:text-[#FF605D] transition-colors text-[13px] leading-none">&times;</span>
-          </button>
+            <span className="opacity-50 text-[13px] leading-none">&times;</span>
+          </Button>
           {focusStrike && (
-            <button onClick={() => setFocusStrike(null)}
-              className="flex items-center gap-1.5 bg-white/5 border border-white/20 rounded-full px-3 py-1 text-white text-xs font-mono hover:bg-white/10">
-              Strike {focusStrike} <span className="text-white/40">&times;</span>
-            </button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setFocusStrike(null)}
+              className="gap-1.5 font-mono text-xs"
+            >
+              <span>Strike {focusStrike}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
           )}
           {focusExpiry && (
-            <button onClick={() => setFocusExpiry(null)}
-              className="flex items-center gap-1.5 bg-white/5 border border-white/20 rounded-full px-3 py-1 text-white text-xs font-mono hover:bg-white/10">
-              Exp {focusExpiry} <span className="text-white/40">&times;</span>
-            </button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setFocusExpiry(null)}
+              className="gap-1.5 font-mono text-xs"
+            >
+              <span>Exp {focusExpiry}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
           )}
           <span className="text-white/25 text-xs ml-auto">{filtered.length} signals</span>
         </div>
