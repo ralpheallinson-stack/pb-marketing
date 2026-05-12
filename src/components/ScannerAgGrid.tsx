@@ -171,8 +171,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Time",
     field: "time",
     valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
-    width: 104,
-    minWidth: 104,
+    width: 96,
+    minWidth: 96,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
     cellClass: "cf-mono cf-muted",
   },
@@ -199,8 +199,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "strike",
     cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
-    width: 95,
-    minWidth: 95,
+    width: 84,
+    minWidth: 84,
     sortable: true,
     type: "rightAligned",
   },
@@ -232,8 +232,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       }
       return map[a] ?? a
     },
-    width: 75,
-    minWidth: 75,
+    width: 68,
+    minWidth: 68,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center",
     cellClassRules: {
@@ -256,8 +256,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (!d || d === "NEUTRAL") return "—"
       return d
     },
-    width: 69,
-    minWidth: 69,
+    width: 60,
+    minWidth: 60,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -284,8 +284,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "contracts",
     valueGetter: (p) => p.data?.contracts ?? 0,
     valueFormatter: (p) => (p.value as number).toLocaleString(),
-    width: 82,
-    minWidth: 82,
+    width: 72,
+    minWidth: 72,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -298,8 +298,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Price",
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
-    width: 100,
-    minWidth: 100,
+    width: 88,
+    minWidth: 88,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
@@ -310,8 +310,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
-    width: 100,
-    minWidth: 100,
+    width: 88,
+    minWidth: 88,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-bold",
@@ -326,8 +326,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     field: "flow_type",
     headerClass: "ag-center-aligned-header",
     valueGetter: (p) => p.data?.flow_type || "—",
-    width: 100,
-    minWidth: 100,
+    width: 88,
+    minWidth: 88,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-medium",
     cellClassRules: {
@@ -341,8 +341,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Vol",
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 88,
-    minWidth: 88,
+    width: 76,
+    minWidth: 76,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -352,8 +352,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "OI",
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
-    width: 88,
-    minWidth: 88,
+    width: 76,
+    minWidth: 76,
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
@@ -365,8 +365,8 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
     flex: 1,
-    minWidth: 175,
-    maxWidth: 320,
+    minWidth: 220,
+    maxWidth: 380,
     sortable: false,
     // Row height stays uniform at theme rowHeight (44px) regardless of
     // CONDS content. Prior autoHeight: true (7a5ecee) let wrapping
@@ -441,7 +441,7 @@ export function ScannerAgGrid({
         headerHeight: 36,
         rowHeight: 44,
         fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
-        fontSize: 14,
+        fontSize: 12,
         borderColor: "rgba(255,255,255,0.06)",
         rowHoverColor: "rgba(255,255,255,0.05)",
         oddRowBackgroundColor: "transparent",
@@ -525,8 +525,12 @@ export function ScannerAgGrid({
         .ag-header-cell-text {
           text-transform: uppercase;
           /* Density refinement: removed letter-spacing 0.08em (= 0.96px
-             at 12px font-size). Compact headers feel tabular. */
-          font-size: 13px;
+             at 12px font-size). Compact headers feel tabular.
+             2026-05-12: dropped from 13px → 12px to match Cheddar
+             density alongside body fontSize 14 → 12. If headers feel
+             too cramped, revert this single line only — body can stay
+             at 12. */
+          font-size: 12px;
         }
         /* Custom — not built-in v35 (ag-right-aligned-header IS built-in
            but ag-center-aligned-header has no first-party definition). */
