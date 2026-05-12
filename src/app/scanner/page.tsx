@@ -875,9 +875,14 @@ export default function ScannerPage() {
                 fresh.push(t)
               }
               if (fresh.length === 0) return prev
-              // Phase 5: dispatch same fresh batch to AG Grid. No-op when
-              // flag is off or gridApi not yet captured.
-              agGridAdd(fresh)
+              // Phase 5: dispatch fresh batch to AG Grid imperatively. Gate
+              // through matchesFilterRef so SSE row-push respects the current
+              // filter (sse_scanner.py does not apply server predicates on
+              // the topic stream). Trades buffer stays unfiltered so client-
+              // only widenings — search / focusTicker — can recover rows on
+              // the next matchesFilter recompute without a re-fetch.
+              const visibleFresh = fresh.filter(matchesFilterRef.current)
+              if (visibleFresh.length > 0) agGridAdd(visibleFresh)
               return [...fresh, ...prev].slice(0, 2000)
             })
             // Blip is one-per-batch (was one-per-row pre-2026-05-11). The
@@ -1526,12 +1531,27 @@ export default function ScannerPage() {
     if (filterDte === "30+" && (t.dte ?? -1) < 30) return false
     if (filterMinContracts > 0 && (t.contracts ?? 0) < filterMinContracts) return false
     if (filterMinVolOi > 0 && ((t.vol_oi ?? 0) * 10) < filterMinVolOi) return false
-    // exclude_side / exclude_multi_leg — client-side mirror of the backend
-    // f182f0a predicates. Backend's snapshot already filters these out, but
-    // sse_scanner.py live row pushes don't apply the predicates yet — this
-    // catches the gap so the toggle state is visually consistent regardless
-    // of which delivery path a row arrived on. Aligned with aggrLabel logic
-    // (page.tsx:304): null/NEUTRAL/MIDPOINT all map to the "Mid" display.
+    // ── Server-side filter MIRROR (REGRESSION-PREVENTION CHECKPOINT) ──
+    // Every server-side filter sent in buildScannerUrl MUST have a matching
+    // predicate here. sse_scanner.py live row pushes do not apply these
+    // server predicates, so without a client mirror the SSE delivery path
+    // would contaminate the filtered view with rows that fail the user's
+    // current toggle state (snapshot fetches stay clean; SSE rows leak).
+    //
+    // Audit: all entries in buildScannerUrl deps MUST have a matching
+    // predicate below. Current set (keep in sync — 2026-05-11):
+    //   timeRange           — N/A (SSE topic is per-range; no row check)
+    //   filterMinPremium    ✓ premium ≥ N
+    //   filterDte           ✓ DTE bucket (above)
+    //   filterCuratedOnly   ✓ drop PASS grade when ON
+    //   filterExcludeMidpoint ✓ aggression null/NEUTRAL/MIDPOINT
+    //   filterExcludeMultiLeg ✓ structure + MULTI-LEG badge
+    // aggrLabel logic (page.tsx:304): null/NEUTRAL/MIDPOINT → "Mid" display.
+    if (filterCuratedOnly && t.grade === "PASS") return false
+    if (filterMinPremium !== "") {
+      const minPrem = Number(filterMinPremium)
+      if (isFinite(minPrem) && minPrem > 0 && (t.premium ?? 0) < minPrem) return false
+    }
     if (filterExcludeMidpoint) {
       const a = t.aggression
       if (!a || a === "NEUTRAL" || a === "MIDPOINT") return false
@@ -1541,7 +1561,7 @@ export default function ScannerPage() {
       if (t.badges?.some(b => b.label === "MULTI-LEG")) return false
     }
     return true
-  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi, filterMinPremium, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Ref so fetchData doesn't rebind on filter changes
   const matchesFilterRef = useRef(matchesFilter)
