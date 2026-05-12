@@ -194,6 +194,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     minWidth: 63,
     sortable: false,  // categorical — sort meaningless
     cellClass: "cf-center cf-semibold",
+    headerClass: "ag-center-aligned-header",
     cellClassRules: {
       "cf-bullish": (p) => p.data?.row_color === "bullish",
       "cf-bearish": (p) => p.data?.row_color === "bearish",
@@ -202,6 +203,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Side",
     field: "aggression",
+    headerClass: "ag-center-aligned-header",
     valueGetter: (p) => {
       const a = p.data?.aggression
       if (!a || a === "NEUTRAL" || a === "MIDPOINT") return "Mid"
@@ -231,6 +233,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "B/S",
     field: "trade_direction",
+    headerClass: "ag-center-aligned-header",
     valueGetter: (p) => {
       const d = p.data?.trade_direction
       if (!d || d === "NEUTRAL") return "—"
@@ -257,6 +260,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "Size",
@@ -271,6 +275,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellClassRules: {
       "cf-size-big": (p) => (p.data?.contracts ?? 0) >= 1000,
     },
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "Price",
@@ -281,6 +286,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono",
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "Prem",
@@ -296,10 +302,12 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       "cf-bullish": (p) => p.data?.row_color === "bullish",
       "cf-bearish": (p) => p.data?.row_color === "bearish",
     },
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "Type",
     field: "flow_type",
+    headerClass: "ag-center-aligned-header",
     valueGetter: (p) => p.data?.flow_type || "—",
     width: 100,
     minWidth: 100,
@@ -321,6 +329,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "OI",
@@ -331,6 +340,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     sortable: true,
     type: "rightAligned",
     cellClass: "cf-mono cf-muted",
+    cellStyle: { textAlign: "right" },
   },
   {
     headerName: "Conds",
@@ -475,6 +485,11 @@ export function ScannerAgGrid({
           text-transform: uppercase;
           letter-spacing: 0.08em;
           font-size: 12px;
+        }
+        /* Custom — not built-in v35 (ag-right-aligned-header IS built-in
+           but ag-center-aligned-header has no first-party definition). */
+        .ag-center-aligned-header .ag-header-cell-label {
+          justify-content: center;
         }
         .ag-row {
           border-bottom: 1px solid rgba(255,255,255,0.04);
