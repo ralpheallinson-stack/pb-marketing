@@ -1645,12 +1645,24 @@ export default function ScannerPage() {
       p.set("range", timeRange)
       if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
       p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
-      // focusTicker propagation (2026-05-13): closes the bug where
-      // clicking a ticker filtered the table (via external-filter API,
-      // 3d06735) but stat strip stayed on global aggregates. Backend
-      // range-agg now accepts ?symbol=TICK; cache_key includes it
-      // so SPXW/NVDA can't share each other's stale agg.
+      // Path A maximal scope (2026-05-13): every filter that narrows
+      // the visible population propagates to range-agg so the stat
+      // strip reflects the same population the table is showing.
+      // Backend (3c01111) accepts: symbol, strike, expiry, search,
+      // min_dte, max_dte, exclude_side, exclude_multi_leg.
       if (focusTicker) p.set("symbol", focusTicker)
+      if (focusStrike) p.set("strike", focusStrike)
+      if (focusExpiry) p.set("expiry", focusExpiry)
+      if (search) p.set("search", search)
+      // filterDte bucket → explicit min_dte/max_dte bounds (matches
+      // matchesFilter ranges exactly, not buildScannerUrl's max-only
+      // approximation which included 0DTE in the "1-7" bucket).
+      if (filterDte === "0dte") { p.set("min_dte", "0"); p.set("max_dte", "0") }
+      else if (filterDte === "1-7") { p.set("min_dte", "1"); p.set("max_dte", "7") }
+      else if (filterDte === "8-30") { p.set("min_dte", "8"); p.set("max_dte", "30") }
+      else if (filterDte === "30+") { p.set("min_dte", "30") }
+      if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
+      if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
       fetch(`/api/scanner/range-agg?${p.toString()}`, { credentials: "include" })
         .then(r => r.ok ? r.json() : null)
         .then(data => {
@@ -1659,7 +1671,7 @@ export default function ScannerPage() {
         .catch(() => {/* silent — fall back to client-side reduction */})
     }, 200)
     return () => clearTimeout(handle)
-  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker])
+  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker, focusStrike, focusExpiry, search, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   const aggregates = useMemo(() => {
     // Bifurcation (2026-05-11, Bug 3): non-today ranges read range-wide
