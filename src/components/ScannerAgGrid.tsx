@@ -597,15 +597,16 @@ export function ScannerAgGrid({
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
 
         /* ── Phase 3 cellRenderer styling (matches SignalRow.tsx legacy) ── */
-        .cf-tick-cell { padding: 0; }
+        .cf-tick-cell { padding: 0 !important; }
         .cf-tick-btn {
           display: block;
           text-align: left;
           background: none;
           border: none;
-          padding: 4px 0;
+          padding: 4px 9px;
           cursor: pointer;
           width: 100%;
+          height: 100%;
           line-height: 1;
         }
         .cf-tick-symbol {
