@@ -1645,6 +1645,12 @@ export default function ScannerPage() {
       p.set("range", timeRange)
       if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
       p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
+      // focusTicker propagation (2026-05-13): closes the bug where
+      // clicking a ticker filtered the table (via external-filter API,
+      // 3d06735) but stat strip stayed on global aggregates. Backend
+      // range-agg now accepts ?symbol=TICK; cache_key includes it
+      // so SPXW/NVDA can't share each other's stale agg.
+      if (focusTicker) p.set("symbol", focusTicker)
       fetch(`/api/scanner/range-agg?${p.toString()}`, { credentials: "include" })
         .then(r => r.ok ? r.json() : null)
         .then(data => {
@@ -1653,7 +1659,7 @@ export default function ScannerPage() {
         .catch(() => {/* silent — fall back to client-side reduction */})
     }, 200)
     return () => clearTimeout(handle)
-  }, [timeRange, filterMinPremium, filterCuratedOnly])
+  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker])
 
   const aggregates = useMemo(() => {
     // Bifurcation (2026-05-11, Bug 3): non-today ranges read range-wide
