@@ -75,6 +75,10 @@ interface ScannerGridContext {
   setFocusTicker: Dispatch<SetStateAction<string | null>>
   setFocusStrike: Dispatch<SetStateAction<string | null>>
   setFocusExpiry: Dispatch<SetStateAction<string | null>>
+  setFilterOptType: Dispatch<SetStateAction<string>>
+  setFilterSide: Dispatch<SetStateAction<string>>
+  setFilterBuySell: Dispatch<SetStateAction<string>>
+  setFilterType: Dispatch<SetStateAction<string>>
 }
 
 type TradeCellParams = ICellRendererParams<Trade, unknown, ScannerGridContext>
@@ -165,6 +169,60 @@ function CondsCellRenderer(params: TradeCellParams) {
   )
 }
 
+// Side enum → display label (mirrors valueGetter on the Side column).
+const SIDE_LABEL: Record<string, string> = {
+  ABOVE_ASK: "Above", AT_ASK: "Ask", AT_BID: "Bid", BELOW_BID: "Below",
+}
+
+function CPCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t?.opt_type) return null
+  const ctx = params.context
+  return (
+    <button onClick={() => ctx.setFilterOptType(t.opt_type)} className="cf-focus-btn">
+      {t.opt_type === "C" ? "Call" : "Put"}
+    </button>
+  )
+}
+
+function SideCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t) return null
+  const a = t.aggression
+  // Mid/NEUTRAL/MIDPOINT/null → display "Mid", non-clickable (no enum to filter on)
+  if (!a || a === "NEUTRAL" || a === "MIDPOINT") return <span>Mid</span>
+  const ctx = params.context
+  return (
+    <button onClick={() => ctx.setFilterSide(a)} className="cf-focus-btn">
+      {SIDE_LABEL[a] ?? a}
+    </button>
+  )
+}
+
+function BSCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t) return null
+  const d = t.trade_direction
+  if (!d || d === "NEUTRAL") return <span>—</span>
+  const ctx = params.context
+  return (
+    <button onClick={() => ctx.setFilterBuySell(d)} className="cf-focus-btn">
+      {d}
+    </button>
+  )
+}
+
+function TypeCellRenderer(params: TradeCellParams) {
+  const t = params.data
+  if (!t?.flow_type) return <span>—</span>
+  const ctx = params.context
+  return (
+    <button onClick={() => ctx.setFilterType(t.flow_type)} className="cf-focus-btn">
+      {t.flow_type}
+    </button>
+  )
+}
+
 // ── Column definitions ──
 const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
@@ -206,6 +264,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   },
   {
     headerName: "C/P",
+    cellRenderer: CPCellRenderer,
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
     width: 64,
     minWidth: 64,
@@ -220,6 +279,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Side",
     field: "aggression",
+    cellRenderer: SideCellRenderer,
     headerClass: "ag-center-aligned-header",
     valueGetter: (p) => {
       const a = p.data?.aggression
@@ -250,6 +310,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "B/S",
     field: "trade_direction",
+    cellRenderer: BSCellRenderer,
     headerClass: "ag-center-aligned-header",
     valueGetter: (p) => {
       const d = p.data?.trade_direction
@@ -324,6 +385,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Type",
     field: "flow_type",
+    cellRenderer: TypeCellRenderer,
     headerClass: "ag-center-aligned-header",
     valueGetter: (p) => p.data?.flow_type || "—",
     width: 80,
@@ -391,9 +453,26 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
 ]
 
 const ROW_CLASS_RULES: RowClassRules<Trade> = {
-  "cf-row-oi-single": (p) => p.data?.flow_highlight === "oi_single",
-  "cf-row-oi-multi": (p) => p.data?.flow_highlight === "oi_multi",
+  // OI tints — frontend-derived from raw fields (2026-05-15). Calibrated
+  // against measured distribution: backend's vol_oi > 1 fired on ~32% of
+  // rows under default subscriber filters; user target ≤10-15% yellow,
+  // ≤2-3% purple. Multi gates first so single doesn't also fire on
+  // multi rows (matches AG Grid evaluation order + intent: "this is
+  // purple, not yellow"). Late stays backend-owned for forward compat.
+  "cf-row-oi-multi": (p) =>
+    (p.data?.accum_hits ?? 0) >= 2 &&
+    (p.data?.vol_oi ?? 0) >= 2,
+  "cf-row-oi-single": (p) => {
+    if (!p.data) return false
+    if ((p.data.accum_hits ?? 0) >= 2 && (p.data.vol_oi ?? 0) >= 2) return false
+    const size = p.data.contracts ?? 0
+    const oi = p.data.open_interest ?? Infinity
+    const volOi = p.data.vol_oi ?? 0
+    return size > oi * 2 || volOi >= 5
+  },
   "cf-row-late": (p) => p.data?.flow_highlight === "late",
+  "cf-row-bull": (p) => p.data?.row_color === "bullish",
+  "cf-row-bear": (p) => p.data?.row_color === "bearish",
 }
 
 interface ScannerAgGridProps {
@@ -401,6 +480,10 @@ interface ScannerAgGridProps {
   setFocusTicker: Dispatch<SetStateAction<string | null>>
   setFocusStrike: Dispatch<SetStateAction<string | null>>
   setFocusExpiry: Dispatch<SetStateAction<string | null>>
+  setFilterOptType: Dispatch<SetStateAction<string>>
+  setFilterSide: Dispatch<SetStateAction<string>>
+  setFilterBuySell: Dispatch<SetStateAction<string>>
+  setFilterType: Dispatch<SetStateAction<string>>
   // External-filter ref (2026-05-11): page.tsx owns matchesFilter
   // (the canonical client-side predicate that mirrors server-side
   // filters + adds client-only filters search/focus/grade/etc).
@@ -428,6 +511,10 @@ export function ScannerAgGrid({
   setFocusTicker,
   setFocusStrike,
   setFocusExpiry,
+  setFilterOptType,
+  setFilterSide,
+  setFilterBuySell,
+  setFilterType,
   matchesFilterRef,
   onApiReady,
   enableSort,
@@ -473,8 +560,8 @@ export function ScannerAgGrid({
   // useState are reference-stable across renders, so this memo never
   // recreates after first render.
   const context = useMemo<ScannerGridContext>(
-    () => ({ setFocusTicker, setFocusStrike, setFocusExpiry }),
-    [setFocusTicker, setFocusStrike, setFocusExpiry],
+    () => ({ setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType }),
+    [setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType],
   )
 
   const handleGridReady = useCallback(
@@ -584,7 +671,7 @@ export function ScannerAgGrid({
         .cf-medium { font-weight: 400; }  /* density: normalized to 400 */
         .cf-center { text-align: center; }
 
-        .cf-size-big { color: #22d3ee; }  /* density: dropped font-weight 600; color carries hierarchy */
+        .cf-size-big { color: #48DEFF; }  /* density: dropped font-weight 600; color carries hierarchy. Matches cf-block (≥1000 contracts = meaningful size). */
 
         .cf-sweep { color: #F2C94C; }
         .cf-block { color: #48DEFF; }
@@ -595,6 +682,7 @@ export function ScannerAgGrid({
         .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.12); border-left: 3px solid rgba(234,179,8,0.7); }
         .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.14); border-left: 3px solid rgba(168,85,247,0.8); }
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
+
 
         /* ── Phase 3 cellRenderer styling (matches SignalRow.tsx legacy) ── */
         .cf-tick-cell { padding: 0 !important; }
@@ -629,7 +717,7 @@ export function ScannerAgGrid({
           border: none;
           padding: 0;
           cursor: pointer;
-          color: #ffffff;
+          color: inherit;
           font-size: 13px;
           font-weight: 400;
           font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

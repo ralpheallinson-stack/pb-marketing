@@ -472,6 +472,7 @@ export default function ScannerPage() {
   const [showSavePreset, setShowSavePreset] = useState(false)
   const [filterDte, setFilterDte] = useState("")
   const [filterSide, setFilterSide] = useState("")
+  const [filterBuySell, setFilterBuySell] = useState("")
   const [filterUnusualOnly, setFilterUnusualOnly] = useState(false)
   const [filterNoIndex, setFilterNoIndex] = useState(false)
   // 2026-05-09: "Curated grades only" toggle. Default OFF = full coverage
@@ -1503,13 +1504,14 @@ export default function ScannerPage() {
     if (filterMinVolOi > 0) c++
     if (filterDte) c++
     if (filterSide) c++
+    if (filterBuySell) c++
     if (filterUnusualOnly) c++
     if (filterNoIndex) c++
     if (filterCuratedOnly) c++
     if (filterExcludeMidpoint) c++
     if (filterExcludeMultiLeg) c++
     setActiveFilterCount(c)
-  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterUnusualOnly, filterNoIndex, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [timeRange, filterGrade, filterType, filterOptType, filterMinPremium, filterMinContracts, filterMinVolOi, filterDte, filterSide, filterBuySell, filterUnusualOnly, filterNoIndex, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Persist curated-only toggle to localStorage on change.
   useEffect(() => {
@@ -1539,6 +1541,7 @@ export default function ScannerPage() {
     if (filterType && t.flow_type !== filterType) return false
     if (filterOptType && t.opt_type !== filterOptType) return false
     if (filterSide && t.aggression !== filterSide) return false
+    if (filterBuySell && t.trade_direction !== filterBuySell) return false
     // Industry-standard "Unusual Volume" filter — uses 20d baseline, not raw vol_oi
     if (filterUnusualOnly && (t.contract_volume_multiple ?? 0) < 1.5) return false
     if (filterNoIndex && ["SPX","SPXW","NDXP","NDX","RUT","RUTW"].includes(t.symbol)) return false
@@ -1578,7 +1581,7 @@ export default function ScannerPage() {
       if (t.badges?.some(b => b.label === "MULTI-LEG")) return false
     }
     return true
-  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi, filterMinPremium, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterBuySell, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi, filterMinPremium, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
 
   // Ref so fetchData doesn't rebind on filter changes
   const matchesFilterRef = useRef(matchesFilter)
@@ -1597,7 +1600,7 @@ export default function ScannerPage() {
   }, [
     search,
     focusTicker, focusStrike, focusExpiry,
-    filterGrade, filterType, filterOptType, filterSide,
+    filterGrade, filterType, filterOptType, filterSide, filterBuySell,
     filterUnusualOnly, filterNoIndex,
     filterMinContracts, filterMinVolOi,
   ])
@@ -1663,6 +1666,10 @@ export default function ScannerPage() {
       else if (filterDte === "30+") { p.set("min_dte", "30") }
       if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
       if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
+      if (filterOptType) p.set("call_put", filterOptType)
+      if (filterSide) p.set("side", filterSide)
+      if (filterBuySell) p.set("buy_sell", filterBuySell)
+      if (filterType) p.set("flow_type", filterType)
       fetch(`/api/scanner/range-agg?${p.toString()}`, { credentials: "include" })
         .then(r => r.ok ? r.json() : null)
         .then(data => {
@@ -1671,7 +1678,7 @@ export default function ScannerPage() {
         .catch(() => {/* silent — fall back to client-side reduction */})
     }, 200)
     return () => clearTimeout(handle)
-  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker, focusStrike, focusExpiry, search, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker, focusStrike, focusExpiry, search, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg, filterOptType, filterSide, filterBuySell, filterType])
 
   const aggregates = useMemo(() => {
     // Bifurcation (2026-05-11, Bug 3): non-today ranges read range-wide
@@ -1705,7 +1712,7 @@ export default function ScannerPage() {
     ? filtered.slice(clientPage * CLIENT_PAGE_SIZE, (clientPage + 1) * CLIENT_PAGE_SIZE)
     : filtered
   // Reset client page when filters change
-  useEffect(() => { setClientPage(0) }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
+  useEffect(() => { setClientPage(0) }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterBuySell, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
 
   // Phase 6 (2026-05-11): scroll AG Grid to row 0 on pagination changes.
   // Today range uses clientPage (200-row chunks over the 20K trades
@@ -2405,23 +2412,25 @@ export default function ScannerPage() {
       </header>
 
       {/* ── FOCUS BAR ── */}
-      {focusTicker && (
+      {(focusTicker || filterOptType || filterSide || filterBuySell || filterType) && (
         <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#23222D' }}>
-          <Button
-            variant="secondary"
-            size="sm"
-            // CASCADE-CLEAR (load-bearing invariant — see
-            // project_pb_scanner_focus_pill_cascade_clear.md):
-            // clicking the ticker pill clears ticker + strike +
-            // expiry. Strike/expiry without a ticker is invalid
-            // state (the parent FOCUS BAR is gated on focusTicker).
-            onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
-            className="gap-2 font-mono font-semibold tracking-wider text-[11px]"
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="opacity-50"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
-            <span>{focusTicker}</span>
-            <span className="opacity-50 text-[13px] leading-none">&times;</span>
-          </Button>
+          {focusTicker && (
+            <Button
+              variant="secondary"
+              size="sm"
+              // CASCADE-CLEAR (load-bearing invariant — see
+              // project_pb_scanner_focus_pill_cascade_clear.md):
+              // clicking the ticker pill clears ticker + strike +
+              // expiry. Strike/expiry without a ticker is invalid
+              // state.
+              onClick={() => { setFocusTicker(null); setFocusStrike(null); setFocusExpiry(null) }}
+              className="gap-2 font-mono font-semibold tracking-wider text-[11px]"
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="opacity-50"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
+              <span>{focusTicker}</span>
+              <span className="opacity-50 text-[13px] leading-none">&times;</span>
+            </Button>
+          )}
           {focusStrike && (
             <Button
               variant="secondary"
@@ -2441,6 +2450,30 @@ export default function ScannerPage() {
               className="gap-1.5 font-mono text-xs"
             >
               <span>Exp {focusExpiry}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
+          )}
+          {filterOptType && (
+            <Button variant="secondary" size="sm" onClick={() => setFilterOptType("")} className="gap-1.5 text-xs">
+              <span>{filterOptType === "C" ? "Call" : "Put"}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
+          )}
+          {filterSide && (
+            <Button variant="secondary" size="sm" onClick={() => setFilterSide("")} className="gap-1.5 text-xs">
+              <span>{({ABOVE_ASK:"Above",AT_ASK:"Ask",AT_BID:"Bid",BELOW_BID:"Below"} as Record<string,string>)[filterSide] ?? filterSide}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
+          )}
+          {filterBuySell && (
+            <Button variant="secondary" size="sm" onClick={() => setFilterBuySell("")} className="gap-1.5 text-xs">
+              <span>{filterBuySell}</span>
+              <span className="opacity-50">&times;</span>
+            </Button>
+          )}
+          {filterType && (
+            <Button variant="secondary" size="sm" onClick={() => setFilterType("")} className="gap-1.5 text-xs">
+              <span>{filterType}</span>
               <span className="opacity-50">&times;</span>
             </Button>
           )}
@@ -2533,6 +2566,10 @@ export default function ScannerPage() {
           setFocusTicker={setFocusTicker}
           setFocusStrike={setFocusStrike}
           setFocusExpiry={setFocusExpiry}
+          setFilterOptType={setFilterOptType}
+          setFilterSide={setFilterSide}
+          setFilterBuySell={setFilterBuySell}
+          setFilterType={setFilterType}
           matchesFilterRef={matchesFilterRef}
           onApiReady={handleAgGridApiReady}
           enableSort={timeRange === "today"}
