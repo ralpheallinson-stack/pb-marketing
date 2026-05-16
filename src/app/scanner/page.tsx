@@ -1723,6 +1723,19 @@ export default function ScannerPage() {
     gridApiRef.current?.ensureIndexVisible(0, "top")
   }, [page, clientPage])
 
+  // Pagination wire (2026-05-15): sync AG Grid rowData to the
+  // clientPage slice in Today mode. Without this, the external
+  // Pagination component updates clientPage but the grid still
+  // shows the full 20K buffer (fetchData → agGridReplace(incoming)
+  // sends the whole buffer; only the legacy <table> path consumed
+  // pageRows for slicing). Non-Today is server-paginated — its page
+  // state already triggers a refetch + replace upstream.
+  useEffect(() => {
+    if (timeRange !== "today") return
+    const start = clientPage * CLIENT_PAGE_SIZE
+    agGridReplace(filtered.slice(start, start + CLIENT_PAGE_SIZE))
+  }, [clientPage, filtered, timeRange, agGridReplace])
+
   const rowVirtualizer = useVirtualizer({
     count: pageRows.length,
     getScrollElement: () => tableContainerRef.current,
