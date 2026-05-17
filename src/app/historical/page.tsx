@@ -18,9 +18,16 @@ import { StatsPanel, type Stats } from "@/components/scanner/StatsPanel"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import type { Trade } from "@/components/SignalRow"
 import { rowsToTrades } from "@/lib/feed-decoder"
-function daysAgo(n: number): Date {
-  const d = new Date()
-  d.setDate(d.getDate() - n)
+// Most recent trading day at-or-before the given anchor (default: today).
+// Starts from anchor - 1, then rolls back through Sat (6) / Sun (0).
+// Holiday-list NOT applied — relies on the backend last-session fallback
+// + the Item 1 banner for the picked-a-holiday edge case.
+function mostRecentTradingDay(from: Date = new Date()): Date {
+  const d = new Date(from)
+  d.setDate(d.getDate() - 1)
+  while (d.getDay() === 0 || d.getDay() === 6) {
+    d.setDate(d.getDate() - 1)
+  }
   return d
 }
 
@@ -45,7 +52,7 @@ function HistoricalPageInner() {
       const parsed = parseISO(fromUrl)
       if (isValid(parsed)) return parsed
     }
-    return daysAgo(1)
+    return mostRecentTradingDay()
   }, [searchParams])
   const [selectedDate, setSelectedDate] = React.useState<Date>(initialDate)
 
@@ -61,6 +68,11 @@ function HistoricalPageInner() {
   const [trades, setTrades] = React.useState<Trade[]>([])
   const [loading, setLoading] = React.useState(false)
   const [fetchError, setFetchError] = React.useState<string | null>(null)
+  // Fallback transparency (Item 1, 2026-05-17): when the user picks a date
+  // that has no data, backend falls back to the most-recent-session-with-data
+  // and reports the actual date in meta.served_date. Frontend surfaces the
+  // swap via a banner above the table.
+  const [servedDate, setServedDate] = React.useState<string | null>(null)
 
   // Filter state (mirrors scanner/page.tsx for FiltersDialog reuse)
   const [filterOptType, setFilterOptType] = React.useState("")
@@ -110,6 +122,7 @@ function HistoricalPageInner() {
         } else {
           setTrades([])
         }
+        setServedDate(d?.meta?.served_date ?? null)
         setLoading(false)
       })
       .catch(err => {
@@ -253,16 +266,19 @@ function HistoricalPageInner() {
                   selected={selectedDate}
                   onSelect={(d) => d && setSelectedDate(d)}
                   disabled={(d) => d > today || d < MIN_DATE}
+                  captionLayout="dropdown"
+                  startMonth={MIN_DATE}
+                  endMonth={today}
+                  classNames={{
+                    dropdowns: "flex gap-2",
+                    months_dropdown: "bg-[#16191F] text-zinc-200 border border-white/[0.08] rounded-md px-2 py-1 text-sm hover:bg-white/[0.04] focus:outline-none focus:ring-1 focus:ring-cyan-400/30",
+                    years_dropdown: "bg-[#16191F] text-zinc-200 border border-white/[0.08] rounded-md px-2 py-1 text-sm hover:bg-white/[0.04] focus:outline-none focus:ring-1 focus:ring-cyan-400/30",
+                  }}
                   autoFocus
                 />
               </PopoverContent>
             </Popover>
 
-            <div className="flex items-center gap-1 ml-2">
-              <QuickPickChip label="Yesterday" onClick={() => setSelectedDate(daysAgo(1))} />
-              <QuickPickChip label="-1 week" onClick={() => setSelectedDate(daysAgo(7))} />
-              <QuickPickChip label="-1 month" onClick={() => setSelectedDate(daysAgo(30))} />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -313,6 +329,31 @@ function HistoricalPageInner() {
           calls={calls}
           puts={puts}
         />
+
+        {(() => {
+          const reqStr = format(selectedDate, "yyyy-MM-dd")
+          if (!servedDate || servedDate === reqStr) return null
+          // Parse the served date as a UTC midnight + reformat for display.
+          // (parseISO of a date-only string lands on local midnight which
+          // can cross day boundaries in non-UTC zones; using component-wise
+          // construction avoids that.)
+          const [y, m, d] = servedDate.split("-").map(Number)
+          const servedDateObj = new Date(y, (m ?? 1) - 1, d ?? 1)
+          return (
+            <div className="flex items-center justify-between px-4 py-2.5 border border-amber-500/30 rounded-lg text-[13px]" style={{ background: "rgba(245, 158, 11, 0.08)" }}>
+              <span className="text-amber-200">
+                No trades recorded for <span className="font-semibold">{format(selectedDate, "EEEE, MMM d")}</span>. Showing nearest session: <span className="font-semibold">{format(servedDateObj, "EEEE, MMM d, yyyy")}</span>.
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedDate(servedDateObj)}
+                className="text-amber-300 hover:text-amber-100 underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-300 transition-colors whitespace-nowrap"
+              >
+                Update picker →
+              </button>
+            </div>
+          )
+        })()}
 
         <div className="flex flex-1 flex-col overflow-hidden border border-white/[0.06] rounded-lg" style={{ background: "#16191F" }}>
           {loading && trades.length === 0 ? (
@@ -366,14 +407,3 @@ function HistoricalPageInner() {
   )
 }
 
-function QuickPickChip({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="text-[11px] px-2.5 py-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] transition-colors"
-    >
-      {label}
-    </button>
-  )
-}

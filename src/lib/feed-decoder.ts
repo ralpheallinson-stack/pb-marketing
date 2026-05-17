@@ -141,6 +141,8 @@ export interface FeedMeta {
   has_more?: boolean
   since_id?: number | null
   total?: number
+  requested_date?: string
+  served_date?: string
 }
 
 export interface FeedAgg {

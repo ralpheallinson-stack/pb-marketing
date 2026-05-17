@@ -127,33 +127,6 @@ function isMarketOpen() {
 
 /* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
 /* ── time ranges (moved to filter panel) ── */
-function injectDaySeparators(rows: Trade[]): Trade[] {
-  if (rows.length === 0) return rows
-  const out: Trade[] = []
-  let lastDayKey: string | null = null
-  for (const row of rows) {
-    const ts = row.date_time
-    if (!ts) { out.push(row); continue }
-    const d = new Date(ts)
-    if (isNaN(d.getTime())) { out.push(row); continue }
-    const dayKey = d.toLocaleDateString("en-US", {
-      timeZone: "America/New_York",
-      year: "numeric", month: "2-digit", day: "2-digit",
-    })
-    if (dayKey !== lastDayKey) {
-      const label = d.toLocaleDateString("en-US", {
-        timeZone: "America/New_York",
-        weekday: "long", month: "short", day: "numeric", year: "numeric",
-      }).toUpperCase()
-      const [m, day, y] = dayKey.split("/")
-      const sepId = -parseInt(`${y}${m}${day}`, 10)
-      out.push({ id: sepId, __isDaySeparator: true, dayLabel: label } as Trade)
-      lastDayKey = dayKey
-    }
-    out.push(row)
-  }
-  return out
-}
 
 function isMarketClosedET(): boolean {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -405,9 +378,7 @@ export default function ScannerPage() {
   // Day separators only valid on multi-day non-today ranges + time-sorted
   // rows. Refs let agGridReplace decide at call-time without re-binding.
   const sortFieldRef = useRef<string | null>(null)
-  const timeRangeRef = useRef<string>("today")
   useEffect(() => { sortFieldRef.current = sortField }, [sortField])
-  useEffect(() => { timeRangeRef.current = timeRange }, [timeRange])
   const lastTradeIdRef = useRef<number>(0)
   const isFirstLoadRef = useRef<boolean>(true)
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -637,9 +608,7 @@ export default function ScannerPage() {
   const agGridReplace = useCallback((rows: Trade[]) => {
     const api = gridApiRef.current
     if (!api) return
-    const filtered = rows.filter((t) => !t.mm_suspected)
-    const shouldInject = timeRangeRef.current !== "today" && !sortFieldRef.current
-    api.setGridOption("rowData", shouldInject ? injectDaySeparators(filtered) : filtered)
+    api.setGridOption("rowData", rows.filter((t) => !t.mm_suspected))
     // CONDS autoHeight stale-height workaround (2026-05-12): after a
     // full snapshot replace, AG Grid v35 occasionally retains prior
     // measured row heights for the new content, causing phantom empty
@@ -943,7 +912,6 @@ export default function ScannerPage() {
 
   const buildUrl = useCallback((opts?: { sinceId?: number; pageNum?: number }) => {
     const p = new URLSearchParams()
-    if (timeRange !== "today") p.set("range", timeRange)
     if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
@@ -970,7 +938,6 @@ export default function ScannerPage() {
   // feed endpoint or move incremental updates onto SSE in Phase 2.
   const buildFeedUrl = useCallback(() => {
     const p = new URLSearchParams()
-    if (timeRange !== "today") p.set("range", timeRange)
     if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
@@ -997,7 +964,6 @@ export default function ScannerPage() {
     const pg = opts?.pageNum ?? 0
     const p = new URLSearchParams()
     p.set("unified", "1")
-    if (timeRange !== "today") p.set("range", timeRange)
     if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
     if (filterDte === "0dte") p.set("max_dte", "0")
     else if (filterDte === "1-7") p.set("max_dte", "7")
@@ -1008,10 +974,6 @@ export default function ScannerPage() {
     if (sortField && sortDir) { p.set("sort", sortField); p.set("order", sortDir) }
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
     if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
-    // Non-today initial fetch (no since_id, no explicit page) gets the
-    // full filtered set in one shot so continuous virtualized scroll
-    // works without pagination. Backend cap 25000.
-    if (pg === 0 && !opts?.sinceId && timeRange !== "today") p.set("page_size", "25000")
     // Dashboard bundle is page-0 only (Q1 default). Skip on incremental
     // polls — server already strips dashboard when since_id is set, this
     // just saves a few URL bytes.
@@ -1404,7 +1366,6 @@ export default function ScannerPage() {
   // active filter count
   useEffect(() => {
     let c = 0
-    if (timeRange !== "today") c++
     if (filterGrade) c++
     if (filterType) c++
     if (filterOptType) c++
@@ -1528,87 +1489,14 @@ export default function ScannerPage() {
   // range keeps the client-side reduction since the 20000-row buffer
   // IS the full set. See project_pb_scanner_time_range_investigation.md
   // §Bug 3 for the full investigation.
-  const [rangeAgg, setRangeAgg] = useState<{
-    sentiment: { label: string; score: number; _sort_score: number }
-    pcr: number | null
-    call_flow: { premium: string; count: number; _sort_premium: number }
-    put_flow: { premium: string; count: number; _sort_premium: number }
-    raw: {
-      bull_vol: number; bear_vol: number
-      call_prem: number; put_prem: number
-      call_vol: number; put_vol: number
-      call_n: number; put_n: number
-    }
-  } | null>(null)
-
-  // Refetch range-agg whenever range or filter state changes. Today range
-  // clears the cached agg so a stale Month snapshot doesn't leak through
-  // when the user toggles back. Debounced 200ms so rapid filter clicks
-  // coalesce into one request; cache TTL on the server is 15s so
-  // pagination spam during the same range/filter combo lands on hot
-  // cache. Silent on failure — stat strip falls back to client-side
-  // reduction via the bifurcation below.
-  useEffect(() => {
-    if (timeRange === "today") {
-      setRangeAgg(null)
-      return
-    }
-    const handle = setTimeout(() => {
-      const p = new URLSearchParams()
-      p.set("range", timeRange)
-      if (filterMinPremium !== "") p.set("min_premium", filterMinPremium)
-      p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
-      // Path A maximal scope (2026-05-13): every filter that narrows
-      // the visible population propagates to range-agg so the stat
-      // strip reflects the same population the table is showing.
-      // Backend (3c01111) accepts: symbol, strike, expiry, search,
-      // min_dte, max_dte, exclude_side, exclude_multi_leg.
-      if (focusTicker) p.set("symbol", focusTicker)
-      if (focusStrike) p.set("strike", focusStrike)
-      if (focusExpiry) p.set("expiry", focusExpiry)
-      if (search) p.set("search", search)
-      // filterDte bucket → explicit min_dte/max_dte bounds (matches
-      // matchesFilter ranges exactly, not buildScannerUrl's max-only
-      // approximation which included 0DTE in the "1-7" bucket).
-      if (filterDte === "0dte") { p.set("min_dte", "0"); p.set("max_dte", "0") }
-      else if (filterDte === "1-7") { p.set("min_dte", "1"); p.set("max_dte", "7") }
-      else if (filterDte === "8-30") { p.set("min_dte", "8"); p.set("max_dte", "30") }
-      else if (filterDte === "30+") { p.set("min_dte", "30") }
-      if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
-      if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
-      if (filterOptType) p.set("call_put", filterOptType)
-      if (filterSide) p.set("side", filterSide)
-      if (filterBuySell) p.set("buy_sell", filterBuySell)
-      if (filterType) p.set("flow_type", filterType)
-      fetch(`/api/scanner/range-agg?${p.toString()}`, { credentials: "include" })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (data && !data.error && data.raw) setRangeAgg(data)
-        })
-        .catch(() => {/* silent — fall back to client-side reduction */})
-    }, 200)
-    return () => clearTimeout(handle)
-  }, [timeRange, filterMinPremium, filterCuratedOnly, focusTicker, focusStrike, focusExpiry, search, filterDte, filterExcludeMidpoint, filterExcludeMultiLeg, filterOptType, filterSide, filterBuySell, filterType])
-
   const aggregates = useMemo(() => {
-    // Bifurcation (2026-05-11, Bug 3): non-today ranges read range-wide
-    // aggregates from the server so paginating doesn't shift the strip.
-    // Today + (no-rangeAgg-yet || fetch failed) → client-side reduction.
-    if (timeRange !== "today" && rangeAgg?.raw) {
-      return {
-        callCount: rangeAgg.raw.call_n,
-        putCount:  rangeAgg.raw.put_n,
-        callPrem:  rangeAgg.raw.call_prem,
-        putPrem:   rangeAgg.raw.put_prem,
-      }
-    }
     let callCount = 0, putCount = 0, callPrem = 0, putPrem = 0
     for (const t of filtered) {
       if (t.opt_type === "C") { callCount++; callPrem += t.premium }
       else if (t.opt_type === "P") { putCount++; putPrem += t.premium }
     }
     return { callCount, putCount, callPrem, putPrem }
-  }, [filtered, timeRange, rangeAgg])
+  }, [filtered])
   const callPrem = aggregates.callPrem
   const putPrem = aggregates.putPrem
   const calls = aggregates.callCount  // count, not array — only .length was ever used
@@ -1618,9 +1506,7 @@ export default function ScannerPage() {
   const CLIENT_PAGE_SIZE = 200
   const [clientPage, setClientPage] = useState(0)
   const totalClientPages = Math.max(1, Math.ceil(filtered.length / CLIENT_PAGE_SIZE))
-  const pageRows = timeRange === "today"
-    ? filtered.slice(clientPage * CLIENT_PAGE_SIZE, (clientPage + 1) * CLIENT_PAGE_SIZE)
-    : filtered
+  const pageRows = filtered.slice(clientPage * CLIENT_PAGE_SIZE, (clientPage + 1) * CLIENT_PAGE_SIZE)
   // Reset client page when filters change
   useEffect(() => { setClientPage(0) }, [search, focusTicker, focusStrike, focusExpiry, filterGrade, filterType, filterOptType, filterSide, filterBuySell, filterUnusualOnly, filterNoIndex, filterDte, filterMinContracts, filterMinVolOi])
 
@@ -1641,10 +1527,9 @@ export default function ScannerPage() {
   // pageRows for slicing). Non-Today is server-paginated — its page
   // state already triggers a refetch + replace upstream.
   useEffect(() => {
-    if (timeRange !== "today") return
     const start = clientPage * CLIENT_PAGE_SIZE
     agGridReplace(filtered.slice(start, start + CLIENT_PAGE_SIZE))
-  }, [clientPage, filtered, timeRange, agGridReplace])
+  }, [clientPage, filtered, agGridReplace])
 
   const rowVirtualizer = useVirtualizer({
     count: pageRows.length,
@@ -1678,16 +1563,6 @@ export default function ScannerPage() {
     // = filtered.length intentionally — that label reflects what's on
     // screen ("1,234 signals" maps to the rendered row count, not the
     // range total).
-    if (timeRange !== "today" && rangeAgg?.raw) {
-      const score = rangeAgg.sentiment.score
-      return {
-        count: filtered.length,
-        bull: rangeAgg.raw.bull_vol,
-        bear: rangeAgg.raw.bear_vol,
-        lean: score >= 0.65 ? "BULL" : score <= 0.35 ? "BEAR" : "MIXED",
-        pc_ratio: rangeAgg.pcr ?? 0,
-      }
-    }
     let cv = 0, pv = 0, bullVol = 0, bearVol = 0
     for (const t of filtered) {
       const qty = t.contracts || 0
@@ -1705,7 +1580,7 @@ export default function ScannerPage() {
       lean: score >= 0.65 ? "BULL" : score <= 0.35 ? "BEAR" : "MIXED",
       pc_ratio: cv > 0 ? +(pv / cv).toFixed(2) : 0,
     }
-  }, [filtered, timeRange, rangeAgg])
+  }, [filtered])
 
   return (
     <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#0E1117', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
