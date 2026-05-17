@@ -133,7 +133,7 @@ function StrikeCellRenderer(params: TradeCellParams) {
   }
   return (
     <button onClick={onClick} className="cf-focus-btn">
-      {t.strike_fmt ?? t.strike}
+      {params.valueFormatted ?? t.strike_fmt ?? t.strike}
     </button>
   )
 }
@@ -223,6 +223,10 @@ function TypeCellRenderer(params: TradeCellParams) {
   )
 }
 
+function DaySeparatorRenderer(params: ICellRendererParams<Trade>) {
+  return <div className="pb-day-separator">{params.data?.dayLabel}</div>
+}
+
 // ── Column definitions ──
 const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
@@ -256,7 +260,17 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Strike",
     field: "strike",
     cellRenderer: StrikeCellRenderer,
-    valueGetter: (p) => p.data?.strike_fmt ?? p.data?.strike,
+    valueGetter: (p) => p.data?.strike,
+    valueFormatter: (p) => {
+      const v = p.value
+      if (v == null) return ""
+      const n = typeof v === "string" ? parseFloat(v) : v
+      if (isNaN(n)) return String(v)
+      return "$" + n.toLocaleString("en-US", {
+        minimumFractionDigits: n % 1 === 0 ? 0 : 2,
+        maximumFractionDigits: 2,
+      })
+    },
     width: 76,
     minWidth: 76,
     sortable: true,
@@ -264,6 +278,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   },
   {
     headerName: "C/P",
+    colId: "cp",
     cellRenderer: CPCellRenderer,
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
     width: 64,
@@ -504,6 +519,12 @@ interface ScannerAgGridProps {
   // multi-page sort. Phase 7 / future may revisit with a backend-driven
   // multi-page sort. See memo §C5 + §F Q3.
   enableSort: boolean
+  // Density: row height in px. 35 compact / 44 comfortable.
+  rowHeight?: number
+  // Server-side sort (2026-05-15). AG Grid header click → onSortChanged
+  // → parent threads sort+order into the feed URL; backend ORDER BY on
+  // the full result set, not just the current page. null/null = unsort.
+  onSortChanged?: (field: string | null, dir: "asc" | "desc" | null) => void
 }
 
 export function ScannerAgGrid({
@@ -518,6 +539,8 @@ export function ScannerAgGrid({
   matchesFilterRef,
   onApiReady,
   enableSort,
+  onSortChanged,
+  rowHeight = 44,
 }: ScannerAgGridProps) {
   // Phase 7 (2026-05-11): custom theme tokens matching PB warm theme.
   // Tokens captured from page.tsx legacy chrome (#1C1C1E body, #252430
@@ -536,7 +559,6 @@ export function ScannerAgGrid({
         headerFontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
         headerFontWeight: 500,
         headerHeight: 36,
-        rowHeight: 44,
         fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
         fontSize: 12,
         borderColor: "rgba(255,255,255,0.06)",
@@ -604,10 +626,32 @@ export function ScannerAgGrid({
     [enableSort],
   )
 
+  // AG Grid field → backend API sort name. Frontend ColDefs use
+  // semantic field names; backend whitelist uses short names
+  // (spot, price, vol, oi). This map is the only place they touch.
+  const FIELD_TO_SORT: Record<string, string> = useMemo(() => ({
+    strike: "strike",
+    spot_fmt: "spot",
+    contracts: "contracts",
+    entry_price: "price",
+    premium: "premium",
+    day_volume: "vol",
+    open_interest: "oi",
+  }), [])
+
   const handleSortChanged = useCallback((event: SortChangedEvent<Trade>) => {
-    const active = event.api.getColumnState().filter((c) => c.sort)
-    console.info("[scanner-ag] sort changed:", active)
-  }, [])
+    const active = event.api.getColumnState().find((c) => c.sort)
+    if (!active || !active.colId || !active.sort) {
+      onSortChanged?.(null, null)
+      return
+    }
+    const apiName = FIELD_TO_SORT[active.colId] ?? null
+    if (!apiName) {
+      onSortChanged?.(null, null)
+      return
+    }
+    onSortChanged?.(apiName, active.sort as "asc" | "desc")
+  }, [onSortChanged, FIELD_TO_SORT])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -682,6 +726,22 @@ export function ScannerAgGrid({
         .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.12); border-left: 3px solid rgba(234,179,8,0.7); }
         .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.14); border-left: 3px solid rgba(168,85,247,0.8); }
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
+
+        .pb-day-separator {
+          height: 32px;
+          display: flex;
+          align-items: center;
+          padding-left: 16px;
+          background-color: #16191F;
+          border-top: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #7A8BA8;
+        }
+        .ag-row:has(.pb-day-separator) { background: transparent !important; }
 
 
         /* ── Phase 3 cellRenderer styling (matches SignalRow.tsx legacy) ── */
@@ -765,9 +825,14 @@ export function ScannerAgGrid({
         onSortChanged={handleSortChanged}
         isExternalFilterPresent={isExternalFilterPresent}
         doesExternalFilterPass={doesExternalFilterPass}
+        rowHeight={rowHeight}
+        getRowHeight={(p) => (p.data?.__isDaySeparator ? 32 : rowHeight)}
+        isFullWidthRow={(p) => !!(p.rowNode.data as Trade | undefined)?.__isDaySeparator}
+        fullWidthCellRenderer={DaySeparatorRenderer}
         pagination={false}
         suppressCellFocus
         suppressHorizontalScroll={false}
+        overlayNoRowsTemplate='<div style="color: rgba(255,255,255,0.45); font-size: 13px; padding: 32px; text-align: center;">No flow matches the current filters.</div>'
       />
     </div>
   )

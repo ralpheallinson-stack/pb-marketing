@@ -17,6 +17,8 @@ import { badgeClass } from "@/lib/badge-styles"
 export interface Trade {
   id: number
   date_time: string
+  __isDaySeparator?: boolean
+  dayLabel?: string
   symbol: string
   strike: number
   opt_type: string

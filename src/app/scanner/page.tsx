@@ -6,73 +6,8 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { SignalRow, type Trade } from "@/components/SignalRow"
 
-// AccountMenu — sidebar profile dropdown. Replaces the top-bar
-// Account/Logout links per Cheddar-parity UX (2026-05-11). Custom
-// useState + mousedown click-outside; zero new deps (Radix
-// DropdownMenu not installed and not worth adding for two items).
-// Module-scope so React preserves popover state across parent
-// re-renders.
-function AccountMenu({
-  buttonClassName,
-  children,
-}: {
-  buttonClassName: string
-  children: React.ReactNode
-}) {
-  const [open, setOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", handler)
-    return () => document.removeEventListener("mousedown", handler)
-  }, [open])
-
-  return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={buttonClassName}
-        aria-label="Profile and settings"
-        aria-expanded={open}
-        title="Profile"
-      >
-        {children}
-      </button>
-      {open ? (
-        <div
-          role="menu"
-          className="absolute left-full ml-2 bottom-0 z-50 min-w-[140px] rounded-md border border-white/[0.08] bg-stone-900 shadow-lg py-1"
-        >
-          <a
-            href="/account"
-            role="menuitem"
-            className="block px-3 py-2 text-sm text-white/80 hover:bg-white/[0.05] hover:text-white transition-colors"
-          >
-            Account
-          </a>
-          <a
-            href="/logout"
-            role="menuitem"
-            className="block px-3 py-2 text-sm text-white/80 hover:bg-white/[0.05] hover:text-white transition-colors"
-          >
-            Logout
-          </a>
-        </div>
-      ) : null}
-    </div>
-  )
-}
 import dynamic from "next/dynamic"
+import { AccountMenu } from "@/components/AccountMenu"
 
 // AG Grid migration Phase 1 harness — dynamic import keeps the AG Grid
 // bundle (~250-300KB gzipped) out of the marketing-site critical bundle
@@ -97,9 +32,12 @@ import type { GridApi } from "ag-grid-community"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis, getPageNumbers } from "@/components/ui/pagination"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
+import { FiltersDialog } from "@/components/scanner/FiltersDialog"
+import { StatsPanel } from "@/components/scanner/StatsPanel"
+import { ScannerSidebar } from "@/components/scanner-sidebar"
+import { cn } from "@/lib/utils"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Card } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
@@ -110,7 +48,7 @@ import InfoTooltip from "@/components/InfoTooltip"
 import ReplayProgress from "@/components/ReplayProgress"
 
 import Link from "next/link"
-import { decodeConds } from "./condCodes"
+import { rowsToTrades, type RawRow, type FeedMeta, type FeedResponse } from "@/lib/feed-decoder"
 /* ── types ── */
 interface Stats {
   count: number
@@ -138,103 +76,6 @@ interface ApiResponse {
  * The bandwidth win is captured at JSON.parse time; client-side dict
  * allocation cost is identical to receiving dicts off the wire.
  */
-type RawRow = unknown[];
-
-interface FeedMeta {
-  topic_id: string
-  trading_day: string
-  updated_at: string
-  filter_count: number
-  scorer_version: string
-  is_historical: boolean
-  columns: string[]
-}
-
-interface FeedAgg {
-  sentiment: { label: string; score: number; _sort_score: number }
-  pcr: number | null
-  call_flow: { premium: string; count: number; _sort_premium: number }
-  put_flow:  { premium: string; count: number; _sort_premium: number }
-}
-
-interface FeedResponse {
-  meta: FeedMeta
-  rows: RawRow[]
-  agg: FeedAgg
-  error?: string
-}
-
-/**
- * Hydrate column-array rows back into the existing Trade interface.
- * Single conversion site → all downstream render/filter/sort code keeps
- * working unchanged.
- *
- * Two derived fields:
- *   strike, premium, spot — backend ships precomputed _sort_* keys
- *     (×100 cents/×100 spot). We divide back out so existing code that
- *     reads t.premium etc. as dollars/raw values keeps working.
- *   badges — decoded from the conds[] short-code array via condCodes.ts
- *     into the {label, tier} shape badge-styles.ts expects.
- */
-function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
-  const idx: Record<string, number> = {}
-  for (let i = 0; i < columns.length; i++) idx[columns[i]] = i
-  const out: Trade[] = []
-  for (const r of rows) {
-    const condCodes = (r[idx["conds"]] as string[] | null) ?? []
-    out.push({
-      id: r[idx["id"]] as number,
-      time: r[idx["time"]] as string,
-      date_time: r[idx["date_time"]] as string,
-      symbol: r[idx["symbol"]] as string,
-      sector: r[idx["sector"]] as string,
-      expiration: r[idx["expiration"]] as string,
-      strike: ((r[idx["_sort_strike"]] as number) || 0) / 100,
-      strike_fmt: r[idx["strike_fmt"]] as string,
-      opt_type: r[idx["opt_type"]] as string,
-      aggression: r[idx["side"]] as string | null,
-      trade_direction: r[idx["bs"]] as string | null,
-      direction: (r[idx["direction"]] as string) || undefined,
-      spot_fmt: r[idx["spot_fmt"]] as string,
-      contracts: r[idx["contracts"]] as number,
-      flow_type: r[idx["flow_type"]] as string,
-      premium: ((r[idx["_sort_premium"]] as number) || 0) / 100,
-      premium_fmt: r[idx["premium_fmt"]] as string,
-      day_volume: r[idx["day_volume"]] as number,
-      open_interest: r[idx["open_interest"]] as number,
-      iv: (r[idx["iv"]] as number | null) ?? null,
-      iv_rank: (r[idx["iv_rank"]] as number | null) ?? null,
-      ruoa_streak: (r[idx["ruoa_streak"]] as number | null) ?? null,
-      grade: r[idx["grade"]] as string,
-      bullish: !!(r[idx["bullish"]] as boolean),
-      whale: !!(r[idx["whale"]] as boolean),
-      mm_suspected: !!(r[idx["mm_suspected"]] as boolean),
-      high_conviction: !!(r[idx["high_conviction"]] as boolean),
-      structure: (r[idx["structure"]] as string | null) ?? null,
-      position_action: (r[idx["position_action"]] as string) || "",
-      row_color: (r[idx["row_color"]] as "bullish" | "bearish" | undefined) ?? undefined,
-      flow_highlight: (r[idx["flow_highlight"]] as "oi_multi" | "oi_single" | "late" | null) ?? null,
-      delta: (r[idx["delta"]] as number | null) ?? null,
-      vol_oi: (r[idx["vol_oi"]] as number | undefined) ?? undefined,
-      dte: (r[idx["dte"]] as number | undefined) ?? undefined,
-      money: (r[idx["money"]] as string) || "",
-      accum_hits: (r[idx["accum_hits"]] as number | null) ?? 0,
-      accum_premium: (r[idx["accum_premium"]] as number | undefined) ?? undefined,
-      adv_multiple: (r[idx["adv_multiple"]] as number | null) ?? null,
-      conviction_strength: (r[idx["conviction_strength"]] as string | null) ?? null,
-      is_event_driven: !!(r[idx["is_event_driven"]] as boolean),
-      contract_volume_multiple: (r[idx["contract_volume_multiple"]] as number | null) ?? null,
-      baseline_volume: (r[idx["baseline_volume"]] as number | null) ?? null,
-      today_volume: (r[idx["today_volume"]] as number | null) ?? null,
-      entry_price: (r[idx["entry_price"]] as number | null) ?? null,
-      outcome: (r[idx["outcome"]] as string | undefined) ?? undefined,
-      pnl_percent: (r[idx["pnl_percent"]] as number | undefined) ?? undefined,
-      badges: decodeConds(condCodes),
-    })
-  }
-  return out
-}
-
 interface FilterPreset {
   name: string
   filters: {
@@ -265,31 +106,6 @@ function fmtPrem(v: number) {
 // pre-2026-05-10. Single-bar 0-100 gauge with a faint background ring.
 // Stays on the warm theme palette (Direction A scoping respected — palette
 // applies to filter panel only, not the stat strip).
-function KPIGaugeRing({ value, color }: { value: number; color: string }) {
-  const data = [{ name: "value", value: Math.max(0, Math.min(100, value)), fill: color }]
-  return (
-    <ChartContainer
-      config={{ value: { label: "value" } }}
-      className="!aspect-square !h-[52px] !w-[52px]"
-    >
-      <RadialBarChart
-        data={data}
-        startAngle={90}
-        endAngle={-270}
-        innerRadius="70%"
-        outerRadius="100%"
-      >
-        <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-        <RadialBar
-          dataKey="value"
-          cornerRadius={4}
-          background={{ fill: "rgba(255,255,255,0.06)" }}
-        />
-      </RadialBarChart>
-    </ChartContainer>
-  )
-}
-
 function fmtGex(v: number) {
   const abs = Math.abs(v)
   const sign = v < 0 ? "-" : ""
@@ -311,12 +127,48 @@ function isMarketOpen() {
 
 /* ── row highlight (inline styles — Tailwind JIT can't handle dynamic rgba) ── */
 /* ── time ranges (moved to filter panel) ── */
-const TIME_RANGES = [
-  { key: "today", label: "Today" },
-  { key: "week", label: "This Week" },
-  { key: "last_week", label: "Last Week" },
-  { key: "month", label: "Month" },
-] as const
+function injectDaySeparators(rows: Trade[]): Trade[] {
+  if (rows.length === 0) return rows
+  const out: Trade[] = []
+  let lastDayKey: string | null = null
+  for (const row of rows) {
+    const ts = row.date_time
+    if (!ts) { out.push(row); continue }
+    const d = new Date(ts)
+    if (isNaN(d.getTime())) { out.push(row); continue }
+    const dayKey = d.toLocaleDateString("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric", month: "2-digit", day: "2-digit",
+    })
+    if (dayKey !== lastDayKey) {
+      const label = d.toLocaleDateString("en-US", {
+        timeZone: "America/New_York",
+        weekday: "long", month: "short", day: "numeric", year: "numeric",
+      }).toUpperCase()
+      const [m, day, y] = dayKey.split("/")
+      const sepId = -parseInt(`${y}${m}${day}`, 10)
+      out.push({ id: sepId, __isDaySeparator: true, dayLabel: label } as Trade)
+      lastDayKey = dayKey
+    }
+    out.push(row)
+  }
+  return out
+}
+
+function isMarketClosedET(): boolean {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(new Date())
+  const wd = parts.find(p => p.type === "weekday")?.value
+  if (wd === "Sat" || wd === "Sun") return true
+  const hh = parseInt(parts.find(p => p.type === "hour")?.value ?? "0", 10)
+  const mm = parseInt(parts.find(p => p.type === "minute")?.value ?? "0", 10)
+  const minOfDay = hh * 60 + mm
+  return minOfDay < 570 || minOfDay >= 960
+}
+
+
 
 const COLS = [
   { key: "time",   label: "Time",   cls: "text-left px-3 w-[7%]" },
@@ -344,8 +196,41 @@ export default function ScannerPage() {
   const router = useRouter()
   const [trades, setTrades] = useState<Trade[]>([])
   const [stats, setStats] = useState<Stats>({ count: 0, bull: 0, bear: 0, lean: "MIXED", pc_ratio: 0 })
-  const [timeRange, setTimeRange] = useState("today")
+  // Phase 1 (Scanner = today-only, 2026-05-17): timeRange hardcoded.
+  // Historical browsing moved to /historical. Hardcoded as `string` (not
+  // `as const`) so TS doesn't narrow non-today branches to `never`.
+  const timeRange: string = "today"
   const [page, setPage] = useState(0)
+
+  // 1s ticker for the footer "Updated Xs ago" indicator. Reads
+  // lastSuccessRef.current at render time; the tick triggers re-render.
+  // Whole page re-renders every 1s but AG Grid uses imperative gridApi
+  // updates so its rowData is unaffected.
+  // Server-side total filtered count (Patch — 2026-05-17). Populated
+  // from fd.meta.total on page 0; reused across pagination (server
+  // returns it cached 60s). null when unknown — footer falls back to
+  // trades.length so the "of Y" suffix never disappears.
+  const [serverTotal, setServerTotal] = useState<number | null>(null)
+
+  const [nowTs, setNowTs] = useState(Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNowTs(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Density toggle (Patch 6, 2026-05-17) — compact 35px / comfortable 44px,
+  // persisted to localStorage. AG Grid honors via rowHeight prop.
+  const [density, setDensity] = useState<"compact" | "comfortable">("comfortable")
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const v = window.localStorage.getItem("pb_density")
+    if (v === "compact" || v === "comfortable") setDensity(v)
+  }, [])
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try { window.localStorage.setItem("pb_density", density) } catch {}
+  }, [density])
+  const rowHeightPx = density === "compact" ? 35 : 44
   const [search, setSearch] = useState("")
   const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
@@ -512,6 +397,17 @@ export default function ScannerPage() {
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
   const [focusStrike, setFocusStrike] = useState<string | null>(null)
   const [focusExpiry, setFocusExpiry] = useState<string | null>(null)
+  // Server-side sort (2026-05-15) — AG Grid header click → setSortField/Dir
+  // → buildScannerUrl threads ?sort=&order= → backend ORDER BY on full
+  // result set (not just the current page).
+  const [sortField, setSortField] = useState<string | null>(null)
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | null>(null)
+  // Day separators only valid on multi-day non-today ranges + time-sorted
+  // rows. Refs let agGridReplace decide at call-time without re-binding.
+  const sortFieldRef = useRef<string | null>(null)
+  const timeRangeRef = useRef<string>("today")
+  useEffect(() => { sortFieldRef.current = sortField }, [sortField])
+  useEffect(() => { timeRangeRef.current = timeRange }, [timeRange])
   const lastTradeIdRef = useRef<number>(0)
   const isFirstLoadRef = useRef<boolean>(true)
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -741,7 +637,9 @@ export default function ScannerPage() {
   const agGridReplace = useCallback((rows: Trade[]) => {
     const api = gridApiRef.current
     if (!api) return
-    api.setGridOption("rowData", rows.filter((t) => !t.mm_suspected))
+    const filtered = rows.filter((t) => !t.mm_suspected)
+    const shouldInject = timeRangeRef.current !== "today" && !sortFieldRef.current
+    api.setGridOption("rowData", shouldInject ? injectDaySeparators(filtered) : filtered)
     // CONDS autoHeight stale-height workaround (2026-05-12): after a
     // full snapshot replace, AG Grid v35 occasionally retains prior
     // measured row heights for the new content, causing phantom empty
@@ -1107,14 +1005,19 @@ export default function ScannerPage() {
     p.set("grades", filterCuratedOnly ? "A,B" : "A,B,PASS")
     if (filterExcludeMidpoint) p.set("exclude_side", "MIDPOINT")
     if (filterExcludeMultiLeg) p.set("exclude_multi_leg", "1")
+    if (sortField && sortDir) { p.set("sort", sortField); p.set("order", sortDir) }
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
     if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
+    // Non-today initial fetch (no since_id, no explicit page) gets the
+    // full filtered set in one shot so continuous virtualized scroll
+    // works without pagination. Backend cap 25000.
+    if (pg === 0 && !opts?.sinceId && timeRange !== "today") p.set("page_size", "25000")
     // Dashboard bundle is page-0 only (Q1 default). Skip on incremental
     // polls — server already strips dashboard when since_id is set, this
     // just saves a few URL bytes.
     if (pg === 0 && !opts?.sinceId) p.set("include_dashboard", "1")
     return `/api/scanner/feed?${p.toString()}`
-  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
   // Feature flag: opt-in via `localStorage.setItem('pb_scanner_feed','1')` on
   // the browser DevTools console. Default OFF — existing live-flow path
@@ -1218,6 +1121,9 @@ export default function ScannerPage() {
       // legacy split branches below. Bug 2 endpoint unification —
       // project_pb_scanner_endpoint_unification_design.md §Phase 2.
       if (useUnifiedEndpoint() && !unifiedDisabledRef.current) {
+        // Continuous-scroll mode (Patch — 2026-05-17): non-today modes
+        // also get incremental top-ups so the in-memory buffer stays
+        // current as new trades arrive. trades grows up to the 20K cap.
         const isIncrementalCall = pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0
         const sinceId = isIncrementalCall ? lastTradeIdRef.current : undefined
         try {
@@ -1236,6 +1142,7 @@ export default function ScannerPage() {
           feedMetaRef.current = fd.meta
           feedColumnsRef.current = fd.meta.columns
           setTopicId(fd.meta.topic_id)
+          if (typeof fd.meta.total === "number" && fd.meta.total > 0) setServerTotal(fd.meta.total)
           const incoming = rowsToTrades(fd.rows || [], fd.meta.columns)
 
           if (isIncrementalCall) {
@@ -1286,7 +1193,8 @@ export default function ScannerPage() {
         }
       }
 
-      // Incremental polling — only on page 0 (live) after first load
+      // Incremental polling — page 0 + after first load. Both Today and
+      // non-today use it now (continuous-scroll mode).
       if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
         const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }), { signal: ac.signal })
         if (isAuthRedirect(res)) {
@@ -1325,6 +1233,7 @@ export default function ScannerPage() {
         feedMetaRef.current = fd.meta
         feedColumnsRef.current = fd.meta.columns
         setTopicId(fd.meta.topic_id)
+        if (typeof fd.meta.total === "number" && fd.meta.total > 0) setServerTotal(fd.meta.total)
         const incoming = rowsToTrades(fd.rows || [], fd.meta.columns)
         if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
           playBlipRef.current()
@@ -1407,7 +1316,7 @@ export default function ScannerPage() {
     setTrades([])
     agGridReplace([])
     fetchDataRef.current?.({ initial: true, pageNum: page })
-  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg])
+  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
   // auto-refresh every 3s on page 0 (live).
   //
@@ -1533,6 +1442,7 @@ export default function ScannerPage() {
   }, [filterExcludeMultiLeg])
 
   const matchesFilter = useCallback((t: Trade) => {
+    if (t.__isDaySeparator) return true
     if (search && !t.symbol.toLowerCase().includes(search.toLowerCase())) return false
     if (focusTicker && t.symbol !== focusTicker) return false
     if (focusStrike && String(t.strike) !== focusStrike) return false
@@ -1797,81 +1707,33 @@ export default function ScannerPage() {
     }
   }, [filtered, timeRange, rangeAgg])
 
-  const iconCls = "w-[22px] h-[22px]"
-  const sideBtn = (active: boolean) => `w-14 h-14 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all cursor-pointer ${active ? "bg-white/[0.1] text-white" : "text-white/40 hover:text-white/80 hover:bg-white/[0.06]"}`
-  const sideCircle = (active: boolean) => `w-10 h-10 flex items-center justify-center rounded-full transition-all cursor-pointer ${active ? "bg-white/[0.14] text-white" : "bg-white/[0.05] text-white/45 hover:text-white/90 hover:bg-white/[0.1]"}`
-
   return (
-    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#1C1C1E', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
+    <div className="h-screen flex text-[#E8EDF5] overflow-hidden" style={{ background: '#0E1117', fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}>
       {pollError && (
         <div role="status" aria-live="polite" className="fixed top-2 right-2 z-50 px-3 py-1.5 rounded text-xs font-medium text-white shadow-lg" style={{ background: "rgba(217,119,6,0.92)" }}>
           {pollError}
         </div>
       )}
 
-      {/* ── SIDEBAR ── */}
-      <nav className="fixed left-0 top-0 h-full w-[68px] flex flex-col items-center py-4 gap-2 z-40" style={{ background: '#23222D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-        {/* Logo */}
-        <Link href="/" className="mb-3 flex items-center justify-center" aria-label="Home">
-          <img src="/images/pb-logo.png" alt="Profit Builders" width={32} height={32} className="w-8 h-8 object-contain" />
-        </Link>
-
-        {/* Main nav */}
-        <button onClick={() => setActivePage("scanner")} className={sideBtn(activePage === "scanner")} title="Flow Scanner">
-          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5V19a1 1 0 001 1h4V13.5M3 13.5V10a1 1 0 011-1h4a1 1 0 011 1v3.5M3 13.5h6M9 13.5V19h4V9.5M9 13.5h4M13 13.5V6a1 1 0 011-1h4a1 1 0 011 1v13h-4V13.5M13 13.5h6" /></svg>
-          <span className="text-[10px] font-medium tracking-wider text-white/50">Flow</span>
-        </button>
-        <button
-          onClick={() => canAccessGamma ? setActivePage("heatmap") : setShowUpgradeModal(true)}
-          className={`${sideBtn(activePage === "heatmap")} relative`}
-          title={canAccessGamma ? "GEX Heatmap" : "Upgrade for GEX"}
-        >
-          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-          <span className="text-[10px] font-medium tracking-wider text-white/50">GEX</span>
-          {<span className="absolute -top-0.5 -right-0.5 text-[8px] font-bold text-[#48DEFF] bg-[#48DEFF]/20 px-1.5 py-0.5 rounded-md">NEW</span>}
-        </button>
-        <button onClick={() => setActivePage("watchlist")} className={sideBtn(activePage === "watchlist")} title="Watchlist">
-          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
-          <span className="text-[10px] font-medium tracking-wider text-white/50">Watch</span>
-        </button>
-
-        <div className="w-6 h-px bg-white/[0.06] my-1" />
-
-        {/* Filters */}
-        <button onClick={() => setShowFilters(true)} className={sideBtn(showFilters)} title="Filters">
-          <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" d="M3 4h18M6 8h12M9 12h6" /></svg>
-          <span className="text-[10px] font-medium tracking-wider text-white/50">Filters</span>
-        </button>
-
-        {/* Market status — pinned to bottom */}
-        <div className="mt-auto flex flex-col items-center gap-1 pt-3 pb-2 w-full border-t border-white/[0.06]" title={marketOpen ? "Market open" : "Market closed"}>
-          <style>{`@keyframes pb-ping { 75%, 100% { transform: scale(2); opacity: 0; } } .pb-dot-ping { animation: pb-ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }`}</style>
-          <div style={{ position: "relative", width: 8, height: 8 }}>
-            <div className={marketOpen ? "pb-dot-ping" : ""} style={{ position: "absolute", inset: 0, borderRadius: "50%", background: marketOpen ? "#22c55e" : "#ef4444", opacity: 0.4 }} />
-            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: marketOpen ? "#22c55e" : "#ef4444" }} />
-          </div>
-          <span style={{ fontSize: 8, fontFamily: "monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: marketOpen ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.25)" }}>
-            {marketOpen ? "OPEN" : "CLOSED"}
-          </span>
-        </div>
-
-        {/* Bottom circle buttons */}
-        <div className="flex flex-col items-center gap-2">
-          <button onClick={toggleSound} className={sideCircle(soundEnabled)} title={soundEnabled ? "Sound on" : "Sound off"}>
-            {soundEnabled ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
-            )}
-          </button>
-          <AccountMenu buttonClassName={sideCircle(false)}>
+      <ScannerSidebar
+        activePage={activePage}
+        setActivePage={setActivePage}
+        canAccessGamma={canAccessGamma}
+        setShowUpgradeModal={setShowUpgradeModal}
+        setShowFilters={setShowFilters}
+        activeFilterCount={activeFilterCount}
+        marketOpen={marketOpen}
+        soundEnabled={soundEnabled}
+        toggleSound={toggleSound}
+        accountMenu={
+          <AccountMenu buttonClassName="group relative flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-zinc-200">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.6}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
           </AccountMenu>
-        </div>
-      </nav>
+        }
+      />
 
       {/* ── MAIN CONTENT ── */}
-      <div className="ml-[68px] flex flex-col h-screen overflow-hidden flex-1">
+      <div className="ml-16 flex flex-col h-screen overflow-hidden flex-1">
       <TrialBanner />
 
       {activePage === "heatmap" ? ((() => {
@@ -2389,10 +2251,11 @@ export default function ScannerPage() {
             })()}
           </div>
         </div>
-      ) : (<>
+      ) : (
+        <div className="flex flex-1 flex-col gap-2 p-2 overflow-hidden">
 
       {/* ── HEADER ── */}
-      <header className="h-12 border-b border-white/[0.06] flex items-center px-4 flex-shrink-0" style={{ background: '#252430' }}>
+      <header className="h-12 border border-white/[0.06] rounded-lg flex items-center px-4 flex-shrink-0" style={{ background: '#16191F' }}>
         <div className="flex items-center gap-3 ml-auto">
           <InputGroup
             className="bg-stone-900/40 border-stone-800 focus-within:border-amber-600 rounded-xl h-[43px] transition-colors"
@@ -2406,7 +2269,14 @@ export default function ScannerPage() {
               placeholder="Search ticker..."
               value={searchInput}
               onChange={e => setSearchInput(e.target.value.toUpperCase())}
-              onKeyDown={e => { if (e.key === "Enter") { setSearch(searchInput); setPage(0) } if (e.key === "Escape") { setSearchInput(""); setSearch("") } }}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  const v = searchInput.trim().toUpperCase()
+                  if (v) { setFocusTicker(v); setSearchInput(""); setSearch("") }
+                  setPage(0)
+                }
+                if (e.key === "Escape") { setSearchInput(""); setSearch("") }
+              }}
               className="text-white text-[13px] font-mono tracking-wide placeholder-stone-500"
             />
             <InputGroupAddon align="inline-end">
@@ -2414,19 +2284,61 @@ export default function ScannerPage() {
             </InputGroupAddon>
           </InputGroup>
           <div className="w-px h-7 bg-white/[0.06]" />
-          <Button variant="outline" size="sm" onClick={() => setShowFilters(true)} className="gap-1.5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-60"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">{activeFilterCount}</span>
-            )}
-          </Button>
+          <button
+            type="button"
+            onClick={() => setDensity(d => d === "compact" ? "comfortable" : "compact")}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-stone-400 hover:bg-white/[0.06] hover:text-stone-200 transition-colors"
+            title={density === "compact" ? "Switch to comfortable rows" : "Switch to compact rows"}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              {density === "compact"
+                ? <path strokeLinecap="round" d="M3 6h18M3 10h18M3 14h18M3 18h18" />
+                : <path strokeLinecap="round" d="M3 7h18M3 12h18M3 17h18" />}
+            </svg>
+          </button>
+          <FiltersDialog
+            open={showFilters}
+            onOpenChange={setShowFilters}
+            trigger={
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-60"><path strokeLinecap="round" d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">{activeFilterCount}</span>
+                )}
+              </Button>
+            }
+            filterOptType={filterOptType}
+            setFilterOptType={setFilterOptType}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            filterExcludeMultiLeg={filterExcludeMultiLeg}
+            setFilterExcludeMultiLeg={setFilterExcludeMultiLeg}
+            filterMinPremium={filterMinPremium}
+            setFilterMinPremium={setFilterMinPremium}
+            filterDte={filterDte}
+            setFilterDte={setFilterDte}
+            filterMinContracts={filterMinContracts}
+            setFilterMinContracts={setFilterMinContracts}
+            filterMinVolOi={filterMinVolOi}
+            setFilterMinVolOi={setFilterMinVolOi}
+            filterCuratedOnly={filterCuratedOnly}
+            setFilterCuratedOnly={setFilterCuratedOnly}
+            filterUnusualOnly={filterUnusualOnly}
+            setFilterUnusualOnly={setFilterUnusualOnly}
+            filterNoIndex={filterNoIndex}
+            setFilterNoIndex={setFilterNoIndex}
+            filterExcludeMidpoint={filterExcludeMidpoint}
+            setFilterExcludeMidpoint={setFilterExcludeMidpoint}
+            activeFilterCount={activeFilterCount}
+            resetFilters={resetFilters}
+          />
         </div>
       </header>
 
       {/* ── FOCUS BAR ── */}
       {(focusTicker || filterOptType || filterSide || filterBuySell || filterType) && (
-        <div className="border-b border-white/[0.04] px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#23222D' }}>
+        <div className="border border-white/[0.06] rounded-lg px-3 py-1.5 flex items-center gap-2 flex-wrap flex-shrink-0" style={{ background: '#16191F' }}>
           {focusTicker && (
             <Button
               variant="secondary"
@@ -2495,77 +2407,23 @@ export default function ScannerPage() {
       )}
 
       {/* ── STATS BAR ── */}
-      {(() => {
-        const totalPrem = displayStats.bull + displayStats.bear
-        const bullPct = totalPrem > 0 ? (displayStats.bull / totalPrem) * 100 : 50
-        const isBull = displayStats.lean === "BULL"
-        const totalCount = calls + puts
-        const callSharePct = Math.round((calls / (totalCount || 1)) * 100)
-        const putSharePct = Math.round((puts / (totalCount || 1)) * 100)
-        return (
-          <div className="grid border-b border-white/[0.06] flex-shrink-0" style={{ gridTemplateColumns: '1fr 1px 1fr 1px 1fr 1px 1fr', background: '#1C1C1E' }}>
+      <StatsPanel
+        displayStats={displayStats}
+        callPrem={callPrem}
+        putPrem={putPrem}
+        calls={calls}
+        puts={puts}
+      />
 
-            {/* Flow sentiment */}
-            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing
-                value={Math.round(bullPct)}
-                color={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
-              />
-              <div>
-                <div className="text-[12px] text-white/50 mb-1">Flow sentiment</div>
-                <span className={`text-[24px] font-semibold leading-none ${isBull ? "text-[#22C55E]" : displayStats.lean === "BEAR" ? "text-[#FF605D]" : "text-white/90"}`}>
-                  {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
-                </span>
-                <div className="text-[10px] text-white/30 mt-0.5 tracking-wide" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</div>
-              </div>
-            </Card>
-
-            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
-
-            {/* Put to call */}
-            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing
-                value={Math.min(Math.round(displayStats.pc_ratio * 50), 100)}
-                color="#48DEFF"
-              />
-              <div>
-                <div className="text-[12px] text-white/50 mb-1">Put to call</div>
-                <div className="text-[24px] font-semibold text-white leading-none font-mono">{displayStats.pc_ratio.toFixed(3)}</div>
-              </div>
-            </Card>
-
-            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
-
-            {/* Call flow */}
-            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing value={callSharePct} color="#22C55E" />
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[12px] text-white/50">Call flow</span>
-                  <span className="text-[13px] font-semibold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
-                </div>
-                <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
-              </div>
-            </Card>
-
-            <div style={{ background: 'rgba(255,255,255,0.06)' }} />
-
-            {/* Put flow */}
-            <Card className="border-0 rounded-none bg-transparent shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4">
-              <KPIGaugeRing value={putSharePct} color="#FF605D" />
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[12px] text-white/50">Put flow</span>
-                  <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
-                </div>
-                <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString()}</div>
-              </div>
-            </Card>
-
-          </div>
-        )
-      })()}
-
+      <div className="flex flex-1 flex-col overflow-hidden border border-white/[0.06] rounded-lg" style={{ background: '#16191F' }}>
+      {trades.length === 0 && !loading && isMarketClosedET() && (
+        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <span className="text-sm text-zinc-400">Market closed — no live flow right now.</span>
+          <Link href="/historical" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-4 decoration-cyan-400/40 hover:decoration-cyan-300 transition-colors">
+            Browse historical sessions →
+          </Link>
+        </div>
+      )}
       {/* ── TABLE ── */}
       {/* AG Grid Phase 1 harness gate: when flag is on, render empty AG Grid
           harness instead of the legacy table. tableContainerRef stays attached
@@ -2585,7 +2443,9 @@ export default function ScannerPage() {
           setFilterType={setFilterType}
           matchesFilterRef={matchesFilterRef}
           onApiReady={handleAgGridApiReady}
-          enableSort={timeRange === "today"}
+          enableSort={true}
+          onSortChanged={(field, dir) => { setSortField(field); setSortDir(dir); setPage(0); setClientPage(0) }}
+          rowHeight={rowHeightPx}
         />
       ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>
@@ -2624,7 +2484,7 @@ export default function ScannerPage() {
           </table>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-white/15 text-xs">
-            {search ? `No trades matching "${search}"` : "No trades found for this period."}
+            {search ? `No trades matching "${search}"` : "No flow matches the current filters."}
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -2660,21 +2520,31 @@ export default function ScannerPage() {
       </div>
       )}
 
-      {/* ── PAGINATION BAR — shadcn-style numbered Pagination ── */}
-      <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-[#252E3D] bg-[#161B24] flex-shrink-0">
-        {/* Left: signal count + range label (replaces inline mid-bar text) */}
-        <div className="text-[11px] text-[#4A5A72] tabular-nums">
-          {timeRange === "today" ? (
-            <>Page <span className="text-[#E7E5E4] font-medium">{clientPage + 1}</span> of <span className="text-[#E7E5E4] font-medium">{totalClientPages}</span> · {filtered.length.toLocaleString()} signals</>
-          ) : (
-            page === 0
-              ? <>{filtered.length.toLocaleString()} signals</>
-              : <>Page <span className="text-[#E7E5E4] font-medium">{page + 1}</span> · {timeRange.replace("_", " ")}</>
-          )}
+      {/* ── PAGINATION BAR — 3-column: Updated · counts/page · prev/next ── */}
+      <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] flex-shrink-0">
+        {/* Left: market dot + Updated Xs ago */}
+        <div className="flex items-center gap-2 text-[11px] text-zinc-500 tabular-nums">
+          <span className={cn("h-1.5 w-1.5 rounded-full", marketOpen ? "bg-emerald-400 animate-pulse" : "bg-zinc-600")} />
+          <span>Updated {(() => {
+            const s = Math.max(0, Math.floor((nowTs - lastSuccessRef.current) / 1000))
+            if (s < 60) return `${s}s ago`
+            if (s < 3600) return `${Math.floor(s / 60)}m ago`
+            return `${Math.floor(s / 3600)}h ago`
+          })()}</span>
+        </div>
+
+        {/* Center: showing N · Page X of Y */}
+        <div className="flex items-center gap-6 text-[11px] text-zinc-500 tabular-nums">
+          <span>
+            Showing <span className="text-zinc-300 font-medium">{pageRows.length.toLocaleString()}</span>
+            {' of '}
+            <span className="text-zinc-300 font-medium">{filtered.length.toLocaleString()}</span>
+          </span>
+          <span>Page <span className="text-zinc-300 font-medium">{clientPage + 1}</span> of <span className="text-zinc-300 font-medium">{totalClientPages}</span></span>
         </div>
 
         {/* Right: numbered Pagination component */}
-        {timeRange === "today" ? (
+        {true ? (
           <Pagination className="w-auto mx-0">
             <PaginationContent>
               <PaginationItem>
@@ -2706,392 +2576,12 @@ export default function ScannerPage() {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        ) : (
-          // Server-side pagination — total pages unknown until the server
-          // returns < page_size rows. Show prev / current-page / next only.
-          <Pagination className="w-auto mx-0">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => { setPage(Math.max(0, page - 1)); tableContainerRef.current?.scrollTo(0, 0) }}
-                  disabled={page === 0}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink isActive size="icon">{page + 1}</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => { setPage(page + 1); tableContainerRef.current?.scrollTo(0, 0) }}
-                  disabled={trades.length < 2000 && page > 0}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+        ) : null  /* continuous scroll on non-today; no pagination controls */}
       </div>
 
-      {/* ── FILTER PANEL ── */}
-      {showFilters && (
-        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowFilters(false)}>
-          <div className="w-[340px] h-full overflow-y-auto" style={{ background: '#232225', borderLeft: '1px solid rgba(255,255,255,0.06)' }}
-            onClick={e => e.stopPropagation()}>
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <span className="text-[15px] font-semibold">Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className="text-[10px] bg-[#48DEFF]/15 text-[#48DEFF] px-2 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <button onClick={resetFilters} className="text-[12px] text-white hover:underline">Reset</button>
-                <button onClick={() => setShowFilters(false)} className="text-white/40 hover:text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div className="px-5 py-4 space-y-6">
-
-              {/* ── TIME RANGE ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Time range</div>
-                <ToggleGroup
-                  type="single"
-                  value={timeRange}
-                  onValueChange={(v) => { if (v) { setTimeRange(v); setPage(0); setClientPage(0) } }}
-                  className="grid grid-cols-4 gap-1.5"
-                >
-                  {TIME_RANGES.map(tr => (
-                    <ToggleGroupItem
-                      key={tr.key}
-                      value={tr.key}
-                      className="text-[11px] font-medium py-2 rounded-lg border bg-white/[0.04] border-white/[0.08] text-stone-400 hover:border-white/[0.15] hover:text-stone-200 data-[state=on]:bg-amber-700/15 data-[state=on]:border-amber-700/40 data-[state=on]:text-amber-500"
-                    >
-                      {tr.label}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── SAVED PRESETS ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Saved presets</div>
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {presets.map(p => (
-                    <div key={p.name} className="group flex items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-md px-2.5 py-1.5 cursor-pointer hover:border-[#48DEFF]/40 hover:bg-[#48DEFF]/5 transition-colors"
-                      onClick={() => loadPreset(p)}>
-                      <span className="text-[12px] text-white/60 group-hover:text-[#48DEFF]">{p.name}</span>
-                      <button onClick={e => { e.stopPropagation(); deletePreset(p.name) }}
-                        className="text-white/20 hover:text-[#FF605D] ml-0.5 text-[10px]">✕</button>
-                    </div>
-                  ))}
-                  {!showSavePreset ? (
-                    <button onClick={() => setShowSavePreset(true)}
-                      className="flex items-center gap-1 border border-dashed border-white/[0.12] rounded-md px-2.5 py-1.5 text-[12px] text-white/30 hover:text-white/50 hover:border-white/20 transition-colors">
-                      <span>+</span> Save current
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 w-full mt-1">
-                      <input value={presetName} onChange={e => setPresetName(e.target.value)}
-                        onKeyDown={e => e.key === "Enter" && savePreset(presetName)}
-                        placeholder="Preset name..."
-                        className="flex-1 bg-white/[0.04] border border-white/[0.12] rounded-md px-2.5 py-1.5 text-[12px] text-white placeholder-white/25 focus:outline-none focus:border-[#48DEFF]/40"
-                        autoFocus />
-                      <button onClick={() => savePreset(presetName)}
-                        className="px-2.5 py-1.5 bg-[#48DEFF] text-[#1C1C1E] rounded-md text-[11px] font-semibold hover:bg-[#6ee8ff]">Save</button>
-                      <button onClick={() => { setShowSavePreset(false); setPresetName("") }}
-                        className="text-white/30 hover:text-white/60 text-[12px]">✕</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── DIRECTION ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Direction</div>
-                <div className="space-y-0">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Calls only</div>
-                      <div className="text-[12px] text-stone-400">Show call options only</div>
-                    </div>
-                    <Switch
-                      checked={filterOptType === "C"}
-                      onCheckedChange={(v) => setFilterOptType(v ? "C" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Puts only</div>
-                      <div className="text-[12px] text-stone-400">Show put options only</div>
-                    </div>
-                    <Switch
-                      checked={filterOptType === "P"}
-                      onCheckedChange={(v) => setFilterOptType(v ? "P" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── FLOW TYPE ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Flow type</div>
-                <div className="space-y-0">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Sweeps only</div>
-                      <div className="text-[12px] text-stone-400">Multi-leg aggressive fills</div>
-                    </div>
-                    <Switch
-                      checked={filterType === "SWEEP"}
-                      onCheckedChange={(v) => setFilterType(v ? "SWEEP" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Blocks only</div>
-                      <div className="text-[12px] text-stone-400">Single-fill large orders</div>
-                    </div>
-                    <Switch
-                      checked={filterType === "BLOCK"}
-                      onCheckedChange={(v) => setFilterType(v ? "BLOCK" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── SIGNAL QUALITY ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Signal quality</div>
-                <div className="space-y-0">
-<div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Unusual only</div>
-                      <div className="text-[12px] text-stone-400">V/OI flagged activity</div>
-                    </div>
-                    <Switch
-                      checked={filterUnusualOnly}
-                      onCheckedChange={setFilterUnusualOnly}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">No index</div>
-                      <div className="text-[12px] text-stone-400">Hide SPX, SPXW, NDX, RUT, VIX</div>
-                    </div>
-                    <Switch
-                      checked={filterNoIndex}
-                      onCheckedChange={setFilterNoIndex}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Curated grades only</div>
-                      <div className="text-[12px] text-stone-400">Hide graded-PASS flow (lower-win-rate signals)</div>
-                    </div>
-                    <Switch
-                      checked={filterCuratedOnly}
-                      onCheckedChange={setFilterCuratedOnly}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── EXCLUSIONS ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Exclusions</div>
-                <div className="space-y-0">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Exclude midpoint</div>
-                      <div className="text-[12px] text-stone-400">Hide rows where SIDE renders &ldquo;Mid&rdquo; (non-directional fills)</div>
-                    </div>
-                    <Switch
-                      checked={filterExcludeMidpoint}
-                      onCheckedChange={setFilterExcludeMidpoint}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Exclude multi-leg</div>
-                      <div className="text-[12px] text-stone-400">Hide straddles, strangles, verticals, and OPRA multi-leg prints</div>
-                    </div>
-                    <Switch
-                      checked={filterExcludeMultiLeg}
-                      onCheckedChange={setFilterExcludeMultiLeg}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── SIDE ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Side</div>
-                <div className="space-y-0">
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">Above ask only</div>
-                      <div className="text-[12px] text-stone-400">Most aggressive — paid above ask</div>
-                    </div>
-                    <Switch
-                      checked={filterSide === "ABOVE_ASK"}
-                      onCheckedChange={(v) => setFilterSide(v ? "ABOVE_ASK" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04]">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">At ask only</div>
-                      <div className="text-[12px] text-stone-400">Aggressive buys at the ask</div>
-                    </div>
-                    <Switch
-                      checked={filterSide === "AT_ASK"}
-                      onCheckedChange={(v) => setFilterSide(v ? "AT_ASK" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between py-2.5">
-                    <div>
-                      <div className="text-[14px] text-stone-200 font-medium">At bid only</div>
-                      <div className="text-[12px] text-stone-400">Sells hitting the bid</div>
-                    </div>
-                    <Switch
-                      checked={filterSide === "AT_BID"}
-                      onCheckedChange={(v) => setFilterSide(v ? "AT_BID" : "")}
-                      className="data-[state=checked]:bg-stone-700 data-[state=unchecked]:bg-white/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-stone-800" />
-
-              {/* ── RANGE FILTERS ── */}
-              <div>
-                <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-stone-600 mb-3">Range filters</div>
-
-                {/* Min Premium */}
-                <div className="mb-5">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-stone-200 font-medium">Min premium</span>
-                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
-                      {({"": "Any", "50000": "$50K", "100000": "$100K", "200000": "$200K", "500000": "$500K", "1000000": "$1M", "5000000": "$5M+"} as Record<string, string>)[filterMinPremium] || "Any"}
-                    </span>
-                  </div>
-                  <Slider min={0} max={6} step={1}
-                    value={[({"": 0, "50000": 1, "100000": 2, "200000": 3, "500000": 4, "1000000": 5, "5000000": 6} as Record<string, number>)[filterMinPremium] ?? 0]}
-                    onValueChange={([v]) => setFilterMinPremium(["", "50000", "100000", "200000", "500000", "1000000", "5000000"][v])}
-                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
-                  />
-                  <div className="flex justify-between mt-1">
-                    {["Any", "$50K", "$100K", "$200K", "$500K", "$1M", "$5M+"].map(l => (
-                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Min Contracts */}
-                <div className="mb-5">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-stone-200 font-medium">Min contracts</span>
-                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
-                      {filterMinContracts === 0 ? "Any" : filterMinContracts.toLocaleString()}
-                    </span>
-                  </div>
-                  <Slider min={0} max={2000} step={50}
-                    value={[filterMinContracts]}
-                    onValueChange={([v]) => setFilterMinContracts(v)}
-                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
-                  />
-                  <div className="flex justify-between mt-1">
-                    {["0", "500", "1K", "1.5K", "2K"].map(l => (
-                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Max DTE */}
-                <div className="mb-5">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-stone-200 font-medium">Max DTE</span>
-                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
-                      {filterDte === "0dte" ? "0DTE" : filterDte === "1-7" ? "7d" : filterDte === "8-30" ? "30d" : filterDte === "30+" ? "30d+" : "All"}
-                    </span>
-                  </div>
-                  <Slider min={0} max={4} step={1}
-                    value={[({"": 0, "0dte": 1, "1-7": 2, "8-30": 3, "30+": 4} as Record<string, number>)[filterDte] ?? 0]}
-                    onValueChange={([v]) => setFilterDte(["", "0dte", "1-7", "8-30", "30+"][v])}
-                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
-                  />
-                  <div className="flex justify-between mt-1">
-                    {["All", "0DTE", "1-7d", "8-30d", "30d+"].map(l => (
-                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Min V/OI Ratio */}
-                <div className="mb-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[13px] text-stone-200 font-medium">Min V/OI ratio</span>
-                    <span className="text-[13px] text-amber-600 font-semibold font-mono">
-                      {filterMinVolOi === 0 ? "Any" : (filterMinVolOi / 10).toFixed(1) + "x"}
-                    </span>
-                  </div>
-                  <Slider min={0} max={50} step={5}
-                    value={[filterMinVolOi]}
-                    onValueChange={([v]) => setFilterMinVolOi(v)}
-                    className="w-full [&_[data-slot=slider-track]]:bg-stone-950 [&_[data-slot=slider-range]]:bg-stone-700 [&_[data-slot=slider-thumb]]:bg-stone-200 [&_[data-slot=slider-thumb]]:border-stone-700"
-                  />
-                  <div className="flex justify-between mt-1">
-                    {["Any", "1x", "2x", "3x", "4x", "5x"].map(l => (
-                      <span key={l} className="text-[9px] text-stone-600 font-mono">{l}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* ── APPLY BUTTON ── */}
-              <button onClick={() => setShowFilters(false)}
-                className="w-full py-2.5 bg-amber-600 text-stone-950 rounded-lg text-[13px] font-semibold hover:bg-amber-500 active:scale-[0.98] transition-all">
-                Apply filters
-              </button>
-
-            </div>
-          </div>
+      </div>
         </div>
       )}
-
-      </>)}
 
       {/* ── UPGRADE MODAL ── */}
       {showUpgradeModal && (
