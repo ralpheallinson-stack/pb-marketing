@@ -831,6 +831,18 @@ export function ScannerAgGrid({
           /* Density refinement: removed border-bottom rgba(0.04). Pure
              vertical spacing rhythm separates rows (Cheddar pattern). */
           font-variant-numeric: tabular-nums;
+          /* Row-motion (2026-05-18 revised). Opacity-only fade-in;
+             transform + top transitions removed because rows arriving
+             faster than 240ms left the slide-down stuck mid-frame
+             (visible gaps + out-of-order timestamps at high signal
+             rates). Rows now snap to their correct Y instantly, only
+             the soft fade signals "something new arrived." */
+          transition: opacity 200ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ag-row {
+            transition: none !important;
+          }
         }
         /* Edit 1: cell horizontal padding 15px → 9px. Frees ~180px
            across the row. AG Grid sets cell padding inline; !important
@@ -1013,6 +1025,17 @@ export function ScannerAgGrid({
         isFullWidthRow={(p) => !!(p.rowNode.data as Trade | undefined)?.__isDaySeparator}
         fullWidthCellRenderer={DaySeparatorRenderer}
         pagination={false}
+        // animateRows={false} (2026-05-18). AG Grid's default true emits
+        // `style="transition: transform 0.4s, top 0.4s, opacity 0.2s"`
+        // inline on each .ag-row, beating our opacity-only CSS even with
+        // !important (inline style takes precedence over CSS !important
+        // when the library also injects inline !important). At high
+        // signal rates the 0.4s transform/top slide left rows visibly
+        // stuck mid-frame (out-of-order timestamps, empty gaps). With
+        // animation off, rows snap to position instantly and our
+        // `.ag-row { transition: opacity 200ms !important }` finally
+        // takes effect for the soft fade-in.
+        animateRows={false}
         suppressCellFocus
         suppressHorizontalScroll={false}
         overlayNoRowsTemplate='<div style="color: rgba(255,255,255,0.45); font-size: 13px; padding: 32px; text-align: center;">No flow matches the current filters.</div>'
