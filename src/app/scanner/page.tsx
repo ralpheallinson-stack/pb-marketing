@@ -36,6 +36,7 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import { exportTradesToCsv } from "@/lib/csv-export"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { StatsPanel } from "@/components/scanner/StatsPanel"
 import { ScannerSidebar } from "@/components/scanner-sidebar"
 import { cn } from "@/lib/utils"
@@ -201,19 +202,24 @@ export default function ScannerPage() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
 
-  // Density toggle (Patch 6, 2026-05-17) — compact 35px / comfortable 44px,
-  // persisted to localStorage. AG Grid honors via rowHeight prop.
-  const [density, setDensity] = useState<"compact" | "comfortable">("comfortable")
+  // Density (Round 1, 2026-05-18) — extended from 2 levels (compact/
+  // comfortable @ 35/44px) to 3 levels (compact/comfortable/spacious
+  // @ 28/35/48px). Existing pb_density localStorage values remap
+  // cleanly: any prior "compact"/"comfortable" still parses; new
+  // "spacious" appears via the popover UI.
+  type Density = "compact" | "comfortable" | "spacious"
+  const [density, setDensity] = useState<Density>("comfortable")
+  const [densityOpen, setDensityOpen] = useState(false)
   useEffect(() => {
     if (typeof window === "undefined") return
     const v = window.localStorage.getItem("pb_density")
-    if (v === "compact" || v === "comfortable") setDensity(v)
+    if (v === "compact" || v === "comfortable" || v === "spacious") setDensity(v)
   }, [])
   useEffect(() => {
     if (typeof window === "undefined") return
     try { window.localStorage.setItem("pb_density", density) } catch {}
   }, [density])
-  const rowHeightPx = density === "compact" ? 35 : 44
+  const rowHeightPx = density === "compact" ? 28 : density === "spacious" ? 48 : 35
   const [search, setSearch] = useState("")
   const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
@@ -2228,18 +2234,56 @@ export default function ScannerPage() {
             </InputGroupAddon>
           </InputGroup>
           <div className="w-px h-7 bg-white/[0.06]" />
-          <button
-            type="button"
-            onClick={() => setDensity(d => d === "compact" ? "comfortable" : "compact")}
-            className="flex h-8 w-8 items-center justify-center rounded-md text-stone-400 hover:bg-white/[0.06] hover:text-stone-200 transition-colors"
-            title={density === "compact" ? "Switch to comfortable rows" : "Switch to compact rows"}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              {density === "compact"
-                ? <path strokeLinecap="round" d="M3 6h18M3 10h18M3 14h18M3 18h18" />
-                : <path strokeLinecap="round" d="M3 7h18M3 12h18M3 17h18" />}
-            </svg>
-          </button>
+          <Popover open={densityOpen} onOpenChange={setDensityOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="flex h-8 w-8 items-center justify-center rounded-md text-stone-400 hover:bg-white/[0.06] hover:text-stone-200 transition-colors"
+                title={`Row density: ${density}`}
+                aria-label="Adjust row density"
+              >
+                {/* Bars icon — same visual identity regardless of state, since
+                    the popover IS the affordance. Spacing of bars reflects
+                    the current density choice as a subtle hint. */}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  {density === "compact" ? (
+                    <path strokeLinecap="round" d="M3 6h18M3 10h18M3 14h18M3 18h18" />
+                  ) : density === "spacious" ? (
+                    <path strokeLinecap="round" d="M3 8h18M3 16h18" />
+                  ) : (
+                    <path strokeLinecap="round" d="M3 7h18M3 12h18M3 17h18" />
+                  )}
+                </svg>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-40 p-1 border border-white/[0.08]"
+              style={{ background: "#16191F" }}
+            >
+              {([
+                { value: "compact",     label: "Compact",     hint: "28px rows" },
+                { value: "comfortable", label: "Comfortable", hint: "35px rows" },
+                { value: "spacious",    label: "Spacious",    hint: "48px rows" },
+              ] as { value: Density; label: string; hint: string }[]).map(opt => {
+                const active = density === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => { setDensity(opt.value); setDensityOpen(false) }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-2.5 py-1.5 rounded text-left text-[12px] transition-colors",
+                      active ? "bg-white/[0.06] text-white" : "text-zinc-300 hover:bg-white/[0.04]",
+                    )}
+                  >
+                    <span className="font-medium">{opt.label}</span>
+                    <span className="text-[10px] text-zinc-500 tabular-nums">{opt.hint}</span>
+                  </button>
+                )
+              })}
+            </PopoverContent>
+          </Popover>
           <Button
             variant="outline"
             size="sm"
