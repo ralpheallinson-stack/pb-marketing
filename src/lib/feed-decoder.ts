@@ -181,6 +181,7 @@ export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
       id: r[idx["id"]] as number,
       time: r[idx["time"]] as string,
       date_time: r[idx["date_time"]] as string,
+      timestampMs: (r[idx["_sort_time"]] as number | undefined) ?? undefined,
       symbol: r[idx["symbol"]] as string,
       sector: r[idx["sector"]] as string,
       expiration: r[idx["expiration"]] as string,
@@ -226,6 +227,49 @@ export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
       pnl_percent: (r[idx["pnl_percent"]] as number | undefined) ?? undefined,
       badges: decodeConds(condCodes),
     })
+  }
+  return out
+}
+
+
+// ─── Day-separator injection (used by /historical multi-day ranges) ──────────
+
+/**
+ * Insert synthetic full-width separator rows between trades from different
+ * ET calendar days. Consumed by ScannerAgGrid's isFullWidthRow predicate
+ * which keys off __isDaySeparator and renders dayLabel via fullWidthCellRenderer.
+ *
+ * Single-day input is returned unchanged. Rows with missing/invalid date_time
+ * pass through without triggering a separator.
+ */
+export function injectDaySeparators(rows: Trade[]): Trade[] {
+  if (rows.length === 0) return rows
+  const out: Trade[] = []
+  let lastDayKey: string | null = null
+  for (const row of rows) {
+    // Use ms-epoch timestampMs (mapped from backend _sort_time in
+    // rowsToTrades) — date_time is a no-year display string like "5/8 03:35
+    // PM" which V8/JSC silently parse to year 2001.
+    const ts = row.timestampMs
+    if (!ts) { out.push(row); continue }
+    const d = new Date(ts)
+    if (isNaN(d.getTime())) { out.push(row); continue }
+    const dayKey = d.toLocaleDateString("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric", month: "2-digit", day: "2-digit",
+    })
+    if (dayKey !== lastDayKey) {
+      // Drop year — implicit from picker range. Matches CheddarFlow /
+      // BlackBox separator format: "TUE · MAY 15".
+      const wd = d.toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short" }).toUpperCase()
+      const md = d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" }).toUpperCase()
+      const label = `${wd} · ${md}`
+      const [m, day, y] = dayKey.split("/")
+      const sepId = -parseInt(`${y}${m}${day}`, 10)
+      out.push({ id: sepId, __isDaySeparator: true, dayLabel: label } as Trade)
+      lastDayKey = dayKey
+    }
+    out.push(row)
   }
   return out
 }

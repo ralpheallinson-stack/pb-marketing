@@ -17,6 +17,7 @@ import { badgeClass } from "@/lib/badge-styles"
 export interface Trade {
   id: number
   date_time: string
+  timestampMs?: number  // ms epoch from backend _sort_time; date_time is a no-year display string and unsafe for new Date()
   __isDaySeparator?: boolean
   dayLabel?: string
   symbol: string

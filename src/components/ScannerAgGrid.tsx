@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { Dispatch, RefObject, SetStateAction } from "react"
 import { AgGridReact } from "ag-grid-react"
 import {
@@ -51,8 +51,26 @@ function fmtExpiry(exp: string | null | undefined): string {
   return year && month && day ? `${parseInt(month)}-${day}-${year}` : exp
 }
 
-function fmtTime(t: Trade): string {
-  return t.time ?? t.date_time?.slice(11, 16) ?? "—"
+function fmtTime(t: Trade, isMultiDay = false): string {
+  // Single-day (/scanner live tape): show full HH:MM:SS AM/PM — seconds
+  // matter for real-time tape reading. /historical single-day uses the
+  // same format (no date prefix, just the time).
+  const fullTime = t.time ?? t.date_time?.slice(11, 16) ?? "—"
+  if (!isMultiDay || !t.timestampMs) return fullTime
+  // Multi-day (/historical range): show "MMM d · HH:MM AM/PM" — seconds
+  // dropped because cross-day research operates at minute-level clustering
+  // (matching Cheddar/BlackBox compact multi-day views). Saves ~30px so
+  // the cell fits in 145px without truncation. Builds time string from
+  // ms-epoch timestampMs (not t.time, which has seconds baked in).
+  const d = new Date(t.timestampMs)
+  if (isNaN(d.getTime())) return fullTime
+  const date = d.toLocaleDateString("en-US", {
+    timeZone: "America/New_York", month: "short", day: "numeric",
+  })
+  const hm = d.toLocaleTimeString("en-US", {
+    timeZone: "America/New_York", hour: "2-digit", minute: "2-digit", hour12: true,
+  })
+  return `${date} · ${hm}`
 }
 
 function fmtPrice(v: number | null | undefined): string {
@@ -79,6 +97,7 @@ interface ScannerGridContext {
   setFilterSide: Dispatch<SetStateAction<string>>
   setFilterBuySell: Dispatch<SetStateAction<string>>
   setFilterType: Dispatch<SetStateAction<string>>
+  isMultiDay: boolean
 }
 
 type TradeCellParams = ICellRendererParams<Trade, unknown, ScannerGridContext>
@@ -232,7 +251,10 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Time",
     field: "time",
-    valueGetter: (p) => (p.data ? fmtTime(p.data) : "—"),
+    // isMultiDay flag is threaded through the context (set by parent when
+    // a multi-day range is picked) so the same ColDef serves both /scanner
+    // (today-only, time-only) and /historical (range-aware, date-prefixed).
+    valueGetter: (p) => (p.data ? fmtTime(p.data, !!(p.context as ScannerGridContext | undefined)?.isMultiDay) : "—"),
     width: 124,
     minWidth: 124,
     sortable: false,  // server pre-sorts time-DESC; resort is redundant
@@ -525,6 +547,26 @@ interface ScannerAgGridProps {
   // → parent threads sort+order into the feed URL; backend ORDER BY on
   // the full result set, not just the current page. null/null = unsort.
   onSortChanged?: (field: string | null, dir: "asc" | "desc" | null) => void
+  // When true, Time column prepends each row's date ("May 15 · 04:30 PM")
+  // and a sticky day-banner overlay tracks the topmost visible day as the
+  // user scrolls. Defaults false for /scanner (today-only). /historical
+  // sets this to (range.from !== range.to).
+  isMultiDay?: boolean
+  // Infinite-scroll trigger (2026-05-18). Fired when the user scrolls to
+  // within ~200 rows of the bottom. Parent decides whether to fetch the
+  // next chunk (idempotent — should no-op if already loading or no more
+  // pages). Called at most once per scroll event; throttled implicitly
+  // because AG Grid only fires onBodyScroll on actual scroll movement.
+  onScrollNearBottom?: () => void
+  // Controlled sort (2026-05-18). When parent drives sort programmatically
+  // (e.g. /historical's premium-DESC default, or chip toggle), the grid's
+  // internal column-state must be synced so the header chevron + active-
+  // column highlight appear. Parent passes the backend field name (e.g.
+  // "premium", "vol") and direction; the grid translates back to its
+  // internal colId via the inverse of FIELD_TO_SORT and calls
+  // applyColumnState. Two-way: AG Grid still emits onSortChanged on
+  // header clicks; applyColumnState is idempotent when state matches.
+  controlledSort?: { field: string | null; dir: "asc" | "desc" | null }
 }
 
 export function ScannerAgGrid({
@@ -541,6 +583,9 @@ export function ScannerAgGrid({
   enableSort,
   onSortChanged,
   rowHeight = 44,
+  isMultiDay = false,
+  onScrollNearBottom,
+  controlledSort,
 }: ScannerAgGridProps) {
   // Phase 7 (2026-05-11): custom theme tokens matching PB warm theme.
   // Tokens captured from page.tsx legacy chrome (#1C1C1E body, #252430
@@ -582,12 +627,62 @@ export function ScannerAgGrid({
   // useState are reference-stable across renders, so this memo never
   // recreates after first render.
   const context = useMemo<ScannerGridContext>(
-    () => ({ setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType }),
-    [setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType],
+    () => ({ setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType, isMultiDay }),
+    [setFocusTicker, setFocusStrike, setFocusExpiry, setFilterOptType, setFilterSide, setFilterBuySell, setFilterType, isMultiDay],
   )
+
+  // Sticky day-banner (multi-day only). Overlay sits outside the AG Grid
+  // virtualized row container — CSS position:sticky doesn't work on AG
+  // Grid rows because they're absolutely positioned for virtualization.
+  // Map: ordered (displayed-index, dayLabel) for every separator row.
+  // Rebuilt on row-data + sort + filter changes via onModelUpdated.
+  const stickyMapRef = useRef<Array<{ index: number; label: string }>>([])
+  const [stickyLabel, setStickyLabel] = useState<string | null>(null)
+  const gridApiRef = useRef<GridApi<Trade> | null>(null)
+
+  const rebuildStickyMap = useCallback((api: GridApi<Trade>) => {
+    const map: Array<{ index: number; label: string }> = []
+    const n = api.getDisplayedRowCount()
+    for (let i = 0; i < n; i++) {
+      const node = api.getDisplayedRowAtIndex(i)
+      const data = node?.data
+      if (data?.__isDaySeparator && data.dayLabel) {
+        map.push({ index: i, label: data.dayLabel })
+      }
+    }
+    stickyMapRef.current = map
+  }, [])
+
+  const updateStickyLabel = useCallback(() => {
+    if (!isMultiDay) { setStickyLabel(null); return }
+    const api = gridApiRef.current
+    if (!api) { setStickyLabel(null); return }
+    const map = stickyMapRef.current
+    if (map.length === 0) { setStickyLabel(null); return }
+    const firstIdx = api.getFirstDisplayedRowIndex()
+    if (firstIdx < 0) { setStickyLabel(null); return }
+    // Binary-search largest separator index ≤ firstIdx.
+    let lo = 0, hi = map.length - 1, best = -1
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1
+      if (map[mid].index <= firstIdx) { best = mid; lo = mid + 1 }
+      else { hi = mid - 1 }
+    }
+    // If the topmost visible row IS a separator, the inline banner is
+    // already on-screen — skip overlay to avoid double-banner.
+    if (best === -1 || map[best].index === firstIdx) { setStickyLabel(null); return }
+    setStickyLabel(map[best].label)
+  }, [isMultiDay])
+
+  // Bridge AG Grid's async onGridReady into React's effect graph. The
+  // controlledSort useEffect needs to re-run once gridApiRef.current is
+  // populated; refs don't trigger effects so we flip this flag instead.
+  const [gridReady, setGridReady] = useState(false)
 
   const handleGridReady = useCallback(
     (event: GridReadyEvent<Trade>) => {
+      gridApiRef.current = event.api
+      setGridReady(true)
       onApiReady?.(event.api)
       console.info(
         "[scanner-ag] Phase 5 grid ready —",
@@ -619,11 +714,18 @@ export function ScannerAgGrid({
   // of the full result. Phase 7 may revisit with backend multi-page
   // sort if the user wants the feature.
   const columnDefs = useMemo<ColDef<Trade>[]>(
-    () =>
-      enableSort
-        ? BASE_COLUMN_DEFS
-        : BASE_COLUMN_DEFS.map((c) => ({ ...c, sortable: false })),
-    [enableSort],
+    () => BASE_COLUMN_DEFS.map((c) => {
+      let next: ColDef<Trade> = c
+      // enableSort gate (Phase 6): when false, every column becomes
+      // unsortable regardless of per-column setting.
+      if (!enableSort) next = { ...next, sortable: false }
+      // Time-col width widens on multi-day so "May 15 · 04:30 PM" (~13
+      // chars) doesn't truncate to "May 15 · 04...". Single-day keeps
+      // the 124px baseline (just "04:30:49 PM").
+      if (isMultiDay && c.field === "time") next = { ...next, width: 170, minWidth: 155 }
+      return next
+    }),
+    [enableSort, isMultiDay],
   )
 
   // AG Grid field → backend API sort name. Frontend ColDefs use
@@ -638,6 +740,35 @@ export function ScannerAgGrid({
     day_volume: "vol",
     open_interest: "oi",
   }), [])
+
+  // Inverse of FIELD_TO_SORT — backend name → AG Grid colId. Used by the
+  // controlledSort sync below to translate parent-owned sort state ("vol")
+  // back to the grid's colId ("day_volume") for applyColumnState.
+  const SORT_TO_FIELD: Record<string, string> = useMemo(() => {
+    const inverse: Record<string, string> = {}
+    for (const [colId, sortName] of Object.entries(FIELD_TO_SORT)) {
+      inverse[sortName] = colId
+    }
+    return inverse
+  }, [FIELD_TO_SORT])
+
+  // Sync parent's controlledSort to AG Grid's internal column state.
+  // Without this, programmatic parent sort changes (default state on
+  // mount, chip toggle, URL deep-link) update the fetch but never reach
+  // the grid → header chevron never appears. Depends on gridReady so the
+  // first-paint sync runs once handleGridReady has populated gridApiRef.
+  // applyColumnState is a no-op when target state matches current, so
+  // this also safely re-runs after AG Grid emits its own onSortChanged.
+  useEffect(() => {
+    if (!gridReady) return
+    const api = gridApiRef.current
+    if (!api || !controlledSort) return
+    const colId = controlledSort.field ? SORT_TO_FIELD[controlledSort.field] : null
+    const state = colId && controlledSort.dir
+      ? [{ colId, sort: controlledSort.dir }]
+      : []
+    api.applyColumnState({ state, defaultState: { sort: null } })
+  }, [controlledSort, SORT_TO_FIELD, gridReady])
 
   const handleSortChanged = useCallback((event: SortChangedEvent<Trade>) => {
     const active = event.api.getColumnState().find((c) => c.sort)
@@ -654,7 +785,10 @@ export function ScannerAgGrid({
   }, [onSortChanged, FIELD_TO_SORT])
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div style={{ height: "100%", width: "100%", position: "relative" }}>
+      {stickyLabel && (
+        <div className="pb-day-sticky" aria-hidden="true">{stickyLabel}</div>
+      )}
       <style>{`
         /* ── Phase 7 (2026-05-11): theme-param gap-fillers ──
            AG Grid's withParams() covers colors, font, dimensions. These
@@ -663,6 +797,21 @@ export function ScannerAgGrid({
            "uppercase tracking-[0.08em]"), row border-bottom (legacy
            used "border-b border-white/[0.04]"), and the
            tabular-numeric default. */
+        /* Active sort column — brighten header text + sort icon. Theme
+           sets headerTextColor to rgba(255,255,255,0.30) for low-density
+           reads; without this override the sorted-column indicator
+           inherits that dim color and is nearly invisible. Active-sort
+           gets full opacity + the cyan accent to match the rest of the
+           interactive UI. */
+        .ag-header-cell-sorted-asc .ag-header-cell-text,
+        .ag-header-cell-sorted-desc .ag-header-cell-text {
+          color: rgba(255,255,255,0.95);
+        }
+        .ag-header-cell-sorted-asc .ag-sort-ascending-icon,
+        .ag-header-cell-sorted-desc .ag-sort-descending-icon {
+          color: #48DEFF;
+          opacity: 1;
+        }
         .ag-header-cell-text {
           text-transform: uppercase;
           /* Density refinement: removed letter-spacing 0.08em (= 0.96px
@@ -740,6 +889,27 @@ export function ScannerAgGrid({
           letter-spacing: 0.08em;
           text-transform: uppercase;
           color: #7A8BA8;
+        }
+        .pb-day-sticky {
+          position: absolute;
+          top: 32px;
+          left: 0;
+          right: 0;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          padding-left: 16px;
+          background-color: rgba(22,25,31,0.96);
+          border-top: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,0.65);
+          z-index: 5;
+          pointer-events: none;
+          backdrop-filter: blur(4px);
+          font-family: Inter, system-ui, -apple-system, sans-serif;
         }
         .ag-row:has(.pb-day-separator) { background: transparent !important; }
 
@@ -823,6 +993,19 @@ export function ScannerAgGrid({
         context={context}
         onGridReady={handleGridReady}
         onSortChanged={handleSortChanged}
+        onModelUpdated={(e) => { rebuildStickyMap(e.api); updateStickyLabel() }}
+        onBodyScroll={(e) => {
+          updateStickyLabel()
+          // Infinite scroll: fire onScrollNearBottom when the user is
+          // within 200 displayed rows of the last row. AG Grid fires
+          // onBodyScroll on every scroll tick, so parents must guard
+          // against double-fetch (loadingMore + hasMore checks).
+          if (onScrollNearBottom) {
+            const total = e.api.getDisplayedRowCount()
+            const last = e.api.getLastDisplayedRowIndex()
+            if (total > 0 && total - last < 200) onScrollNearBottom()
+          }
+        }}
         isExternalFilterPresent={isExternalFilterPresent}
         doesExternalFilterPass={doesExternalFilterPass}
         rowHeight={rowHeight}
