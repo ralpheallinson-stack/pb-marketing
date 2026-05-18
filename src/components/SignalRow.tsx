@@ -164,7 +164,7 @@ export function SignalRow({ trade: t, dataIndex, measureRef, setFocusTicker, set
         {bsLabel(t.trade_direction)}
       </td>
       <td className="px-2 py-2 text-right text-white text-[13px] font-medium font-mono">{t.spot_fmt}</td>
-      <td className={`px-2 py-2 text-right text-[13px] font-medium font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString()}</td>
+      <td className={`px-2 py-2 text-right text-[13px] font-medium font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString("en-US")}</td>
       <td className="px-2 py-2 text-right text-white/90 text-[13px] font-medium font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
       <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#FF605D' }}>
         {t.premium_fmt}
@@ -175,10 +175,10 @@ export function SignalRow({ trade: t, dataIndex, measureRef, setFocusTicker, set
         {t.flow_type || "—"}
       </td>
       <td className="px-2 py-2 text-right text-[13px] font-medium font-mono text-white/80">
-        {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString() : "—"}
+        {(t.day_volume ?? 0) > 0 ? t.day_volume.toLocaleString("en-US") : "—"}
       </td>
       <td className="px-2 py-2 text-right text-white/80 text-[13px] font-medium font-mono">
-        {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString() : "—"}
+        {(t.open_interest ?? 0) > 0 ? t.open_interest.toLocaleString("en-US") : "—"}
       </td>
       <td className="px-2 py-2 text-right text-[13px] font-semibold font-mono"
           style={{

@@ -603,11 +603,11 @@ function HistoricalPageInner() {
             <span>
               {serverTotal != null ? (
                 <>
-                  <span className="text-zinc-300 font-medium">{serverTotal.toLocaleString()}</span> trades
+                  <span className="text-zinc-300 font-medium">{serverTotal.toLocaleString("en-US")}</span> trades
                   {focusTicker && <span className="text-zinc-500"> for <span className="text-zinc-300">{focusTicker}</span></span>}
                 </>
               ) : (
-                <>{trades.length.toLocaleString()} trades on this page</>
+                <>{trades.length.toLocaleString("en-US")} trades on this page</>
               )}
             </span>
             <div className="flex items-center gap-3">
@@ -626,7 +626,7 @@ function HistoricalPageInner() {
                     >
                       ‹ Prev
                     </button>
-                    <span className="text-zinc-400">Page <span className="text-zinc-200 font-medium">{page + 1}</span> of <span className="text-zinc-200 font-medium">{totalPages.toLocaleString()}</span></span>
+                    <span className="text-zinc-400">Page <span className="text-zinc-200 font-medium">{page + 1}</span> of <span className="text-zinc-200 font-medium">{totalPages.toLocaleString("en-US")}</span></span>
                     <button
                       type="button"
                       disabled={atLast || loading}

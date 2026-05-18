@@ -89,7 +89,7 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
             <span className="text-[12px] text-white/50">Call flow</span>
             <span className="text-[13px] font-semibold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
           </div>
-          <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString()}</div>
+          <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString("en-US")}</div>
         </div>
       </Card>
 
@@ -101,7 +101,7 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
             <span className="text-[12px] text-white/50">Put flow</span>
             <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
           </div>
-          <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString()}</div>
+          <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString("en-US")}</div>
         </div>
       </Card>
     </div>

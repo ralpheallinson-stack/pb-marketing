@@ -74,11 +74,14 @@ function fmtTime(t: Trade, isMultiDay = false): string {
 }
 
 function fmtPrice(v: number | null | undefined): string {
-  return v != null ? `$${v.toFixed(2)}` : "—"
+  // 2026-05-18: $ prefix stripped — Price column now shows plain
+  // tabular-numeric values. Prem column still carries the $ via
+  // backend premium_fmt. Only caller: Price col valueFormatter.
+  return v != null ? v.toFixed(2) : "—"
 }
 
 function fmtCount(v: number | null | undefined): string {
-  return v != null && v > 0 ? v.toLocaleString() : "—"
+  return v != null && v > 0 ? v.toLocaleString("en-US") : "—"
 }
 
 function fmtCondsLabels(badges: Trade["badges"]): string {
@@ -118,7 +121,9 @@ function TickCellRenderer(params: TradeCellParams) {
   return (
     <button onClick={onClick} className="cf-tick-btn">
       <div className="cf-tick-symbol">{t.symbol}</div>
-      {t.sector ? <div className="cf-tick-sector">{t.sector}</div> : null}
+      {/* 2026-05-18: sector subtitle removed. Trade.sector still flows
+          through the API for future filters/analytics; only the inline
+          two-line render dropped. */}
     </button>
   )
 }
@@ -288,7 +293,9 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
       if (v == null) return ""
       const n = typeof v === "string" ? parseFloat(v) : v
       if (isNaN(n)) return String(v)
-      return "$" + n.toLocaleString("en-US", {
+      // 2026-05-18: $ prefix stripped per Ralph's read pass — keeps
+      // thousand separators, drops the currency mark.
+      return n.toLocaleString("en-US", {
         minimumFractionDigits: n % 1 === 0 ? 0 : 2,
         maximumFractionDigits: 2,
       })
@@ -370,6 +377,10 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
     headerName: "Spot",
     field: "spot_fmt",
+    // 2026-05-18: spot_fmt arrives from backend pre-formatted as "$7,403.04".
+    // Trade interface doesn't expose raw spot — strip the leading $ on
+    // display so the column matches the no-dollar convention of Strike + Price.
+    valueFormatter: (p) => (p.value as string ?? "").replace(/^\$/, ""),
     width: 104,
     minWidth: 104,
     sortable: true,
@@ -381,7 +392,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     headerName: "Size",
     field: "contracts",
     valueGetter: (p) => p.data?.contracts ?? 0,
-    valueFormatter: (p) => (p.value as number).toLocaleString(),
+    valueFormatter: (p) => (p.value as number).toLocaleString("en-US"),
     width: 80,
     minWidth: 80,
     sortable: true,
@@ -947,12 +958,6 @@ export function ScannerAgGrid({
           transition: color 120ms ease;
         }
         .cf-tick-btn:hover .cf-tick-symbol { color: #48DEFF; }
-        .cf-tick-sector {
-          color: rgba(255,255,255,0.25);
-          font-size: 10px;
-          margin-top: 2px;
-          line-height: 1.2;
-        }
 
         .cf-focus-btn {
           background: none;

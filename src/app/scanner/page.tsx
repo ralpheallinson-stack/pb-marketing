@@ -191,6 +191,15 @@ export default function ScannerPage() {
     return () => clearInterval(id)
   }, [])
 
+  // Hydration gate (2026-05-18). useAgGridEndpoint() reads localStorage +
+  // URL params → returns false on the build server (typeof window check)
+  // but true for default subscribers on the client. JSX conditional at
+  // ~line 2360 would render different subtrees server vs client → #418.
+  // Render a stable loader placeholder until mount, then swap to the
+  // real conditional. Reusable by any future SSR/CSR-divergent renderer.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   // Density toggle (Patch 6, 2026-05-17) — compact 35px / comfortable 44px,
   // persisted to localStorage. AG Grid honors via rowHeight prop.
   const [density, setDensity] = useState<"compact" | "comfortable">("comfortable")
@@ -207,7 +216,16 @@ export default function ScannerPage() {
   const [search, setSearch] = useState("")
   const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
-  const [live, setLive] = useState(isMarketOpen())
+  // Hydration-safe (2026-05-18). Was useState(isMarketOpen()) — that
+  // initializer calls new Date() at evaluation time, so build-time
+  // (e.g. Sunday deploy, market closed → false) and client first render
+  // (Monday market hours → true) produce different values, firing
+  // React #418. Init false, then reconcile in a post-mount effect.
+  // setLive(isMarketOpen()) is already called from the polling tick at
+  // ~line 1349; this mount effect just establishes the correct first
+  // state before the polling loop spins up.
+  const [live, setLive] = useState(false)
+  useEffect(() => { setLive(isMarketOpen()) }, [])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [activePage, setActivePage] = useState<"scanner" | "heatmap" | "watchlist">("scanner")
   const [canAccessGamma, setCanAccessGamma] = useState(false)
@@ -341,11 +359,13 @@ export default function ScannerPage() {
   // under pb_curated_grades. See project_pb_stage3_dte_filter_investigation.md
   // for the rationale (78.7% of 0-2 DTE flow gets PASS-graded; default-on
   // exposes that flow without changing the grader).
-  const [filterCuratedOnly, setFilterCuratedOnly] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false
-    try { return window.localStorage.getItem("pb_curated_grades") === "1" }
-    catch { return false }
-  })
+  // Hydration-safe (2026-05-18). Was useState(() => localStorage.getItem(...))
+  // which mismatched #418 on static-export: build-time returned false, client
+  // first render read the actual stored value. Now init to false, then
+  // reconcile from localStorage in a post-mount effect below. Brief flicker
+  // (sub-frame) is the SSR-safe tradeoff. Write-side persistence at lines
+  // ~1421+ unchanged.
+  const [filterCuratedOnly, setFilterCuratedOnly] = useState<boolean>(false)
   // 2026-05-10: companion to backend f182f0a which added exclude_side +
   // exclude_multi_leg query params on /api/scanner/feed and /live-flow.
   // Default OFF — opt-in via filter drawer toggles. exclude_side="MIDPOINT"
@@ -356,16 +376,19 @@ export default function ScannerPage() {
   // toggle state is visually consistent regardless of which delivery path a
   // row arrived on. Live SSE pushes from sse_scanner.py do not yet apply
   // these predicates server-side — client-side filtering covers that gap.
-  const [filterExcludeMidpoint, setFilterExcludeMidpoint] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false
-    try { return window.localStorage.getItem("pb_exclude_midpoint") === "1" }
-    catch { return false }
-  })
-  const [filterExcludeMultiLeg, setFilterExcludeMultiLeg] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false
-    try { return window.localStorage.getItem("pb_exclude_multi_leg") === "1" }
-    catch { return false }
-  })
+  const [filterExcludeMidpoint, setFilterExcludeMidpoint] = useState<boolean>(false)
+  const [filterExcludeMultiLeg, setFilterExcludeMultiLeg] = useState<boolean>(false)
+  // Post-mount localStorage hydration for the three filter toggles above.
+  // Single combined effect: cheaper than three useEffects, same semantics.
+  // Runs after the first paint, then the write-side useEffects at ~1421+
+  // take over for any subsequent toggles.
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem("pb_curated_grades") === "1") setFilterCuratedOnly(true)
+      if (window.localStorage.getItem("pb_exclude_midpoint") === "1") setFilterExcludeMidpoint(true)
+      if (window.localStorage.getItem("pb_exclude_multi_leg") === "1") setFilterExcludeMultiLeg(true)
+    } catch {}
+  }, [])
   const [activeFilterCount, setActiveFilterCount] = useState(0)
   const [focusTicker, setFocusTicker] = useState<string | null>(null)
   const [focusStrike, setFocusStrike] = useState<string | null>(null)
@@ -609,15 +632,16 @@ export default function ScannerPage() {
     const api = gridApiRef.current
     if (!api) return
     api.setGridOption("rowData", rows.filter((t) => !t.mm_suspected))
-    // CONDS autoHeight stale-height workaround (2026-05-12): after a
-    // full snapshot replace, AG Grid v35 occasionally retains prior
-    // measured row heights for the new content, causing phantom empty
-    // bands where a tall (wrapped-badges) row is replaced by a short
-    // one. resetRowHeights forces re-measure on next render — cheap,
-    // ~25 visible rows via virtualization regardless of total rowData
-    // size. Bug is upstream behavior of autoHeight + bulk rowData
-    // swaps; documented AG Grid workaround.
-    api.resetRowHeights()
+    // CONDS autoHeight stale-height workaround (2026-05-12, revised
+    // 2026-05-18). After a full snapshot replace, AG Grid v35
+    // occasionally retains prior measured row heights for the new
+    // content, causing phantom empty bands where a tall (wrapped-badges)
+    // row is replaced by a short one. Was resetRowHeights() — AG Grid
+    // v35 emits Warning #3 ("cannot be called when one or more columns
+    // has Auto Row Height enabled") for that API path. redrawRows()
+    // also forces remeasure on autoHeight columns AND is the supported
+    // path; cost negligible at ~25 visible virtualized rows.
+    api.redrawRows()
   }, [])
   const agGridAdd = useCallback((rows: Trade[]) => {
     const api = gridApiRef.current
@@ -626,14 +650,16 @@ export default function ScannerPage() {
     if (fresh.length === 0) return
     // getRowId on the grid de-dupes — re-adding an id already present
     // is a no-op (returns an empty `add` transaction).
-    api.applyTransaction({ add: fresh, addIndex: 0 })
-    // CONDS autoHeight stale-height workaround (2026-05-12): freshly
-    // inserted rows can render with mis-measured heights when
-    // CondsCellRenderer mounts after AG Grid's first height read.
-    // Force re-measure after the transaction; ~25 visible rows so
-    // cost is negligible per batched SSE flush (already throttled
-    // to 200ms / 50-row escape in flushSseBuffer).
-    api.resetRowHeights()
+    const result = api.applyTransaction({ add: fresh, addIndex: 0 })
+    // CONDS autoHeight stale-height workaround (2026-05-12, revised
+    // 2026-05-18). Freshly inserted rows can render with mis-measured
+    // heights when CondsCellRenderer mounts after AG Grid's first
+    // height read. Was resetRowHeights() — emits Warning #3 with
+    // autoHeight columns. Scoped redrawRows({rowNodes: ...}) only
+    // remeasures the just-added nodes (typically 1-50 per SSE batch
+    // flush) instead of all ~25 visible rows — cheaper and correct.
+    const added = result?.add
+    if (added && added.length > 0) api.redrawRows({ rowNodes: added })
   }, [])
   useEffect(() => { playBlipRef.current = playBlip }, [playBlip])
 
@@ -1109,12 +1135,29 @@ export default function ScannerPage() {
 
           if (isIncrementalCall) {
             if (incoming.length > 0) {
-              if (incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
-                playBlipRef.current()
-              }
-              lastTradeIdRef.current = Math.max(lastTradeIdRef.current, ...incoming.map(tr => tr.id))
-              setTrades(prev => [...incoming, ...prev].slice(0, 20000))
-              agGridAdd(incoming)
+              setTrades(prev => {
+                // Dedup (2026-05-18). sinceId polling can return overlapping
+                // windows on reconnect / clock skew (backend re-sends a few
+                // tail trades whose ids overlap what's already in state).
+                // Without this, React state briefly contains duplicate ids
+                // and AG Grid emits Warning #2 ("Duplicate node id") during
+                // the transient render frame — surfaces as row-stacking
+                // artifacts. Mirrors the SSE flush path at ~line 751.
+                const seen = new Set(prev.map(p => p.id))
+                const fresh: Trade[] = []
+                for (const t of incoming) {
+                  if (seen.has(t.id)) continue
+                  seen.add(t.id)
+                  fresh.push(t)
+                }
+                if (fresh.length === 0) return prev
+                if (fresh.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
+                  playBlipRef.current()
+                }
+                lastTradeIdRef.current = Math.max(lastTradeIdRef.current, ...fresh.map(tr => tr.id))
+                agGridAdd(fresh)
+                return [...fresh, ...prev].slice(0, 20000)
+              })
             }
           } else {
             if (prevTradeIdsRef.current.size > 0 && incoming.some(tr => !prevTradeIdsRef.current.has(tr.id) && matchesFilterRef.current(tr))) {
@@ -1166,11 +1209,23 @@ export default function ScannerPage() {
         }
         const data: ApiResponse = await res.json()
         if (data.trades?.length > 0) {
-          const newMaxId = Math.max(...data.trades.map((tr: Trade) => tr.id))
-          lastTradeIdRef.current = newMaxId
-          setTrades(prev => [...data.trades, ...prev].slice(0, 20000))
-          agGridAdd(data.trades)
-          if (data.trades.some(matchesFilterRef.current)) playBlipRef.current()
+          setTrades(prev => {
+            // Dedup (2026-05-18). Legacy split-path incremental polling.
+            // Same race as the unified path above + the SSE flush — sinceId
+            // windows can overlap on reconnect. See site 1 for rationale.
+            const seen = new Set(prev.map(p => p.id))
+            const fresh: Trade[] = []
+            for (const t of data.trades) {
+              if (seen.has(t.id)) continue
+              seen.add(t.id)
+              fresh.push(t)
+            }
+            if (fresh.length === 0) return prev
+            lastTradeIdRef.current = Math.max(lastTradeIdRef.current, ...fresh.map(tr => tr.id))
+            agGridAdd(fresh)
+            if (fresh.some(matchesFilterRef.current)) playBlipRef.current()
+            return [...fresh, ...prev].slice(0, 20000)
+          })
         }
         lastSuccessRef.current = Date.now()
         setPollError(null)
@@ -1618,7 +1673,15 @@ export default function ScannerPage() {
     const row = gexData.matrix[sk] || {}
     return sum + Object.values(row).reduce((rs: number, c: { net_gex: number }) => rs + c.net_gex, 0)
   }, 0) : 0
-  const todayStr = new Date().toISOString().slice(0, 10)
+  // ET-keyed YYYY-MM-DD to match backend expiration strings at line 1891.
+  // Was new Date().toISOString().slice(0, 10) — UTC date; off-by-one for
+  // ~4 hours each evening (8pm-midnight ET) which silently broke the
+  // "TODAY" column highlight in /heatmap. en-CA produces ISO format
+  // natively + timeZone option pins to ET.
+  const todayStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date())
   const fmtExp = (exp: string) => { const p = exp.split("-"); return p.length === 3 ? `${p[1]}/${p[2]}` : exp }
 
   const strikeTotals = gexData ? [...gexData.strikes].reverse().map(strike => {
@@ -1880,7 +1943,7 @@ export default function ScannerPage() {
                       <div key={`${strike}-${exp}`}
                         className={`border-r border-b border-white/[0.04] flex items-center justify-center relative ${isFallback ? "opacity-75" : ""}`}
                         style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
-                        title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString()}\nPut OI: ${putOi.toLocaleString()}`}>
+                        title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString("en-US")}\nPut OI: ${putOi.toLocaleString("en-US")}`}>
                         {gex !== 0 && (
                           <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
                             {fmtGex(gex)}
@@ -2005,7 +2068,7 @@ export default function ScannerPage() {
                 const isBull = callPrem > putPrem * 1.3
                 const isBear = putPrem > callPrem * 1.3
                 const lastSignalTs = symTrades.length
-                  ? Math.max(...symTrades.map(t => Math.floor(new Date(t.date_time).getTime() / 1000)))
+                  ? Math.max(...symTrades.map(t => Math.floor((t.timestampMs ?? 0) / 1000)))
                   : 0
                 const quote = wlQuotes[sym] || { spot: null, change: null, change_pct: null, prev_close: null }
                 const spark = wlSparks[sym] || []
@@ -2306,7 +2369,11 @@ export default function ScannerPage() {
           rowVirtualizer's getScrollElement returns null gracefully when the
           flag is on (the virtualizer simply doesn't activate). Pagination bar
           stays outside the conditional so the layout below is unaffected. */}
-      {useAgGridEndpoint() ? (
+      {!mounted ? (
+        <div className="flex-1 flex items-center justify-center text-white/40 text-sm">
+          Loading scanner…
+        </div>
+      ) : useAgGridEndpoint() ? (
         <ScannerAgGrid
           trades={trades}
           setFocusTicker={setFocusTicker}
@@ -2350,7 +2417,7 @@ export default function ScannerPage() {
                 <tr key={i} className="border-b border-white/[0.04]">
                   {Array.from({ length: 15 }).map((_, j) => (
                     <td key={j} className="px-2 py-1.5">
-                      <div className="h-2.5 bg-white/[0.03] rounded animate-pulse" style={{ width: `${40 + Math.random() * 40}%` }} />
+                      <div className="h-2.5 bg-white/[0.03] rounded animate-pulse" style={{ width: `${40 + ((i * 7 + j * 13 + i * j) % 40)}%` }} />
                     </td>
                   ))}
                 </tr>
@@ -2411,9 +2478,9 @@ export default function ScannerPage() {
         {/* Center: showing N · Page X of Y */}
         <div className="flex items-center gap-6 text-[11px] text-zinc-500 tabular-nums">
           <span>
-            Showing <span className="text-zinc-300 font-medium">{pageRows.length.toLocaleString()}</span>
+            Showing <span className="text-zinc-300 font-medium">{pageRows.length.toLocaleString("en-US")}</span>
             {' of '}
-            <span className="text-zinc-300 font-medium">{filtered.length.toLocaleString()}</span>
+            <span className="text-zinc-300 font-medium">{filtered.length.toLocaleString("en-US")}</span>
           </span>
           <span>Page <span className="text-zinc-300 font-medium">{clientPage + 1}</span> of <span className="text-zinc-300 font-medium">{totalClientPages}</span></span>
         </div>
