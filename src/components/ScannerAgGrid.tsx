@@ -254,7 +254,7 @@ function DaySeparatorRenderer(params: ICellRendererParams<Trade>) {
 // ── Column definitions ──
 const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
   {
-    headerName: "Time",
+    headerName: "Time", headerTooltip: "Trade execution time (ET). Multi-day ranges prepend the date.",
     field: "time",
     // isMultiDay flag is threaded through the context (set by parent when
     // a multi-day range is picked) so the same ColDef serves both /scanner
@@ -266,7 +266,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellClass: "cf-mono cf-muted",
   },
   {
-    headerName: "Tick",
+    headerName: "Tick", headerTooltip: "Underlying ticker symbol. Click to filter the table to this ticker.",
     field: "symbol",
     cellRenderer: TickCellRenderer,
     width: 96,
@@ -275,7 +275,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellClass: "cf-tick-cell",
   },
   {
-    headerName: "Expiry",
+    headerName: "Expiry", headerTooltip: "Option expiration date. Click to filter to this expiry.",
     field: "expiration",
     cellRenderer: ExpiryCellRenderer,
     valueFormatter: (p) => fmtExpiry(p.value),
@@ -284,7 +284,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     sortable: false,  // multi-expiry per row makes sort comparison ambiguous
   },
   {
-    headerName: "Strike",
+    headerName: "Strike", headerTooltip: "Option strike price. Click to filter to this strike.",
     field: "strike",
     cellRenderer: StrikeCellRenderer,
     valueGetter: (p) => p.data?.strike,
@@ -306,7 +306,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     type: "rightAligned",
   },
   {
-    headerName: "C/P",
+    headerName: "C/P", headerTooltip: "Call: right to buy at strike. Put: right to sell at strike.",
     colId: "cp",
     cellRenderer: CPCellRenderer,
     valueGetter: (p) => (p.data?.opt_type === "C" ? "Call" : "Put"),
@@ -321,7 +321,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     },
   },
   {
-    headerName: "Side",
+    headerName: "Side", headerTooltip: "Fill vs midpoint: Ask/Above = aggressive buy, Bid/Below = aggressive sell, Mid = neutral.",
     field: "aggression",
     cellRenderer: SideCellRenderer,
     headerClass: "ag-center-aligned-header",
@@ -352,7 +352,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     },
   },
   {
-    headerName: "B/S",
+    headerName: "B/S", headerTooltip: "Inferred direction: BUY = opening long, SELL = opening short.",
     field: "trade_direction",
     cellRenderer: BSCellRenderer,
     headerClass: "ag-center-aligned-header",
@@ -375,7 +375,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     },
   },
   {
-    headerName: "Spot",
+    headerName: "Spot", headerTooltip: "Underlying spot price at time of trade.",
     field: "spot_fmt",
     // 2026-05-18: spot_fmt arrives from backend pre-formatted as "$7,403.04".
     // Trade interface doesn't expose raw spot — strip the leading $ on
@@ -389,7 +389,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Size",
+    headerName: "Size", headerTooltip: "Number of contracts (each contract = 100 shares of underlying).",
     field: "contracts",
     valueGetter: (p) => p.data?.contracts ?? 0,
     valueFormatter: (p) => (p.value as number).toLocaleString("en-US"),
@@ -404,7 +404,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Price",
+    headerName: "Price", headerTooltip: "Option premium per contract (entry price).",
     field: "entry_price",
     valueFormatter: (p) => fmtPrice(p.value),
     width: 80,
@@ -415,7 +415,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Prem",
+    headerName: "Prem", headerTooltip: "Total premium: Size × Price × 100. Notional dollar size of the trade.",
     field: "premium",
     valueGetter: (p) => p.data?.premium ?? 0,
     valueFormatter: (p) => p.data?.premium_fmt ?? "—",
@@ -431,7 +431,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Type",
+    headerName: "Type", headerTooltip: "Order type: BLOCK = single-venue fill. SWEEP = split across exchanges (urgency signal).",
     field: "flow_type",
     cellRenderer: TypeCellRenderer,
     headerClass: "ag-center-aligned-header",
@@ -448,7 +448,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     },
   },
   {
-    headerName: "Vol",
+    headerName: "Vol", headerTooltip: "Total contracts traded today for this option strike.",
     field: "day_volume",
     valueFormatter: (p) => fmtCount(p.value),
     width: 88,
@@ -459,7 +459,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "OI",
+    headerName: "OI", headerTooltip: "Open Interest: contracts outstanding (not yet closed). Vol > OI = new positioning.",
     field: "open_interest",
     valueFormatter: (p) => fmtCount(p.value),
     width: 88,
@@ -470,7 +470,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Conds",
+    headerName: "Conds", headerTooltip: "Conditions: WHALE = $10M+, OPENING = new position, MIXED = multi-leg, V/OI = unusual volume.",
     field: "badges",
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),

@@ -2481,6 +2481,7 @@ export default function ScannerPage() {
             Showing <span className="text-zinc-300 font-medium">{pageRows.length.toLocaleString("en-US")}</span>
             {' of '}
             <span className="text-zinc-300 font-medium">{filtered.length.toLocaleString("en-US")}</span>
+            {focusTicker && <span className="text-zinc-500"> for <span className="text-zinc-300">{focusTicker}</span></span>}
           </span>
           <span>Page <span className="text-zinc-300 font-medium">{clientPage + 1}</span> of <span className="text-zinc-300 font-medium">{totalClientPages}</span></span>
         </div>
@@ -2521,6 +2522,11 @@ export default function ScannerPage() {
         ) : null  /* continuous scroll on non-today; no pagination controls */}
       </div>
 
+      </div>
+
+      {/* ── DISCLAIMER ── */}
+      <div className="border-t border-white/[0.04] px-4 py-2 text-[10px] text-zinc-500 text-center flex-shrink-0">
+        For informational purposes only. Not investment advice. Past performance does not guarantee future results. Options trading involves substantial risk.
       </div>
         </div>
       )}

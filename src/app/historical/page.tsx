@@ -645,6 +645,11 @@ function HistoricalPageInner() {
         </div>
       </div>
 
+      {/* ── DISCLAIMER ── */}
+      <div className="ml-16 border-t border-white/[0.04] px-4 py-2 text-[10px] text-zinc-500 text-center flex-shrink-0">
+        For informational purposes only. Not investment advice. Past performance does not guarantee future results. Options trading involves substantial risk.
+      </div>
+
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setShowUpgradeModal(false)}>
           <div className="border border-[#1E2A3A] rounded-xl p-8 max-w-sm w-full mx-4" style={{ background: "#0F1520" }} onClick={e => e.stopPropagation()}>
