@@ -617,7 +617,10 @@ function HistoricalPageInner() {
             />
           )}
 
-          {/* Footer */}
+          {/* Footer — hidden when single-page result. See /scanner for
+              rationale: degenerate counts + disabled pagination = clutter.
+              Disclaimer below the table card stays visible regardless. */}
+          {serverTotal != null && serverTotal > PAGE_SIZE && (
           <div className="flex items-center justify-between px-4 py-2 text-[11px] text-zinc-500 tabular-nums border-t border-white/[0.06]">
             <span>Historical · <span className="text-zinc-300 font-medium">{rangeLabel}</span></span>
             <span>
@@ -662,6 +665,7 @@ function HistoricalPageInner() {
               <span className="text-zinc-600">{loading ? "Loading…" : ""}</span>
             </div>
           </div>
+          )}
         </div>
       </div>
 

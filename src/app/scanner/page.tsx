@@ -2523,7 +2523,11 @@ export default function ScannerPage() {
       </div>
       )}
 
-      {/* ── PAGINATION BAR — 3-column: Updated · counts/page · prev/next ── */}
+      {/* ── PAGINATION BAR — 3-column: Updated · counts/page · prev/next ──
+           Hidden when totalClientPages <= 1 (single-page result set):
+           "Updated 0s ago" / "Showing 123 of 123" / "Page 1 of 1 [disabled]"
+           is degenerate clutter. Disclaimer row below stays visible. */}
+      {totalClientPages > 1 && (
       <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] flex-shrink-0">
         {/* Left: market dot + Updated Xs ago */}
         <div className="flex items-center gap-2 text-[11px] text-zinc-500 tabular-nums">
@@ -2582,6 +2586,7 @@ export default function ScannerPage() {
           </Pagination>
         ) : null  /* continuous scroll on non-today; no pagination controls */}
       </div>
+      )}
 
       </div>
 
