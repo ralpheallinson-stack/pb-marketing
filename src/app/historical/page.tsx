@@ -92,25 +92,43 @@ function HistoricalPageInner() {
     }
   }, [range, router, searchParams])
 
-  // Picker working state — react-day-picker mode="range" emits partial
-  // selections (from-only) while the user is mid-pick. We commit to `range`
-  // only when both endpoints are set.
-  const [pickerRange, setPickerRange] = React.useState<DateRange | undefined>({
-    from: range.from,
-    to: range.to,
-  })
-  React.useEffect(() => {
-    // Re-sync picker working state when committed range changes (e.g. URL nav,
-    // fallback banner "Update picker" click).
-    setPickerRange({ from: range.from, to: range.to })
-  }, [range])
+  // Two-click range sequencer (replaces the prior partial-range library
+  // path which committed an unintended single-day range on first click).
+  // calendarOpen drives the Popover; pendingFrom is the in-progress
+  // "from" between the two clicks (null = not mid-selection).
+  //
+  // Lifecycle:
+  //   - First click on day X → setPendingFrom(X); calendar stays open
+  //   - Second click on day Y → commit ordered range; close calendar
+  //   - Popover onOpenChange(false) mid-selection → discard pendingFrom,
+  //     leave committed range untouched
+  const [calendarOpen, setCalendarOpen] = React.useState(false)
+  const [pendingFrom, setPendingFrom] = React.useState<Date | null>(null)
 
-  const handleRangeSelect = React.useCallback((r: DateRange | undefined) => {
-    setPickerRange(r)
-    if (r?.from && r?.to) {
-      setRange({ from: r.from, to: r.to })
-    }
-  }, [])
+  // rdp v10 OnSelectHandler signature: (selected, triggerDate, modifiers, e)
+  // — second arg is the user's clicked date. We ignore rdp's auto-built
+  // `selected` because the library's range logic doesn't match the
+  // two-click-commit semantics we want.
+  const handleRangeSelect = React.useCallback(
+    (_selected: DateRange | undefined, triggerDate: Date) => {
+      if (!triggerDate) return
+      if (pendingFrom === null) {
+        // First click — start new selection. Calendar stays open; URL/fetch
+        // unchanged until the second click commits.
+        setPendingFrom(triggerDate)
+        return
+      }
+      // Second click — commit ordered range, close picker. The existing
+      // useEffect on `range` handles URL sync + fetch.
+      const newRange = triggerDate >= pendingFrom
+        ? { from: pendingFrom, to: triggerDate }
+        : { from: triggerDate, to: pendingFrom }
+      setRange(newRange)
+      setPendingFrom(null)
+      setCalendarOpen(false)
+    },
+    [pendingFrom],
+  )
 
   // Fetch state
   const [trades, setTrades] = React.useState<Trade[]>([])
@@ -382,7 +400,15 @@ function HistoricalPageInner() {
           <div className="flex items-center gap-3">
             <h1 className="text-sm font-semibold text-zinc-200">Historical Flow</h1>
 
-            <Popover>
+            <Popover
+              open={calendarOpen}
+              onOpenChange={(open) => {
+                setCalendarOpen(open)
+                // Mid-selection close (Esc, click-outside) discards the
+                // pending "from" and reverts to the committed range.
+                if (!open) setPendingFrom(null)
+              }}
+            >
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2 bg-transparent border-white/[0.08] hover:bg-white/[0.04] text-zinc-200">
                   <CalendarIcon className="w-4 h-4 opacity-70" />
@@ -394,7 +420,11 @@ function HistoricalPageInner() {
                 <Calendar
                   mode="range"
                   numberOfMonths={2}
-                  selected={pickerRange}
+                  // During selection (pendingFrom set): highlight just the
+                  // pending day. Otherwise: show the committed range as
+                  // background so the user sees what they're about to
+                  // replace.
+                  selected={pendingFrom ? { from: pendingFrom, to: pendingFrom } : { from: range.from, to: range.to }}
                   onSelect={handleRangeSelect}
                   disabled={(d) => d > today || d < MIN_DATE}
                   captionLayout="dropdown"
@@ -404,9 +434,17 @@ function HistoricalPageInner() {
                     dropdowns: "flex gap-2",
                     months_dropdown: "bg-[#16191F] text-zinc-200 border border-white/[0.08] rounded-md px-2 py-1 text-sm hover:bg-white/[0.04] focus:outline-none focus:ring-1 focus:ring-cyan-400/30",
                     years_dropdown: "bg-[#16191F] text-zinc-200 border border-white/[0.08] rounded-md px-2 py-1 text-sm hover:bg-white/[0.04] focus:outline-none focus:ring-1 focus:ring-cyan-400/30",
+                    range_start: "bg-white/[0.16] text-white rounded-l-md",
+                    range_end: "bg-white/[0.16] text-white rounded-r-md",
+                    range_middle: "bg-white/[0.06] text-zinc-200 rounded-none",
                   }}
                   autoFocus
                 />
+                {pendingFrom && (
+                  <div className="px-4 py-2.5 text-xs text-zinc-400 border-t border-white/[0.08]">
+                    From <span className="text-zinc-200 font-medium">{format(pendingFrom, "MMM d, yyyy")}</span> — click end date
+                  </div>
+                )}
               </PopoverContent>
             </Popover>
 
