@@ -35,6 +35,7 @@ import { Slider } from "@/components/ui/slider"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
+import { exportTradesToCsv } from "@/lib/csv-export"
 import { StatsPanel } from "@/components/scanner/StatsPanel"
 import { ScannerSidebar } from "@/components/scanner-sidebar"
 import { cn } from "@/lib/utils"
@@ -411,9 +412,14 @@ export default function ScannerPage() {
   const [topicId, setTopicId] = useState<string | null>(null)
   const feedColumnsRef = useRef<string[] | null>(null)
 
+  // userTier (2026-05-18) — drives CSV export row cap. Free tiers
+  // capped at 1000 rows; pro/beta/lifetime/heatmap unlimited. Source
+  // of truth is server-side via /api/me — frontend cap is a polite
+  // default; real enforcement is a future backend concern.
+  const [userTier, setUserTier] = useState<string | null>(null)
   useEffect(() => {
     fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
-      if (d) setCanAccessGamma(d.gamma_wall)
+      if (d) { setCanAccessGamma(d.gamma_wall); setUserTier(d.tier ?? null) }
     }).catch(() => {})
   }, [])
 
@@ -2234,6 +2240,17 @@ export default function ScannerPage() {
                 : <path strokeLinecap="round" d="M3 7h18M3 12h18M3 17h18" />}
             </svg>
           </button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            disabled={filtered.length === 0}
+            onClick={() => exportTradesToCsv(filtered, { filenamePrefix: "pb-flow", tier: userTier })}
+            title={`Export ${filtered.length} trades to CSV`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-60"><path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span>Export</span>
+          </Button>
           <FiltersDialog
             open={showFilters}
             onOpenChange={setShowFilters}

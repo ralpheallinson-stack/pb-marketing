@@ -18,6 +18,7 @@ import { StatsPanel, type Stats } from "@/components/scanner/StatsPanel"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import type { Trade } from "@/components/SignalRow"
 import { rowsToTrades, injectDaySeparators } from "@/lib/feed-decoder"
+import { exportTradesToCsv } from "@/lib/csv-export"
 
 // Most recent trading day at-or-before the given anchor (default: today).
 // Starts from anchor - 1, then rolls back through Sat (6) / Sun (0).
@@ -184,6 +185,14 @@ function HistoricalPageInner() {
   const toggleSound = React.useCallback(() => setSoundEnabled(s => !s), [])
   const [marketOpen] = React.useState(false)  // historical = no live status
   const canAccessGamma = true
+
+  // userTier (2026-05-18) — drives CSV export row cap. Free → 1000.
+  const [userTier, setUserTier] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
+      if (d) setUserTier(d.tier ?? null)
+    }).catch(() => {})
+  }, [])
 
   const isSingleDay = isSameDay(range.from, range.to)
 
@@ -451,6 +460,17 @@ function HistoricalPageInner() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={filtered.length === 0}
+              onClick={() => exportTradesToCsv(filtered, { filenamePrefix: "pb-historical", tier: userTier })}
+              title={`Export ${filtered.length} trades to CSV`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-60"><path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              <span>Export</span>
+            </Button>
             <FiltersDialog
               open={showFilters}
               onOpenChange={setShowFilters}
