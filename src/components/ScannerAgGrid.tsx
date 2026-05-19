@@ -1000,6 +1000,80 @@ export function ScannerAgGrid({
                - align-items: center keeps badges mid-aligned
                  within each wrap row */
         }
+
+        /* ─── Alignment ship (2026-05-18 evening) ──────────────────────────
+           Three rules from Ralph's empirical DOM read on the rendered grid:
+
+           1) Tabular-nums net widened beyond .cf-mono / .cf-focus-btn — the
+              existing two classes covered numeric cells, but stray descendant
+              spans (e.g. inside cellRenderers, badge wrappers) inherited
+              proportional digits. Universal tnum + lnum eliminates any
+              digit-width drift across the whole grid surface, headers included.
+
+           2) Categorical columns (C/P, Side, B/S, Type) flipped from
+              center-aligned to left-aligned. Reason: variable-width labels
+              like "Call"/"Put" and "BUY"/"SELL" anchor cleanly to a fixed
+              left edge but float when centered (content x-position shifts
+              row-to-row by label length / 2). Higher-specificity selectors
+              override the prior .cf-center + .ag-center-aligned-header rules.
+              The class names stay as-is for backward compatibility; only the
+              layout flips. */
+
+        .ag-root,
+        .ag-root .ag-cell,
+        .ag-root .ag-cell *,
+        .ag-root .ag-header-cell,
+        .ag-root .ag-header-cell * {
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1, "lnum" 1;
+        }
+
+        .ag-root .ag-cell.cf-center {
+          text-align: left;
+          justify-content: flex-start;
+        }
+        .ag-root .ag-header-cell.ag-center-aligned-header .ag-header-cell-label,
+        .ag-root .ag-header-cell.ag-center-aligned-header .ag-header-cell-text {
+          justify-content: flex-start;
+          text-align: left;
+        }
+
+        /* 3) Every row reserves 3px on the left; only highlighted rows paint
+              it. Eliminates content-shift artifact when a tint class toggles
+              on/off (non-tinted rows previously had zero left border, so the
+              row content jumped right by 3px when a tint appeared). Existing
+              .ag-row.cf-row-oi-* + .cf-row-late rules above keep their
+              shorthand border-left: 3px solid colored which paints over
+              this transparent default at higher specificity. */
+        .ag-root .ag-row {
+          border-left: 3px solid transparent;
+        }
+        /* Explicit tint-color overrides (redundant with the shorthand at
+           lines ~898-900 above but kept per Ralph's spec for the new
+           transparent-default baseline. The existing border-left shorthand
+           wins on specificity ties via source order, but border-left-color
+           alone is also correct and self-documenting). */
+        .ag-root .ag-row.cf-row-oi-single {
+          border-left-color: rgba(234, 179, 8, 0.7);
+        }
+        .ag-root .ag-row.cf-row-oi-multi {
+          border-left-color: rgba(168, 85, 247, 0.8);
+        }
+
+        /* Single-line badge pills + clip at right edge (2026-05-18 evening).
+           Reverses the 2026-05-12 wrap-allowed design (see 30-line comment
+           on .cf-conds-wrap above). Rationale: row-to-row vertical alignment
+           wins over preserving 4+ badge visibility. Trailing badges past the
+           cell width clip silently; future +N overflow pill is the proper
+           fix per the col-def TODO. autoHeight on the Conds col remains
+           true — with nowrap, AG Grid measures uniform single-line height
+           per row so the variable-height behavior naturally resolves. */
+        .ag-root .cf-conds-wrap {
+          flex-wrap: nowrap;
+        }
+        .ag-root .ag-cell[col-id="badges"] {
+          overflow: hidden;
+        }
       `}</style>
       <AgGridReact<Trade>
         theme={theme}
