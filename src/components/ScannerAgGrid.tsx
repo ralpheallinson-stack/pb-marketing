@@ -18,6 +18,7 @@ import {
 import type { Trade } from "./SignalRow"
 import { badgeClass } from "@/lib/badge-styles"
 import { Button } from "@/components/ui/button-pill"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 /**
@@ -105,6 +106,36 @@ interface ScannerGridContext {
 
 type TradeCellParams = ICellRendererParams<Trade, unknown, ScannerGridContext>
 
+// ── Badge tier classifier (2026-05-19, Ralph spec) ──
+// Numeric priority 1-4 for ordering badges left-to-right inside CONDS.
+// Distinct axis from the existing Badge.tier (semantic color class).
+// Stable sort preserves intra-tier order from decodeConds output.
+type BadgeTier = 1 | 2 | 3 | 4
+const tierOf = (text: string): BadgeTier => {
+  const t = text.toUpperCase()
+  // Tier 1 — conviction / size signals (always show first)
+  if (/UNUSUAL\s+\d/.test(t)) return 1
+  if (/ACCUM\s+\d/.test(t))   return 1
+  if (/V\/OI\s+\d/.test(t))   return 1
+  if (/WHALE/.test(t))         return 1
+  if (/\$\d+M\+?/.test(t))    return 1
+  if (/EARNINGS/.test(t))      return 1
+  // Tier 2 — directional / context
+  if (/^OPENING$/.test(t))     return 2
+  if (/^CLOSING$/.test(t))     return 2
+  if (/^MIXED$/.test(t))       return 2
+  if (/DEEP\s+ITM/.test(t))    return 2
+  if (/BLOCK_/.test(t))        return 2
+  // Tier 3 — structure / OPRA mechanics
+  if (/MULTI-LEG/.test(t))     return 3
+  if (/STRADDLE/.test(t))      return 3
+  if (/STRANGLE/.test(t))      return 3
+  if (/AUCTION/.test(t))       return 3
+  if (/^ISO$/.test(t))         return 3
+  if (/^CLOSE/.test(t))        return 3
+  return 4
+}
+
 // ── cellRenderers (match SignalRow.tsx legacy JSX byte-faithfully) ──
 
 function TickCellRenderer(params: TradeCellParams) {
@@ -162,33 +193,66 @@ function StrikeCellRenderer(params: TradeCellParams) {
   )
 }
 
+const CONDS_VISIBLE_CAP = 3
+function renderBadgePill(b: { label: string; tier: string }, key: string | number) {
+  return (
+    <Button
+      key={key}
+      size="tiny"
+      type="custom"
+      shape="rounded"
+      className={cn(
+        badgeClass(b.tier),
+        "text-[11px] font-medium uppercase tracking-[0.04em]",
+        "cursor-default pointer-events-none",
+      )}
+    >
+      {b.label}
+    </Button>
+  )
+}
+
 function CondsCellRenderer(params: TradeCellParams) {
   const t = params.data
   if (!t?.badges?.length) return null
-  // Option 3 hybrid (2026-05-11): Button-Pill type="custom" emits no color
-  // classes; badgeClass(tier) from @/lib/badge-styles supplies the 11
-  // semantic tier colors (warning amber, iv_high red, iv_low cyan,
-  // directional emerald, ruoa violet, ruoa_heavy bright violet, iso cyan,
-  // cross fuchsia, rapid teal, plus unified slate for the 10 neutral
-  // tiers). cursor-default + pointer-events-none neutralize Button's
-  // hover/focus interactivity for badge use.
+  // Tier sort (2026-05-19): stable sort by tierOf — conviction signals
+  // (UNUSUAL/WHALE/EARNINGS/V-OI/ACCUM/$M) render leftmost so they stay
+  // visible without horizontal scroll. Tier 4 (unknown) sinks to the
+  // tail / +N popover.
+  const sorted = [...t.badges].sort((a, b) => tierOf(a.label) - tierOf(b.label))
+  const visible = sorted.slice(0, CONDS_VISIBLE_CAP)
+  const overflow = sorted.slice(CONDS_VISIBLE_CAP)
+  // Prior renderer: t.badges.slice(0, 4) — 4 flat badges, no priority.
+  // Replaced with sort + 3 visible + +N popover-pill = same 4-slot
+  // visual budget but the 4th slot is the overflow indicator instead
+  // of an arbitrary 4th badge. Badge style choices (Button-Pill +
+  // badgeClass + cursor-default) unchanged.
   return (
     <div className="cf-conds-wrap">
-      {t.badges.slice(0, 4).map((b, i) => (
-        <Button
-          key={i}
-          size="tiny"
-          type="custom"
-          shape="rounded"
-          className={cn(
-            badgeClass(b.tier),
-            "text-[11px] font-medium uppercase tracking-[0.04em]",
-            "cursor-default pointer-events-none",
-          )}
-        >
-          {b.label}
-        </Button>
-      ))}
+      {visible.map((b, i) => renderBadgePill(b, i))}
+      {overflow.length > 0 && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="cf-overflow-pill"
+              aria-label={`Show ${overflow.length} more badge${overflow.length === 1 ? "" : "s"}`}
+              title={`+${overflow.length} more`}
+            >
+              +{overflow.length}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            sideOffset={4}
+            className="cf-conds-overflow-popover"
+          >
+            <div className="cf-conds-overflow-list">
+              {overflow.map((b, i) => renderBadgePill(b, i))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   )
 }
@@ -1002,6 +1066,45 @@ export function ScannerAgGrid({
         .cf-conds-wrap::-webkit-scrollbar      { height: 4px; }
         .cf-conds-wrap::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 2px; }
         .cf-conds-wrap::-webkit-scrollbar-track { background: transparent; }
+
+        /* +N overflow pill (2026-05-19). Matches the visual weight of the
+           badge pills but neutral colored — signals "more available" without
+           competing with the conviction/structure tier coloring. Click opens
+           a Radix Popover containing the trailing tier-3/4 badges. */
+        .cf-overflow-pill {
+          flex-shrink: 0;
+          display: inline-flex;
+          align-items: center;
+          height: 18px;
+          padding: 1px 6px;
+          background: rgba(255, 255, 255, 0.08);
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          border-radius: 2px;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          cursor: pointer;
+          transition: background 120ms ease, color 120ms ease;
+          font-variant-numeric: tabular-nums;
+        }
+        .cf-overflow-pill:hover {
+          background: rgba(255, 255, 255, 0.14);
+          color: rgba(255, 255, 255, 0.95);
+        }
+        .cf-conds-overflow-popover {
+          background: #16191F !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+          padding: 8px !important;
+          max-width: 320px;
+          z-index: 50;
+        }
+        .cf-conds-overflow-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          align-items: center;
+        }
 
         /* ─── Alignment ship (2026-05-18 evening) ──────────────────────────
            Three rules from Ralph's empirical DOM read on the rendered grid:
