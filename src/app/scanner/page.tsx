@@ -634,7 +634,7 @@ export default function ScannerPage() {
   // fetchDataRef so polling/reset effects don't re-run on fetchData identity changes.
   // lastSuccessRef + pollError power the connection-status banner + stale watchdog.
   const playBlipRef = useRef<() => void>(() => {})
-  const fetchDataRef = useRef<((opts?: { initial?: boolean; pageNum?: number }) => Promise<void>) | null>(null)
+  const fetchDataRef = useRef<((opts?: { initial?: boolean; pageNum?: number; light?: boolean; forceFull?: boolean }) => Promise<void>) | null>(null)
   const lastSuccessRef = useRef<number>(Date.now())
   const [pollError, setPollError] = useState<string | null>(null)
 
@@ -1006,7 +1006,7 @@ export default function ScannerPage() {
   // include_dashboard/include_sectors. Mirrors buildFeedUrl's filter
   // params + buildUrl's pagination params. include_dashboard=1 is sent
   // only on page 0 (page>0 dashboard is null per Q1).
-  const buildScannerUrl = useCallback((opts?: { pageNum?: number; sinceId?: number }) => {
+  const buildScannerUrl = useCallback((opts?: { pageNum?: number; sinceId?: number; light?: boolean }) => {
     const pg = opts?.pageNum ?? 0
     const p = new URLSearchParams()
     p.set("unified", "1")
@@ -1020,10 +1020,14 @@ export default function ScannerPage() {
     if (sortField && sortDir) { p.set("sort", sortField); p.set("order", sortDir) }
     if (opts?.sinceId && opts.sinceId > 0) p.set("since_id", opts.sinceId.toString())
     if (pg > 0) { p.set("page", pg.toString()); p.set("page_size", "2000") }
+    // Light mode (2026-05-19) — fast first-paint bootstrap (200 rows +
+    // full-set agg via _compute_global_agg). Pairs with full follow-up
+    // fetch scheduled from inside fetchData. Dashboard bundle skipped:
+    // the full follow-up brings it in.
+    if (opts?.light) p.set("light", "1")
     // Dashboard bundle is page-0 only (Q1 default). Skip on incremental
-    // polls — server already strips dashboard when since_id is set, this
-    // just saves a few URL bytes.
-    if (pg === 0 && !opts?.sinceId) p.set("include_dashboard", "1")
+    // polls AND on light bootstrap.
+    if (pg === 0 && !opts?.sinceId && !opts?.light) p.set("include_dashboard", "1")
     return `/api/scanner/feed?${p.toString()}`
   }, [timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
@@ -1132,10 +1136,10 @@ export default function ScannerPage() {
         // Continuous-scroll mode (Patch — 2026-05-17): non-today modes
         // also get incremental top-ups so the in-memory buffer stays
         // current as new trades arrive. trades grows up to the 20K cap.
-        const isIncrementalCall = pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0
+        const isIncrementalCall = pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0 && !opts?.forceFull
         const sinceId = isIncrementalCall ? lastTradeIdRef.current : undefined
         try {
-          const url = buildScannerUrl({ pageNum: pg, sinceId })
+          const url = buildScannerUrl({ pageNum: pg, sinceId, light: opts?.light })
           const res = await fetch(url, { signal: ac.signal })
           if (isAuthRedirect(res)) {
             setPollError("Session expired — redirecting to login…")
@@ -1188,8 +1192,31 @@ export default function ScannerPage() {
               lastTradeIdRef.current = Math.max(...incoming.map(tr => tr.id))
             }
             isFirstLoadRef.current = false
-            setTrades(incoming)
-            agGridReplace(incoming)
+
+            if (opts?.forceFull) {
+              // Full follow-up landing on top of light data. MERGE rather
+              // than replace — preserve any SSE rows arrived during the
+              // light→full window that arent in the full payload (servers
+              // SQL ran microseconds before the SSE row was committed).
+              setTrades(prev => {
+                const fullIds = new Set(incoming.map(r => r.id))
+                const sseNewer = prev.filter(r => !fullIds.has(r.id))
+                const merged = [...sseNewer, ...incoming].slice(0, 20000)
+                agGridReplace(merged)
+                return merged
+              })
+            } else {
+              setTrades(incoming)
+              agGridReplace(incoming)
+              // Light fetch landed — schedule the full follow-up. setTimeout(0)
+              // yields the current event-loop turn so React commits the
+              // skeleton→data transition first, then full kicks off ~one
+              // tick later. forceFull bypasses since_id auto-detection
+              // that would otherwise produce an incremental-only fetch.
+              if (opts?.light) {
+                setTimeout(() => fetchDataRef.current?.({ pageNum: 0, forceFull: true }), 0)
+              }
+            }
             if (fd.agg) {
               const agg = fd.agg
               const lean = (agg.sentiment?.label || "MIXED").toUpperCase()
@@ -1353,7 +1380,7 @@ export default function ScannerPage() {
     lastTradeIdRef.current = 0
     setTrades([])
     agGridReplace([])
-    fetchDataRef.current?.({ initial: true, pageNum: page })
+    fetchDataRef.current?.({ initial: true, pageNum: page, light: true })
   }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
   // auto-refresh every 3s on page 0 (live).
