@@ -38,6 +38,7 @@ import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import { exportTradesToCsv } from "@/lib/csv-export"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { StatsPanel } from "@/components/scanner/StatsPanel"
+import { DashboardSkeleton, ScannerSkeleton } from "@/components/scanner/SkeletonViews"
 import { ScannerSidebar } from "@/components/scanner-sidebar"
 import { cn } from "@/lib/utils"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
@@ -223,6 +224,13 @@ export default function ScannerPage() {
   const [search, setSearch] = useState("")
   const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
+  // Initial-hydration gate (2026-05-19). loading flips true on every
+  // refetch (initial mount, page change, filter-change refetch). The
+  // skeleton should only appear on the FIRST window where trades is
+  // still empty — never on subsequent refetches where stale data is
+  // already on screen. Tracks via state (not ref) so the conditional
+  // render reacts to the transition.
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
   // Hydration-safe (2026-05-18). Was useState(isMarketOpen()) — that
   // initializer calls new Date() at evaluation time, so build-time
   // (e.g. Sunday deploy, market closed → false) and client first render
@@ -1328,6 +1336,7 @@ export default function ScannerPage() {
     } finally {
       clearTimeout(timeoutId)
       setLoading(false)
+      setHasInitiallyLoaded(true)
     }
   }, [page, buildUrl, buildScannerUrl, router])
 
@@ -2406,6 +2415,15 @@ export default function ScannerPage() {
       )}
 
       {/* ── STATS BAR ── */}
+      {/* Initial-hydration skeleton (2026-05-19). Replaces both the
+          StatsPanel zero-gauges and the AG Grid empty-overlay "No flow
+          matches" string during the ~1-3s window between page mount
+          and first /api/scanner/feed completion. After the first load
+          completes, hasInitiallyLoaded sticks and subsequent loading
+          cycles render stale data instead of the skeleton. */}
+      {!hasInitiallyLoaded && loading ? (
+        <DashboardSkeleton />
+      ) : (
       <StatsPanel
         displayStats={displayStats}
         callPrem={callPrem}
@@ -2413,6 +2431,7 @@ export default function ScannerPage() {
         calls={calls}
         puts={puts}
       />
+      )}
 
       <div className="flex flex-1 flex-col overflow-hidden border border-white/[0.06] rounded-lg" style={{ background: '#16191F' }}>
       {trades.length === 0 && !loading && isMarketClosedET() && (
@@ -2430,7 +2449,9 @@ export default function ScannerPage() {
           rowVirtualizer's getScrollElement returns null gracefully when the
           flag is on (the virtualizer simply doesn't activate). Pagination bar
           stays outside the conditional so the layout below is unaffected. */}
-      {!mounted ? (
+      {!hasInitiallyLoaded && loading ? (
+        <ScannerSkeleton rowCount={15} />
+      ) : !mounted ? (
         <div className="flex-1 flex items-center justify-center text-white/40 text-sm">
           Loading scanner…
         </div>
@@ -2452,40 +2473,11 @@ export default function ScannerPage() {
         />
       ) : (
       <div ref={tableContainerRef} className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none", fontVariantNumeric: "tabular-nums", background: '#1C1C1E' }}>
-        {loading ? (
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10" style={{ background: '#252430' }}>
-              <tr className="text-xs text-white/30 uppercase tracking-[0.08em]">
-                <th className="text-left px-3 py-1.5 font-medium">Time</th>
-                <th className="text-left px-2 py-1.5 font-medium">Tick</th>
-                <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell">Expiry</th>
-                <th className="text-right px-2 py-1.5 font-medium">Strike</th>
-                <th className="text-center px-2 py-1.5 font-medium">C/P</th>
-                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">Side</th>
-                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">B/S</th>
-                <th className="text-right px-2 py-1.5 font-medium hidden md:table-cell">Spot</th>
-                <th className="text-right px-2 py-1.5 font-medium hidden lg:table-cell">Size</th>
-                <th className="text-center px-2 py-1.5 font-medium hidden lg:table-cell">Type</th>
-                <th className="text-right px-2 py-1.5 font-medium">Value</th>
-                <th className="text-right px-2 py-1.5 font-medium hidden xl:table-cell">Vol</th>
-                <th className="text-right px-2 py-1.5 font-medium hidden xl:table-cell">OI</th>
-                <th className="text-right px-2 py-1.5 font-medium hidden lg:table-cell">IV</th>
-                <th className="text-left px-2 py-1.5 font-medium hidden md:table-cell w-[180px] max-w-[180px]">Conds</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 25 }).map((_, i) => (
-                <tr key={i} className="border-b border-white/[0.04]">
-                  {Array.from({ length: 15 }).map((_, j) => (
-                    <td key={j} className="px-2 py-1.5">
-                      <div className="h-2.5 bg-white/[0.03] rounded animate-pulse" style={{ width: `${40 + ((i * 7 + j * 13 + i * j) % 40)}%` }} />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : filtered.length === 0 ? (
+        {/* Inner loading-skeleton removed (2026-05-19) — the outer
+            !hasInitiallyLoaded gate now intercepts the initial-load
+            window for both AG Grid and legacy paths. Subsequent refetches
+            keep stale data on screen rather than flashing the skeleton. */}
+        {filtered.length === 0 ? (
           <div className="text-center py-20 text-white/15 text-xs">
             {search ? `No trades matching "${search}"` : "No flow matches the current filters."}
           </div>
