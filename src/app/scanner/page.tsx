@@ -2523,34 +2523,15 @@ export default function ScannerPage() {
       </div>
       )}
 
-      {/* ── PAGINATION BAR — 3-column: Updated · counts/page · prev/next ──
-           Hidden when totalClientPages <= 1 (single-page result set):
-           "Updated 0s ago" / "Showing 123 of 123" / "Page 1 of 1 [disabled]"
-           is degenerate clutter. Disclaimer row below stays visible. */}
+      {/* ── PAGINATION BAR — controls-only (2026-05-18) ──
+           Status text (Updated / Showing / Page X of Y) intentionally
+           removed per Ralph feedback — pagination buttons themselves
+           are sufficient navigation context. Gate retained on
+           totalClientPages > 1 so single-page views hide the whole
+           bar (no controls needed when nothing to paginate).
+           Disclaimer row below stays visible. */}
       {totalClientPages > 1 && (
-      <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] flex-shrink-0">
-        {/* Left: market dot + Updated Xs ago */}
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500 tabular-nums">
-          <span className={cn("h-1.5 w-1.5 rounded-full", marketOpen ? "bg-emerald-400 animate-pulse" : "bg-zinc-600")} />
-          <span>Updated {(() => {
-            const s = Math.max(0, Math.floor((nowTs - lastSuccessRef.current) / 1000))
-            if (s < 60) return `${s}s ago`
-            if (s < 3600) return `${Math.floor(s / 60)}m ago`
-            return `${Math.floor(s / 3600)}h ago`
-          })()}</span>
-        </div>
-
-        {/* Center: showing N · Page X of Y */}
-        <div className="flex items-center gap-6 text-[11px] text-zinc-500 tabular-nums">
-          <span>
-            Showing <span className="text-zinc-300 font-medium">{pageRows.length.toLocaleString("en-US")}</span>
-            {' of '}
-            <span className="text-zinc-300 font-medium">{filtered.length.toLocaleString("en-US")}</span>
-            {focusTicker && <span className="text-zinc-500"> for <span className="text-zinc-300">{focusTicker}</span></span>}
-          </span>
-          <span>Page <span className="text-zinc-300 font-medium">{clientPage + 1}</span> of <span className="text-zinc-300 font-medium">{totalClientPages}</span></span>
-        </div>
-
+      <div className="flex items-center justify-end gap-3 px-4 py-2 border-t border-white/[0.06] flex-shrink-0">
         {/* Right: numbered Pagination component */}
         {true ? (
           <Pagination className="w-auto mx-0">

@@ -620,19 +620,12 @@ function HistoricalPageInner() {
           {/* Footer — hidden when single-page result. See /scanner for
               rationale: degenerate counts + disabled pagination = clutter.
               Disclaimer below the table card stays visible regardless. */}
+          {/* Footer — controls-only (2026-05-18). Status text dropped
+              per /scanner parity: range label, trade count, and
+              "Page N of M" label all removed. Just Prev/Next buttons
+              + loading indicator. Disclaimer below stays visible. */}
           {serverTotal != null && serverTotal > PAGE_SIZE && (
-          <div className="flex items-center justify-between px-4 py-2 text-[11px] text-zinc-500 tabular-nums border-t border-white/[0.06]">
-            <span>Historical · <span className="text-zinc-300 font-medium">{rangeLabel}</span></span>
-            <span>
-              {serverTotal != null ? (
-                <>
-                  <span className="text-zinc-300 font-medium">{serverTotal.toLocaleString("en-US")}</span> trades
-                  {focusTicker && <span className="text-zinc-500"> for <span className="text-zinc-300">{focusTicker}</span></span>}
-                </>
-              ) : (
-                <>{trades.length.toLocaleString("en-US")} trades on this page</>
-              )}
-            </span>
+          <div className="flex items-center justify-end px-4 py-2 text-[11px] text-zinc-500 tabular-nums border-t border-white/[0.06]">
             <div className="flex items-center gap-3">
               {serverTotal != null && serverTotal > PAGE_SIZE && (() => {
                 const totalPages = Math.max(1, Math.ceil(serverTotal / PAGE_SIZE))
@@ -645,17 +638,16 @@ function HistoricalPageInner() {
                       disabled={atFirst || loading}
                       onClick={() => setPage(p => Math.max(0, p - 1))}
                       className="px-2 py-1 rounded border border-white/[0.08] text-zinc-300 hover:bg-white/[0.04] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Previous page"
+                      aria-label={`Previous page (currently on page ${page + 1} of ${totalPages})`}
                     >
                       ‹ Prev
                     </button>
-                    <span className="text-zinc-400">Page <span className="text-zinc-200 font-medium">{page + 1}</span> of <span className="text-zinc-200 font-medium">{totalPages.toLocaleString("en-US")}</span></span>
                     <button
                       type="button"
                       disabled={atLast || loading}
                       onClick={() => setPage(p => p + 1)}
                       className="px-2 py-1 rounded border border-white/[0.08] text-zinc-300 hover:bg-white/[0.04] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Next page"
+                      aria-label={`Next page (currently on page ${page + 1} of ${totalPages})`}
                     >
                       Next ›
                     </button>
