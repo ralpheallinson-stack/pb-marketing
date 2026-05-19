@@ -980,26 +980,28 @@ export function ScannerAgGrid({
           align-content: flex-start;
           align-items: center;
           padding: 4px 0;
-          overflow: hidden;
+          /* overflow path (2026-05-19 — third revision):
+             - Original (pre-dc3f9dd): overflow: hidden + flex-wrap: wrap
+               with max-height: 60px clip. Variable-height rows.
+             - dc3f9dd: flex-wrap: nowrap via .ag-root .cf-conds-wrap
+               override (single-line pills). overflow: hidden still
+               clipped trailing pills with no recovery path.
+             - Now: overflow-x: auto + overflow-y: hidden. Single-line
+               preserved; pills past the 184px CONDS width are reachable
+               via horizontal scroll within the cell (wheel/trackpad/
+               keyboard). Row height stays uniform at theme rowHeight.
+               Ralph empirical: 4-pill rows need ~266px of content into
+               a 184px cell — auto-scroll lets users reach AUCTION/ISO/
+               MULTI-LEG without sacrificing vertical alignment. */
+          overflow-x: auto;
+          overflow-y: hidden;
           max-height: 60px;
-          /* 2026-05-12: reversed f1c4f85's single-line lock. 4+
-             badge rows wrap to a second line; row grows to ~70px
-             via CONDS autoHeight: true while single/double-badge
-             rows stay at theme rowHeight 44px. User accepted the
-             variable-row-height tradeoff for not clipping 4-badge
-             content.
-
-             Bounded safety net:
-               - max-height: 60px caps wrap at ~2 lines (~70px
-                 total row including 8px padding/border) so a
-                 hypothetical 6+ badge row can never grow unbounded
-               - overflow: hidden clips anything beyond the cap
-               - align-content: flex-start anchors wrapped rows to
-                 top of cell so the short line doesn't float
-                 centered when the full line is below it
-               - align-items: center keeps badges mid-aligned
-                 within each wrap row */
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
         }
+        .cf-conds-wrap::-webkit-scrollbar      { height: 4px; }
+        .cf-conds-wrap::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 2px; }
+        .cf-conds-wrap::-webkit-scrollbar-track { background: transparent; }
 
         /* ─── Alignment ship (2026-05-18 evening) ──────────────────────────
            Three rules from Ralph's empirical DOM read on the rendered grid:
