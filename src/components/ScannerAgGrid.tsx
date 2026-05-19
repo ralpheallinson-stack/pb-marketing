@@ -193,7 +193,6 @@ function StrikeCellRenderer(params: TradeCellParams) {
   )
 }
 
-const CONDS_VISIBLE_CAP = 3
 function renderBadgePill(b: { label: string; tier: string }, key: string | number) {
   return (
     <Button
@@ -212,6 +211,22 @@ function renderBadgePill(b: { label: string; tier: string }, key: string | numbe
   )
 }
 
+// Estimate a pill's rendered pixel width from its text. Inter at 12px
+// uppercase with letter-spacing 0.04em averages ~6.5px/char; pill has
+// padding: 1px 4px (8px horizontal) + 1px border on each side + 4px
+// safety margin = 14px non-text. Tuned against measured widths in the
+// Ralph DOM dump (5/19): "UNUSUAL 60.3x" → 99 vs measured 106 (~7%
+// under); "AUCTION" → 60 vs measured 66 (~10% under). PLUS_N_RESERVE
+// is bumped to 44px (vs the 36px the demo measured) to absorb that
+// underestimate margin without re-introducing clipping.
+const PILL_CHAR_PX = 6.5
+const PILL_FIXED_PX = 14
+const PILL_GAP_PX = 4
+const PLUS_N_RESERVE_PX = 44
+const CELL_HORIZONTAL_PADDING = 18  // .ag-cell padding-left + padding-right = 9 + 9
+const estimatePillWidth = (label: string) =>
+  Math.ceil(label.length * PILL_CHAR_PX) + PILL_FIXED_PX
+
 function CondsCellRenderer(params: TradeCellParams) {
   const t = params.data
   if (!t?.badges?.length) return null
@@ -220,8 +235,36 @@ function CondsCellRenderer(params: TradeCellParams) {
   // visible without horizontal scroll. Tier 4 (unknown) sinks to the
   // tail / +N popover.
   const sorted = [...t.badges].sort((a, b) => tierOf(a.label) - tierOf(b.label))
-  const visible = sorted.slice(0, CONDS_VISIBLE_CAP)
-  const overflow = sorted.slice(CONDS_VISIBLE_CAP)
+
+  // Width-aware truncation (2026-05-19 v2). Was: fixed slice(0, 3) which
+  // missed the case where 3 wide tier-1 pills exceed the cell budget
+  // (e.g. "UNUSUAL 184.1x" + "ACCUM 5x" + "$50M+" = ~270px into a
+  // 204-380px cell). Now: iterate, accumulate estimated widths, stop at
+  // the last pill that fits with the +N reserve also accounted for.
+  // Always shows at least pill 0 (sorted by tier, so tier-1 first) even
+  // if it'''s individually wider than the cell — the inner-scroll safety
+  // net from 63e5568 handles that single-pill case.
+  const cellWidth = (params.column?.getActualWidth?.() ?? 204) - CELL_HORIZONTAL_PADDING
+  let cumWidth = 0
+  let lastVisibleIdx = -1
+  for (let i = 0; i < sorted.length; i++) {
+    const w = estimatePillWidth(sorted[i].label)
+    const gap = i > 0 ? PILL_GAP_PX : 0
+    const needed = cumWidth + gap + w
+    const willHaveMore = i < sorted.length - 1
+    const budget = willHaveMore ? cellWidth - PILL_GAP_PX - PLUS_N_RESERVE_PX : cellWidth
+    if (needed <= budget) {
+      cumWidth = needed
+      lastVisibleIdx = i
+    } else {
+      break
+    }
+  }
+  // Floor: always show at least the first (tier-1) pill — single-pill
+  // overflow falls through to the inner scrollbar from 63e5568.
+  if (lastVisibleIdx === -1 && sorted.length > 0) lastVisibleIdx = 0
+  const visible = sorted.slice(0, lastVisibleIdx + 1)
+  const overflow = sorted.slice(lastVisibleIdx + 1)
   // Prior renderer: t.badges.slice(0, 4) — 4 flat badges, no priority.
   // Replaced with sort + 3 visible + +N popover-pill = same 4-slot
   // visual budget but the 4th slot is the overflow indicator instead
