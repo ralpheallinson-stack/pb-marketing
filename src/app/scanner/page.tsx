@@ -806,7 +806,7 @@ export default function ScannerPage() {
               // the next matchesFilter recompute without a re-fetch.
               const visibleFresh = fresh.filter(matchesFilterRef.current)
               if (visibleFresh.length > 0) agGridAdd(visibleFresh)
-              return [...fresh, ...prev].slice(0, 2000)
+              return [...fresh, ...prev].slice(0, 20000)
             })
             // Blip is one-per-batch (was one-per-row pre-2026-05-11). The
             // UX delta is intentional: per-row dinging on heavy flow was
@@ -900,7 +900,7 @@ export default function ScannerPage() {
           }
           if (fresh.length === 0) return prev
           agGridAdd(fresh)
-          return [...fresh, ...prev].slice(0, 2000)
+          return [...fresh, ...prev].slice(0, 20000)
         })
         if (shouldBlip) playBlipRef.current()
       }
