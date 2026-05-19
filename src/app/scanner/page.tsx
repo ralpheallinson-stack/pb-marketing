@@ -1109,7 +1109,7 @@ export default function ScannerPage() {
     return false
   }
 
-  const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number }) => {
+  const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number; light?: boolean; forceFull?: boolean }) => {
     const pg = opts?.pageNum ?? page
     if (opts?.initial) setLoading(true)
     // Hard 12s timeout via AbortController. Without this, a hung fetch (slow
