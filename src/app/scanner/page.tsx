@@ -170,6 +170,25 @@ const COLS = [
 /* ── page ── */
 const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
 
+// Watchlist ticker avatar — 36px rounded-square gray chip with the ticker's
+// first 3 chars. When a Polygon logo is available it renders monochrome-white
+// over the chip; the chip stays BEHIND the image so a load error (onError) or
+// a missing logo (ETFs) falls back cleanly with no flicker.
+function WlTickerAvatar({ sym, logoUrl }: { sym: string; logoUrl?: string | null }) {
+  const [logoFailed, setLogoFailed] = useState(false)
+  return (
+    <div className="relative flex items-center justify-center flex-shrink-0"
+      style={{ width: 36, height: 36, borderRadius: 8, background: "var(--pb-surface-elev)", border: "1px solid var(--pb-border)" }}>
+      <span style={{ fontSize: 9, fontWeight: 700, color: "var(--pb-text-secondary)", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
+      {logoUrl && !logoFailed && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logoUrl} alt="" width={18} height={18} onError={() => setLogoFailed(true)}
+          className="absolute" style={{ width: 18, height: 18, filter: "brightness(0) invert(1)", opacity: 0.88 }} />
+      )}
+    </div>
+  )
+}
+
 export default function ScannerPage() {
   const router = useRouter()
   const [trades, setTrades] = useState<Trade[]>([])
@@ -325,7 +344,10 @@ export default function ScannerPage() {
   }, [])
   // Snapshot enrichment only fetches when the user is actually viewing Overview
   // (the hook skips entirely on an empty symbol list).
-  const wlSnapshotSymbols = (activePage === "watchlist" && wlViewMode === "overview") ? watchlist : []
+  // Fetched on the whole watchlist tab (not just overview) so ticker logos
+  // resolve in both view modes; overview mode additionally renders the
+  // mcap/iv/sparkline columns from this same snapshot.
+  const wlSnapshotSymbols = (activePage === "watchlist") ? watchlist : []
   const { data: wlSnapshot } = useWatchlistSnapshot(wlSnapshotSymbols)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [marketOpen, setMarketOpen] = useState(false)
@@ -2169,13 +2191,6 @@ export default function ScannerPage() {
               // OVERVIEW MODE (Phase 2B step 1) — enrichment columns from
               // useWatchlistSnapshot. Parallel to the Flow IIFE below, which is
               // left byte-for-byte unchanged. Pinned: Ticker | Spot | Δ%.
-              // Ticker avatar — 36px rounded-square gray chip (logo wired in commit 2).
-              const WlAvatar = ({ sym }: { sym: string }) => (
-                <div className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: 36, height: 36, borderRadius: 8, background: "var(--pb-surface-elev)", border: "1px solid var(--pb-border)" }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "var(--pb-text-secondary)", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
-                </div>
-              )
               const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
                 if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
                 const pad = 2
@@ -2247,7 +2262,7 @@ export default function ScannerPage() {
                           onClick={() => setWlExpanded(prev => prev === sym ? null : sym)}
                           title={`Click for ${sym} flow detail`}>
                           <div className="px-3 flex items-center gap-2.5 min-w-0">
-                            <WlAvatar sym={sym} />
+                            <WlTickerAvatar sym={sym} logoUrl={wlSnapshot?.[sym]?.logo_url} />
                             <span className="text-[13px] font-bold text-white font-mono truncate">{sym}</span>
                           </div>
                           <div className="px-3 text-right">
@@ -2336,13 +2351,6 @@ export default function ScannerPage() {
                 if (d < 86400) return `${Math.floor(d / 3600)}h`
                 return `${Math.floor(d / 86400)}d`
               }
-              // Ticker avatar — 36px rounded-square gray chip (logo wired in commit 2).
-              const WlAvatar = ({ sym }: { sym: string }) => (
-                <div className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: 36, height: 36, borderRadius: 8, background: "var(--pb-surface-elev)", border: "1px solid var(--pb-border)" }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "var(--pb-text-secondary)", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
-                </div>
-              )
               // Sparkline — 80×24 framer-motion path-draw, color by direction.
               const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
                 if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
@@ -2437,7 +2445,7 @@ export default function ScannerPage() {
                            onClick={() => setWlExpanded(prev => prev === sym ? null : sym)}
                            title={`Click for ${sym} flow detail`}>
                         <div className="px-3 flex items-center gap-2.5 min-w-0">
-                          <WlAvatar sym={sym} />
+                          <WlTickerAvatar sym={sym} logoUrl={wlSnapshot?.[sym]?.logo_url} />
                           <span className="text-[13px] font-bold text-white font-mono truncate">{sym}</span>
                         </div>
                         <div className="px-3 text-right">
