@@ -115,7 +115,7 @@ export const Button = ({
         fullWidth && "w-full",
         variant === "unstyled"
           ? "outline-none px-0 h-fit bg-transparent hover:bg-transparent text-stone-50"
-          : "focus:ring-2 focus:ring-cyan-400/40 focus:outline-0",
+          : "focus:ring-2 focus:ring-[#D4A574]/40 focus:outline-0",
         className,
       )}
       {...rest}

@@ -181,7 +181,7 @@ function SidebarNavItem({
       {icon}
 
       {isActive && (
-        <span className="absolute right-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-gradient-to-b from-cyan-400 to-cyan-500" />
+        <span className="absolute right-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-gradient-to-b from-[#D4A574] to-[#C49A6C]" />
       )}
 
       {badge && (

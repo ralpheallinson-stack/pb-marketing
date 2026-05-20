@@ -36,19 +36,6 @@ export type Ticker = {
   topTrades: TradeRow[];
 };
 
-export const TICKER_COLORS: Record<string, string> = {
-  SPY:  '#0EA5E9',
-  QQQ:  '#6366F1',
-  NVDA: '#76B900',
-  TSLA: '#E31937',
-  AAPL: '#A1A1AA',
-  AMD:  '#ED1C24',
-  MSFT: '#00A4EF',
-  AMZN: '#FF9900',
-};
-
-export const TICKER_COLOR_FALLBACK = '#7A8BA8';
-
 export const mockTickers: Ticker[] = [
   {
     symbol: 'SPY', name: 'SPDR S&P 500 ETF',
