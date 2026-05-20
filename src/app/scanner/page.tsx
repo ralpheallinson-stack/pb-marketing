@@ -253,6 +253,10 @@ export default function ScannerPage() {
   useEffect(() => { setLive(isMarketOpen()) }, [])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [activePage, setActivePage] = useState<"scanner" | "heatmap" | "watchlist">("scanner")
+  // false until the ?view= effect resolves the initial tab from the URL. Flow
+  // fetch/SSE/poll effects wait for this so a heatmap deep-link (?view=heatmap)
+  // doesn't fire a one-shot flow request while activePage is still its default.
+  const [viewReady, setViewReady] = useState(false)
   const [canAccessGamma, setCanAccessGamma] = useState(false)
   // Flow entitlement (premium/pro_bundle/beta/lifetime). Default true so entitled
   // users aren't briefly gated before /api/me resolves; server 403 is the real gate.
@@ -279,6 +283,7 @@ export default function ScannerPage() {
     else if (v === "watchlist") setActivePage("watchlist")
     const symParam = params.get("symbol")
     if (symParam && /^[A-Za-z.]{1,6}$/.test(symParam)) { setSearch(symParam.toUpperCase()); setSearchInput(symParam.toUpperCase()) }
+    setViewReady(true)
   }, [])
 
   // S = open command palette. Bare-letter shortcut, focus-aware. Only active
@@ -762,6 +767,7 @@ export default function ScannerPage() {
   const sseBufferBlipRef = useRef(false)
   useEffect(() => {
     if (page !== 0) return
+    if (!viewReady) return  // wait until ?view resolves the initial tab
     if (activePage !== "scanner") return  // flow stream only on the flow tab; heatmap/watchlist don't subscribe (avoids 403 retry storm)
     const feedMode = useFeedEndpoint() && !!topicId
 
@@ -941,7 +947,7 @@ export default function ScannerPage() {
       close()
       document.removeEventListener("visibilitychange", onVis)
     }
-  }, [page, topicId, activePage])
+  }, [page, topicId, activePage, viewReady])
 
   const savePreset = (name: string) => {
     if (!name.trim()) return
@@ -1415,6 +1421,7 @@ export default function ScannerPage() {
   // (timeRange, filterMinPremium, filterDte from buildUrl) so changing those
   // clears the stale trade list and refetches with the new server filter.
   useEffect(() => {
+    if (!viewReady) return  // wait until ?view resolves the initial tab
     if (activePage !== "scanner") return  // don't fetch flow on heatmap/watchlist tabs
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
@@ -1422,7 +1429,7 @@ export default function ScannerPage() {
     setTrades([])
     agGridReplace([])
     fetchDataRef.current?.({ initial: true, pageNum: page, light: true })
-  }, [activePage, page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
+  }, [viewReady, activePage, page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
   // auto-refresh every 3s on page 0 (live).
   //
@@ -1434,6 +1441,7 @@ export default function ScannerPage() {
   // restart the timer fresh — don't trust whatever stale state Chrome left it in.
   useEffect(() => {
     if (page !== 0) return
+    if (!viewReady) return  // wait until ?view resolves the initial tab
     if (activePage !== "scanner") return  // no flow polling off the flow tab
     // Phase 2: row-push SSE handles updates when feed flag is on AND we have
     // a topic_id. Skip the 3s polling tick entirely. The wake handlers below
@@ -1506,7 +1514,7 @@ export default function ScannerPage() {
       window.removeEventListener("pointerdown", wake)
       window.removeEventListener("keydown", wake)
     }
-  }, [page, topicId, activePage])
+  }, [page, topicId, activePage, viewReady])
 
   // active filter count
   useEffect(() => {
