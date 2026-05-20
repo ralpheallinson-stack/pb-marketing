@@ -171,12 +171,30 @@ export type RawRow = unknown[]
  * Field-name mismatches (e.g. `_sort_strike` / 100 → strike) are normalized
  * here so consumers see the canonical Trade shape.
  */
+// Derive OPEN / CLOSE / ACCUM pills from the authoritative row fields
+// (position_action, accum_hits) rather than the backend conds codes — the
+// codes only emit OPENING ("o") / ACCUM ("a<n>") on a subset of rows and
+// never emit a CLOSING code at all. Strip the partial code-derived
+// OPENING/ACCUM badges to avoid duplicates, then prepend the authoritative
+// versions so the open/close + accumulation read leads (ScannerAgGrid.tierOf
+// promotes OPEN/CLOSE/ACCUM to tier 1). Shared by /scanner and /historical.
+function deriveStackBadges(base: Badge[], positionAction: string, accumHits: number): Badge[] {
+  const rest = base.filter((b) => b.label !== "OPENING" && !/^ACCUM \d+x$/.test(b.label))
+  const lead: Badge[] = []
+  if (positionAction === "OPENING") lead.push({ label: "OPEN", tier: "position-open" })
+  else if (positionAction === "CLOSING") lead.push({ label: "CLOSE", tier: "position-close" })
+  if (accumHits > 1) lead.push({ label: `ACCUM ${accumHits}x`, tier: "accumulation" })
+  return [...lead, ...rest]
+}
+
 export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
   const idx: Record<string, number> = {}
   for (let i = 0; i < columns.length; i++) idx[columns[i]] = i
   const out: Trade[] = []
   for (const r of rows) {
     const condCodes = (r[idx["conds"]] as string[] | null) ?? []
+    const positionAction = (r[idx["position_action"]] as string) || ""
+    const accumHits = (r[idx["accum_hits"]] as number | null) ?? 0
     out.push({
       id: r[idx["id"]] as number,
       time: r[idx["time"]] as string,
@@ -225,7 +243,7 @@ export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
       entry_price: (r[idx["entry_price"]] as number | null) ?? null,
       outcome: (r[idx["outcome"]] as string | undefined) ?? undefined,
       pnl_percent: (r[idx["pnl_percent"]] as number | undefined) ?? undefined,
-      badges: decodeConds(condCodes),
+      badges: deriveStackBadges(decodeConds(condCodes), positionAction, accumHits),
     })
   }
   return out

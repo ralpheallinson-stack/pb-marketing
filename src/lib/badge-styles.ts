@@ -7,9 +7,11 @@ export const TIER_STYLES: Record<string, string> = {
   institutional: UNIFIED,
   timing:        UNIFIED,
   activity:      UNIFIED,
-  accumulation:  UNIFIED,
+  accumulation:  'bg-[var(--pb-accent-bg)] text-[var(--pb-accent)] border-[var(--pb-accent-border)]',  // ACCUM Nx — repeat prints same name (amber accent)
   size:          UNIFIED,
   position:      UNIFIED,
+  "position-open":  'bg-[var(--pb-positive-bg)] text-[var(--pb-positive)] border-[var(--pb-positive-border)]',  // OPEN — new position (sage)
+  "position-close": 'bg-[var(--pb-negative-bg)] text-[var(--pb-negative)] border-[var(--pb-negative-border)]',  // CLOSE — unwinding existing position (terracotta)
   warning:       'bg-amber-500/20 text-amber-300 border-amber-500/30',  // MIXED — fade signal (was ROLL/HEDGE pre-2026-05-09 c4519ab)
   structure:     UNIFIED,
   strategy:      UNIFIED,

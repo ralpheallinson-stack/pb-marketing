@@ -113,6 +113,12 @@ type TradeCellParams = ICellRendererParams<Trade, unknown, ScannerGridContext>
 type BadgeTier = 1 | 2 | 3 | 4
 const tierOf = (text: string): BadgeTier => {
   const t = text.toUpperCase()
+  // Tier 1 — the open/close + accumulation read leads (2026-05-20):
+  // OPEN/CLOSE + ACCUM are the highest-value stack signals, so they sort
+  // ahead of activity/size. Exact-match OPEN/CLOSE before the /^CLOSE/
+  // CLOSE-OF-DAY tier-3 rule below.
+  if (/^OPEN$/.test(t))  return 1
+  if (/^CLOSE$/.test(t)) return 1
   // Tier 1 — conviction / size signals (always show first)
   if (/UNUSUAL\s+\d/.test(t)) return 1
   if (/ACCUM\s+\d/.test(t))   return 1
@@ -577,7 +583,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Conds", headerTooltip: "Conditions: WHALE = $10M+, OPENING = new position, MIXED = multi-leg, V/OI = unusual volume.",
+    headerName: "Conds", headerTooltip: "Conditions — OPEN = new position, CLOSE = unwinding, ACCUM Nx = repeat prints same name, WHALE = $10M+, UNUSUAL / V/OI = unusual volume, MIXED = multi-leg.",
     field: "badges",
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
