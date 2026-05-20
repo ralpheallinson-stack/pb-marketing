@@ -15,44 +15,48 @@ runDemo({
     await page.locator('.ag-row').first().waitFor({ timeout: 15000 }).catch(() => {});
     await h.pause(1700);
     await h.subtitle('Watching a name? See what institutions are doing in it.');
-    await h.pause(1800);
+    await h.pause(1700);
 
-    // Pull up the ticker
+    // Step 1 — pull up the ticker
     const search = page.locator('input[placeholder="Search ticker..."]');
     await h.subtitle(`Step 1 — pull up ${TICKER}`);
     await h.type(search, TICKER, 'search ticker input');
     await page.keyboard.press('Enter');
     await page.locator('.ag-row').first().waitFor({ timeout: 8000 }).catch(() => {});
-    await h.pause(1800);
+    await h.pause(1700);
 
-    // Sort by premium (biggest bet first) — descending via aria-sort
+    // Step 2 — sort by premium DESC. Fixed two clicks (none->asc->desc) is
+    // deterministic; the aria-sort attribute lagged under record timing.
     await h.subtitle('Step 2 — sort by premium: the biggest bet first');
     const premHead = page.locator('.ag-header-cell[col-id="premium"]');
     await h.check(premHead, 'Premium column header');
-    for (let i = 0; i < 3; i++) {
-      const s = await premHead.getAttribute('aria-sort').catch(() => null);
-      if (s === 'descending') break;
+    for (let i = 0; i < 2; i++) {
       if (!rehearse) { const box = await premHead.boundingBox(); if (box) { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 10 }); await page.waitForTimeout(250); } }
       await premHead.click();
-      await page.waitForTimeout(rehearse ? 1600 : 2300);
+      await page.waitForTimeout(rehearse ? 1600 : 2600);
     }
-    await page.waitForFunction(() => {
-      const c = document.querySelector('.ag-row[row-index="0"] .ag-cell[col-id="premium"]');
-      return c && /M\b/.test(c.textContent || '');
-    }, { timeout: 12000 }).catch(() => {});
+    // BLOCK until the top row is actually a $…M whale for this ticker (sort landed).
+    await page.waitForFunction(tk => {
+      const r = document.querySelector('.ag-row[row-index="0"]');
+      if (!r) return false;
+      const sym = (r.querySelector('.ag-cell[col-id="symbol"]') || {}).textContent || '';
+      const prem = (r.querySelector('.ag-cell[col-id="premium"]') || {}).textContent || '';
+      return sym.trim() === tk && /M\b/.test(prem);
+    }, TICKER, { timeout: 16000 }).catch(() => {});
     await h.pause(900);
 
     const top = await page.evaluate(() => {
       const r = document.querySelector('.ag-row[row-index="0"]');
       if (!r) return null;
       const cell = id => { const c = r.querySelector(`.ag-cell[col-id="${id}"]`); return c ? c.textContent.trim() : ''; };
-      return { sym: cell('symbol'), cp: cell('cp'), prem: cell('premium'), dte: cell('dte') };
+      return { sym: cell('symbol'), cp: cell('cp'), prem: cell('premium') };
     });
     console.log('TOP ROW:', JSON.stringify(top));
-    if (top && top.sym) {
-      await h.subtitle(`Biggest ${top.sym} bet today: ${top.cp} · ${top.prem}${top.dte ? ' · ' + top.dte + ' DTE' : ''}`);
+    // Guard: only call it "the biggest bet" if it's genuinely a $…M whale.
+    if (top && top.sym && /M\b/.test(top.prem)) {
+      await h.subtitle(`Biggest ${top.sym} bet today: ${top.cp} · ${top.prem}`);
     } else {
-      await h.subtitle(`The biggest ${TICKER} bet on the tape`);
+      await h.subtitle(`${TICKER} — institutional flow, every print graded`);
     }
     await h.pause(2600);
 
