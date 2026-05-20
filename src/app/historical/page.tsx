@@ -681,11 +681,17 @@ function HistoricalPageInner() {
           </div>
           )}
         </div>
-      </div>
 
-      {/* ── DISCLAIMER ── */}
-      <div className="ml-16 border-t border-white/[0.04] px-4 py-2 text-[10px] text-zinc-500 text-center flex-shrink-0">
-        For informational purposes only. Not investment advice. Past performance does not guarantee future results. Options trading involves substantial risk.
+        {/* ── DISCLAIMER ── (2026-05-19 layout fix)
+            Moved INSIDE the content column. Was a sibling of the column in
+            the outer `h-screen flex` (row) container, so it became a 3rd
+            flex item alongside sidebar + content — claiming ~739px of
+            horizontal width and squeezing the grid. mt-auto pins it to the
+            bottom of the flex-col column; ml-16 dropped (column already
+            offsets past the sidebar). Matches /scanner's nesting. */}
+        <div className="mt-auto border-t border-white/[0.04] px-4 py-2 text-[10px] text-zinc-500 text-center flex-shrink-0">
+          For informational purposes only. Not investment advice. Past performance does not guarantee future results. Options trading involves substantial risk.
+        </div>
       </div>
 
       {showUpgradeModal && (
