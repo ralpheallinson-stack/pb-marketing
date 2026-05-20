@@ -196,6 +196,7 @@ function HistoricalPageInner() {
   const toggleSound = React.useCallback(() => setSoundEnabled(s => !s), [])
   const [marketOpen] = React.useState(false)  // historical = no live status
   const canAccessGamma = true
+  const canAccessFlow = true   // historical is server-gated to flow tiers (@tier_required), so reaching this page implies access
 
   // userTier (2026-05-18) — drives CSV export row cap. Free → 1000.
   const [userTier, setUserTier] = React.useState<string | null>(null)
@@ -423,6 +424,7 @@ function HistoricalPageInner() {
         activePage={activePage}
         setActivePage={setActivePage}
         canAccessGamma={canAccessGamma}
+        canAccessFlow={canAccessFlow}
         setShowUpgradeModal={setShowUpgradeModal}
         setShowFilters={setShowFilters}
         activeFilterCount={activeFilterCount}

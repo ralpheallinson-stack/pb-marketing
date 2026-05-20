@@ -9,6 +9,7 @@ type ScannerSidebarProps = {
   activePage: 'scanner' | 'heatmap' | 'watchlist';
   setActivePage: (page: 'scanner' | 'heatmap' | 'watchlist') => void;
   canAccessGamma: boolean;
+  canAccessFlow: boolean;
   setShowUpgradeModal: (show: boolean) => void;
   setShowFilters: (show: boolean) => void;
   activeFilterCount: number;
@@ -30,6 +31,7 @@ export function ScannerSidebar({
   activePage,
   setActivePage,
   canAccessGamma,
+  canAccessFlow,
   setShowUpgradeModal,
   setShowFilters,
   activeFilterCount,
@@ -44,10 +46,10 @@ export function ScannerSidebar({
   const onHistoricalRoute = pathname?.startsWith('/historical') ?? false;
 
   const navItems: NavItem[] = [
-    { id: 'scanner', label: 'Flow', icon: <LayoutGrid className="w-6 h-6" /> },
+    { id: 'scanner', label: 'Flow', icon: <LayoutGrid className="w-6 h-6" />, locked: !canAccessFlow },
     { id: 'heatmap', label: 'GEX', icon: <BarChart3 className="w-6 h-6" />, badge: 'NEW', locked: !canAccessGamma },
     { id: 'watchlist', label: 'Watch', icon: <Star className="w-6 h-6" /> },
-    { id: 'historical', label: 'Historical', icon: <Clock className="w-6 h-6" /> },
+    { id: 'historical', label: 'Historical', icon: <Clock className="w-6 h-6" />, locked: !canAccessFlow },
   ];
 
   const handleNavClick = (item: NavItem) => {

@@ -254,6 +254,12 @@ export default function ScannerPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [activePage, setActivePage] = useState<"scanner" | "heatmap" | "watchlist">("scanner")
   const [canAccessGamma, setCanAccessGamma] = useState(false)
+  // Flow entitlement (premium/pro_bundle/beta/lifetime). Default true so entitled
+  // users aren't briefly gated before /api/me resolves; server 403 is the real gate.
+  const [canAccessFlow, setCanAccessFlow] = useState(true)
+  // Set when a flow endpoint returns 403 (authenticated but wrong tier, e.g.
+  // heatmap). Distinct from session-expiry — must NOT redirect to /login.
+  const [flowLocked, setFlowLocked] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [gexSymbol, setGexSymbol] = useState("SPY")
   const [liveGexSpot, setLiveGexSpot] = useState<number | null>(null)
@@ -446,7 +452,13 @@ export default function ScannerPage() {
   const [userTier, setUserTier] = useState<string | null>(null)
   useEffect(() => {
     fetch("/api/me").then(r => r.ok ? r.json() : null).then(d => {
-      if (d) { setCanAccessGamma(d.gamma_wall); setUserTier(d.tier ?? null) }
+      if (d) {
+        setCanAccessGamma(d.gamma_wall)
+        // flow_access defaults true if the server omits it (older builds) so we
+        // never wrongly lock an entitled user out of the flow tab.
+        setCanAccessFlow(d.flow_access ?? true)
+        setUserTier(d.tier ?? null)
+      }
     }).catch(() => {})
   }, [])
 
@@ -750,6 +762,7 @@ export default function ScannerPage() {
   const sseBufferBlipRef = useRef(false)
   useEffect(() => {
     if (page !== 0) return
+    if (activePage !== "scanner") return  // flow stream only on the flow tab; heatmap/watchlist don't subscribe (avoids 403 retry storm)
     const feedMode = useFeedEndpoint() && !!topicId
 
     // Stale-guard reconnect — closes the current ES, refetches the snapshot
@@ -928,7 +941,7 @@ export default function ScannerPage() {
       close()
       document.removeEventListener("visibilitychange", onVis)
     }
-  }, [page, topicId])
+  }, [page, topicId, activePage])
 
   const savePreset = (name: string) => {
     if (!name.trim()) return
@@ -1120,11 +1133,16 @@ export default function ScannerPage() {
   // in /login. Without this check, the polling loop silently swallows the
   // login HTML, fails JSON parse, and the user sees "Connection lost" forever
   // until they manually refresh. Spotted in the 16/199 302 ratio in access logs.
+  // Session expiry → must bounce to /login. NOTE: 403 is NOT here — a 403 means
+  // authenticated-but-not-entitled (e.g. heatmap hitting flow), which must show
+  // a tier-locked state, not a login redirect (that caused a heatmap login-loop).
   const isAuthRedirect = (res: Response): boolean => {
-    if (res.status === 401 || res.status === 403) return true
+    if (res.status === 401) return true
     if (res.redirected && res.url.includes("/login")) return true
     return false
   }
+  // 403 from a flow endpoint = wrong tier. Lock the flow UI; never redirect.
+  const isTierLocked = (res: Response): boolean => res.status === 403
 
   const fetchData = useCallback(async (opts?: { initial?: boolean; pageNum?: number; light?: boolean; forceFull?: boolean }) => {
     const pg = opts?.pageNum ?? page
@@ -1154,6 +1172,7 @@ export default function ScannerPage() {
         try {
           const url = buildScannerUrl({ pageNum: pg, sinceId, light: opts?.light })
           const res = await fetch(url, { signal: ac.signal })
+          if (isTierLocked(res)) { setFlowLocked(true); return }
           if (isAuthRedirect(res)) {
             setPollError("Session expired — redirecting to login…")
             router.push("/login")
@@ -1266,6 +1285,7 @@ export default function ScannerPage() {
       // non-today use it now (continuous-scroll mode).
       if (pg === 0 && !isFirstLoadRef.current && lastTradeIdRef.current > 0) {
         const res = await fetch(buildUrl({ sinceId: lastTradeIdRef.current }), { signal: ac.signal })
+        if (isTierLocked(res)) { setFlowLocked(true); return }
         if (isAuthRedirect(res)) {
           setPollError("Session expired — redirecting to login…")
           router.push("/login")
@@ -1304,6 +1324,7 @@ export default function ScannerPage() {
       // also stays on live-flow.
       if (pg === 0 && useFeedEndpoint()) {
         const res = await fetch(buildFeedUrl(), { signal: ac.signal })
+        if (isTierLocked(res)) { setFlowLocked(true); return }
         if (isAuthRedirect(res)) {
           setPollError("Session expired — redirecting to login…")
           router.push("/login")
@@ -1347,6 +1368,7 @@ export default function ScannerPage() {
 
       // Legacy path (default): /api/scanner/live-flow with full dict shape.
       const res = await fetch(buildUrl({ pageNum: pg }), { signal: ac.signal })
+      if (isTierLocked(res)) { setFlowLocked(true); return }
       if (isAuthRedirect(res)) {
         setPollError("Session expired — redirecting to login…")
         router.push("/login")
@@ -1393,13 +1415,14 @@ export default function ScannerPage() {
   // (timeRange, filterMinPremium, filterDte from buildUrl) so changing those
   // clears the stale trade list and refetches with the new server filter.
   useEffect(() => {
+    if (activePage !== "scanner") return  // don't fetch flow on heatmap/watchlist tabs
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
     setHasFullData(false)
     setTrades([])
     agGridReplace([])
     fetchDataRef.current?.({ initial: true, pageNum: page, light: true })
-  }, [page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
+  }, [activePage, page, timeRange, filterMinPremium, filterDte, filterCuratedOnly, filterExcludeMidpoint, filterExcludeMultiLeg, sortField, sortDir])
 
   // auto-refresh every 3s on page 0 (live).
   //
@@ -1411,6 +1434,7 @@ export default function ScannerPage() {
   // restart the timer fresh — don't trust whatever stale state Chrome left it in.
   useEffect(() => {
     if (page !== 0) return
+    if (activePage !== "scanner") return  // no flow polling off the flow tab
     // Phase 2: row-push SSE handles updates when feed flag is on AND we have
     // a topic_id. Skip the 3s polling tick entirely. The wake handlers below
     // are also skipped — #5 will add a 60s SSE-stale guard to handle the
@@ -1482,7 +1506,7 @@ export default function ScannerPage() {
       window.removeEventListener("pointerdown", wake)
       window.removeEventListener("keydown", wake)
     }
-  }, [page, topicId])
+  }, [page, topicId, activePage])
 
   // active filter count
   useEffect(() => {
@@ -1715,6 +1739,7 @@ export default function ScannerPage() {
         activePage={activePage}
         setActivePage={setActivePage}
         canAccessGamma={canAccessGamma}
+        canAccessFlow={canAccessFlow}
         setShowUpgradeModal={setShowUpgradeModal}
         setShowFilters={setShowFilters}
         activeFilterCount={activeFilterCount}
@@ -2337,6 +2362,13 @@ export default function ScannerPage() {
               )
             })()}
           </div>
+        </div>
+      ) : flowLocked ? (
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-6" style={{ background: "#1A1A22" }}>
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#3D4D63] mb-3">Flow Scanner</div>
+          <div className="text-[15px] font-semibold text-white/80 mb-2">Real-time options flow isn&apos;t included in your plan</div>
+          <div className="text-[13px] text-white/40 mb-5 max-w-sm">Your GEX Heatmap plan covers the gamma view. Upgrade to Flow Scanner or Pro Bundle to unlock live sweeps, blocks, and AI-graded signals.</div>
+          <button onClick={() => setShowUpgradeModal(true)} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white" style={{ background: "#60a5fa" }}>Upgrade to unlock &rarr;</button>
         </div>
       ) : (
         <div className="flex flex-1 flex-col gap-2 p-2 overflow-hidden">
