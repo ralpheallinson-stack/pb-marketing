@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Switch } from "@/components/ui/switch"
 import {
-  Dialog, DialogTrigger, DialogContent, DialogTitle, DialogClose,
+  Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
@@ -179,6 +179,9 @@ export function FiltersDialog(props: FiltersDialogProps) {
         {/* Custom header — drops <DialogHeader> bg-muted/30 + close button for full light-theme control */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 bg-white">
           <DialogTitle className="text-base font-semibold text-zinc-900">Filters</DialogTitle>
+          <DialogDescription className="sr-only">
+            Refine the scanner feed by direction, premium, DTE, contract size, V/OI ratio, and quality. Changes apply immediately to both the live tape and the snapshot.
+          </DialogDescription>
           <DialogClose className="rounded-md bg-zinc-100 hover:bg-zinc-200 transition-colors p-1.5 text-zinc-600">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" d="M18 6L6 18M6 6l12 12"/></svg>
             <span className="sr-only">Close</span>
