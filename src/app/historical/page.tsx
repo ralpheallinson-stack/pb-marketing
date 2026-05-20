@@ -17,7 +17,7 @@ import { ScannerAgGrid } from "@/components/ScannerAgGrid"
 import { StatsPanel, type Stats } from "@/components/scanner/StatsPanel"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import type { Trade } from "@/components/SignalRow"
-import { rowsToTrades, injectDaySeparators } from "@/lib/feed-decoder"
+import { rowsToTrades, injectDaySeparators, type FeedAgg } from "@/lib/feed-decoder"
 import { DashboardSkeleton, ScannerSkeleton } from "@/components/scanner/SkeletonViews"
 import { exportTradesToCsv } from "@/lib/csv-export"
 
@@ -155,6 +155,13 @@ function HistoricalPageInner() {
   const [sortField, setSortField] = React.useState<string | null>("premium")
   const [sortDir, setSortDir] = React.useState<"asc" | "desc" | null>("desc")
   const [serverTotal, setServerTotal] = React.useState<number | null>(null)
+  // feedAgg (Bug 1b, 2026-05-19): the server's full-day agg block. The
+  // dashboard MUST source from this, not from client sums over the loaded
+  // page — /historical only fetches the current page (page_size=500), so
+  // client sums show page totals (e.g. 500) instead of the day total
+  // (e.g. 13,252). Backend 4290fa6 made the agg block full-day-correct
+  // in historical mode; this wires the UI to actually read it.
+  const [feedAgg, setFeedAgg] = React.useState<FeedAgg | null>(null)
   // Fallback transparency: when the user picks a date with no data and the
   // range collapses to a single day, backend falls back to the most-recent-
   // session-with-data and reports it via meta.served_date. Banner surfaces
@@ -233,11 +240,13 @@ function HistoricalPageInner() {
         setTrades(ts)
         setServedDate(d?.meta?.served_date ?? null)
         setServerTotal(d?.meta?.total ?? null)
+        setFeedAgg(d?.agg ?? null)
         setLoading(false)
       })
       .catch(err => {
         setFetchError(err.message)
         setTrades([])
+        setFeedAgg(null)
         setLoading(false)
       })
   }, [range, page, sortField, sortDir, retryNonce])
@@ -343,6 +352,26 @@ function HistoricalPageInner() {
     if (t.opt_type === "C") { calls++; callPrem += t.premium }
     else if (t.opt_type === "P") { puts++; putPrem += t.premium }
   }
+
+  // Dashboard sources from the server agg block (full-day) when present,
+  // falling back to the client page-sums only if the response lacked an
+  // agg (shouldn't happen post-4290fa6 — historical always returns one).
+  // Maps FeedAgg → StatsPanel props: sentiment._sort_score (0-100) drives
+  // the bull/bear gauge; label maps to the BULL/BEAR/MIXED lean the panel
+  // checks; _sort_premium (cents) → dollars for call/put flow.
+  const aggScore = feedAgg?.sentiment?._sort_score ?? 50
+  const dashStats: Stats = feedAgg ? {
+    count: (feedAgg.call_flow?.count ?? 0) + (feedAgg.put_flow?.count ?? 0),
+    bull: aggScore,
+    bear: 100 - aggScore,
+    lean: feedAgg.sentiment?.label === "Bullish" ? "BULL"
+        : feedAgg.sentiment?.label === "Bearish" ? "BEAR" : "MIXED",
+    pc_ratio: feedAgg.pcr ?? 0,
+  } : stats
+  const dashCallPrem = feedAgg ? (feedAgg.call_flow?._sort_premium ?? 0) / 100 : callPrem
+  const dashPutPrem = feedAgg ? (feedAgg.put_flow?._sort_premium ?? 0) / 100 : putPrem
+  const dashCalls = feedAgg ? (feedAgg.call_flow?.count ?? 0) : calls
+  const dashPuts = feedAgg ? (feedAgg.put_flow?.count ?? 0) : puts
 
   // activeFilterCount mirrors page.tsx semantics
   let activeFilterCount = 0
@@ -522,11 +551,11 @@ function HistoricalPageInner() {
           <DashboardSkeleton />
         ) : (
         <StatsPanel
-          displayStats={stats}
-          callPrem={callPrem}
-          putPrem={putPrem}
-          calls={calls}
-          puts={puts}
+          displayStats={dashStats}
+          callPrem={dashCallPrem}
+          putPrem={dashPutPrem}
+          calls={dashCalls}
+          puts={dashPuts}
         />
         )}
 
