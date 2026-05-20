@@ -45,3 +45,4 @@ test-results/
 
 # Local file backups (per-edit safety — not for git)
 *.bak.*
+tests/demo/output/
