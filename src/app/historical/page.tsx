@@ -18,6 +18,7 @@ import { StatsPanel, type Stats } from "@/components/scanner/StatsPanel"
 import { FiltersDialog } from "@/components/scanner/FiltersDialog"
 import type { Trade } from "@/components/SignalRow"
 import { rowsToTrades, injectDaySeparators } from "@/lib/feed-decoder"
+import { DashboardSkeleton, ScannerSkeleton } from "@/components/scanner/SkeletonViews"
 import { exportTradesToCsv } from "@/lib/csv-export"
 
 // Most recent trading day at-or-before the given anchor (default: today).
@@ -135,6 +136,9 @@ function HistoricalPageInner() {
   const [trades, setTrades] = React.useState<Trade[]>([])
   const [loading, setLoading] = React.useState(false)
   const [fetchError, setFetchError] = React.useState<string | null>(null)
+  // Retry nonce — incrementing it re-fires the fetch effect without
+  // changing range/sort/page. Powers the error-state Retry button.
+  const [retryNonce, setRetryNonce] = React.useState(0)
   // Phase A pagination (2026-05-18). Explicit Prev/Next paged nav at 500
   // rows/page replaces the prior infinite-scroll. Reasoning: subscribers
   // need to find the biggest/most-unusual trades, not flip through 200K
@@ -236,7 +240,7 @@ function HistoricalPageInner() {
         setTrades([])
         setLoading(false)
       })
-  }, [range, page, sortField, sortDir])
+  }, [range, page, sortField, sortDir, retryNonce])
 
   // Reset to page 0 when range or sort changes — keeps the user from
   // landing on "page 47 of a freshly-sorted view." Filter-change pagination
@@ -511,6 +515,12 @@ function HistoricalPageInner() {
           </div>
         </header>
 
+        {/* Skeleton during any load (including date-picker changes — the
+            one case where re-flashing the skeleton is correct UX since
+            the user explicitly requested different data). */}
+        {loading ? (
+          <DashboardSkeleton />
+        ) : (
         <StatsPanel
           displayStats={stats}
           callPrem={callPrem}
@@ -518,6 +528,7 @@ function HistoricalPageInner() {
           calls={calls}
           puts={puts}
         />
+        )}
 
         {(sortField && sortDir) || focusTicker ? (
           <div className="flex items-center gap-3 px-4 py-2 border border-white/[0.06] rounded-lg text-xs" style={{ background: "#16191F" }}>
@@ -587,12 +598,23 @@ function HistoricalPageInner() {
         })()}
 
         <div className="flex flex-1 flex-col overflow-hidden border border-white/[0.06] rounded-lg" style={{ background: "#16191F" }}>
-          {loading && trades.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-sm text-zinc-500">Loading {rangeLabel}…</div>
+          {loading ? (
+            <ScannerSkeleton rowCount={15} />
           ) : fetchError ? (
-            <div className="flex-1 flex flex-col items-center justify-center gap-2 text-sm">
-              <span className="text-red-400">Fetch error: {fetchError}</span>
-              <Link href="/historical" className="text-zinc-400 hover:text-zinc-200 underline underline-offset-4">Reset</Link>
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-sm px-6 text-center">
+              <div className="text-zinc-300 text-[15px] font-medium">Couldn&apos;t load flow for {rangeLabel}.</div>
+              <div className="text-zinc-500 text-[13px]">Try again or pick a different date.</div>
+              <div className="flex items-center gap-3 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setRetryNonce(n => n + 1)}
+                  className="px-3 py-1.5 rounded-md bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 hover:bg-cyan-500/25 transition-colors text-[13px] font-medium"
+                >
+                  Retry
+                </button>
+                <Link href="/historical" className="text-zinc-400 hover:text-zinc-200 underline underline-offset-4 text-[13px]">Reset</Link>
+              </div>
+              <div className="text-zinc-600 text-[11px] mt-1 font-mono">{fetchError}</div>
             </div>
           ) : trades.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 text-sm text-zinc-500">
