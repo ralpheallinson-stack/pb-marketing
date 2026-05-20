@@ -44,10 +44,10 @@ export function ScannerSidebar({
   const onHistoricalRoute = pathname?.startsWith('/historical') ?? false;
 
   const navItems: NavItem[] = [
-    { id: 'scanner', label: 'Flow', icon: <LayoutGrid className="w-5 h-5" /> },
-    { id: 'heatmap', label: 'GEX', icon: <BarChart3 className="w-5 h-5" />, badge: 'NEW', locked: !canAccessGamma },
-    { id: 'watchlist', label: 'Watch', icon: <Star className="w-5 h-5" /> },
-    { id: 'historical', label: 'Historical', icon: <Clock className="w-5 h-5" /> },
+    { id: 'scanner', label: 'Flow', icon: <LayoutGrid className="w-6 h-6" /> },
+    { id: 'heatmap', label: 'GEX', icon: <BarChart3 className="w-6 h-6" />, badge: 'NEW', locked: !canAccessGamma },
+    { id: 'watchlist', label: 'Watch', icon: <Star className="w-6 h-6" /> },
+    { id: 'historical', label: 'Historical', icon: <Clock className="w-6 h-6" /> },
   ];
 
   const handleNavClick = (item: NavItem) => {
@@ -82,7 +82,7 @@ export function ScannerSidebar({
       </Link>
 
       {/* Nav items */}
-      <nav className="flex flex-1 flex-col items-center gap-1">
+      <nav className="flex flex-1 flex-col items-center gap-2">
         {navItems.map((item) => {
           const isActive = item.id === 'historical'
             ? onHistoricalRoute
@@ -106,7 +106,7 @@ export function ScannerSidebar({
         {/* Filters trigger (opens Dialog, doesn't change activePage) */}
         <SidebarNavItem
           label="Filters"
-          icon={<SlidersHorizontal className="w-5 h-5" />}
+          icon={<SlidersHorizontal className="w-6 h-6" />}
           isActive={false}
           badge={activeFilterCount > 0 ? `${activeFilterCount}` : null}
           onClick={() => setShowFilters(true)}
@@ -135,7 +135,7 @@ export function ScannerSidebar({
           className="group relative flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-white/[0.04]"
           style={{ color: '#7A8BA8' }}
         >
-          {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+          {soundEnabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
           <SidebarTooltip>
             Sound {soundEnabled ? 'on' : 'off'}
           </SidebarTooltip>
@@ -179,7 +179,7 @@ function SidebarNavItem({
       {icon}
 
       {isActive && (
-        <span className="absolute right-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-l-full bg-white" />
+        <span className="absolute right-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-gradient-to-b from-cyan-400 to-cyan-500" />
       )}
 
       {badge && (
