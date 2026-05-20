@@ -231,6 +231,14 @@ export default function ScannerPage() {
   // already on screen. Tracks via state (not ref) so the conditional
   // render reacts to the transition.
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
+  // hasFullData (2026-05-19) — true only after the FULL fetch lands.
+  // The light fetch populates rows fast (table skeleton clears) but its
+  // client-computed displayStats over just 200 rows is wrong (off ~100x).
+  // So the dashboard stays skeleton until the full ~12K rows arrive,
+  // then displayStats recomputes over the real set. Decouples the
+  // dashboard skeleton (clears on full) from the table skeleton (clears
+  // on light).
+  const [hasFullData, setHasFullData] = useState(false)
   // Hydration-safe (2026-05-18). Was useState(isMarketOpen()) — that
   // initializer calls new Date() at evaluation time, so build-time
   // (e.g. Sunday deploy, market closed → false) and client first render
@@ -1205,9 +1213,13 @@ export default function ScannerPage() {
                 agGridReplace(merged)
                 return merged
               })
+              setHasFullData(true)
             } else {
               setTrades(incoming)
               agGridReplace(incoming)
+              // Non-light full load (light mode off, or a plain reload):
+              // this IS the full data, so clear the dashboard skeleton now.
+              if (!opts?.light) setHasFullData(true)
               // Light fetch landed — schedule the full follow-up. setTimeout(0)
               // yields the current event-loop turn so React commits the
               // skeleton→data transition first, then full kicks off ~one
@@ -1378,6 +1390,7 @@ export default function ScannerPage() {
   useEffect(() => {
     isFirstLoadRef.current = true
     lastTradeIdRef.current = 0
+    setHasFullData(false)
     setTrades([])
     agGridReplace([])
     fetchDataRef.current?.({ initial: true, pageNum: page, light: true })
@@ -2448,7 +2461,7 @@ export default function ScannerPage() {
           and first /api/scanner/feed completion. After the first load
           completes, hasInitiallyLoaded sticks and subsequent loading
           cycles render stale data instead of the skeleton. */}
-      {!hasInitiallyLoaded && loading ? (
+      {!hasFullData ? (
         <DashboardSkeleton />
       ) : (
       <StatsPanel
