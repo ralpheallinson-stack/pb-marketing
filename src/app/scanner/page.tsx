@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { SignalRow, type Trade } from "@/components/SignalRow"
+import { motion, AnimatePresence } from "framer-motion"
+import { TICKER_COLORS, TICKER_COLOR_FALLBACK } from "@/components/watchlist/mockData"
 
 import dynamic from "next/dynamic"
 import { AccountMenu } from "@/components/AccountMenu"
@@ -269,6 +271,8 @@ export default function ScannerPage() {
     const v = params.get("view")
     if (v === "heatmap") setActivePage("heatmap")
     else if (v === "watchlist") setActivePage("watchlist")
+    const symParam = params.get("symbol")
+    if (symParam && /^[A-Za-z.]{1,6}$/.test(symParam)) { setSearch(symParam.toUpperCase()); setSearchInput(symParam.toUpperCase()) }
   }, [])
 
   // S = open command palette. Bare-letter shortcut, focus-aware. Only active
@@ -291,6 +295,7 @@ export default function ScannerPage() {
   const [watchlist, setWatchlist] = useState<string[]>([])
   const [wlQuotes, setWlQuotes] = useState<Record<string, { spot: number | null; change: number | null; change_pct: number | null; prev_close: number | null }>>({})
   const [wlSparks, setWlSparks] = useState<Record<string, number[]>>({})
+  const [wlExpanded, setWlExpanded] = useState<string | null>(null)
   const [wlSort, setWlSort] = useState<{ key: "symbol" | "price" | "change" | "callFlow" | "putFlow" | "signals" | "lastSignal"; dir: "asc" | "desc" }>({ key: "change", dir: "desc" })
   const [wlInput, setWlInput] = useState("")
   const [soundEnabled, setSoundEnabled] = useState(true)
@@ -2105,19 +2110,31 @@ export default function ScannerPage() {
                 if (d < 86400) return `${Math.floor(d / 3600)}h`
                 return `${Math.floor(d / 86400)}d`
               }
-              // Inline SVG sparkline — 60×20, no chart library.
-              const Spark = ({ pts, positive }: { pts: number[]; positive: boolean }) => {
+              // Brand-tinted ticker avatar — 34px gradient chip, first 3 chars.
+              const hexA = (hex: string, a: number) => hex + Math.round(a * 255).toString(16).padStart(2, "0")
+              const WlAvatar = ({ sym }: { sym: string }) => {
+                const c = TICKER_COLORS[sym] ?? TICKER_COLOR_FALLBACK
+                return (
+                  <div className="flex items-center justify-center rounded-full flex-shrink-0"
+                    style={{ width: 34, height: 34, background: `linear-gradient(135deg, ${hexA(c, 0.34)}, ${hexA(c, 0.10)})`, border: `1px solid ${hexA(c, 0.6)}` }}>
+                    <span className="font-bold text-white" style={{ fontSize: 10, letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
+                  </div>
+                )
+              }
+              // Sparkline — 80×24 framer-motion path-draw, color by direction.
+              const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
                 if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
-                const W = 60, H = 18
+                const pad = 2
                 const lo = Math.min(...pts), hi = Math.max(...pts)
                 const span = (hi - lo) || 1
-                const xs = pts.map((_, i) => (i / (pts.length - 1)) * W)
-                const ys = pts.map(p => H - ((p - lo) / span) * H)
+                const xs = pts.map((_, i) => pad + (i / (pts.length - 1)) * (w - 2 * pad))
+                const ys = pts.map(p => (h - pad) - ((p - lo) / span) * (h - 2 * pad))
                 const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
-                const color = positive ? "#22C55E" : "#FF605D"
+                const color = positive ? "#4ade80" : "#f87171"
                 return (
-                  <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
-                    <path d={d} fill="none" stroke={color} strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" />
+                  <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ filter: `drop-shadow(0 0 3px ${color}66)` }}>
+                    <motion.path key={d} d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round"
+                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, ease: "easeOut" }} />
                   </svg>
                 )
               }
@@ -2162,7 +2179,7 @@ export default function ScannerPage() {
               // Industry-standard column layout — TradingView/ToS pattern with
               // our flow-specific columns appended. 32px rows.
               // Symbol(70) Last(80) Chg(80) %Chg(80) Spark(80) Call$(90) Put$(90) Bias(70) Sig(60) Age(60) ×(28)
-              const cols = "70px 80px 80px 80px 80px 1fr 90px 90px 70px 60px 60px 28px"
+              const cols = "190px 80px 80px 80px 90px 1fr 90px 90px 84px 56px 56px 30px"
               return (
                 <div>
                   <div className="grid sticky top-0 z-10 border-b border-[#2D2C38]" style={{ gridTemplateColumns: cols, background: "#212029" }}>
@@ -2179,19 +2196,28 @@ export default function ScannerPage() {
                     <SortHead k="lastSignal" label="Age" align="center" />
                     <div />
                   </div>
-                  {rows.map(r => {
+                  {rows.map((r, idx) => {
                     const { sym, callPrem, putPrem, count, isBull, isBear, lastSignalTs, quote, spark } = r
                     const positive = (quote.change_pct ?? 0) > 0
                     const negative = (quote.change_pct ?? 0) < 0
                     const changeColor = positive ? "#22C55E" : negative ? "#FF605D" : "#E7E5E4"
                     const change = quote.change ?? 0
+                    const expanded = wlExpanded === sym
+                    const top5 = trades.filter(t => t.symbol === sym).slice().sort((a, b) => b.premium - a.premium).slice(0, 5)
                     return (
-                      <div key={sym}
-                           className="grid border-b border-[#2D2C38] hover:bg-white/[0.04] transition-colors cursor-pointer group"
-                           style={{ gridTemplateColumns: cols, minHeight: 32, alignItems: "center" }}
-                           onClick={() => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner") }}
-                           title={`Click to filter scanner to ${sym}`}>
-                        <div className="px-3"><span className="text-[12px] font-bold text-white font-mono">{sym}</span></div>
+                      <div key={sym} className="border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                      <motion.div
+                           initial={{ opacity: 0, y: 8 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ duration: 0.4, ease: "easeOut", delay: Math.min(idx * 0.04, 0.4) }}
+                           className="grid cursor-pointer group transition-colors hover:bg-cyan-500/[0.04]"
+                           style={{ gridTemplateColumns: cols, minHeight: 56, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderLeft: expanded ? "2px solid #22d3ee" : "2px solid transparent", background: expanded ? "rgba(34,211,238,0.06)" : undefined }}
+                           onClick={() => setWlExpanded(prev => prev === sym ? null : sym)}
+                           title={`Click for ${sym} flow detail`}>
+                        <div className="px-3 flex items-center gap-2.5 min-w-0">
+                          <WlAvatar sym={sym} />
+                          <span className="text-[13px] font-bold text-white font-mono truncate">{sym}</span>
+                        </div>
                         <div className="px-3 text-right">
                           <span className="text-[12px] font-mono tabular-nums text-white">
                             {quote.spot != null ? quote.spot.toFixed(2) : <span className="text-[#3D4D63]">—</span>}
@@ -2227,8 +2253,11 @@ export default function ScannerPage() {
                         </div>
                         <div className="px-3 flex items-center justify-center">
                           {count > 0 ? (
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider ${isBull ? "bg-[#22C55E]/15 text-[#22C55E]" : isBear ? "bg-[#FF605D]/15 text-[#FF605D]" : "bg-white/5 text-[#E7E5E4]"}`}>
-                              {isBull ? "BULL" : isBear ? "BEAR" : "MIX"}
+                            <span className="font-bold tracking-wider"
+                              style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
+                                background: isBull ? "rgba(74,222,128,0.14)" : isBear ? "rgba(248,113,113,0.14)" : "rgba(251,146,60,0.14)",
+                                color: isBull ? "#4ade80" : isBear ? "#f87171" : "#fb923c" }}>
+                              {isBull ? "BULL" : isBear ? "BEAR" : "MIXED"}
                             </span>
                           ) : <span className="text-[10px] text-[#3D4D63]">—</span>}
                         </div>
@@ -2242,6 +2271,65 @@ export default function ScannerPage() {
                           <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }}
                             className="text-[#3D4D63] hover:text-[#FF605D] text-base leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#FF605D]/15">×</button>
                         </div>
+                      </motion.div>
+                      <AnimatePresence initial={false}>
+                        {expanded && (
+                          <motion.div key="panel"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            style={{ overflow: "hidden" }}>
+                            <div className="px-6 py-5" style={{ borderLeft: "2px solid #22d3ee", background: "linear-gradient(180deg, rgba(34,211,238,0.05), transparent)" }}>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4A5A72]">
+                                  Today&apos;s top 5 trades on <span className="text-white font-mono">{sym}</span>
+                                </div>
+                                <a href={`/scanner?symbol=${sym}`}
+                                   onClick={e => { e.preventDefault(); setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner"); try { window.history.replaceState(null, "", `/scanner?symbol=${sym}`) } catch {} }}
+                                   className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">Open in scanner →</a>
+                              </div>
+                              {top5.length === 0 ? (
+                                <div className="text-[12px] text-[#3D4D63] py-3">No flow on {sym} today.</div>
+                              ) : (
+                                <div>
+                                  <div className="grid text-[9px] font-bold uppercase tracking-[0.12em] text-[#3D4D63] pb-1.5 border-b border-white/[0.06]"
+                                    style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
+                                    <div>Time</div><div>Side</div><div>C/P</div><div>Strike·Expiry</div>
+                                    <div className="text-right">Size</div><div className="text-right">Premium</div><div>Conds</div>
+                                  </div>
+                                  {top5.map(t => {
+                                    const isCall = t.opt_type === "C"
+                                    const a = (t.aggression || "").toUpperCase()
+                                    const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY"
+                                      : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL"
+                                      : (t.bullish ? "BUY" : "SELL")
+                                    const tradeTime = t.time || (t.timestampMs ? new Date(t.timestampMs).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—")
+                                    const conds = (t.badges || []).slice(0, 3)
+                                    return (
+                                      <div key={t.id} className="grid items-center py-1.5 text-[11px] border-b border-white/[0.03]"
+                                        style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
+                                        <div className="font-mono tabular-nums text-[#9CA3AF]">{tradeTime}</div>
+                                        <div><span className="font-bold" style={{ color: side === "BUY" ? "#4ade80" : "#f87171" }}>{side}</span></div>
+                                        <div><span className="font-bold" style={{ color: isCall ? "#4ade80" : "#f87171" }}>{isCall ? "Call" : "Put"}</span></div>
+                                        <div className="font-mono tabular-nums text-white truncate">{t.strike_fmt || t.strike}<span className="text-[#6B7280]"> · {t.expiration}</span></div>
+                                        <div className="font-mono tabular-nums text-right text-[#E7E5E4]">{typeof t.contracts === "number" ? t.contracts.toLocaleString() : t.contracts}</div>
+                                        <div className="font-mono tabular-nums text-right font-semibold text-white">{t.premium_fmt || fmtPrem(t.premium)}</div>
+                                        <div className="flex flex-wrap gap-1 overflow-hidden">
+                                          {conds.length ? conds.map((b, i) => (
+                                            <span key={i} className="text-[9px] font-semibold rounded whitespace-nowrap"
+                                              style={{ padding: "2px 6px", background: "rgba(34,211,238,0.10)", color: "#67e8f9", border: "1px solid rgba(34,211,238,0.20)" }}>{b.label}</span>
+                                          )) : <span className="text-[#3D4D63]">—</span>}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       </div>
                     )
                   })}
