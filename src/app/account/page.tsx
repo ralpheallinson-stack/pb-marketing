@@ -106,7 +106,9 @@ export default function AccountPage() {
   } | null>(null)
   const [copied, setCopied] = useState(false)
   const [hint, setHint] = useState<string | null>(null)
-  const [refLoading, setRefLoading] = useState(true)
+  // Referral section state machine: loading → has-code (200 + code) | no-code
+  // (404 "No referral code found") | api-error (500 / network).
+  const [refState, setRefState] = useState<"loading" | "has-code" | "no-code" | "api-error">("loading")
   const referralInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -121,10 +123,18 @@ export default function AccountPage() {
       .then(d => { if (d?.url) setBillingUrl(d.url) })
       .catch(() => {})
     fetch("/api/referral-stats")
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d && d.referral_code) setReferral(d) })
-      .catch(() => {})
-      .finally(() => setRefLoading(false))
+      .then(async r => {
+        if (r.ok) {
+          const d = await r.json().catch(() => null)
+          if (d && d.referral_code) { setReferral(d); setRefState("has-code") }
+          else setRefState("no-code")           // 200 without a code (defensive)
+        } else if (r.status === 404) {
+          setRefState("no-code")                 // {error: "No referral code found for your account"}
+        } else {
+          setRefState("api-error")               // 500 / unexpected
+        }
+      })
+      .catch(() => setRefState("api-error"))      // network failure
   }, [router])
 
   // Copy the referral link. Async Clipboard API first; on rejection (unfocused
@@ -274,30 +284,46 @@ export default function AccountPage() {
               </div>
             </div>
 
-            {/* Refer & earn — always rendered (loading/empty handled), flat layout */}
+            {/* Refer & earn — heading always visible; body branches on refState */}
             <Divider />
             <h4 className="text-[15px] font-semibold text-stone-100">Refer &amp; earn</h4>
             <p className="mt-1 text-[13px] text-stone-400">Refer friends and earn $99 credit when they subscribe.</p>
-            <div className="mt-3 flex max-w-lg gap-2">
-              <Input
-                ref={referralInputRef}
-                type="text"
-                readOnly
-                value={referral?.share_link ?? ""}
-                placeholder={refLoading ? "Loading your referral link…" : "Your referral link will appear here"}
-                onFocus={e => e.currentTarget.select()}
-                disabled={!referral?.share_link}
-                className="font-mono text-[12px]"
-              />
-              <Button variant="primary" onClick={copyReferralLink} disabled={!referral?.share_link} className="flex-shrink-0">
-                {copied ? "Copied!" : hint ? hint : "Copy link"}
-              </Button>
-            </div>
-            <p className="mt-2 text-[11px] text-stone-500">
-              {refLoading
-                ? "Loading referral stats…"
-                : `${referral?.total_referrals ?? 0} invited · ${referral?.converted ?? 0} active · $${referral?.total_savings_usd ?? 0} credited`}
-            </p>
+
+            {refState === "has-code" && referral ? (
+              <>
+                <div className="mt-3 flex max-w-lg gap-2">
+                  <Input
+                    ref={referralInputRef}
+                    type="text"
+                    readOnly
+                    value={referral.share_link}
+                    onFocus={e => e.currentTarget.select()}
+                    className="font-mono text-[12px]"
+                  />
+                  <Button variant="primary" onClick={copyReferralLink} className="flex-shrink-0">
+                    {copied ? "Copied!" : hint ? hint : "Copy link"}
+                  </Button>
+                </div>
+                <p className="mt-2 text-[11px] text-stone-500">
+                  {referral.total_referrals} invited &middot; {referral.converted} active &middot; ${referral.total_savings_usd} credited
+                </p>
+              </>
+            ) : refState === "loading" ? (
+              <>
+                <div className="mt-3 flex max-w-lg gap-2">
+                  <div className="h-9 w-full animate-pulse rounded-md border border-white/[0.08] bg-white/[0.04]" />
+                </div>
+                <p className="mt-2 text-[11px] text-stone-500">Loading referral stats…</p>
+              </>
+            ) : refState === "no-code" ? (
+              <p className="mt-3 max-w-lg text-[12px] text-stone-500">
+                Your referral link is being generated. Check back soon, or contact support if it doesn&apos;t appear.
+              </p>
+            ) : (
+              <p className="mt-3 max-w-lg text-[12px] text-stone-500">
+                Unable to load referral info — try refreshing.
+              </p>
+            )}
 
             <Divider />
 
