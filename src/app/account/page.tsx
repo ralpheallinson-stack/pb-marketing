@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/tremor/Tabs"
@@ -105,7 +105,9 @@ export default function AccountPage() {
     total_savings_usd: number
   } | null>(null)
   const [copied, setCopied] = useState(false)
+  const [hint, setHint] = useState<string | null>(null)
   const [refLoading, setRefLoading] = useState(true)
+  const referralInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     document.title = "Account | Profit Builders"
@@ -125,12 +127,34 @@ export default function AccountPage() {
       .finally(() => setRefLoading(false))
   }, [router])
 
+  // Copy the referral link. Async Clipboard API first; on rejection (unfocused
+  // doc, non-secure context, old browser, enterprise clipboard policy) fall back
+  // to selecting the input + execCommand('copy'); if that also fails, hint the
+  // user to ⌘C the (already-selected) link manually.
   const copyReferralLink = () => {
     if (!referral?.share_link) return
-    navigator.clipboard.writeText(referral.share_link).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
-    })
+    setHint(null)
+    navigator.clipboard.writeText(referral.share_link)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      })
+      .catch(() => {
+        const input = referralInputRef.current
+        if (input) {
+          input.focus()
+          input.select()
+          try {
+            if (document.execCommand("copy")) {
+              setCopied(true)
+              setTimeout(() => setCopied(false), 1500)
+              return
+            }
+          } catch { /* execCommand unavailable — fall through to hint */ }
+        }
+        setHint("Press ⌘C to copy")
+        setTimeout(() => setHint(null), 3000)
+      })
   }
 
   // Set/update password — backend takes new + confirm (no current-password
@@ -256,6 +280,7 @@ export default function AccountPage() {
             <p className="mt-1 text-[13px] text-stone-400">Refer friends and earn $99 credit when they subscribe.</p>
             <div className="mt-3 flex max-w-lg gap-2">
               <Input
+                ref={referralInputRef}
                 type="text"
                 readOnly
                 value={referral?.share_link ?? ""}
@@ -265,7 +290,7 @@ export default function AccountPage() {
                 className="font-mono text-[12px]"
               />
               <Button variant="primary" onClick={copyReferralLink} disabled={!referral?.share_link} className="flex-shrink-0">
-                {copied ? "Copied!" : "Copy link"}
+                {copied ? "Copied!" : hint ? hint : "Copy link"}
               </Button>
             </div>
             <p className="mt-2 text-[11px] text-stone-500">
