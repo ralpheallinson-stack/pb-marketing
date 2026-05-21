@@ -58,11 +58,11 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
       <Card className="border border-white/[0.06] rounded-lg shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4" style={{ background: "#16191F" }}>
         <KPIGaugeRing
           value={Math.round(bullPct)}
-          color={isBull ? "var(--pb-positive)" : displayStats.lean === "BEAR" ? "var(--pb-negative)" : "var(--pb-accent)"}
+          color={isBull ? "#22C55E" : displayStats.lean === "BEAR" ? "#FF605D" : "#48DEFF"}
         />
         <div className="flex flex-col gap-0.5">
           <span className="text-[12px] text-white/50">Flow sentiment</span>
-          <span className={`text-[22px] font-semibold leading-tight ${isBull ? "text-[var(--pb-positive)]" : displayStats.lean === "BEAR" ? "text-[var(--pb-negative)]" : "text-zinc-300"}`}>
+          <span className={`text-[22px] font-semibold leading-tight ${isBull ? "text-green-400" : displayStats.lean === "BEAR" ? "text-red-400" : "text-zinc-300"}`}>
             {isBull ? "Bullish" : displayStats.lean === "BEAR" ? "Bearish" : "Mixed"}
           </span>
           <span className="text-[10px] text-white/30 tracking-wide leading-tight" title="Sentiment + PCR computed from contract volume, not premium dollars">volume-weighted</span>
@@ -73,7 +73,7 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
       <Card className="border border-white/[0.06] rounded-lg shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4" style={{ background: "#16191F" }}>
         <KPIGaugeRing
           value={Math.min(Math.round(displayStats.pc_ratio * 50), 100)}
-          color="var(--pb-accent)"
+          color="#48DEFF"
         />
         <div>
           <div className="text-[12px] text-white/50 mb-1">Put to call</div>
@@ -83,11 +83,11 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
 
       {/* Call flow */}
       <Card className="border border-white/[0.06] rounded-lg shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4" style={{ background: "#16191F" }}>
-        <KPIGaugeRing value={callSharePct} color="var(--pb-positive)" />
+        <KPIGaugeRing value={callSharePct} color="#22C55E" />
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[12px] text-white/50">Call flow</span>
-            <span className="text-[13px] font-semibold text-[var(--pb-positive)] font-mono">{fmtPrem(callPrem)}</span>
+            <span className="text-[13px] font-semibold text-[#22C55E] font-mono">{fmtPrem(callPrem)}</span>
           </div>
           <div className="text-[24px] font-semibold text-white leading-none font-mono">{calls.toLocaleString("en-US")}</div>
         </div>
@@ -95,11 +95,11 @@ export function StatsPanel({ displayStats, callPrem, putPrem, calls, puts }: Sta
 
       {/* Put flow */}
       <Card className="border border-white/[0.06] rounded-lg shadow-none p-0 px-5 py-3 flex flex-row items-center gap-4" style={{ background: "#16191F" }}>
-        <KPIGaugeRing value={putSharePct} color="var(--pb-negative)" />
+        <KPIGaugeRing value={putSharePct} color="#FF605D" />
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[12px] text-white/50">Put flow</span>
-            <span className="text-[13px] font-semibold text-[var(--pb-negative)] font-mono">{fmtPrem(putPrem)}</span>
+            <span className="text-[13px] font-semibold text-[#FF605D] font-mono">{fmtPrem(putPrem)}</span>
           </div>
           <div className="text-[24px] font-semibold text-white leading-none font-mono">{puts.toLocaleString("en-US")}</div>
         </div>

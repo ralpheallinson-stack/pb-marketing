@@ -727,7 +727,7 @@ export function ScannerAgGrid({
         borderColor: "rgba(255,255,255,0.06)",
         rowHoverColor: "rgba(255,255,255,0.05)",
         oddRowBackgroundColor: "transparent",
-        accentColor: "#D4A574", // amber — matches var(--pb-accent)
+        accentColor: "#48DEFF",
       }),
     [],
   )
@@ -927,7 +927,7 @@ export function ScannerAgGrid({
         }
         .ag-header-cell-sorted-asc .ag-sort-ascending-icon,
         .ag-header-cell-sorted-desc .ag-sort-descending-icon {
-          color: var(--pb-accent);
+          color: #48DEFF;
           opacity: 1;
         }
         .ag-header-cell-text {
@@ -984,9 +984,9 @@ export function ScannerAgGrid({
         }
 
         /* ── Phase 2 cell classes (preserved) ── */
-        .cf-bullish { color: var(--pb-positive); }
-        .cf-bearish { color: var(--pb-negative); }
-        .cf-mid { color: var(--pb-neutral); }
+        .cf-bullish { color: #22C55E; }
+        .cf-bearish { color: #FF605D; }
+        .cf-mid { color: #F59E0B; }
         .cf-muted { color: rgba(255,255,255,0.55); }
         .cf-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
         .cf-bold { font-weight: 400; }  /* density: normalized to 400 (color carries hierarchy) */
@@ -994,11 +994,11 @@ export function ScannerAgGrid({
         .cf-medium { font-weight: 400; }  /* density: normalized to 400 */
         .cf-center { text-align: center; }
 
-        .cf-size-big { color: var(--pb-accent); }  /* density: dropped font-weight 600; color carries hierarchy. Matches cf-block (≥1000 contracts = meaningful size). */
+        .cf-size-big { color: #48DEFF; }  /* density: dropped font-weight 600; color carries hierarchy. Matches cf-block (≥1000 contracts = meaningful size). */
 
         .cf-sweep { color: #F2C94C; }
-        .cf-block { color: var(--pb-accent); }
-        .cf-block-bold { color: var(--pb-accent); }  /* density: dropped font-weight 700; color carries hierarchy */
+        .cf-block { color: #48DEFF; }
+        .cf-block-bold { color: #48DEFF; }  /* density: dropped font-weight 700; color carries hierarchy */
 
         /* ── Row-level OI status tints (Phase 2) ──
            border-left overrides AG Grid's row border on tinted rows. */
