@@ -985,7 +985,7 @@ export function ScannerAgGrid({
 
         /* ── Phase 2 cell classes (preserved) ── */
         .cf-bullish { color: #22C55E; }
-        .cf-bearish { color: #FF605D; }
+        .cf-bearish { color: #ef4444; }
         .cf-mid { color: #F59E0B; }
         .cf-muted { color: rgba(255,255,255,0.55); }
         .cf-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }

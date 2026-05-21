@@ -90,7 +90,7 @@ function aggrColor(a: string | null | undefined) {
   // Industry-standard 5-bucket aggression: ABOVE/ASK aggressive buy (green),
   // BID/BELOW aggressive sell (red), MIDPOINT neutral (amber — no directional info).
   if (a === "ABOVE_ASK" || a === "AT_ASK") return "text-[#22C55E]"
-  if (a === "BELOW_BID" || a === "AT_BID") return "text-[#FF605D]"
+  if (a === "BELOW_BID" || a === "AT_BID") return "text-[#ef4444]"
   if (!a || a === "NEUTRAL" || a === "MIDPOINT") return "text-[#F59E0B]"   // MIDPOINT (industry standard) — backend (queries.py:962-964) emits literal "MIDPOINT"
   return "text-white/90"
 }
@@ -107,7 +107,7 @@ function aggrLabel(a: string | null | undefined) {
 function bsColor(d: string | null | undefined) {
   if (!d || d === "NEUTRAL") return "text-white/30"
   if (d === "BUY") return "text-[#22C55E]"
-  if (d === "SELL") return "text-[#FF605D]"
+  if (d === "SELL") return "text-[#ef4444]"
   return "text-white/90"
 }
 
@@ -154,7 +154,7 @@ export function SignalRow({ trade: t, dataIndex, measureRef, setFocusTicker, set
           {t.strike_fmt ?? t.strike}
         </button>
       </td>
-      <td className="px-2 py-2 text-center text-[12px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#FF605D' }}>
+      <td className="px-2 py-2 text-center text-[12px] font-semibold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#ef4444' }}>
         {t.opt_type === "C" ? "Call" : "Put"}
       </td>
       <td className={`px-2 py-2 text-center text-[12px] ${aggrColor(t.aggression)}`}>
@@ -166,7 +166,7 @@ export function SignalRow({ trade: t, dataIndex, measureRef, setFocusTicker, set
       <td className="px-2 py-2 text-right text-white text-[13px] font-medium font-mono">{t.spot_fmt}</td>
       <td className={`px-2 py-2 text-right text-[13px] font-medium font-mono ${(t.contracts ?? 0) >= 1000 ? "text-[#22d3ee] font-semibold" : "text-white"}`}>{(t.contracts ?? 0).toLocaleString("en-US")}</td>
       <td className="px-2 py-2 text-right text-white/90 text-[13px] font-medium font-mono">{t.entry_price ? `$${t.entry_price.toFixed(2)}` : "—"}</td>
-      <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#FF605D' }}>
+      <td className="px-2 py-2 text-right text-[12px] font-bold" style={{ color: t.row_color === 'bullish' ? '#22C55E' : '#ef4444' }}>
         {t.premium_fmt}
       </td>
       <td className={`px-2 py-2 text-center text-[12px] font-medium ${
@@ -186,7 +186,7 @@ export function SignalRow({ trade: t, dataIndex, measureRef, setFocusTicker, set
             // Color hints elevated vs normal vol, but absolute thresholds
             // are loose because IV scales with DTE and moneyness.
             color: t.iv == null ? "rgba(255,255,255,0.3)"
-                   : t.iv >= 100 ? "#FF605D"          // red — extremely elevated
+                   : t.iv >= 100 ? "#ef4444"          // red — extremely elevated
                    : t.iv >= 60  ? "#FFA64D"          // amber — elevated
                    : "rgba(255,255,255,0.7)",         // normal — neutral
           }}
