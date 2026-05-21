@@ -28,6 +28,7 @@ runDemo({
   seedLocalStorage: { pb_exclude_midpoint: '0', pb_curated_grades: '0', pb_exclude_multi_leg: '0' },
   story: async (page, h, { baseUrl, rehearse }) => {
     const rowsReady = () => page.locator('.ag-row').first().waitFor({ timeout: 15000 }).catch(() => {});
+    const search = page.locator('input[placeholder="Search ticker..."]');
     await h.goto(`${baseUrl}/scanner`);
     await rowsReady();
     await h.pause(2000);
@@ -103,6 +104,15 @@ runDemo({
     await h.pause(2800);
 
     // ─────────────────── ACT 4 — the candidate read (~55s) ──────────────────
+    // DEMO_TICKER override: after the funnel demo, drill into a specific name.
+    if (DEMO_TICKER) {
+      await h.subtitle(`Or pin a name you're already tracking — search ${DEMO_TICKER}.`);
+      await h.type(search, DEMO_TICKER, `search ${DEMO_TICKER}`);
+      await page.keyboard.press('Enter');
+      await page.locator('.ag-row').first().waitFor({ timeout: 8000 }).catch(() => {});
+      await page.waitForFunction(tk => Array.from(document.querySelectorAll('.ag-row .ag-cell[col-id="symbol"]')).some(c => c.textContent.trim() === tk), DEMO_TICKER, { timeout: 8000 }).catch(() => {});
+      await h.pause(1800);
+    }
     // Pick the top single-name equity (skip indices+ETFs); prefer a gold/purple
     // row; DEMO_TICKER overrides. Never feature an index/ETF as "the equity bet".
     const featured = await page.evaluate(({ exclude, want }) => {
@@ -114,7 +124,8 @@ runDemo({
         spot: cell(r, 'spot_fmt'), exp: cell(r, 'expiration'), conds: cell(r, 'badges'),
         gold: /cf-row-oi-single/.test(r.className), purple: /cf-row-oi-multi/.test(r.className),
       })).filter(x => x.sym && !exclude.includes(x.sym));
-      if (want) return all.find(x => x.sym === want) || null;
+      const parsePrem = p => { const m = /\$([\d.]+)([MK])/.exec(p || ''); return m ? parseFloat(m[1]) * (m[2] === 'M' ? 1e6 : 1e3) : 0; };
+      if (want) { const ms = all.filter(x => x.sym === want); ms.sort((a, b) => parsePrem(b.prem) - parsePrem(a.prem)); return ms[0] || null; }
       return all.find(x => (x.gold || x.purple) && /M\b/.test(x.prem))
           || all.find(x => /M\b/.test(x.prem)) || all[0] || null;
     }, { exclude: NOT_EQUITY, want: DEMO_TICKER });
