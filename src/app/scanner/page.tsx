@@ -2247,8 +2247,8 @@ export default function ScannerPage() {
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#1A1A22" }}>
           {/* Compact TradingView-style watchlist header */}
           <div className="px-4 py-2.5 border-b border-[#2D2C38] flex items-center gap-3 flex-shrink-0" style={{ background: "#212029" }}>
-            <div className="text-[9px] font-bold text-[#4A5A72] tracking-[0.18em] uppercase">Watchlist</div>
-            <div className="text-[10px] text-[#3D4D63] font-mono tabular-nums">{watchlist.length}</div>
+            <div className="text-[9px] font-bold text-[#E8EDF5] tracking-[0.18em] uppercase">Watchlist</div>
+            <div className="text-[10px] text-[#8893A8] font-mono tabular-nums">{watchlist.length}</div>
             <div className="ml-auto flex items-center gap-2">
               {/* Overview / Flow view-mode toggle (Phase 2B step 1) */}
               <div className="flex items-center gap-1 p-1 bg-white/[0.04] border border-white/[0.06] rounded">
