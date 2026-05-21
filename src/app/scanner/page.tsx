@@ -2338,34 +2338,13 @@ export default function ScannerPage() {
                 </div>
               )
             })() : (() => {
-              const fmtTime = (ts: number) => {
-                const d = Math.floor((Date.now() / 1000) - ts)
-                if (d < 60) return `${d}s`
-                if (d < 3600) return `${Math.floor(d / 60)}m`
-                if (d < 86400) return `${Math.floor(d / 3600)}h`
-                return `${Math.floor(d / 86400)}d`
-              }
-              // Avatar: shared TickerAvatar (logo from snapshot). Flow mode is
-              // still the legacy table here — its full card rebuild lands in
-              // commit 3; this swap only removes the TICKER_COLORS dependency.
-              const WlAvatar = ({ sym }: { sym: string }) => <TickerAvatar sym={sym} logoUrl={wlSnapshot?.[sym]?.logo_url} />
-              // Sparkline — 80×24 framer-motion path-draw, color by direction.
-              const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
-                if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
-                const pad = 2
-                const lo = Math.min(...pts), hi = Math.max(...pts)
-                const span = (hi - lo) || 1
-                const xs = pts.map((_, i) => pad + (i / (pts.length - 1)) * (w - 2 * pad))
-                const ys = pts.map(p => (h - pad) - ((p - lo) / span) * (h - 2 * pad))
-                const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
-                const color = positive ? "#4ade80" : "#f87171"
-                return (
-                  <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ filter: `drop-shadow(0 0 3px ${color}66)` }}>
-                    <motion.path key={d} d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round"
-                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, ease: "easeOut" }} />
-                  </svg>
-                )
-              }
+              // FLOW MODE (Watchlist v3) — spark-card stack. Right zone: NET $
+              // + BIAS pill, then a C·P line. Sparkline = 5-day price tinted by
+              // bias (BULL green / BEAR red / MIXED orange). Sort preserved via
+              // a control (cards have no column headers). SIG/AGE dropped from
+              // the card per the v3 mockup (Age still available as a sort key).
+              // Bias computation unchanged from the prior Flow mode.
+              const openInScanner = (sym: string) => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner"); try { window.history.replaceState(null, "", `/scanner?symbol=${sym}`) } catch {} }
               const rows = watchlist.map(sym => {
                 const symTrades = trades.filter(t => t.symbol === sym)
                 const callPrem = symTrades.filter(t => t.opt_type === "C").reduce((s, t) => s + t.premium, 0)
@@ -2396,168 +2375,53 @@ export default function ScannerPage() {
                 if (av > bv) return  1 * dirMul
                 return 0
               })
-              const SortHead = ({ k, label, align = "left" }: { k: typeof wlSort.key; label: string; align?: "left" | "right" | "center" }) => (
-                <button
-                  onClick={() => setWlSort(s => ({ key: k, dir: s.key === k && s.dir === "desc" ? "asc" : "desc" }))}
-                  className={`px-3 py-2 text-[9px] font-bold tracking-[0.12em] uppercase transition-colors flex items-center gap-1 w-full ${wlSort.key === k ? "text-white" : "text-[#3D4D63] hover:text-[#E7E5E4]"} ${align === "right" ? "justify-end" : align === "center" ? "justify-center" : ""}`}>
-                  {label}
-                  {wlSort.key === k && <span className="text-[8px]">{wlSort.dir === "desc" ? "▼" : "▲"}</span>}
-                </button>
-              )
-              // Industry-standard column layout — TradingView/ToS pattern with
-              // our flow-specific columns appended. 32px rows.
-              // Symbol(70) Last(80) Chg(80) %Chg(80) Spark(80) Call$(90) Put$(90) Bias(70) Sig(60) Age(60) ×(28)
-              const cols = "190px 80px 80px 80px 90px 1fr 90px 90px 84px 56px 56px 30px"
+              const SORT_LABELS: Record<typeof wlSort.key, string> = { symbol: "Symbol", price: "Last", change: "% Chg", callFlow: "Call $", putFlow: "Put $", signals: "Signals", lastSignal: "Age" }
               return (
-                <div>
-                  <div className="grid sticky top-0 z-10 border-b border-[#2D2C38]" style={{ gridTemplateColumns: cols, background: "#212029" }}>
-                    <SortHead k="symbol" label="Symbol" />
-                    <SortHead k="price" label="Last" align="right" />
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Chg</div>
-                    <SortHead k="change" label="% Chg" align="right" />
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">5D</div>
-                    <div />
-                    <SortHead k="callFlow" label="Call $" align="right" />
-                    <SortHead k="putFlow" label="Put $" align="right" />
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">Bias</div>
-                    <SortHead k="signals" label="Sig" align="center" />
-                    <SortHead k="lastSignal" label="Age" align="center" />
-                    <div />
+                <div className="mx-auto w-full px-6 pt-4 pb-8" style={{ maxWidth: 1020 }}>
+                  {/* Sort control — replaces the column-header sort in the card layout */}
+                  <div className="flex items-center justify-end gap-2 mb-3">
+                    <span className="text-[10px] uppercase tracking-[0.14em] text-[#5A6070]">Sort</span>
+                    <select value={wlSort.key}
+                      onChange={e => setWlSort(s => ({ ...s, key: e.target.value as typeof wlSort.key }))}
+                      className="bg-white/[0.04] border border-white/[0.06] rounded text-[11px] text-[#E7E5E4] px-2 py-1 focus:outline-none cursor-pointer">
+                      {(Object.keys(SORT_LABELS) as (typeof wlSort.key)[]).map(k => (
+                        <option key={k} value={k} style={{ background: "#1A1A22" }}>{SORT_LABELS[k]}</option>
+                      ))}
+                    </select>
+                    <button onClick={() => setWlSort(s => ({ ...s, dir: s.dir === "desc" ? "asc" : "desc" }))}
+                      className="bg-white/[0.04] border border-white/[0.06] rounded text-[11px] text-[#E7E5E4] px-2.5 py-1 hover:bg-white/[0.08] transition-colors"
+                      title={wlSort.dir === "desc" ? "Descending" : "Ascending"}>{wlSort.dir === "desc" ? "▼" : "▲"}</button>
                   </div>
-                  {rows.map((r, idx) => {
-                    const { sym, callPrem, putPrem, count, isBull, isBear, lastSignalTs, quote, spark } = r
-                    const positive = (quote.change_pct ?? 0) > 0
-                    const negative = (quote.change_pct ?? 0) < 0
-                    const changeColor = positive ? "#22C55E" : negative ? "#FF605D" : "#E7E5E4"
-                    const change = quote.change ?? 0
+                  {rows.map((r) => {
+                    const { sym, callPrem, putPrem, count, isBull, isBear, spark } = r
+                    const net = callPrem - putPrem
+                    const biasColor = isBull ? "#22c55e" : isBear ? "#FF605D" : "#fb923c"
+                    const biasBg = isBull ? "rgba(34,197,94,0.12)" : isBear ? "rgba(255,96,93,0.12)" : "rgba(251,146,60,0.12)"
+                    const biasLabel = isBull ? "BULL" : isBear ? "BEAR" : "MIXED"
                     const expanded = wlExpanded === sym
                     const top5 = trades.filter(t => t.symbol === sym).slice().sort((a, b) => b.premium - a.premium).slice(0, 5)
+                    const right = count > 0 ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono tabular-nums" style={{ fontSize: 16, fontWeight: 600, color: biasColor }}>NET {fmtPrem(net)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, color: biasColor, background: biasBg }}>{biasLabel}</span>
+                        </div>
+                        <div className="font-mono tabular-nums" style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", letterSpacing: "0.01em" }}>
+                          C {fmtPrem(callPrem)} · P {fmtPrem(putPrem)}
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.35)" }}>No flow today</span>
+                    )
                     return (
-                      <div key={sym} className="border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                      <motion.div
-                           initial={{ opacity: 0, y: 8 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           transition={{ duration: 0.4, ease: "easeOut", delay: Math.min(idx * 0.04, 0.4) }}
-                           className="grid cursor-pointer group transition-colors hover:bg-cyan-500/[0.04]"
-                           style={{ gridTemplateColumns: cols, minHeight: 56, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderLeft: expanded ? "2px solid #22d3ee" : "2px solid transparent", background: expanded ? "rgba(34,211,238,0.06)" : undefined }}
-                           onClick={() => setWlExpanded(prev => prev === sym ? null : sym)}
-                           title={`Click for ${sym} flow detail`}>
-                        <div className="px-3 flex items-center gap-2.5 min-w-0">
-                          <WlAvatar sym={sym} />
-                          <span className="text-[13px] font-bold text-white font-mono truncate">{sym}</span>
-                        </div>
-                        <div className="px-3 text-right">
-                          <span className="text-[12px] font-mono tabular-nums text-white">
-                            {quote.spot != null ? quote.spot.toFixed(2) : <span className="text-[#3D4D63]">—</span>}
-                          </span>
-                        </div>
-                        <div className="px-3 text-right">
-                          {change !== 0 && quote.change != null ? (
-                            <span className="text-[11px] font-mono tabular-nums" style={{ color: changeColor }}>
-                              {positive ? "+" : ""}{change.toFixed(2)}
-                            </span>
-                          ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
-                        </div>
-                        <div className="px-3 text-right">
-                          {quote.change_pct != null ? (
-                            <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>
-                              {positive ? "+" : ""}{quote.change_pct.toFixed(2)}%
-                            </span>
-                          ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
-                        </div>
-                        <div className="px-3 flex items-center justify-center">
-                          <Spark pts={spark} positive={positive || (spark.length >= 2 && spark[spark.length-1] >= spark[0])} />
-                        </div>
-                        <div />
-                        <div className="px-3 text-right">
-                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${callPrem > 0 ? "text-[#22C55E]" : "text-[#3D4D63]"}`}>
-                            {callPrem > 0 ? fmtPrem(callPrem) : "—"}
-                          </span>
-                        </div>
-                        <div className="px-3 text-right">
-                          <span className={`text-[11px] font-mono tabular-nums font-semibold ${putPrem > 0 ? "text-[#FF605D]" : "text-[#3D4D63]"}`}>
-                            {putPrem > 0 ? fmtPrem(putPrem) : "—"}
-                          </span>
-                        </div>
-                        <div className="px-3 flex items-center justify-center">
-                          {count > 0 ? (
-                            <span className="font-bold tracking-wider"
-                              style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
-                                background: isBull ? "rgba(74,222,128,0.14)" : isBear ? "rgba(248,113,113,0.14)" : "rgba(251,146,60,0.14)",
-                                color: isBull ? "#4ade80" : isBear ? "#f87171" : "#fb923c" }}>
-                              {isBull ? "BULL" : isBear ? "BEAR" : "MIXED"}
-                            </span>
-                          ) : <span className="text-[10px] text-[#3D4D63]">—</span>}
-                        </div>
-                        <div className="px-3 text-center">
-                          <span className="text-[11px] text-[#E7E5E4] font-mono tabular-nums">{count || "—"}</span>
-                        </div>
-                        <div className="px-3 text-center">
-                          <span className="text-[11px] text-[#E7E5E4] font-mono tabular-nums">{lastSignalTs ? fmtTime(lastSignalTs) : "—"}</span>
-                        </div>
-                        <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }}
-                            className="text-[#3D4D63] hover:text-[#FF605D] text-base leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#FF605D]/15">×</button>
-                        </div>
-                      </motion.div>
-                      <AnimatePresence initial={false}>
-                        {expanded && (
-                          <motion.div key="panel"
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
-                            style={{ overflow: "hidden" }}>
-                            <div className="px-6 py-5" style={{ borderLeft: "2px solid #22d3ee", background: "linear-gradient(180deg, rgba(34,211,238,0.05), transparent)" }}>
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4A5A72]">
-                                  Today&apos;s top 5 trades on <span className="text-white font-mono">{sym}</span>
-                                </div>
-                                <a href={`/scanner?symbol=${sym}`}
-                                   onClick={e => { e.preventDefault(); setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner"); try { window.history.replaceState(null, "", `/scanner?symbol=${sym}`) } catch {} }}
-                                   className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">Open in scanner →</a>
-                              </div>
-                              {top5.length === 0 ? (
-                                <div className="text-[12px] text-[#3D4D63] py-3">No flow on {sym} today.</div>
-                              ) : (
-                                <div>
-                                  <div className="grid text-[9px] font-bold uppercase tracking-[0.12em] text-[#3D4D63] pb-1.5 border-b border-white/[0.06]"
-                                    style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
-                                    <div>Time</div><div>Side</div><div>C/P</div><div>Strike·Expiry</div>
-                                    <div className="text-right">Size</div><div className="text-right">Premium</div><div>Conds</div>
-                                  </div>
-                                  {top5.map(t => {
-                                    const isCall = t.opt_type === "C"
-                                    const a = (t.aggression || "").toUpperCase()
-                                    const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY"
-                                      : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL"
-                                      : (t.bullish ? "BUY" : "SELL")
-                                    const tradeTime = t.time || (t.timestampMs ? new Date(t.timestampMs).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—")
-                                    const conds = (t.badges || []).slice(0, 3)
-                                    return (
-                                      <div key={t.id} className="grid items-center py-1.5 text-[11px] border-b border-white/[0.03]"
-                                        style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
-                                        <div className="font-mono tabular-nums text-[#9CA3AF]">{tradeTime}</div>
-                                        <div><span className="font-bold" style={{ color: side === "BUY" ? "#4ade80" : "#f87171" }}>{side}</span></div>
-                                        <div><span className="font-bold" style={{ color: isCall ? "#4ade80" : "#f87171" }}>{isCall ? "Call" : "Put"}</span></div>
-                                        <div className="font-mono tabular-nums text-white truncate">{t.strike_fmt || t.strike}<span className="text-[#6B7280]"> · {t.expiration}</span></div>
-                                        <div className="font-mono tabular-nums text-right text-[#E7E5E4]">{typeof t.contracts === "number" ? t.contracts.toLocaleString() : t.contracts}</div>
-                                        <div className="font-mono tabular-nums text-right font-semibold text-white">{t.premium_fmt || fmtPrem(t.premium)}</div>
-                                        <div className="flex flex-wrap gap-1 overflow-hidden">
-                                          {conds.length ? conds.map((b, i) => (
-                                            <span key={i} className="text-[9px] font-semibold rounded whitespace-nowrap"
-                                              style={{ padding: "2px 6px", background: "rgba(34,211,238,0.10)", color: "#67e8f9", border: "1px solid rgba(34,211,238,0.20)" }}>{b.label}</span>
-                                          )) : <span className="text-[#3D4D63]">—</span>}
-                                        </div>
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      <div key={sym} style={{ marginBottom: 10 }}>
+                        <WatchlistSparkCard sym={sym} logoUrl={wlSnapshot?.[sym]?.logo_url} name={wlSnapshot?.[sym]?.name}
+                          sparkPts={spark} sparkColor={biasColor} right={right} expanded={expanded}
+                          onToggle={() => setWlExpanded(prev => prev === sym ? null : sym)}
+                          onRemove={() => removeFromWatchlist(sym)} />
+                        <AnimatePresence initial={false}>
+                          {expanded && <WatchlistDrilldown sym={sym} top5={top5} onOpenScanner={() => openInScanner(sym)} />}
+                        </AnimatePresence>
                       </div>
                     )
                   })}
