@@ -6,6 +6,8 @@ export interface SnapshotEntry {
   market_cap: number | null
   sparkline: number[]           // 0 or 10 points
   flow_contracts_today: number | null  // null for users without flow_access (e.g. heatmap)
+  logo_url: string | null               // same-origin /api/watchlist/logo proxy path, or null (ETF/no branding → chip)
+  name: string | null                   // Polygon company name, or null
 }
 
 /**

@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo, useId } from "react"
 import { useRouter } from "next/navigation"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { badgeClass } from "@/lib/badge-styles"
 import { SignalRow, type Trade } from "@/components/SignalRow"
 import { motion, AnimatePresence } from "framer-motion"
-import { TICKER_COLORS, TICKER_COLOR_FALLBACK } from "@/components/watchlist/mockData"
 import { useWatchlistSnapshot } from "@/hooks/useWatchlistSnapshot"
 
 import dynamic from "next/dynamic"
@@ -171,6 +170,130 @@ const COLS = [
 /* ── page ── */
 const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOGL","AMD","MU","COIN","PLTR","NFLX","CRM","BA","JPM","GS","XOM","GLD"]
 
+/* ── Watchlist v3 spark-card primitives (shared by Overview + Flow modes) ── */
+
+// 40×40 rounded-square chip. Renders the native-color Polygon logo (22×22)
+// when present; chip-behind-image so onError or a missing logo (ETFs) falls
+// back to the 3-letter ticker text.
+function TickerAvatar({ sym, logoUrl }: { sym: string; logoUrl?: string | null }) {
+  const [logoFailed, setLogoFailed] = useState(false)
+  useEffect(() => { setLogoFailed(false) }, [logoUrl])
+  return (
+    <div className="relative flex items-center justify-center flex-shrink-0"
+      style={{ width: 40, height: 40, borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <span style={{ fontSize: 10, fontWeight: 700, color: "#7A8BA8", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
+      {logoUrl && !logoFailed && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logoUrl} alt="" width={22} height={22} onError={() => setLogoFailed(true)}
+          className="absolute inset-0 m-auto" style={{ width: 22, height: 22, objectFit: "contain" }} />
+      )}
+    </div>
+  )
+}
+
+// Filled-area gradient sparkline, 180×48. `color` drives the stroke (full
+// opacity) and the area fill gradient (color@0.35 → color@0). Unique gradient
+// id per instance via useId so multiple sparklines don't collide.
+function SparkAreaChart({ pts, color, w = 180, h = 48 }: { pts: number[]; color: string; w?: number; h?: number }) {
+  const gid = useId().replace(/:/g, "")
+  if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
+  const pad = 3
+  const lo = Math.min(...pts), hi = Math.max(...pts)
+  const span = (hi - lo) || 1
+  const xs = pts.map((_, i) => pad + (i / (pts.length - 1)) * (w - 2 * pad))
+  const ys = pts.map(p => (h - pad) - ((p - lo) / span) * (h - 2 * pad))
+  const line = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
+  const area = `${line} L${xs[xs.length - 1].toFixed(1)},${(h - pad).toFixed(1)} L${xs[0].toFixed(1)},${(h - pad).toFixed(1)} Z`
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
+      <defs>
+        <linearGradient id={`sp-${gid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#sp-${gid})`} stroke="none" />
+      <motion.path key={line} d={line} fill="none" stroke={color} strokeWidth={1.75} strokeLinejoin="round" strokeLinecap="round"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, ease: "easeOut" }} />
+    </svg>
+  )
+}
+
+// Shared spark-card row: [logo+symbol+name | spark | mode-specific right zone].
+// Identical silhouette across Overview/Flow — only `right`, `sparkPts`, and
+// `sparkColor` differ. Click toggles the drill-down; × removes (hover-only).
+function WatchlistSparkCard({ sym, logoUrl, name, sparkPts, sparkColor, right, expanded, onToggle, onRemove }: {
+  sym: string; logoUrl?: string | null; name?: string | null
+  sparkPts: number[]; sparkColor: string; right: React.ReactNode
+  expanded: boolean; onToggle: () => void; onRemove: () => void
+}) {
+  return (
+    <div onClick={onToggle} title={`Click for ${sym} flow detail`}
+      className="relative grid cursor-pointer group rounded-xl border bg-white/[0.025] border-white/[0.06] hover:bg-white/[0.045] hover:border-white/[0.10] transition-colors duration-150"
+      style={{ gridTemplateColumns: "260px 1fr 240px", alignItems: "center", padding: "18px 24px",
+        borderLeftWidth: expanded ? 2 : undefined, borderLeftColor: expanded ? "#22d3ee" : undefined }}>
+      <div className="flex items-center gap-3 min-w-0">
+        <TickerAvatar sym={sym} logoUrl={logoUrl} />
+        <div className="min-w-0">
+          <div className="truncate" style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", color: "#fafafa" }}>{sym}</div>
+          {name ? <div className="truncate" style={{ fontSize: 12, fontWeight: 400, color: "rgba(255,255,255,0.65)" }}>{name}</div> : null}
+        </div>
+      </div>
+      <div className="flex items-center justify-center px-4">
+        <SparkAreaChart pts={sparkPts} color={sparkColor} />
+      </div>
+      <div className="flex flex-col items-end justify-center gap-1">{right}</div>
+      <button onClick={(e) => { e.stopPropagation(); onRemove() }}
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#3D4D63] hover:text-[#FF605D] text-base leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#FF605D]/15">×</button>
+    </div>
+  )
+}
+
+// Shared click-to-expand drill-down — "Today's top 5 trades on {SYM}".
+// Data shape unchanged from the pre-v3 panel; cyan accent retained (palette
+// keeps cyan). BUY/SELL + C/P use the vivid green/red.
+function WatchlistDrilldown({ sym, top5, onOpenScanner }: { sym: string; top5: Trade[]; onOpenScanner: () => void }) {
+  return (
+    <motion.div key="panel" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25, ease: "easeOut" }} style={{ overflow: "hidden" }}>
+      <div className="px-6 py-5 mt-1 rounded-xl" style={{ borderLeft: "2px solid #22d3ee", background: "linear-gradient(180deg, rgba(34,211,238,0.05), transparent)" }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4A5A72]">Today&apos;s top 5 trades on <span className="text-white font-mono">{sym}</span></div>
+          <button onClick={(e) => { e.stopPropagation(); onOpenScanner() }} className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">Open in scanner →</button>
+        </div>
+        {top5.length === 0 ? (
+          <div className="text-[12px] text-[#3D4D63] py-3">No flow on {sym} today.</div>
+        ) : (
+          <div>
+            <div className="grid text-[9px] font-bold uppercase tracking-[0.12em] text-[#3D4D63] pb-1.5 border-b border-white/[0.06]" style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
+              <div>Time</div><div>Side</div><div>C/P</div><div>Strike·Expiry</div><div className="text-right">Size</div><div className="text-right">Premium</div><div>Conds</div>
+            </div>
+            {top5.map(t => {
+              const isCall = t.opt_type === "C"
+              const a = (t.aggression || "").toUpperCase()
+              const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY" : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL" : (t.bullish ? "BUY" : "SELL")
+              const tradeTime = t.time || (t.timestampMs ? new Date(t.timestampMs).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—")
+              const conds = (t.badges || []).slice(0, 3)
+              return (
+                <div key={t.id} className="grid items-center py-1.5 text-[11px] border-b border-white/[0.03]" style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
+                  <div className="font-mono tabular-nums text-[#9CA3AF]">{tradeTime}</div>
+                  <div><span className="font-bold" style={{ color: side === "BUY" ? "#22c55e" : "#FF605D" }}>{side}</span></div>
+                  <div><span className="font-bold" style={{ color: isCall ? "#22c55e" : "#FF605D" }}>{isCall ? "Call" : "Put"}</span></div>
+                  <div className="font-mono tabular-nums text-white truncate">{t.strike_fmt || t.strike}<span className="text-[#6B7280]"> · {t.expiration}</span></div>
+                  <div className="font-mono tabular-nums text-right text-[#E7E5E4]">{typeof t.contracts === "number" ? t.contracts.toLocaleString() : t.contracts}</div>
+                  <div className="font-mono tabular-nums text-right font-semibold text-white">{t.premium_fmt || fmtPrem(t.premium)}</div>
+                  <div className="flex flex-wrap gap-1 overflow-hidden">
+                    {conds.length ? conds.map((b, i) => (<span key={i} className="text-[9px] font-semibold rounded whitespace-nowrap" style={{ padding: "2px 6px", background: "rgba(34,211,238,0.10)", color: "#67e8f9", border: "1px solid rgba(34,211,238,0.20)" }}>{b.label}</span>)) : <span className="text-[#3D4D63]">—</span>}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
 export default function ScannerPage() {
   const router = useRouter()
   const [trades, setTrades] = useState<Trade[]>([])
@@ -326,7 +449,9 @@ export default function ScannerPage() {
   }, [])
   // Snapshot enrichment only fetches when the user is actually viewing Overview
   // (the hook skips entirely on an empty symbol list).
-  const wlSnapshotSymbols = (activePage === "watchlist" && wlViewMode === "overview") ? watchlist : []
+  // Fetched across the whole Watch tab (both modes) so ticker logos + names
+  // resolve in Flow mode too; Overview additionally renders mcap/iv/optvol.
+  const wlSnapshotSymbols = (activePage === "watchlist") ? watchlist : []
   const { data: wlSnapshot } = useWatchlistSnapshot(wlSnapshotSymbols)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [marketOpen, setMarketOpen] = useState(false)
@@ -2128,7 +2253,7 @@ export default function ScannerPage() {
                   <button
                     key={m}
                     onClick={() => setWlViewModePersist(m)}
-                    className={`text-xs font-semibold rounded px-4 py-2 transition-colors ${wlViewMode === m ? "bg-cyan-500/[0.15] text-cyan-400" : "bg-transparent text-zinc-400 hover:text-zinc-200"}`}
+                    className={`text-xs font-semibold rounded px-4 py-2 border transition-colors ${wlViewMode === m ? "bg-white/[0.08] border-white/[0.16] text-white" : "bg-transparent border-transparent text-zinc-400 hover:text-zinc-200"}`}
                   >
                     {m === "overview" ? "Overview" : "Flow"}
                   </button>
@@ -2167,165 +2292,45 @@ export default function ScannerPage() {
                 </div>
               </div>
             ) : wlViewMode === "overview" ? (() => {
-              // OVERVIEW MODE (Phase 2B step 1) — enrichment columns from
-              // useWatchlistSnapshot. Parallel to the Flow IIFE below, which is
-              // left byte-for-byte unchanged. Pinned: Ticker | Spot | Δ%.
-              const hexA = (hex: string, a: number) => hex + Math.round(a * 255).toString(16).padStart(2, "0")
-              const WlAvatar = ({ sym }: { sym: string }) => {
-                const c = TICKER_COLORS[sym] ?? TICKER_COLOR_FALLBACK
-                return (
-                  <div className="flex items-center justify-center rounded-full flex-shrink-0"
-                    style={{ width: 34, height: 34, background: `linear-gradient(135deg, ${hexA(c, 0.34)}, ${hexA(c, 0.10)})`, border: `1px solid ${hexA(c, 0.6)}` }}>
-                    <span className="font-bold text-white" style={{ fontSize: 10, letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
-                  </div>
-                )
-              }
-              const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
-                if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
-                const pad = 2
-                const lo = Math.min(...pts), hi = Math.max(...pts)
-                const span = (hi - lo) || 1
-                const xs = pts.map((_, i) => pad + (i / (pts.length - 1)) * (w - 2 * pad))
-                const ys = pts.map(p => (h - pad) - ((p - lo) / span) * (h - 2 * pad))
-                const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ")
-                const color = positive ? "#4ade80" : "#f87171"
-                return (
-                  <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ filter: `drop-shadow(0 0 3px ${color}66)` }}>
-                    <motion.path key={d} d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round"
-                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, ease: "easeOut" }} />
-                  </svg>
-                )
-              }
-              const fmtMktCap = (v: number | null): string | null => {
-                if (v == null) return null
-                if (v >= 1e12) return `$${(v / 1e12).toFixed(2)}T`
-                if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`
-                if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
-                return `$${v.toLocaleString()}`
-              }
-              const fmtOptVol = (v: number | null): string | null => {
-                if (v == null) return null            // heatmap tier → render "—"
-                if (v === 0) return "0"               // active premium, no flow today
-                if (v >= 1e6) return `${(v / 1e6).toFixed(1)}M`
-                if (v >= 1e3) return `${(v / 1e3).toFixed(0)}K`
-                return `${v}`
-              }
-              const cols = "190px 80px 80px 90px 90px 100px 1fr 90px 30px"
+              // OVERVIEW MODE (Watchlist v3) — spark-card stack. Right zone:
+              // $price + Δ% pill. Sparkline = snapshot 2-day price, green/red
+              // by direction. (IV/OptVol/MktCap columns dropped from the card
+              // per the approved v3 mockup; data still in the snapshot.)
+              const openInScanner = (sym: string) => { setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner"); try { window.history.replaceState(null, "", `/scanner?symbol=${sym}`) } catch {} }
               return (
-                <div>
-                  <div className="grid sticky top-0 z-10 border-b border-[#2D2C38]" style={{ gridTemplateColumns: cols, background: "#212029" }}>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase">Symbol</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Spot</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Δ %</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">IV Rank</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Opt Vol</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Mkt Cap</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-center">2-Day</div>
-                    <div className="px-3 py-2 text-[9px] font-bold text-[#3D4D63] tracking-[0.12em] uppercase text-right">Δ $</div>
-                    <div />
-                  </div>
-                  {watchlist.map((sym, idx) => {
+                <div className="mx-auto w-full px-6 pt-4 pb-8" style={{ maxWidth: 1020 }}>
+                  {watchlist.map((sym) => {
                     const quote = wlQuotes[sym] || { spot: null, change: null, change_pct: null, prev_close: null }
                     const snap = (wlSnapshot && wlSnapshot[sym]) || null
                     const positive = (quote.change_pct ?? 0) > 0
                     const negative = (quote.change_pct ?? 0) < 0
-                    const changeColor = positive ? "#22C55E" : negative ? "#FF605D" : "#E7E5E4"
-                    const dollarChg = quote.change != null ? quote.change
-                      : (quote.spot != null && quote.change_pct != null ? quote.spot * quote.change_pct / 100 : null)
-                    const ivr = snap ? snap.iv_rank : null
-                    const ivColor = ivr == null ? undefined : ivr < 30 ? "#4ade80" : ivr < 60 ? "#fb923c" : "#f87171"
-                    const ivBg = ivr == null ? undefined : ivr < 30 ? "rgba(74,222,128,0.14)" : ivr < 60 ? "rgba(251,146,60,0.14)" : "rgba(248,113,113,0.14)"
-                    const optVol = snap ? fmtOptVol(snap.flow_contracts_today) : null
-                    const mcap = snap ? fmtMktCap(snap.market_cap) : null
+                    const changeColor = positive ? "#22c55e" : negative ? "#FF605D" : "rgba(255,255,255,0.55)"
                     const sparkPts = snap ? (snap.sparkline || []) : []
-                    const sparkPositive = sparkPts.length >= 2 ? sparkPts[sparkPts.length - 1] >= sparkPts[0] : positive
+                    const sparkUp = sparkPts.length >= 2 ? sparkPts[sparkPts.length - 1] >= sparkPts[0] : !negative
+                    const sparkColor = sparkUp ? "#22c55e" : "#FF605D"
                     const expanded = wlExpanded === sym
                     const top5 = trades.filter(t => t.symbol === sym).slice().sort((a, b) => b.premium - a.premium).slice(0, 5)
+                    const right = (
+                      <>
+                        <span style={{ fontSize: 16, fontWeight: 600, color: "#fafafa" }} className="font-mono tabular-nums">
+                          {quote.spot != null ? `$${quote.spot.toFixed(2)}` : <span className="text-[#3D4D63]">—</span>}
+                        </span>
+                        {quote.change_pct != null ? (
+                          <span className="font-mono tabular-nums" style={{ fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
+                            color: changeColor, background: positive ? "rgba(34,197,94,0.12)" : negative ? "rgba(255,96,93,0.12)" : "rgba(255,255,255,0.06)" }}>
+                            {positive ? "+" : ""}{quote.change_pct.toFixed(2)}%
+                          </span>
+                        ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
+                      </>
+                    )
                     return (
-                      <div key={sym} className="border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                        <motion.div
-                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, ease: "easeOut", delay: Math.min(idx * 0.04, 0.4) }}
-                          className="grid cursor-pointer group transition-colors hover:bg-cyan-500/[0.04]"
-                          style={{ gridTemplateColumns: cols, minHeight: 56, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderLeft: expanded ? "2px solid #22d3ee" : "2px solid transparent", background: expanded ? "rgba(34,211,238,0.06)" : undefined }}
-                          onClick={() => setWlExpanded(prev => prev === sym ? null : sym)}
-                          title={`Click for ${sym} flow detail`}>
-                          <div className="px-3 flex items-center gap-2.5 min-w-0">
-                            <WlAvatar sym={sym} />
-                            <span className="text-[13px] font-bold text-white font-mono truncate">{sym}</span>
-                          </div>
-                          <div className="px-3 text-right">
-                            <span className="text-[12px] font-mono tabular-nums text-white">{quote.spot != null ? quote.spot.toFixed(2) : <span className="text-[#3D4D63]">—</span>}</span>
-                          </div>
-                          <div className="px-3 text-right">
-                            {quote.change_pct != null ? (
-                              <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>{positive ? "+" : ""}{quote.change_pct.toFixed(2)}%</span>
-                            ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
-                          </div>
-                          <div className="px-3 flex items-center justify-center">
-                            {ivr == null ? <span className="text-[10px] text-[#3D4D63]">—</span> : (
-                              <span className="font-bold tabular-nums" style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: ivBg, color: ivColor }}>{ivr.toFixed(0)}</span>
-                            )}
-                          </div>
-                          <div className="px-3 text-right">
-                            <span className={`text-[11px] font-mono tabular-nums ${optVol != null ? "text-[#E7E5E4]" : "text-[#3D4D63]"}`}>{optVol != null ? optVol : "—"}</span>
-                          </div>
-                          <div className="px-3 text-right">
-                            <span className={`text-[11px] font-mono tabular-nums ${mcap != null ? "text-[#E7E5E4]" : "text-[#3D4D63]"}`}>{mcap != null ? mcap : "—"}</span>
-                          </div>
-                          <div className="px-3 flex items-center justify-center">
-                            {sparkPts.length >= 2 ? <Spark pts={sparkPts} positive={sparkPositive} /> : <span className="text-[#3D4D63] text-[10px]">—</span>}
-                          </div>
-                          <div className="px-3 text-right">
-                            {dollarChg != null ? (
-                              <span className="text-[11px] font-mono tabular-nums font-semibold" style={{ color: changeColor }}>{dollarChg > 0 ? "+" : ""}{dollarChg.toFixed(2)}</span>
-                            ) : <span className="text-[11px] text-[#3D4D63]">—</span>}
-                          </div>
-                          <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={e => { e.stopPropagation(); removeFromWatchlist(sym) }}
-                              className="text-[#3D4D63] hover:text-[#FF605D] text-base leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#FF605D]/15">×</button>
-                          </div>
-                        </motion.div>
+                      <div key={sym} style={{ marginBottom: 10 }}>
+                        <WatchlistSparkCard sym={sym} logoUrl={snap?.logo_url} name={snap?.name}
+                          sparkPts={sparkPts} sparkColor={sparkColor} right={right} expanded={expanded}
+                          onToggle={() => setWlExpanded(prev => prev === sym ? null : sym)}
+                          onRemove={() => removeFromWatchlist(sym)} />
                         <AnimatePresence initial={false}>
-                          {expanded && (
-                            <motion.div key="panel" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25, ease: "easeOut" }} style={{ overflow: "hidden" }}>
-                              <div className="px-6 py-5" style={{ borderLeft: "2px solid #22d3ee", background: "linear-gradient(180deg, rgba(34,211,238,0.05), transparent)" }}>
-                                <div className="flex items-center justify-between mb-3">
-                                  <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#4A5A72]">Today&apos;s top 5 trades on <span className="text-white font-mono">{sym}</span></div>
-                                  <a href={`/scanner?symbol=${sym}`} onClick={e => { e.preventDefault(); setSearch(sym); setSearchInput(sym); setPage(0); setActivePage("scanner"); try { window.history.replaceState(null, "", `/scanner?symbol=${sym}`) } catch {} }} className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors">Open in scanner →</a>
-                                </div>
-                                {top5.length === 0 ? (
-                                  <div className="text-[12px] text-[#3D4D63] py-3">No flow on {sym} today.</div>
-                                ) : (
-                                  <div>
-                                    <div className="grid text-[9px] font-bold uppercase tracking-[0.12em] text-[#3D4D63] pb-1.5 border-b border-white/[0.06]" style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
-                                      <div>Time</div><div>Side</div><div>C/P</div><div>Strike·Expiry</div><div className="text-right">Size</div><div className="text-right">Premium</div><div>Conds</div>
-                                    </div>
-                                    {top5.map(t => {
-                                      const isCall = t.opt_type === "C"
-                                      const a = (t.aggression || "").toUpperCase()
-                                      const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY" : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL" : (t.bullish ? "BUY" : "SELL")
-                                      const tradeTime = t.time || (t.timestampMs ? new Date(t.timestampMs).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—")
-                                      const conds = (t.badges || []).slice(0, 3)
-                                      return (
-                                        <div key={t.id} className="grid items-center py-1.5 text-[11px] border-b border-white/[0.03]" style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
-                                          <div className="font-mono tabular-nums text-[#9CA3AF]">{tradeTime}</div>
-                                          <div><span className="font-bold" style={{ color: side === "BUY" ? "#4ade80" : "#f87171" }}>{side}</span></div>
-                                          <div><span className="font-bold" style={{ color: isCall ? "#4ade80" : "#f87171" }}>{isCall ? "Call" : "Put"}</span></div>
-                                          <div className="font-mono tabular-nums text-white truncate">{t.strike_fmt || t.strike}<span className="text-[#6B7280]"> · {t.expiration}</span></div>
-                                          <div className="font-mono tabular-nums text-right text-[#E7E5E4]">{typeof t.contracts === "number" ? t.contracts.toLocaleString() : t.contracts}</div>
-                                          <div className="font-mono tabular-nums text-right font-semibold text-white">{t.premium_fmt || fmtPrem(t.premium)}</div>
-                                          <div className="flex flex-wrap gap-1 overflow-hidden">
-                                            {conds.length ? conds.map((b, i) => (<span key={i} className="text-[9px] font-semibold rounded whitespace-nowrap" style={{ padding: "2px 6px", background: "rgba(34,211,238,0.10)", color: "#67e8f9", border: "1px solid rgba(34,211,238,0.20)" }}>{b.label}</span>)) : <span className="text-[#3D4D63]">—</span>}
-                                          </div>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
+                          {expanded && <WatchlistDrilldown sym={sym} top5={top5} onOpenScanner={() => openInScanner(sym)} />}
                         </AnimatePresence>
                       </div>
                     )
@@ -2340,17 +2345,10 @@ export default function ScannerPage() {
                 if (d < 86400) return `${Math.floor(d / 3600)}h`
                 return `${Math.floor(d / 86400)}d`
               }
-              // Brand-tinted ticker avatar — 34px gradient chip, first 3 chars.
-              const hexA = (hex: string, a: number) => hex + Math.round(a * 255).toString(16).padStart(2, "0")
-              const WlAvatar = ({ sym }: { sym: string }) => {
-                const c = TICKER_COLORS[sym] ?? TICKER_COLOR_FALLBACK
-                return (
-                  <div className="flex items-center justify-center rounded-full flex-shrink-0"
-                    style={{ width: 34, height: 34, background: `linear-gradient(135deg, ${hexA(c, 0.34)}, ${hexA(c, 0.10)})`, border: `1px solid ${hexA(c, 0.6)}` }}>
-                    <span className="font-bold text-white" style={{ fontSize: 10, letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
-                  </div>
-                )
-              }
+              // Avatar: shared TickerAvatar (logo from snapshot). Flow mode is
+              // still the legacy table here — its full card rebuild lands in
+              // commit 3; this swap only removes the TICKER_COLORS dependency.
+              const WlAvatar = ({ sym }: { sym: string }) => <TickerAvatar sym={sym} logoUrl={wlSnapshot?.[sym]?.logo_url} />
               // Sparkline — 80×24 framer-motion path-draw, color by direction.
               const Spark = ({ pts, positive, w = 80, h = 24 }: { pts: number[]; positive: boolean; w?: number; h?: number }) => {
                 if (!pts || pts.length < 2) return <span className="text-[#3D4D63] text-[10px]">—</span>
