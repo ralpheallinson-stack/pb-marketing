@@ -105,6 +105,7 @@ export default function AccountPage() {
     total_savings_usd: number
   } | null>(null)
   const [copied, setCopied] = useState(false)
+  const [refLoading, setRefLoading] = useState(true)
 
   useEffect(() => {
     document.title = "Account | Profit Builders"
@@ -121,6 +122,7 @@ export default function AccountPage() {
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d && d.referral_code) setReferral(d) })
       .catch(() => {})
+      .finally(() => setRefLoading(false))
   }, [router])
 
   const copyReferralLink = () => {
@@ -248,33 +250,29 @@ export default function AccountPage() {
               </div>
             </div>
 
-            {/* Referral (kept — tucked into Billing tab) */}
-            {referral && (
-              <>
-                <Divider />
-                <h4 className="text-[15px] font-semibold text-stone-100">Refer &amp; earn</h4>
-                <p className="mt-1 text-[13px] text-stone-400">Invite a trader — earn a $99 Stripe credit on every converted paid referral. No cap.</p>
-                <div className="mt-3 flex max-w-md gap-2">
-                  <Input type="text" value={referral.share_link} readOnly onFocus={e => e.currentTarget.select()} className="font-mono text-[12px]" />
-                  <Button variant={copied ? "ghost" : "primary"} onClick={copyReferralLink} className="flex-shrink-0">{copied ? "Copied" : "Copy"}</Button>
-                </div>
-                <div className="mt-3 grid max-w-md grid-cols-3 gap-2">
-                  {[
-                    { label: "Signups", value: referral.total_referrals, color: "#fafafa" },
-                    { label: "Converted", value: referral.converted, color: "#22d3ee" },
-                    { label: "Earned", value: `$${referral.total_savings_usd}`, color: "#22c55e" },
-                  ].map(s => (
-                    <div key={s.label} className="rounded-md border border-white/[0.08] bg-white/[0.025] px-3 py-2">
-                      <div className="text-[9px] uppercase tracking-[0.14em] text-stone-500">{s.label}</div>
-                      <div className="mt-1 text-[18px] font-bold leading-none" style={{ color: s.color }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <a href={`/referral/dashboard?email=${encodeURIComponent(account?.email ?? "")}`} className="mt-3 inline-block text-[12px] font-semibold text-[#22d3ee] hover:text-[#22d3ee]/80 transition-colors">
-                  Full referral dashboard &rarr;
-                </a>
-              </>
-            )}
+            {/* Refer & earn — always rendered (loading/empty handled), flat layout */}
+            <Divider />
+            <h4 className="text-[15px] font-semibold text-stone-100">Refer &amp; earn</h4>
+            <p className="mt-1 text-[13px] text-stone-400">Refer friends and earn $99 credit when they subscribe.</p>
+            <div className="mt-3 flex max-w-lg gap-2">
+              <Input
+                type="text"
+                readOnly
+                value={referral?.share_link ?? ""}
+                placeholder={refLoading ? "Loading your referral link…" : "Your referral link will appear here"}
+                onFocus={e => e.currentTarget.select()}
+                disabled={!referral?.share_link}
+                className="font-mono text-[12px]"
+              />
+              <Button variant="primary" onClick={copyReferralLink} disabled={!referral?.share_link} className="flex-shrink-0">
+                {copied ? "Copied!" : "Copy link"}
+              </Button>
+            </div>
+            <p className="mt-2 text-[11px] text-stone-500">
+              {refLoading
+                ? "Loading referral stats…"
+                : `${referral?.total_referrals ?? 0} invited · ${referral?.converted ?? 0} active · $${referral?.total_savings_usd ?? 0} credited`}
+            </p>
 
             <Divider />
 
