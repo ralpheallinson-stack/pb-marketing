@@ -74,8 +74,8 @@ export interface Trade {
 
 function getRowStyle(t: Trade): React.CSSProperties {
   // BlackBox-style OI highlights from backend
-  if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.14)", borderLeft: "3px solid rgba(168,85,247,0.8)" }
-  if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.12)", borderLeft: "3px solid rgba(234,179,8,0.7)" }
+  if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.22)", borderLeft: "3px solid rgba(168,85,247,1.0)" }
+  if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.20)", borderLeft: "3px solid rgba(234,179,8,1.0)" }
   if (t.flow_highlight === 'late') return { backgroundColor: "rgba(251,146,60,0.10)", borderLeft: "3px solid rgba(251,146,60,0.6)" }
   return {}
 }

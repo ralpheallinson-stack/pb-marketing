@@ -1002,8 +1002,8 @@ export function ScannerAgGrid({
 
         /* ── Row-level OI status tints (Phase 2) ──
            border-left overrides AG Grid's row border on tinted rows. */
-        .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.12); border-left: 3px solid rgba(234,179,8,0.7); }
-        .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.14); border-left: 3px solid rgba(168,85,247,0.8); }
+        .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.20); border-left: 3px solid rgba(234,179,8,1.0); }
+        .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.22); border-left: 3px solid rgba(168,85,247,1.0); }
         .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
 
         .pb-day-separator {
@@ -1202,10 +1202,10 @@ export function ScannerAgGrid({
            wins on specificity ties via source order, but border-left-color
            alone is also correct and self-documenting). */
         .ag-root .ag-row.cf-row-oi-single {
-          border-left-color: rgba(234, 179, 8, 0.7);
+          border-left-color: rgba(234, 179, 8, 1.0);
         }
         .ag-root .ag-row.cf-row-oi-multi {
-          border-left-color: rgba(168, 85, 247, 0.8);
+          border-left-color: rgba(168, 85, 247, 1.0);
         }
 
         /* Single-line badge pills + clip at right edge (2026-05-18 evening).
