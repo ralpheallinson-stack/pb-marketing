@@ -172,19 +172,22 @@ const GEX_SYMBOLS = ["SPY","QQQ","AAPL","TSLA","NVDA","META","MSFT","AMZN","GOOG
 
 /* ── Watchlist v3 spark-card primitives (shared by Overview + Flow modes) ── */
 
-// 40×40 rounded-square chip. Renders the native-color Polygon logo (22×22)
-// when present; chip-behind-image so onError or a missing logo (ETFs) falls
-// back to the 3-letter ticker text.
+// 40×40 rounded-square chip. Renders the native-color Polygon icon (22×22)
+// when present. Chip text sits behind the image while it loads (no flicker)
+// and is hidden once the icon loads cleanly (onLoad); on error or a missing
+// icon (ETFs) the chip text stays as the fallback.
 function TickerAvatar({ sym, logoUrl }: { sym: string; logoUrl?: string | null }) {
+  const [logoOk, setLogoOk] = useState(false)
   const [logoFailed, setLogoFailed] = useState(false)
-  useEffect(() => { setLogoFailed(false) }, [logoUrl])
+  useEffect(() => { setLogoOk(false); setLogoFailed(false) }, [logoUrl])
   return (
     <div className="relative flex items-center justify-center flex-shrink-0"
       style={{ width: 40, height: 40, borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: "#7A8BA8", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>
+      {!logoOk && <span style={{ fontSize: 10, fontWeight: 700, color: "#7A8BA8", letterSpacing: "0.02em" }}>{sym.slice(0, 3)}</span>}
       {logoUrl && !logoFailed && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={logoUrl} alt="" width={22} height={22} onError={() => setLogoFailed(true)}
+        <img src={logoUrl} alt="" width={22} height={22}
+          onLoad={() => setLogoOk(true)} onError={() => { setLogoFailed(true); setLogoOk(false) }}
           className="absolute inset-0 m-auto" style={{ width: 22, height: 22, objectFit: "contain" }} />
       )}
     </div>
