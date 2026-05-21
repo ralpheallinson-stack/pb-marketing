@@ -183,7 +183,7 @@ function WlTickerAvatar({ sym, logoUrl }: { sym: string; logoUrl?: string | null
       {logoUrl && !logoFailed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={logoUrl} alt="" width={18} height={18} onError={() => setLogoFailed(true)}
-          className="absolute inset-0 m-auto" style={{ width: 18, height: 18, filter: "brightness(0) invert(1)", opacity: 0.88 }} />
+          className="absolute" style={{ width: 18, height: 18, filter: "brightness(0) invert(1)", opacity: 0.88 }} />
       )}
     </div>
   )
