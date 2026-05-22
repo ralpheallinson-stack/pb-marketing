@@ -50,8 +50,8 @@ import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
-import ReplayProgress from "@/components/ReplayProgress"
 import GexHeroCard from "@/components/scanner/gex/GexHeroCard"
+import GexGammaProfile from "@/components/scanner/gex/GexGammaProfile"
 import type { GexSnapshot } from "@/components/scanner/gex/gex.types"
 
 import Link from "next/link"
@@ -399,6 +399,7 @@ export default function ScannerPage() {
   const [gexData, setGexData] = useState<GexSnapshot | null>(null)
   const [gexLoading, setGexLoading] = useState(false)
   const [gexError, setGexError] = useState("")
+  const [gexUpdatedAt, setGexUpdatedAt] = useState<Date | null>(null)
   const [paletteOpen, setPaletteOpen] = useState(false)
 
   // Read ?view=heatmap on mount so /heatmap redirects (and any deep links)
@@ -625,7 +626,7 @@ export default function ScannerPage() {
       .then(r => r.json())
       .then(d => {
         if (reqId !== gexReqIdRef.current) return  // stale response — newer symbol selected
-        if (d.error) { setGexError(d.error); setGexData(null) } else setGexData(d)
+        if (d.error) { setGexError(d.error); setGexData(null) } else { setGexData(d); setGexUpdatedAt(new Date()) }
       })
       .catch(() => { if (reqId === gexReqIdRef.current) setGexError("Failed to load") })
       .finally(() => { if (reqId === gexReqIdRef.current) setGexLoading(false) })
@@ -1937,7 +1938,6 @@ export default function ScannerPage() {
     const row = gexData.matrix[sk] || {}
     return { strike, total: Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0) }
   }) : []
-  const maxStrikeTotal = Math.max(...strikeTotals.map(s => Math.abs(s.total)), 1)
 
   const callWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike > gexData.spot).sort((a, b) => b.total - a.total)[0] : null
   const putWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike < gexData.spot).sort((a, b) => b.total - a.total)[0] : null
@@ -1990,6 +1990,12 @@ export default function ScannerPage() {
               <span className="text-[9px] uppercase tracking-[0.18em] text-white/30 whitespace-nowrap">Gamma Exposure</span>
             </div>
             <div className="ml-auto flex items-center gap-1.5">
+              {gexUpdatedAt && (
+                <span className="hidden sm:flex items-center gap-1.5 text-[10px] text-white/40 mr-1 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                  Live · {gexUpdatedAt.toLocaleTimeString("en-US", { hour12: false, timeZone: "America/New_York" })} ET
+                </span>
+              )}
               <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/60 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.08]">Gamma</span>
               <button
                 onClick={() => setPaletteOpen(true)}
@@ -2011,86 +2017,11 @@ export default function ScannerPage() {
 
           {/* Hero card (v6 Phase 1) — replaces the old metrics strip */}
           {gexData && <GexHeroCard data={gexData} liveSpot={liveGexSpot} symbol={gexSymbol} />}
-
-          {/* Total Net GEX breakout — call vs put, near vs far DTE */}
-          {gexData && (
-            <div className="flex items-center px-5 py-2 gap-3 border-b border-white/[0.04] flex-shrink-0 overflow-x-auto" style={{ background: "#0B0F14" }}>
-              <span className="text-[10px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">Composition</span>
-              <div className="w-px h-3 bg-white/[0.06]" />
-              {[
-                { label: "CALL γ", value: gexData.total_call_gex, color: "#22C55E" },
-                { label: "PUT γ", value: gexData.total_put_gex, color: "#FF605D" },
-                { label: "Near DTE", value: gexData.near_dte_gex, color: gexData.near_dte_gex >= 0 ? "#22C55E" : "#FF605D", note: "≤7d" },
-                { label: "Far DTE", value: gexData.far_dte_gex, color: gexData.far_dte_gex >= 0 ? "#22C55E" : "#FF605D", note: ">7d" },
-              ].map(b => (
-                <div key={b.label} className="flex items-baseline gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05] bg-white/[0.02]">
-                  <span className="font-bold tracking-[0.08em] uppercase text-white/60">{b.label}</span>
-                  {b.note && <span className="font-mono text-white/30 text-[9px]">{b.note}</span>}
-                  <span className="font-mono font-bold tabular-nums" style={{ color: b.color }}>
-                    {fmtGexLocal(b.value)}
-                  </span>
-                </div>
-              ))}
-              {(() => {
-                // Bias indicator: which side of the gamma book dominates.
-                const bias = gexData.total_call_gex + gexData.total_put_gex
-                const dominantSide = Math.abs(gexData.total_call_gex) > Math.abs(gexData.total_put_gex) ? "CALL" : "PUT"
-                const positive = bias >= 0
-                return (
-                  <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] whitespace-nowrap border border-white/[0.05]" style={{ background: positive ? "rgba(0,232,90,0.05)" : "rgba(255,96,93,0.05)" }}>
-                    <span className="font-bold tracking-[0.08em] uppercase text-white/40">Bias</span>
-                    <span className="font-mono font-bold tabular-nums" style={{ color: positive ? "#22C55E" : "#FF605D" }}>
-                      {positive ? "+" : ""}{fmtGexLocal(bias)} · {dominantSide}-led
-                    </span>
-                  </div>
-                )
-              })()}
-            </div>
-          )}
-
-          {/* Chip strip */}
-          {gexData && gexData.top_cells && gexData.top_cells.length > 0 && (
-            <div className="flex items-center px-5 py-2 gap-3 border-b border-white/[0.06] flex-shrink-0 overflow-x-auto" style={{ background: "#0B0F14" }}>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60 whitespace-nowrap">Net GEX Heatmap</span>
-              <InfoTooltip content={<span>Net dollar gamma exposure per share-price move. Strike rows show wall structure; expiry columns reveal time decay. Spot row tinted in blue. Cells with a dashed amber top-border are OI-based estimates (live greeks unavailable, typically after-hours).</span>}>
-                <span className="text-[10px] text-white/40 cursor-help hover:text-white">ⓘ</span>
-              </InfoTooltip>
-              {(() => {
-                // Aggregate fallback indicator — when >50% of cells lack live
-                // greeks, surface an "estimate" pill so the user doesn't read
-                // synthetic numbers as Polygon greeks. Cheap O(n) scan; matrix
-                // is small (~50 strikes × 10 expiries).
-                let total = 0, missing = 0
-                for (const sk of Object.keys(gexData.matrix)) {
-                  for (const exp of Object.keys(gexData.matrix[sk])) {
-                    total++
-                    if (gexData.matrix[sk][exp].has_greeks === false) missing++
-                  }
-                }
-                if (total === 0 || missing / total < 0.5) return null
-                return (
-                  <InfoTooltip content={<span>Polygon greeks unavailable for &gt;50% of cells (typical after market hours). Values shown are OI-weighted Gaussian estimates centered on ATM. Wall direction is robust; magnitudes are approximate. Live greeks resume at 9:30 AM ET.</span>}>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-[0.1em] uppercase border border-amber-500/40 text-amber-400 bg-amber-500/[0.08] cursor-help">Estimated</span>
-                  </InfoTooltip>
-                )
-              })()}
-              <div className="w-px h-3 bg-white/[0.08]" />
-              {gexData.top_cells.map(c => {
-                const positive = c.net_gex > 0
-                return (
-                  <div key={`${c.strike}-${c.expiry}`}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono tabular-nums whitespace-nowrap border ${positive ? "bg-[#22C55E]/[0.06] border-[#22C55E]/25 text-[#22C55E]" : "bg-[#FF605D]/[0.06] border-[#FF605D]/25 text-[#FF605D]"}`}>
-                    <span className="font-semibold">{gexSymbol} {c.strike} {fmtExpShort(c.expiry)}</span>
-                    <span className="opacity-70">·</span>
-                    <span className="font-bold">{positive ? "+" : ""}{fmtCellLocal(c.net_gex)}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
         </>
       )
     })()}
+
+    {gexData && <GexGammaProfile data={gexData} liveSpot={liveGexSpot} />}
 
     <div className="flex-1 flex overflow-hidden">
 
@@ -2124,13 +2055,17 @@ export default function ScannerPage() {
                 const rowTotal = Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0)
                 const isAtm = strike === atmStrike
                 const isZg = strike === zgStrike
+                const isCallWall = !!(callWall && strike === callWall.strike)
+                const isPutWall = !!(putWall && strike === putWall.strike)
+                // Single mark per row (priority spot > flip > call wall > put wall);
+                // colors match the GexGammaProfile dots so the two viz read as one.
+                const mark = isAtm ? { tag: "SPT", color: "#48DEFF" } : isZg ? { tag: "ZG", color: "#a855f7" } : isCallWall ? { tag: "WALL", color: "#22C55E" } : isPutWall ? { tag: "WALL", color: "#FF605D" } : null
                 return [
                   <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-white/[0.04]"
-                    style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.035)" : "transparent", position: "sticky", left: 0, zIndex: 5,
-                    ...(isAtm ? { borderLeft: "2px solid rgba(255,255,255,0.5)" } : isZg ? { borderLeft: "2px solid #a855f7" } : {}) }}>
-                    {isAtm && <span className="text-[8px] font-bold text-white/60">SPT</span>}
-                    {isZg && !isAtm && <span className="text-[8px] font-bold text-[#a855f7]/70">ZG</span>}
-                    <span className={`text-[11px] font-mono font-medium ${isAtm ? "text-white" : isZg ? "text-[#a855f7]" : "text-white/40"}`}>{strike}</span>
+                    style={{ minHeight: 24, background: mark ? `${mark.color}1A` : "transparent", position: "sticky", left: 0, zIndex: 5,
+                    ...(mark ? { borderLeft: `3px solid ${mark.color}` } : {}) }}>
+                    {mark && <span className="text-[8px] font-bold" style={{ color: mark.color }}>{mark.tag}</span>}
+                    <span className="text-[11px] font-mono font-medium" style={{ color: mark ? mark.color : "rgba(255,255,255,0.4)" }}>{strike}</span>
                   </div>,
 
                   ...gexData.expirations.map((exp: string) => {
@@ -2149,7 +2084,7 @@ export default function ScannerPage() {
                     return (
                       <div key={`${strike}-${exp}`}
                         className={`border-r border-b border-white/[0.04] flex items-center justify-center relative ${isFallback ? "opacity-75" : ""}`}
-                        style={{ background: isAtm && gex === 0 ? "rgba(255,255,255,0.025)" : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
+                        style={{ background: mark && gex === 0 ? `${mark.color}14` : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString("en-US")}\nPut OI: ${putOi.toLocaleString("en-US")}`}>
                         {gex !== 0 && (
                           <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
@@ -2161,7 +2096,7 @@ export default function ScannerPage() {
                   }),
 
                   <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.04]"
-                    style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(isAtm ? { background: "rgba(255,255,255,0.035)" } : {}) }}>
+                    style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(mark ? { background: `${mark.color}1A` } : {}) }}>
                     <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#FF605D]"}`}>
                       {rowTotal !== 0 ? fmtGex(rowTotal) : ""}
                     </span>
@@ -2173,35 +2108,8 @@ export default function ScannerPage() {
         ) : null}
       </div>
 
-      {gexData && (
-        <div className="w-[120px] border-l border-white/[0.06] overflow-y-auto flex-shrink-0" style={{ background: "#0B0F14" }}>
-          <div className="sticky top-0 z-10 px-2 py-1 text-[9px] font-semibold text-white/20 tracking-wider uppercase text-center border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>
-            Profile
-          </div>
-          {strikeTotals.map(({ strike, total }) => {
-            const isAtm = gexData && Math.abs(strike - gexData.spot) <= (gexData.strikes.length > 1 ? Math.abs(gexData.strikes[1] - gexData.strikes[0]) / 2 : 1)
-            const barPct = Math.min(Math.abs(total) / maxStrikeTotal * 100, 100)
-            const isPos = total >= 0
-            return (
-              <div key={`gp-${strike}`} className="relative border-b border-white/[0.04]" style={{ minHeight: 24, background: isAtm ? "rgba(255,255,255,0.025)" : "transparent" }}>
-                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/[0.04]" />
-                {total !== 0 && (
-                  <div className="absolute top-[4px] bottom-[4px]" style={{
-                    [isPos ? "left" : "right"]: "50%",
-                    width: `${Math.max(barPct * 0.48, 2)}%`,
-                    background: isPos ? "rgba(0,232,90,0.3)" : "rgba(255,96,93,0.3)",
-                    borderRadius: isPos ? "0 2px 2px 0" : "2px 0 0 2px",
-                  }} />
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
     </div>
 
-    {/* Replay scrubber — locked progress until ≥3 sessions of snapshots */}
-    <ReplayProgress symbol={gexSymbol} />
   </div>
   )
 })()            ) : activePage === "watchlist" ? (
