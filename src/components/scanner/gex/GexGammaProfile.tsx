@@ -6,7 +6,7 @@ import type { GexSnapshot } from "./gex.types";
 // + legend. Marker colors MATCH the heatmap row tags so the two read as one
 // continuous story. Original PB palette; no new deps/tokens; fed from gexData.
 
-const C = { spot: "#48DEFF", flip: "#A855F7", call: "#22C55E", put: "#FF605D" };
+const C = { spot: "#22d3ee", flip: "#a78bfa", call: "#22C55E", put: "#FF605D" };
 
 function fmtGex(v: number): string {
   const abs = Math.abs(v);

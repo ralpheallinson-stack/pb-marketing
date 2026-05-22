@@ -2071,13 +2071,14 @@ export default function ScannerPage() {
                 const isPutWall = !!(putWall && strike === putWall.strike)
                 // Single mark per row (priority spot > flip > call wall > put wall);
                 // colors match the GexGammaProfile dots so the two viz read as one.
-                const mark = isAtm ? { tag: "SPT", color: "#48DEFF" } : isZg ? { tag: "ZG", color: "#a855f7" } : isCallWall ? { tag: "WALL", color: "#22C55E" } : isPutWall ? { tag: "WALL", color: "#FF605D" } : null
+                const mark = isAtm ? { tag: "SPT", color: "#22d3ee" } : isZg ? { tag: "ZG", color: "#a78bfa" } : isCallWall ? { tag: "WALL", color: "#22C55E" } : isPutWall ? { tag: "WALL", color: "#FF605D" } : null
                 return [
-                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 rounded-[3px]"
-                    style={{ minHeight: 22, background: mark ? `${mark.color}1A` : "transparent", position: "sticky", left: 0, zIndex: 5,
-                    ...(mark ? { borderLeft: `3px solid ${mark.color}` } : {}) }}>
-                    {mark && <span className="text-[8px] font-bold" style={{ color: mark.color }}>{mark.tag}</span>}
-                    <span className="text-[10px] font-mono font-medium" style={{ color: mark ? mark.color : "rgba(255,255,255,0.4)" }}>{strike}</span>
+                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1.5 rounded-[3px]"
+                    title={mark ? `${mark.tag} · ${strike}` : undefined}
+                    style={{ minHeight: 22, background: mark ? `${mark.color}1A` : "transparent", position: "sticky", left: 0, zIndex: 5 }}>
+                    {/* v6 marker: thin colored bar + colored number (no pill/label) */}
+                    <span style={{ width: 3, height: 16, borderRadius: 2, background: mark ? mark.color : "transparent", flexShrink: 0 }} />
+                    <span className="text-[10px] font-mono" style={{ color: mark ? mark.color : "rgba(255,255,255,0.4)", fontWeight: mark ? 600 : 500 }}>{strike}</span>
                   </div>,
 
                   ...gexData.expirations.map((exp: string) => {
