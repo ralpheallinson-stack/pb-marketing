@@ -400,6 +400,7 @@ export default function ScannerPage() {
   const [gexLoading, setGexLoading] = useState(false)
   const [gexError, setGexError] = useState("")
   const [gexUpdatedAt, setGexUpdatedAt] = useState<Date | null>(null)
+  const [gexShowAll, setGexShowAll] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
 
   // Read ?view=heatmap on mount so /heatmap redirects (and any deep links)
@@ -1939,8 +1940,10 @@ export default function ScannerPage() {
     return { strike, total: Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0) }
   }) : []
 
-  const callWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike > gexData.spot).sort((a, b) => b.total - a.total)[0] : null
-  const putWall = gexData ? strikeTotals.filter(s => s.total > 0 && s.strike < gexData.spot).sort((a, b) => b.total - a.total)[0] : null
+  // Wall = global gamma extremum (SpotGamma convention): call wall = most positive
+  // net GEX (resistance), put wall = most negative net GEX (support). Not spot-relative.
+  const callWall = gexData && strikeTotals.length ? [...strikeTotals].sort((a, b) => b.total - a.total)[0] : null
+  const putWall = gexData && strikeTotals.length ? [...strikeTotals].sort((a, b) => a.total - b.total)[0] : null
 
   return (
   <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#0B0F14" }}>
@@ -2023,9 +2026,15 @@ export default function ScannerPage() {
 
     {gexData && <GexGammaProfile data={gexData} liveSpot={liveGexSpot} />}
 
-    <div className="flex-1 flex overflow-hidden">
-
-      <div className="flex-1 overflow-auto">
+    <div className="flex-1 mx-5 mb-3 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
+      <div className="flex items-center gap-2 px-5 pt-4 pb-3 flex-shrink-0">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Net GEX Heatmap</span>
+        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-[0.1em] uppercase border border-amber-500/40 text-amber-400 bg-amber-500/[0.08]">Estimated</span>
+        <button onClick={() => setGexShowAll(v => !v)} className="ml-auto text-[10px] text-white/40 hover:text-white border border-white/[0.08] hover:border-white/20 rounded px-2 py-1 transition-colors">
+          {gexShowAll ? "Focus ±13" : "Show all strikes"}
+        </button>
+      </div>
+      <div className="flex-1 overflow-auto min-h-0">
         {gexLoading ? (
           <div className="flex items-center justify-center h-full text-white/20 text-sm">Loading...</div>
         ) : gexError ? (
@@ -2049,7 +2058,10 @@ export default function ScannerPage() {
               const strikes = [...gexData.strikes].reverse()
               const atmStrike = strikes.reduce((best: number, s: number) => Math.abs(s - gexData.spot) < Math.abs(best - gexData.spot) ? s : best, strikes[0])
               const zgStrike = gexData.zero_gamma_strike != null ? strikes.reduce((best: number, s: number) => Math.abs(s - gexData.zero_gamma_strike!) < Math.abs(best - gexData.zero_gamma_strike!) ? s : best, strikes[0]) : null
-              return strikes.map((strike: number) => {
+              // Focus view: spot +/- 13 strikes (~27 rows, v6 density). Toggle shows the full chain.
+              const spotIdx = strikes.reduce((bi: number, s: number, i: number) => Math.abs(s - gexData.spot) < Math.abs(strikes[bi] - gexData.spot) ? i : bi, 0)
+              const displayStrikes = gexShowAll ? strikes : strikes.slice(Math.max(0, spotIdx - 13), spotIdx + 14)
+              return displayStrikes.map((strike: number) => {
                 const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
                 const row = gexData.matrix[sk] || {}
                 const rowTotal = Object.values(row).reduce((s: number, c: { net_gex: number }) => s + c.net_gex, 0)

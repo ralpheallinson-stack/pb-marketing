@@ -40,8 +40,9 @@ export default function GexGammaProfile({ data, liveSpot }: GexGammaProfileProps
   const spotStrike = nearest(spot);
   const flipStrike = nearest(data.gamma_flip);
   // Call wall = largest positive node above spot; put wall = largest positive node below spot.
-  const callWall = bars.filter((b) => b.total > 0 && b.strike > spot).sort((a, b) => b.total - a.total)[0] || null;
-  const putWall = bars.filter((b) => b.total > 0 && b.strike < spot).sort((a, b) => b.total - a.total)[0] || null;
+  // Wall = global gamma extremum: call wall = most positive net GEX, put wall = most negative.
+  const callWall = bars.length ? [...bars].sort((a, b) => b.total - a.total)[0] : null;
+  const putWall = bars.length ? [...bars].sort((a, b) => a.total - b.total)[0] : null;
 
   const markColor = (strike: number): string | null =>
     strike === spotStrike ? C.spot
