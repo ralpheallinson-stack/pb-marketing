@@ -51,7 +51,7 @@ export default function GexHeroCard({ data, liveSpot }: GexHeroCardProps) {
 
   return (
     <div
-      className="mx-5 mt-3 mb-2.5 rounded-lg border border-white/[0.06] border-l-[4px] px-5 py-4"
+      className="mx-5 mt-3 mb-2 rounded-lg border border-white/[0.06] border-l-[4px] px-5 py-3"
       style={{ background: "#0B0F14", borderLeftColor: CYAN }}
     >
       {/* Top row: spot + change · regime pill · flip distance | Total Net GEX */}
@@ -104,14 +104,14 @@ export default function GexHeroCard({ data, liveSpot }: GexHeroCardProps) {
         </div>
       </div>
 
-      <div className="h-px bg-white/[0.06] my-3" />
+      <div className="h-px bg-white/[0.06] my-2.5" />
 
       {/* Secondary metrics: Gamma Flip · Slope Strike · Call γ · Put γ */}
-      <div className="flex items-center gap-x-7 gap-y-1.5 flex-wrap">
+      <div className="flex items-center gap-x-5 gap-y-1.5 flex-wrap">
         {secondary.map((m) => (
           <div key={m.label} className="flex items-center gap-2">
             <span className="text-[9px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">{m.label}</span>
-            <span className="text-[13px] font-mono tabular-nums font-semibold whitespace-nowrap" style={m.color ? { color: m.color } : { color: "#fff" }}>
+            <span className="text-[12px] font-mono tabular-nums font-semibold whitespace-nowrap" style={m.color ? { color: m.color } : { color: "#fff" }}>
               {m.value}
             </span>
           </div>

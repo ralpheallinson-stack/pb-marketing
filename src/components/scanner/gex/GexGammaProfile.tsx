@@ -84,14 +84,14 @@ export default function GexGammaProfile({ data, liveSpot }: GexGammaProfileProps
   );
 
   return (
-    <div className="mx-5 mb-2.5 rounded-lg border border-white/[0.06] px-5 py-4" style={{ background: "#0B0F14" }}>
-      <div className="flex items-center gap-2 mb-3">
+    <div className="mx-5 mb-2 rounded-lg border border-white/[0.06] px-4 py-3" style={{ background: "#0B0F14" }}>
+      <div className="flex items-center gap-2 mb-2">
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Gamma Profile</span>
         <span className="text-[10px] text-white/30">net γ per strike · all expiries</span>
       </div>
 
       {/* 27 bars — every-other strike hidden under 600px (mobile) */}
-      <div className="flex items-end gap-[2px] h-[120px] max-[600px]:[&>*:nth-child(even)]:hidden">
+      <div className="flex items-end gap-[2px] h-[48px] max-[600px]:[&>*:nth-child(even)]:hidden">
         {bars.map(({ strike, total }) => {
           const mag = Math.abs(total) / maxAbs;
           const heightPct = total === 0 ? 0 : 12 + Math.pow(mag, 0.55) * 88;
@@ -118,7 +118,7 @@ export default function GexGammaProfile({ data, liveSpot }: GexGammaProfileProps
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-x-6 gap-y-1.5 mt-3 pt-3 border-t border-white/[0.06]">
+      <div className="flex flex-wrap gap-x-6 gap-y-1.5 mt-2 pt-2 border-t border-white/[0.06]">
         {legend.map((l) => (
           <div key={l.label} className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full" style={{ background: l.color, boxShadow: `0 0 6px ${l.color}` }} />

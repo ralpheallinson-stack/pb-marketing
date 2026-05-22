@@ -2026,8 +2026,8 @@ export default function ScannerPage() {
 
     {gexData && <GexGammaProfile data={gexData} liveSpot={liveGexSpot} />}
 
-    <div className="flex-1 mx-5 mb-3 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
-      <div className="flex items-center gap-2 px-5 pt-4 pb-3 flex-shrink-0">
+    <div className="flex-1 mx-5 mb-2 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
+      <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0">
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Net GEX Heatmap</span>
         <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-[0.1em] uppercase border border-amber-500/40 text-amber-400 bg-amber-500/[0.08]">Estimated</span>
         <button onClick={() => setGexShowAll(v => !v)} className="ml-auto text-[10px] text-white/40 hover:text-white border border-white/[0.08] hover:border-white/20 rounded px-2 py-1 transition-colors">
@@ -2040,19 +2040,19 @@ export default function ScannerPage() {
         ) : gexError ? (
           <div className="flex items-center justify-center h-full text-[#FF605D] text-sm">{gexError}</div>
         ) : gexData ? (
-          <div style={{ display: "grid", gridTemplateColumns: `90px repeat(${gexData.expirations.length}, 1fr) 72px` }}>
-            <div className="sticky top-0 z-10 px-2 py-1 text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase border-r border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>Strike</div>
+          <div style={{ display: "grid", gap: "1px", gridTemplateColumns: `90px repeat(${gexData.expirations.length}, 1fr) 72px` }}>
+            <div className="sticky top-0 z-10 px-2 py-0.5 text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase" style={{ background: "#0B0F14" }}>Strike</div>
             {gexData.expirations.map((exp: string) => {
               const isToday = exp === todayStr
               return (
-                <div key={exp} className="sticky top-0 z-10 px-1 py-1 text-center border-r border-b border-white/[0.04]" style={{ background: "#0B0F14" }}>
+                <div key={exp} className="sticky top-0 z-10 px-1 py-0.5 text-center" style={{ background: "#0B0F14" }}>
                   <div className={`text-[9px] font-semibold tracking-wider ${isToday ? "text-[#FF8A00]" : "text-white/30"}`}>
                     {isToday ? "TODAY" : fmtExp(exp)}
                   </div>
                 </div>
               )
             })}
-            <div className="sticky top-0 z-10 px-2 py-1 text-right text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase border-b border-white/[0.04]" style={{ background: "#0B0F14", borderLeft: "1px solid rgba(255,255,255,0.06)" }}>Total</div>
+            <div className="sticky top-0 z-10 px-2 py-0.5 text-right text-[9px] font-semibold text-white/30 tracking-[0.1em] uppercase" style={{ background: "#0B0F14" }}>Total</div>
 
             {(() => {
               const strikes = [...gexData.strikes].reverse()
@@ -2073,11 +2073,11 @@ export default function ScannerPage() {
                 // colors match the GexGammaProfile dots so the two viz read as one.
                 const mark = isAtm ? { tag: "SPT", color: "#48DEFF" } : isZg ? { tag: "ZG", color: "#a855f7" } : isCallWall ? { tag: "WALL", color: "#22C55E" } : isPutWall ? { tag: "WALL", color: "#FF605D" } : null
                 return [
-                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 border-r border-b border-white/[0.04]"
-                    style={{ minHeight: 24, background: mark ? `${mark.color}1A` : "transparent", position: "sticky", left: 0, zIndex: 5,
+                  <div key={`s-${strike}`} className="px-2 flex items-center gap-1 rounded-[3px]"
+                    style={{ minHeight: 22, background: mark ? `${mark.color}1A` : "transparent", position: "sticky", left: 0, zIndex: 5,
                     ...(mark ? { borderLeft: `3px solid ${mark.color}` } : {}) }}>
                     {mark && <span className="text-[8px] font-bold" style={{ color: mark.color }}>{mark.tag}</span>}
-                    <span className="text-[11px] font-mono font-medium" style={{ color: mark ? mark.color : "rgba(255,255,255,0.4)" }}>{strike}</span>
+                    <span className="text-[10px] font-mono font-medium" style={{ color: mark ? mark.color : "rgba(255,255,255,0.4)" }}>{strike}</span>
                   </div>,
 
                   ...gexData.expirations.map((exp: string) => {
@@ -2095,8 +2095,8 @@ export default function ScannerPage() {
                     const isFallback = cell?.has_greeks === false
                     return (
                       <div key={`${strike}-${exp}`}
-                        className={`border-r border-b border-white/[0.04] flex items-center justify-center relative ${isFallback ? "opacity-75" : ""}`}
-                        style={{ background: mark && gex === 0 ? `${mark.color}14` : bg, minHeight: 24, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
+                        className={`flex items-center justify-center relative rounded-[3px] ${isFallback ? "opacity-75" : ""}`}
+                        style={{ background: mark && gex === 0 ? `${mark.color}14` : bg, minHeight: 22, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString("en-US")}\nPut OI: ${putOi.toLocaleString("en-US")}`}>
                         {gex !== 0 && (
                           <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
@@ -2107,8 +2107,8 @@ export default function ScannerPage() {
                     )
                   }),
 
-                  <div key={`t-${strike}`} className="px-2 flex items-center justify-end border-b border-white/[0.04]"
-                    style={{ minHeight: 24, borderLeft: "1px solid rgba(255,255,255,0.06)", ...(mark ? { background: `${mark.color}1A` } : {}) }}>
+                  <div key={`t-${strike}`} className="px-2 flex items-center justify-end rounded-[3px]"
+                    style={{ minHeight: 22, ...(mark ? { background: `${mark.color}1A` } : {}) }}>
                     <span className={`text-[11px] font-mono font-semibold ${rowTotal >= 0 ? "text-[#22C55E]" : "text-[#FF605D]"}`}>
                       {rowTotal !== 0 ? fmtGex(rowTotal) : ""}
                     </span>
