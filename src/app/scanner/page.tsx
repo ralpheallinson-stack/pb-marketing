@@ -51,6 +51,8 @@ import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
 import ReplayProgress from "@/components/ReplayProgress"
+import GexHeroCard from "@/components/scanner/gex/GexHeroCard"
+import type { GexSnapshot } from "@/components/scanner/gex/gex.types"
 
 import Link from "next/link"
 import { rowsToTrades, type RawRow, type FeedMeta, type FeedResponse } from "@/lib/feed-decoder"
@@ -394,7 +396,7 @@ export default function ScannerPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [gexSymbol, setGexSymbol] = useState("SPY")
   const [liveGexSpot, setLiveGexSpot] = useState<number | null>(null)
-  const [gexData, setGexData] = useState<{ symbol: string; spot: number; spot_fmt: string; expirations: string[]; strikes: number[]; matrix: Record<string, Record<string, { net_gex: number; call_oi: number; put_oi: number; has_greeks?: boolean }>>; max_abs_gex: number; zero_gamma_strike: number | null; gamma_flip: number | null; total_net_gex: number; total_call_gex: number; total_put_gex: number; near_dte_gex: number; far_dte_gex: number; gamma_slope: number | null; slope_strike: number | null; max_plus_gex: { strike: number; gex: number } | null; max_minus_gex: { strike: number; gex: number } | null; prev_close: number | null; spot_change: number | null; spot_change_pct: number | null; top_cells: { strike: number; expiry: string; net_gex: number }[] } | null>(null)
+  const [gexData, setGexData] = useState<GexSnapshot | null>(null)
   const [gexLoading, setGexLoading] = useState(false)
   const [gexError, setGexError] = useState("")
   const [paletteOpen, setPaletteOpen] = useState(false)
@@ -2007,49 +2009,8 @@ export default function ScannerPage() {
             </div>
           </div>
 
-          {/* Metrics row */}
-          {gexData && (
-            <div className="flex items-center px-5 py-2.5 gap-x-9 gap-y-1 border-b border-white/[0.06] flex-shrink-0 overflow-x-auto flex-wrap" style={{ background: "#0B0F14" }}>
-              <div className="flex flex-col gap-0.5 min-w-[110px]">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[19px] font-mono tabular-nums font-bold text-white leading-none">${effSpot.toFixed(2)}</span>
-                  {liveGexSpot !== null && (
-                    <span className="inline-flex items-center gap-1">
-                      <span className="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse" />
-                      <span className="text-[8px] font-bold tracking-[0.12em] text-[#22C55E]">LIVE</span>
-                    </span>
-                  )}
-                </div>
-                {(() => {
-                  const prev = gexData.prev_close ?? gexData.spot
-                  if (!prev) return null
-                  const delta = effSpot - prev
-                  const pct = (delta / prev) * 100
-                  if (Math.abs(delta) < 0.005) return <span className="text-[11px] font-mono tabular-nums text-white/30">unchanged</span>
-                  const positive = delta > 0
-                  return (
-                    <span className={`text-[11px] font-mono tabular-nums ${positive ? "text-[#22C55E]" : "text-[#FF605D]"}`}>
-                      {positive ? "↗" : "↘"} {positive ? "+" : ""}{delta.toFixed(2)} · {positive ? "+" : ""}{pct.toFixed(2)}%
-                    </span>
-                  )
-                })()}
-              </div>
-              {[
-                { label: "Gamma Flip", value: gexData.gamma_flip != null ? `$${gexData.gamma_flip.toFixed(2)}` : "N/A", cls: gexData.gamma_flip != null ? "text-[#F5820A]" : "text-white/30" },
-                { label: "Total Net GEX", value: fmtGexLocal(gexData.total_net_gex), cls: gexData.total_net_gex >= 0 ? "text-[#22C55E]" : "text-[#FF605D]" },
-                { label: "Gamma Slope", value: gexData.gamma_slope != null ? fmtGexLocal(gexData.gamma_slope) : "N/A", cls: gexData.gamma_slope != null ? "text-white" : "text-white/30" },
-                { label: "Slope Strike", value: gexData.slope_strike != null ? `$${gexData.slope_strike.toFixed(2)}` : "N/A", cls: gexData.slope_strike != null ? "text-white" : "text-white/30" },
-                { label: "Max +GEX", value: gexData.max_plus_gex ? fmtGexLocal(gexData.max_plus_gex.gex) : "N/A", cls: gexData.max_plus_gex ? "text-[#22C55E]" : "text-white/30", sub: gexData.max_plus_gex ? `@ $${gexData.max_plus_gex.strike.toFixed(2)}` : undefined },
-                { label: "Max -GEX", value: gexData.max_minus_gex ? fmtGexLocal(gexData.max_minus_gex.gex) : "N/A", cls: gexData.max_minus_gex ? "text-[#FF605D]" : "text-white/30", sub: gexData.max_minus_gex ? `@ $${gexData.max_minus_gex.strike.toFixed(2)}` : undefined },
-              ].map(s => (
-                <div key={s.label} className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-[9px] uppercase tracking-[0.14em] text-white/40 whitespace-nowrap">{s.label}</span>
-                  <span className={`text-[13px] font-mono tabular-nums font-semibold leading-tight whitespace-nowrap ${s.cls}`}>{s.value}</span>
-                  {s.sub && <span className="text-[10px] font-mono tabular-nums text-white/40 whitespace-nowrap">{s.sub}</span>}
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Hero card (v6 Phase 1) — replaces the old metrics strip */}
+          {gexData && <GexHeroCard data={gexData} liveSpot={liveGexSpot} symbol={gexSymbol} />}
 
           {/* Total Net GEX breakout — call vs put, near vs far DTE */}
           {gexData && (
