@@ -2,6 +2,7 @@
 title: "How to Read Sweep and Block Trades in Options Flow"
 description: "Understand the difference between sweep orders and block trades, why they matter, and how to interpret them for directional trading signals."
 date: "2026-01-28"
+updated: "2026-05-23"
 author: "Profit Builders"
 read_time: "7"
 ---

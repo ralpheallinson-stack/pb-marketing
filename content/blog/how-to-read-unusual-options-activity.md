@@ -2,6 +2,7 @@
 title: "How to Read Unusual Options Activity Like a Pro"
 description: "Learn how to identify and interpret unusual options activity — large sweeps, blocks, and dark pool prints — to spot institutional positioning before the market moves."
 date: "2026-02-16"
+updated: "2026-05-23"
 author: "Profit Builders"
 read_time: "10"
 ---
