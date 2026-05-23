@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/flowalgo"
 
 export const metadata: Metadata = {
-  title: "FlowAlgo vs Profit Builders · 2026 Options Flow Comparison",
+  title: "FlowAlgo vs Profit Builders · $149 vs $99 in 2026",
   description:
     "FlowAlgo vs Profit Builders for 2026 options flow. FlowAlgo $149/mo with a $37 auto-charge trial. PB $99/mo, 7-day free trial, documented OPRA methodology.",
   alternates: { canonical: CANON },
@@ -38,7 +38,7 @@ const articleSchema = {
     "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" },
   },
   "datePublished": "2026-04-22T09:00:00-04:00",
-  "dateModified": "2026-04-26T10:00:00-04:00",
+  "dateModified": "2026-05-23T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -146,7 +146,7 @@ export default function VsFlowAlgo() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated May 2026</span>
               </div>
               <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8">
                 FlowAlgo <span className="text-[#3D4D63]">vs</span> Profit Builders.

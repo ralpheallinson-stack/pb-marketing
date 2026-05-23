@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/cheddar-flow"
 
 export const metadata: Metadata = {
-  title: "Cheddar Flow vs Profit Builders · 2026 Options Flow Comparison",
+  title: "Cheddar Flow vs Profit Builders · Same $99, Who Wins?",
   description:
     "Cheddar Flow vs Profit Builders for 2026 — both $99/mo Pro. Cheddar Flow gates dark-pool + AI behind Pro. PB includes everything plus documented OPRA methodology.",
   alternates: { canonical: CANON },
@@ -34,7 +34,7 @@ const articleSchema = {
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": { "@type": "Organization", "name": "Profit Builders", "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" } },
   "datePublished": "2026-04-22T09:00:00-04:00",
-  "dateModified": "2026-04-26T10:00:00-04:00",
+  "dateModified": "2026-05-23T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -142,7 +142,7 @@ export default function VsCheddarFlow() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated May 2026</span>
               </div>
               <h1 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8">
                 Cheddar Flow <span className="text-[#3D4D63]">vs</span> Profit Builders.

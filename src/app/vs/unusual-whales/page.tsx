@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/unusual-whales"
 
 export const metadata: Metadata = {
-  title: "Unusual Whales vs Profit Builders · 2026 Options Flow Comparison",
+  title: "Unusual Whales vs Profit Builders · Breadth or Grades",
   description:
     "Unusual Whales vs Profit Builders for 2026 options flow. UW $50/mo, PB $99/mo. Pricing, data methodology, alerts, and a clear pick-which-when guide inside.",
   alternates: { canonical: CANON },
@@ -38,7 +38,7 @@ const articleSchema = {
     "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" },
   },
   "datePublished": "2026-04-22T09:00:00-04:00",
-  "dateModified": "2026-04-26T10:00:00-04:00",
+  "dateModified": "2026-05-23T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -160,7 +160,7 @@ export default function VsUnusualWhales() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="pb-section-num">01 / 07</span>
                 <span className="pb-rule h-px flex-1" />
-                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated Apr 2026</span>
+                <span className="pb-mono text-[11px] text-[#3D4D63]">Updated May 2026</span>
               </div>
               <h1
                 className="pb-editorial text-[44px] sm:text-[60px] md:text-[68px] leading-[1.02] tracking-[-0.025em] text-white mb-8"
