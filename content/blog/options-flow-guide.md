@@ -125,10 +125,10 @@ There are about a dozen options flow scanners on the market in 2026. We wrote de
 - [Profit Builders vs Unusual Whales](/vs/unusual-whales) — bigger brand, Congress data, no documented methodology
 - [Profit Builders vs FlowAlgo](/vs/flowalgo) — legacy incumbent, 33% more expensive, no published outcomes
 - [Profit Builders vs Cheddar Flow](/vs/cheddar-flow) — same $99 tier but gates dark pool + AI behind Pro
-- [Profit Builders vs Barchart](/blog/barchart-vs-profit-builders) — full multi-asset platform; flow is secondary
-- [Profit Builders vs Market Chameleon](/blog/market-chameleon-vs-profit-builders) — research depth + 15-min delay
-- [Profit Builders vs OptionStrat](/blog/optionstrat-vs-profit-builders) — strategy builder with flow as an add-on
-- [Profit Builders vs SpotGamma](/blog/spotgamma-vs-profit-builders) — different product (gamma regime vs directional flow)
+- [Profit Builders vs Barchart](/vs/barchart) — full multi-asset platform; flow is secondary
+- [Profit Builders vs Market Chameleon](/vs/market-chameleon) — research depth + 15-min delay
+- [Profit Builders vs OptionStrat](/vs/optionstrat) — strategy builder with flow as an add-on
+- [Profit Builders vs SpotGamma](/vs/spotgamma) — different product (gamma regime vs directional flow)
 
 The short version of what to look for: **conviction grading, a documented methodology, reasonable pricing, and mobile-accessible alerts**. Almost nothing else matters. If a scanner dumps raw prints at you with no filtering, no outcome data, and no honest methodology documentation, you're paying for a firehose that costs you money.
 

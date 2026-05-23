@@ -33,48 +33,48 @@ Before comparing platforms, these are the five criteria that separate useful sca
 
 ### FlowAlgo — $149/month
 
-[FlowAlgo](/blog/flowalgo-vs-profit-builders) has been in the space for years and delivers fast data. Their interface is clean, and the dark pool print tracking is solid. For traders who want raw speed and are willing to filter signals manually, it's a capable tool.
+[FlowAlgo](/vs/flowalgo) has been in the space for years and delivers fast data. Their interface is clean, and the dark pool print tracking is solid. For traders who want raw speed and are willing to filter signals manually, it's a capable tool.
 
 The catch: $149/month is steep for what you get. There's no conviction grading — you see every print above your size threshold and decide for yourself what matters. FlowAlgo also doesn't publish a documented methodology, so there's no way to verify the actual win rate of signals that come through their feed.
 
 **Best for:** Experienced traders who want fast raw data and prefer to do their own filtering.
-**Deeper dive:** [FlowAlgo vs Profit Builders head-to-head](/blog/flowalgo-vs-profit-builders).
+**Deeper dive:** [FlowAlgo vs Profit Builders head-to-head](/vs/flowalgo).
 
 ### BlackBoxStocks — $99.97/month
 
-[BlackBoxStocks](/blog/blackboxstocks-vs-profit-builders) combines a flow scanner with a community chat room. The social component is genuinely useful — real traders calling out setups, sharing screens, and talking through trades in real time.
+[BlackBoxStocks](/vs/blackbox-stocks) combines a flow scanner with a community chat room. The social component is genuinely useful — real traders calling out setups, sharing screens, and talking through trades in real time.
 
 The downside is signal quality. The scanner feed is noisy, and the platform leans heavily on the community aspect rather than the data layer. If you're looking for a filtered, graded signal feed, you'll need to do the work yourself. There's also no publicly verifiable track record of signal outcomes.
 
 **Best for:** Traders who want a community-first experience with flow scanning as a secondary feature.
-**Deeper dive:** [BlackBoxStocks vs Profit Builders head-to-head](/blog/blackboxstocks-vs-profit-builders).
+**Deeper dive:** [BlackBoxStocks vs Profit Builders head-to-head](/vs/blackbox-stocks).
 
 ### Cheddar Flow — $85-99/month
 
-[Cheddar Flow](/blog/cheddarflow-vs-profit-builders) has one of the best user interfaces in the category. The scanner is fast, the design is clean, and the data visualization is well thought out. Their dark mode dashboard is genuinely pleasant to stare at for 6+ hours a day.
+[Cheddar Flow](/vs/cheddar-flow) has one of the best user interfaces in the category. The scanner is fast, the design is clean, and the data visualization is well thought out. Their dark mode dashboard is genuinely pleasant to stare at for 6+ hours a day.
 
 Where Cheddar Flow falls short: no conviction grading system. You see flow sorted by premium, time, or [type (sweep vs. block)](/blog/sweep-vs-block-vs-dark-pool), but there's no automated assessment of which signals have the highest probability of working. You're the filter. And like most competitors, there's no public signal track record.
 
 **Best for:** Traders who prioritize clean UI and want a premium-feeling scanner experience.
-**Deeper dive:** [CheddarFlow vs Profit Builders head-to-head](/blog/cheddarflow-vs-profit-builders).
+**Deeper dive:** [CheddarFlow vs Profit Builders head-to-head](/vs/cheddar-flow).
 
 ### Unusual Whales — $35-48/month
 
-Hard to beat on price. [Unusual Whales](/blog/unusual-whales-vs-profit-builders) offers a massive amount of data — flow scanning, politician trades, dark pool data, and options analytics — for under $50/month. The breadth of coverage is impressive for the price point.
+Hard to beat on price. [Unusual Whales](/vs/unusual-whales) offers a massive amount of data — flow scanning, politician trades, dark pool data, and options analytics — for under $50/month. The breadth of coverage is impressive for the price point.
 
 The trade-off is depth vs. breadth. Unusual Whales shows you a lot of data but doesn't grade signal quality. There's no [A/B conviction tier system](/blog/options-flow-signals-grade-a-b-c) to separate high-probability setups from noise. For new traders, the volume of data can be more overwhelming than helpful. No documented methodology of signal outcomes.
 
 **Best for:** Budget-conscious traders who want broad market data coverage and are comfortable filtering signals themselves.
-**Deeper dive:** [Unusual Whales vs Profit Builders head-to-head](/blog/unusual-whales-vs-profit-builders).
+**Deeper dive:** [Unusual Whales vs Profit Builders head-to-head](/vs/unusual-whales).
 
 ### Barchart — $39-199/month
 
-[Barchart](/blog/barchart-vs-profit-builders) is the Swiss Army knife of retail trading platforms — quotes, charts, futures, options, news, and scanners in one subscription. Their options flow module sits inside a much broader product. The Pro tier at $199.95/month unlocks the unusual activity scanner, dark pool data, and full options chain tools.
+[Barchart](/vs/barchart) is the Swiss Army knife of retail trading platforms — quotes, charts, futures, options, news, and scanners in one subscription. Their options flow module sits inside a much broader product. The Pro tier at $199.95/month unlocks the unusual activity scanner, dark pool data, and full options chain tools.
 
 The trade-off: Barchart is breadth-first. Options flow is one feature in a 20-year-old platform that does everything. There's no conviction grading on flow and no public signal track record. You get the data; you do the filtering.
 
 **Best for:** Multi-asset traders who need one platform for options, futures, crypto, and charts under a single login.
-**Deeper dive:** [Barchart vs Profit Builders head-to-head](/blog/barchart-vs-profit-builders).
+**Deeper dive:** [Barchart vs Profit Builders head-to-head](/vs/barchart).
 
 ## Adjacent Tools — Not Direct Competitors
 
@@ -82,24 +82,24 @@ Three tools show up in the same searches but solve different jobs. Worth knowing
 
 ### SpotGamma — $99-299/month
 
-[SpotGamma](/blog/spotgamma-vs-profit-builders) grades dealer positioning and gamma exposure on indices. Call walls, put walls, HIRO indicator, Bloomberg integration. It's the institutional vocabulary for macro gamma regime trading — not a whale print scanner. Pairs well with a flow tool but doesn't replace one.
+[SpotGamma](/vs/spotgamma) grades dealer positioning and gamma exposure on indices. Call walls, put walls, HIRO indicator, Bloomberg integration. It's the institutional vocabulary for macro gamma regime trading — not a whale print scanner. Pairs well with a flow tool but doesn't replace one.
 
 **Best for:** SPX / SPY / QQQ traders who trade off dealer hedging pressure.
-**Deeper dive:** [SpotGamma vs Profit Builders](/blog/spotgamma-vs-profit-builders).
+**Deeper dive:** [SpotGamma vs Profit Builders](/vs/spotgamma).
 
 ### OptionStrat — $14.99-49.99/month
 
-[OptionStrat](/blog/optionstrat-vs-profit-builders) is a strategy builder — payoff diagrams, Greeks per leg, a multi-leg Optimizer. Flow is a secondary feature (and 15-min delayed on everything except the $49.99 Live Flow tier). Great for thesis-first traders constructing iron condors and credit spreads.
+[OptionStrat](/vs/optionstrat) is a strategy builder — payoff diagrams, Greeks per leg, a multi-leg Optimizer. Flow is a secondary feature (and 15-min delayed on everything except the $49.99 Live Flow tier). Great for thesis-first traders constructing iron condors and credit spreads.
 
 **Best for:** Multi-leg strategy construction and premium sellers.
-**Deeper dive:** [OptionStrat vs Profit Builders](/blog/optionstrat-vs-profit-builders).
+**Deeper dive:** [OptionStrat vs Profit Builders](/vs/optionstrat).
 
 ### Market Chameleon — $69-99/month
 
-[Market Chameleon](/blog/market-chameleon-vs-profit-builders) is a deep research library — historical earnings reactions, volatility studies, 100+ screeners, backtesting. Data is 15-minute delayed on every tier, so it's research-first, not execution. Useful as a complement to a live flow tool for earnings strategies.
+[Market Chameleon](/vs/market-chameleon) is a deep research library — historical earnings reactions, volatility studies, 100+ screeners, backtesting. Data is 15-minute delayed on every tier, so it's research-first, not execution. Useful as a complement to a live flow tool for earnings strategies.
 
 **Best for:** Earnings strategy traders and systematic screeners.
-**Deeper dive:** [Market Chameleon vs Profit Builders](/blog/market-chameleon-vs-profit-builders).
+**Deeper dive:** [Market Chameleon vs Profit Builders](/vs/market-chameleon).
 
 ## Why We Built Profit Builders — $99/month
 
