@@ -112,6 +112,11 @@ export default async function BlogPostPage({
       { q: "What is the best options flow scanner in 2026?", a: "The top options flow scanners in 2026 include Profit Builders, Unusual Whales, CheddarFlow, FlowAlgo, and BlackBoxStocks. Profit Builders is the only scanner that grades every signal by conviction and publishes a documented methodology of outcomes." },
       { q: "How much does an options flow scanner cost?", a: "Options flow scanners range from $29 to $199 per month. Profit Builders offers a 7-day free trial with real-time flow, conviction grading, and GEX heatmaps." },
       { q: "What is conviction grading in options flow?", a: "Conviction grading uses automated filters to score each options signal by institutional characteristics — premium size, aggressive fill conditions, volume-to-open-interest ratio, and market maker identification. Grade A signals represent the highest conviction institutional flow." },
+      { q: "How much does FlowAlgo cost in 2026?", a: "FlowAlgo is priced at $149/month. It delivers fast raw flow and dark-pool prints but has no conviction grading and no published methodology of signal outcomes. Profit Builders is $99/month with conviction grading, a GEX heatmap, and a public results log — and includes a 7-day free trial." },
+      { q: "How much does Cheddar Flow cost in 2026?", a: "Cheddar Flow runs $85–99/month depending on plan. It has one of the cleanest UIs in the category but no automated conviction grading and no public track record of signal outcomes. Profit Builders matches the price at $99/month and adds Grade A/B scoring plus a documented methodology." },
+      { q: "What is the best free options flow scanner?", a: "Most flow scanners are paid-only or offer only a trial. Profit Builders has a genuinely free tier — 15-minute delayed flow with conviction grades, no account required, at profitbuilders.io/free-scanner. The paid tier ($99/month, 7-day trial) unlocks real-time flow, full history, and GEX heatmaps." },
+      { q: "What should I look for in unusual options activity before earnings?", a: "Before earnings, weigh four things: liquidity (tight bid/ask and real open interest, not a single illiquid strike), aggression (was the trade lifted at the ask or hit at the bid), positioning (opening vs closing), and whether the flow is repeated accumulation versus a one-off print. A graded scanner surfaces these automatically instead of leaving you to eyeball a noisy options chain." },
+      { q: "What are the best options flow tools in 2026?", a: "The most-used options flow tools in 2026 are Profit Builders, Unusual Whales, Cheddar Flow, FlowAlgo, BlackBoxStocks, and Barchart, plus adjacent tools like SpotGamma (dealer gamma) and Market Chameleon (research). They differ most on signal grading and whether outcomes are published — Profit Builders is the only one that grades every signal and publishes a verifiable results log." },
     ],
     "cheddarflow-vs-profit-builders": [
       { q: "Is CheddarFlow or Profit Builders better for options flow?", a: "CheddarFlow has a clean UI and fast data. Profit Builders adds conviction grading (Grade A/B system), accumulation detection, GEX heatmaps, and a documented methodology of signal outcomes — features CheddarFlow does not offer." },
@@ -500,6 +505,26 @@ export default async function BlogPostPage({
           className="pb-prose"
           dangerouslySetInnerHTML={{ __html: post.content_html }}
         />
+
+        {/* ── FAQ (VISIBLE — must match the FAQPage schema emitted above; a
+            schema-only FAQ with no on-page content is invalid for Google rich
+            results and was earning nothing. Rendering it here makes the schema
+            valid and adds long-tail content depth to every comparison post. ── */}
+        {faqItems.length > 0 && (
+          <section className="mt-14 pt-10 border-t border-gray-100" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="text-[26px] font-bold text-gray-950 tracking-[-0.02em] mb-6">
+              Frequently Asked Questions
+            </h2>
+            <div className="divide-y divide-gray-100">
+              {faqItems.map((f, i) => (
+                <div key={i} className="py-5">
+                  <h3 className="text-[16px] font-semibold text-gray-900 mb-2">{f.q}</h3>
+                  <p className="text-[15px] text-gray-600 leading-relaxed">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── INLINE SCANNER CTA — only on flow-recap-style posts. Uses
             the first detected ticker as the destination when available.
