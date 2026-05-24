@@ -233,7 +233,7 @@ export default function VsFlowAlgo() {
               </table>
             </div>
             <p className="pb-mono text-[10px] text-[#3D4D63] mt-6 uppercase tracking-wider">
-              Pricing and features verified April 2026 from each vendor's public documentation.
+              Pricing and features verified May 2026 from each vendor's public documentation.
             </p>
           </div>
         </section>

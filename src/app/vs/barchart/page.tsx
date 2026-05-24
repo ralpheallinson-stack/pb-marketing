@@ -6,13 +6,13 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/barchart"
 
 export const metadata: Metadata = {
-  title: 'Barchart vs Profit Builders · $200 Suite or $99 Signals',
+  title: 'Barchart vs Profit Builders · Broad Platform or Focused Flow',
   description:
-    'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
+    'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
   alternates: { canonical: CANON },
   openGraph: {
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
+    description: 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Barchart vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
+    description: 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
   },
 }
 
@@ -28,7 +28,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'Barchart vs Profit Builders: 2026 Options Flow Scanner Comparison',
-  "description": 'Honest 2026 comparison. Barchart Pro at $199.95/mo bundles flow into a giant platform. Profit Builders at $99/mo focuses on graded signals with a documented OPRA methodology.',
+  "description": 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/opengraph-image"
@@ -58,9 +58,9 @@ const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "Is Barchart Pro worth $199.95/mo?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on whether you need broad market coverage. Barchart Pro bundles options flow with futures, equities, charting, and news. If you'd otherwise pay for those separately, the math works. If you only want options flow, you're paying ~$100/mo for features outside your workflow."}},
+    {"@type": "Question", "name": "Is Barchart Premier worth it for options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Barchart Premier is $29.95/mo (or $199.95/yr) and bundles options flow with futures, equities, charting, and news. It's inexpensive and broad, but the flow tooling is basic. If options flow is your main use case, a focused tool goes deeper; if you want one cheap platform for everything, Barchart is hard to beat."}},
     {"@type": "Question", "name": "Does Barchart publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology."}},
-    {"@type": "Question", "name": "Which is cheaper for pure options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders at $99/mo. Barchart's flow features at the Premier tier ($39.95) are basic; you need Pro ($199.95) for serious options analysis."}},
+    {"@type": "Question", "name": "Which is better for serious options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders. Barchart Premier ($29.95/mo) includes options flow, but it's a basic feature inside a general market-data platform — no conviction grading, no documented methodology. Profit Builders ($99/mo) is built specifically for graded institutional options flow with verifiable outcomes."}},
     {"@type": "Question", "name": "Does Profit Builders cover futures or stocks like Barchart does?", "acceptedAnswer": {"@type": "Answer", "text": "No. Profit Builders does options flow specifically. If you need futures + equity coverage, Barchart is the broader platform."}},
     {"@type": "Question", "name": "Can I trial both?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders offers a 7-day free trial with full access. Barchart's trial is paid (30 days for $7.99) and converts to monthly billing."}}
   ],
@@ -124,7 +124,7 @@ export default function VsPage() {
               <em className="italic text-white/70">Barchart</em> vs Profit Builders.
             </h1>
             <p className="pb-editorial italic text-[20px] md:text-[22px] leading-[1.45] text-white/65 max-w-[720px]">
-              Two products at very different prices. Barchart bundles options flow into a quotes-and-charts platform. Profit Builders focuses on graded signals with a documented methodology.
+              Two very different products. Barchart bundles basic options flow into a broad quotes-and-charts platform. Profit Builders focuses on graded signals with a documented methodology.
             </p>
           </div>
         </section>
@@ -133,16 +133,16 @@ export default function VsPage() {
         <section className="px-6 border-b pb-hairline">
           <div className="max-w-5xl mx-auto py-8 grid grid-cols-3 gap-6 max-md:grid-cols-1 max-md:gap-3">
             <div className="text-center max-md:text-left max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:border-b max-md:pb-hairline max-md:pb-3">
-              <div className="pb-mono text-[10px] tracking-[0.22em] text-white/40 uppercase mb-2 max-md:mb-0">Barchart Pro</div>
-              <div className="pb-editorial text-[28px] text-white font-normal tracking-[-0.01em] max-md:text-[20px]">$199.95/mo</div>
+              <div className="pb-mono text-[10px] tracking-[0.22em] text-white/40 uppercase mb-2 max-md:mb-0">Barchart Premier</div>
+              <div className="pb-editorial text-[28px] text-white font-normal tracking-[-0.01em] max-md:text-[20px]">$29.95/mo</div>
             </div>
             <div className="text-center max-md:text-left max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:border-b max-md:pb-hairline max-md:pb-3">
               <div className="pb-mono text-[10px] tracking-[0.22em] text-white/40 uppercase mb-2 max-md:mb-0">Profit Builders</div>
               <div className="pb-editorial text-[28px] text-white font-normal tracking-[-0.01em] max-md:text-[20px]">$99/mo</div>
             </div>
             <div className="text-center max-md:text-left max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:border-b max-md:pb-hairline max-md:pb-3">
-              <div className="pb-mono text-[10px] tracking-[0.22em] text-white/40 uppercase mb-2 max-md:mb-0">Saving</div>
-              <div className="pb-editorial text-[28px] text-white font-normal tracking-[-0.01em] max-md:text-[20px]">$1,212/year</div>
+              <div className="pb-mono text-[10px] tracking-[0.22em] text-white/40 uppercase mb-2 max-md:mb-0">Trade-off</div>
+              <div className="pb-editorial text-[28px] text-white font-normal tracking-[-0.01em] max-md:text-[20px]">Breadth vs focus</div>
             </div>
           </div>
         </section>
@@ -161,8 +161,8 @@ export default function VsPage() {
                 <span className="text-right text-[#60a5fa]">Profit Builders</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
-                <span className="pb-editorial text-[15px] text-white/70">Price (real flow tier)</span>
-                <span className="pb-editorial text-[14px] text-white/55 text-right">$199.95/mo</span>
+                <span className="pb-editorial text-[15px] text-white/70">Price (Premier tier)</span>
+                <span className="pb-editorial text-[14px] text-white/55 text-right">$29.95/mo</span>
                 <span className="pb-editorial text-[14px] text-white text-right">$99/mo</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
@@ -227,16 +227,16 @@ export default function VsPage() {
               <h2 className="pb-editorial text-[28px] md:text-[34px] font-normal tracking-[-0.015em] text-white">Questions.</h2>
             </div>
             <div className="py-7 border-b pb-hairline">
-              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Is Barchart Pro worth $199.95/mo?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">It depends on whether you need broad market coverage. Barchart Pro bundles options flow with futures, equities, charting, and news. If you'd otherwise pay for those separately, the math works. If you only want options flow, you're paying ~$100/mo for features outside your workflow.</p>
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Is Barchart Premier worth it for options flow?</h3>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Barchart Premier is $29.95/mo (or $199.95/yr) and bundles options flow with futures, equities, charting, and news. It's inexpensive and broad, but the flow tooling is basic. If options flow is your main use case, a focused tool goes deeper; if you want one cheap platform for everything, Barchart is hard to beat.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does Barchart publish signal outcomes?</h3>
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
-              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Which is cheaper for pure options flow?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Profit Builders at $99/mo. Barchart's flow features at the Premier tier ($39.95) are basic; you need Pro ($199.95) for serious options analysis.</p>
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Which is better for serious options flow?</h3>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Profit Builders. Barchart Premier ($29.95/mo) includes options flow, but it's a basic feature inside a general market-data platform — no conviction grading, no documented methodology. Profit Builders ($99/mo) is built specifically for graded institutional options flow with verifiable outcomes.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does Profit Builders cover futures or stocks like Barchart does?</h3>
@@ -254,7 +254,7 @@ export default function VsPage() {
           <div className="max-w-3xl mx-auto text-center">
             <div className="pb-mono text-[11px] tracking-[0.28em] text-white/40 uppercase mb-5">Verdict</div>
             <p className="pb-editorial text-[20px] md:text-[22px] leading-[1.55] text-white/85 mb-12 italic">
-              Different products at different prices. If you need a one-platform-does-everything subscription, Barchart Pro is defensible at $199.95. If you want focused options flow with grading and verifiable outcomes, Profit Builders is half the price and built for that exact job.
+              Different products for different jobs. If you want one affordable subscription covering futures, equities, charts, and basic flow, Barchart Premier is hard to beat at $29.95/mo. If options flow is the job — graded, documented, with verifiable outcomes — Profit Builders is the focused tool built for exactly that.
             </p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link href="/pricing" className="bg-[#F97316] hover:bg-[#F97316]/90 text-white font-bold px-8 py-3.5 rounded-full text-sm transition-colors">
