@@ -99,8 +99,9 @@ export async function generateMetadata(
       description,
       url,
       type: "article",
+      images: [`/options-flow/${t.symbol}/opengraph-image`],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title, description, images: [`/options-flow/${t.symbol}/opengraph-image`] },
   }
 }
 
