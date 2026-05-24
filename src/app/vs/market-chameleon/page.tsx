@@ -8,11 +8,11 @@ const CANON = "https://profitbuilders.io/vs/market-chameleon"
 export const metadata: Metadata = {
   title: { absolute: "Market Chameleon vs Profit Builders · Research or Flow" },
   description:
-    "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
+    "Market Chameleon is a $99 research library; Profit Builders is a $99 live flow tape. Same price, different jobs — here's which fits your workflow.",
   alternates: { canonical: CANON },
   openGraph: {
     title: 'Market Chameleon vs Profit Builders · Research or Flow',
-    description: "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
+    description: "Market Chameleon is a $99 research library; Profit Builders is a $99 live flow tape. Same price, different jobs — here's which fits your workflow.",
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Market Chameleon vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'Market Chameleon vs Profit Builders · Research or Flow',
-    description: "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
+    description: "Market Chameleon is a $99 research library; Profit Builders is a $99 live flow tape. Same price, different jobs — here's which fits your workflow.",
   },
 }
 
@@ -32,7 +32,7 @@ const articleSchema = {
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/opengraph-image"
   ],
-  "description": "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
+  "description": "Market Chameleon is a $99 research library; Profit Builders is a $99 live flow tape. Same price, different jobs — here's which fits your workflow.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
     "@type": "Organization",

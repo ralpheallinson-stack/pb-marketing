@@ -8,11 +8,11 @@ const CANON = "https://profitbuilders.io/vs/blackbox-stocks"
 export const metadata: Metadata = {
   title: { absolute: "BlackBoxStocks vs Profit Builders · The $99 Decision" },
   description:
-    "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
+    "BlackBoxStocks and Profit Builders are both ~$99/mo: one a community trading room, the other a graded-signal engine with a public outcomes log. How to choose.",
   alternates: { canonical: CANON },
   openGraph: {
     title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
-    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
+    description: "BlackBoxStocks and Profit Builders are both ~$99/mo: one a community trading room, the other a graded-signal engine with a public outcomes log. How to choose.",
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BlackBoxStocks vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
-    description: "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
+    description: "BlackBoxStocks and Profit Builders are both ~$99/mo: one a community trading room, the other a graded-signal engine with a public outcomes log. How to choose.",
   },
 }
 
@@ -28,7 +28,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'BlackBoxStocks vs Profit Builders: 2026 Options Flow Scanner Comparison',
-  "description": "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
+  "description": "BlackBoxStocks and Profit Builders are both ~$99/mo: one a community trading room, the other a graded-signal engine with a public outcomes log. How to choose.",
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/opengraph-image"

@@ -88,7 +88,7 @@ export async function generateMetadata(
   const ctxText = `data methodology`
   // Tighter: short suffix + brand template = clean SERP display
   const title = `${t.symbol} Grade A Flow · ${ga.total.toLocaleString()} Signals`
-  const description = `${t.symbol} Grade A institutional options flow — ${ga.total.toLocaleString()} signals captured via OPRA tape with CBOE Rule 6.11 sweep detection and Black-Scholes-Merton Greeks. Documented methodology at /results.`
+  const description = `${t.symbol} Grade A institutional options flow — ${ga.total.toLocaleString()} signals with full win/loss outcomes, documented OPRA + CBOE Rule 6.11 methodology.`
 
   return {
     title,

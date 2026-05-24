@@ -8,11 +8,11 @@ const CANON = "https://profitbuilders.io/vs/barchart"
 export const metadata: Metadata = {
   title: { absolute: "Barchart vs Profit Builders · Broad Platform or Focused Flow" },
   description:
-    'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
+    'Honest 2026: Barchart Premier ($29.95/mo) is a broad market-data platform where flow is a minor feature. Profit Builders ($99) is focused graded options flow.',
   alternates: { canonical: CANON },
   openGraph: {
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
+    description: 'Honest 2026: Barchart Premier ($29.95/mo) is a broad market-data platform where flow is a minor feature. Profit Builders ($99) is focused graded options flow.',
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Barchart vs Profit Builders" }],
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'Barchart vs Profit Builders · 2026 Options Flow Comparison',
-    description: 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
+    description: 'Honest 2026: Barchart Premier ($29.95/mo) is a broad market-data platform where flow is a minor feature. Profit Builders ($99) is focused graded options flow.',
   },
 }
 
@@ -28,7 +28,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'Barchart vs Profit Builders: 2026 Options Flow Scanner Comparison',
-  "description": 'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
+  "description": 'Honest 2026: Barchart Premier ($29.95/mo) is a broad market-data platform where flow is a minor feature. Profit Builders ($99) is focused graded options flow.',
   "image": [
     "https://profitbuilders.io/images/scanner-preview.png",
     "https://profitbuilders.io/opengraph-image"

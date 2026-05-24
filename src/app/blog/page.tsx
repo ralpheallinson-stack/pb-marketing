@@ -10,7 +10,7 @@ import BlogFeed from "@/components/BlogFeed"
 export const metadata: Metadata = {
   title: "Blog & Market News",
   description:
-    "Daily flow recaps, educational guides, methodology breakdowns, and the latest market news affecting institutional options flow — Benzinga headlines on the tickers actually moving today.",
+    "Daily flow recaps, educational guides, and methodology breakdowns on institutional options flow — plus market news on the tickers moving today.",
   alternates: { canonical: "https://profitbuilders.io/blog" },
 }
 

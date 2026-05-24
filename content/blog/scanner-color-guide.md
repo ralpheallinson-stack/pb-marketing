@@ -1,6 +1,6 @@
 ---
 title: "Scanner Color Guide: What the Row Highlights Mean"
-description: "Understand the BlackBox-style OI-status row highlights in the Profit Builders scanner — single-trade and multi-trade open-interest exceedance, late prints, and market-maker filtering explained."
+description: "The Profit Builders scanner's OI-status row highlights explained — single- and multi-trade open-interest exceedance, late prints, and market-maker filtering."
 date: "2026-03-05"
 updated: "2026-05-11"
 author: "Profit Builders"

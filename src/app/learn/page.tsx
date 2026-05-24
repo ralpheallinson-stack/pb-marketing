@@ -8,7 +8,7 @@ const CANON = "https://profitbuilders.io/learn"
 export const metadata: Metadata = {
   title: "The Library · Learn Options Flow | Profit Builders",
   description:
-    "A field guide to the way institutional money actually moves. 14 essays, 50,000+ words on options flow — what the prints mean, how the filter pipeline surfaces institutional flow, and how to build a workflow around the documented methodology.",
+    "A field guide to how institutional money moves: 14 essays, 50,000+ words on reading options flow — what the prints mean and how to build a workflow around them.",
   alternates: { canonical: CANON },
   openGraph: {
     title: "The Profit Builders Library · Learn Options Flow",
