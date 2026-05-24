@@ -30,6 +30,10 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Cheddar Flow vs Profit Builders: 2026 Options Flow Scanner Comparison",
+  "image": [
+    "https://profitbuilders.io/images/scanner-preview.png",
+    "https://profitbuilders.io/opengraph-image"
+  ],
   "description": "Side-by-side comparison of Cheddar Flow and Profit Builders across pricing, feature access, data methodology, alerts, and filtering.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": { "@type": "Organization", "name": "Profit Builders", "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" } },

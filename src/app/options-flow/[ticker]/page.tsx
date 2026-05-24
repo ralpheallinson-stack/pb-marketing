@@ -167,6 +167,7 @@ export default async function OptionsFlowTickerPage(
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "image": `https://profitbuilders.io/options-flow/${t.symbol}/opengraph-image`,
     "headline": `${t.symbol} Options Flow: Institutional Activity and Grade A Signals`,
     "description": `${t.symbol} options flow tracking with ${t.total_signals.toLocaleString()} signals logged at ${t.total_premium_fmt} in institutional premium.`,
     "datePublished": data.generated_date,

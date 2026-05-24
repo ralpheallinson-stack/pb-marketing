@@ -28,6 +28,10 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": 'Market Chameleon vs Profit Builders: 2026 Options Flow Scanner Comparison',
+  "image": [
+    "https://profitbuilders.io/images/scanner-preview.png",
+    "https://profitbuilders.io/opengraph-image"
+  ],
   "description": "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {

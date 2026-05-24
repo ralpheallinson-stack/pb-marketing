@@ -138,6 +138,7 @@ export default async function GradeAPage(
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "image": `https://profitbuilders.io/options-flow/${t.symbol}/opengraph-image`,
     "headline": `${t.symbol} Grade A Options Flow — Historical Performance`,
     "description": `${t.symbol} Grade A institutional options flow signals with full win/loss outcomes and P&L.`,
     "datePublished": data.generated_date,

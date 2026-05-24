@@ -30,6 +30,10 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "FlowAlgo vs Profit Builders: 2026 Options Flow Scanner Comparison",
+  "image": [
+    "https://profitbuilders.io/images/scanner-preview.png",
+    "https://profitbuilders.io/opengraph-image"
+  ],
   "description": "Side-by-side comparison of FlowAlgo and Profit Builders across pricing, trial transparency, conviction grading, data methodology, alerts, and dark pool features.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {

@@ -30,6 +30,10 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Unusual Whales vs Profit Builders: 2026 Options Flow Scanner Comparison",
+  "image": [
+    "https://profitbuilders.io/images/scanner-preview.png",
+    "https://profitbuilders.io/opengraph-image"
+  ],
   "description": "Side-by-side comparison of Unusual Whales and Profit Builders across pricing, conviction grading, data methodology, alerts, and community.",
   "author": { "@type": "Organization", "name": "Profit Builders", "url": "https://profitbuilders.io" },
   "publisher": {
