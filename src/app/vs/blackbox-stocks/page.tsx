@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/blackbox-stocks"
 
 export const metadata: Metadata = {
-  title: 'BlackBoxStocks vs Profit Builders · The $99 Decision',
+  title: { absolute: "BlackBoxStocks vs Profit Builders · The $99 Decision" },
   description:
     "BlackBoxStocks and Profit Builders are both ~$99/mo. One is a community trading room. The other is a graded-signal engine with a public OPRA-grade log. Here's how to choose.",
   alternates: { canonical: CANON },

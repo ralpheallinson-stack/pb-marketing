@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/barchart"
 
 export const metadata: Metadata = {
-  title: 'Barchart vs Profit Builders · Broad Platform or Focused Flow',
+  title: { absolute: "Barchart vs Profit Builders · Broad Platform or Focused Flow" },
   description:
     'Honest 2026 comparison: Barchart Premier ($29.95/mo) is a broad market-data platform where options flow is one small feature. Profit Builders ($99/mo) is focused, graded options flow.',
   alternates: { canonical: CANON },

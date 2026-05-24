@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/unusual-whales"
 
 export const metadata: Metadata = {
-  title: "Unusual Whales vs Profit Builders · Breadth or Grades",
+  title: { absolute: "Unusual Whales vs Profit Builders · Breadth or Grades" },
   description:
     "Unusual Whales vs Profit Builders for 2026 options flow. UW $50/mo, PB $99/mo. Pricing, data methodology, alerts, and a clear pick-which-when guide inside.",
   alternates: { canonical: CANON },

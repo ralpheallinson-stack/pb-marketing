@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/flowalgo"
 
 export const metadata: Metadata = {
-  title: "FlowAlgo vs Profit Builders · $149 vs $99 in 2026",
+  title: { absolute: "FlowAlgo vs Profit Builders · $149 vs $99 in 2026" },
   description:
     "FlowAlgo vs Profit Builders for 2026 options flow. FlowAlgo $149/mo with a $37 auto-charge trial. PB $99/mo, 7-day free trial, documented OPRA methodology.",
   alternates: { canonical: CANON },

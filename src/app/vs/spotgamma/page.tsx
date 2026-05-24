@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/spotgamma"
 
 export const metadata: Metadata = {
-  title: 'SpotGamma vs Profit Builders · Gamma or Flow',
+  title: { absolute: "SpotGamma vs Profit Builders · Gamma or Flow" },
   description:
     'SpotGamma grades dealer positioning. Profit Builders grades whale prints. Different lenses on the same tape. SpotGamma Alpha $299 vs Profit Builders Pro Bundle $129.',
   alternates: { canonical: CANON },

@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/market-chameleon"
 
 export const metadata: Metadata = {
-  title: 'Market Chameleon vs Profit Builders · Research or Flow',
+  title: { absolute: "Market Chameleon vs Profit Builders · Research or Flow" },
   description:
     "Market Chameleon is a $99 research library. Profit Builders is a $99 live flow tape. Both around the same price, completely different jobs. Here's which fits your workflow.",
   alternates: { canonical: CANON },

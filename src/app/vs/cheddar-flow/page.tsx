@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/cheddar-flow"
 
 export const metadata: Metadata = {
-  title: "Cheddar Flow vs Profit Builders · Same $99, Who Wins?",
+  title: { absolute: "Cheddar Flow vs Profit Builders · Same $99, Who Wins?" },
   description:
     "Cheddar Flow vs Profit Builders for 2026 — both $99/mo Pro. Cheddar Flow gates dark-pool + AI behind Pro. PB includes everything plus documented OPRA methodology.",
   alternates: { canonical: CANON },

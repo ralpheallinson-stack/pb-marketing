@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs"
 
 export const metadata: Metadata = {
-  title: "Compare Profit Builders · Options Flow Scanner Alternatives",
+  title: { absolute: "Compare Profit Builders · Options Flow Scanner Alternatives" },
   description:
     "Honest comparisons of Profit Builders against Unusual Whales, FlowAlgo, and Cheddar Flow. Pricing, data methodology, and alerts — side by side.",
   alternates: { canonical: CANON },

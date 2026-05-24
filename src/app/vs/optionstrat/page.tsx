@@ -6,7 +6,7 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/optionstrat"
 
 export const metadata: Metadata = {
-  title: 'OptionStrat vs Profit Builders · Builder or Signal',
+  title: { absolute: "OptionStrat vs Profit Builders · Builder or Signal" },
   description:
     "OptionStrat helps you draw the trade. Profit Builders helps you find it. Two different jobs at about the same price. Here's which one your workflow needs.",
   alternates: { canonical: CANON },
