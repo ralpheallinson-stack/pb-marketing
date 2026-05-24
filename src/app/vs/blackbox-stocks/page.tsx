@@ -40,7 +40,7 @@ const articleSchema = {
     "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" },
   },
   "datePublished": "2026-04-25T09:00:00-04:00",
-  "dateModified": "2026-05-23T10:00:00-04:00",
+  "dateModified": "2026-05-24T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -59,6 +59,7 @@ const faqSchema = {
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Are BlackBoxStocks and Profit Builders the same price?", "acceptedAnswer": {"@type": "Answer", "text": "Effectively yes — $99.97 vs $99. The first month at BlackBoxStocks is $29.95; Profit Builders offers a 7-day free trial then $99/mo."}},
+    {"@type": "Question", "name": "Does BlackBoxStocks have a cheaper plan?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Options Basic is $59/mo with real-time options flow, algo alerts, institutional charting, and the options heatmap, but no dark pool data or advanced delta/gamma tools. Those sit in the higher Plus and ~$99 Premium tiers, and Premium is the full-feature plan compared here against Profit Builders' $99/mo."}},
     {"@type": "Question", "name": "Does BlackBoxStocks publish a documented methodology?", "acceptedAnswer": {"@type": "Answer", "text": "No. BlackBoxStocks runs live trading rooms and color-coded alerts but doesn't publish signal outcomes or win rates. Profit Builders publishes every signal at /results."}},
     {"@type": "Question", "name": "Does Profit Builders have a mobile app?", "acceptedAnswer": {"@type": "Answer", "text": "Not currently. Profit Builders is web-first and routes alerts to Discord and Telegram. BlackBoxStocks has dedicated iOS and Android apps."}},
     {"@type": "Question", "name": "Which is better for a beginner?", "acceptedAnswer": {"@type": "Answer", "text": "Different paths. BlackBoxStocks' trading rooms walk beginners through real-time decisions. Profit Builders' methodology — Grade A/B engine + public log — gives beginners a clear rule set to follow without depending on a chat room."}},
@@ -229,6 +230,10 @@ export default function VsPage() {
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Are BlackBoxStocks and Profit Builders the same price?</h3>
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Effectively yes — $99.97 vs $99. The first month at BlackBoxStocks is $29.95; Profit Builders offers a 7-day free trial then $99/mo.</p>
+            </div>
+            <div className="py-7 border-b pb-hairline">
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does BlackBoxStocks have a cheaper plan?</h3>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Yes — Options Basic is $59/mo with real-time options flow, algo alerts, institutional charting, and the options heatmap, but no dark pool data or advanced delta/gamma tools. Those sit in the higher Plus and ~$99 Premium tiers, and Premium is the full-feature plan compared here against Profit Builders' $99/mo.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does BlackBoxStocks publish a documented methodology?</h3>
