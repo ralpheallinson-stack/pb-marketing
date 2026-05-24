@@ -10,7 +10,7 @@ import Link from "next/link"
  * keyword-rich ("NVDA options flow", "TSLA institutional activity") not
  * just the cashtag, to give Google strong semantic signal about the target.
  *
- * Drop this on homepage, /results, /vs pages — anywhere you want to
+ * Drop this on homepage, /methodology, /vs pages — anywhere you want to
  * distribute PageRank to the programmatic ticker pages.
  */
 

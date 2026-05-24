@@ -14,7 +14,7 @@ type Item = { href: string; label: string; description: string }
 
 const productItems: Item[] = [
   { href: "/#features",  label: "Features",    description: "Sweep + block detection, Greeks, conviction grading." },
-  { href: "/results",    label: "Methodology", description: "How signals are graded and outcomes audited." },
+  { href: "/methodology",    label: "Methodology", description: "How signals are graded and outcomes audited." },
   { href: "/vs",         label: "Compare",     description: "Profit Builders vs Cheddar, Unusual Whales, FlowAlgo." },
 ]
 

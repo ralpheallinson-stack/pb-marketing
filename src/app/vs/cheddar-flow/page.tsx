@@ -69,7 +69,7 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Does Cheddar Flow publish a documented methodology?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish signal outcomes or win rates publicly. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish signal outcomes or win rates publicly. Profit Builders publishes its full data methodology at profitbuilders.io/methodology — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -288,7 +288,7 @@ export default function VsCheddarFlow() {
                 <Pro win n="02" title="Documented grading vs opaque AI"
                   body="Cheddar Flow's AI Power Alerts surface setups via machine learning, without publishing the system's criteria or its historical hit rate. Profit Builders grades every signal against 9 documented filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and publishes the win rate per grade. When the AI label and the grade both mean 'actionable setup,' only one of them tells you why and how often it's right." />
                 <Pro win n="03" title="Public methodology of OPRA-grade flow"
-                  body="Profit Builders publishes its full data processing methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Cheddar Flow does not publish a methodology page. If you're paying $99 for a flow scanner, you should be able to audit how the data is processed before you pay." />
+                  body="Profit Builders publishes its full data processing methodology at profitbuilders.io/methodology — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Cheddar Flow does not publish a methodology page. If you're paying $99 for a flow scanner, you should be able to audit how the data is processed before you pay." />
                 <Pro win n="04" title="RAPID badges on accumulation patterns"
                   body="When one contract gets hit 10+ times in quick succession with aggressive, similar-sized prints, that's the signature of a large player slicing a position to hide size. Profit Builders flags it with a RAPID badge and surfaces the full accumulation context. Cheddar Flow's filters can be configured to spot this manually, but there's no dedicated pattern label — you build the detection rule yourself." />
                 <Pro win n="05" title="Telegram-first alerting, not Discord-first"
@@ -356,7 +356,7 @@ export default function VsCheddarFlow() {
                   Dark pool data and AI Power Alerts. Both features are Pro-only. The $85/mo Standard tier gives you flow, charting, and unusual volume but not the two features most comparison-shoppers are specifically evaluating the platform to get. Profit Builders gates nothing at $99.
                 </Faq>
                 <Faq q="Does Cheddar Flow publish a documented methodology?">
-                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
+                  No. Cheddar Flow offers 20+ filter options and AI-generated alerts but doesn't publish a methodology describing how its scanner processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/methodology</Link>  — sweep detection, OPRA condition codes, NBBO aggression classification.
                 </Faq>
                 <Faq q="How does AI Power Alerts compare to Grade A signals?">
                   Different approaches. Cheddar Flow's AI applies machine learning to flag setups in real time, without publishing what qualifies a signal or the system's historical hit rate. Profit Builders runs every print through 9 documented filters and publishes outcomes per grade. Transparent methodology on one side, ML black-box on the other — both are legitimate product choices, only one is auditable.

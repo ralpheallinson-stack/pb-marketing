@@ -234,7 +234,7 @@ export default async function OptionsFlowTickerPage(
     },
     {
       q: `What is the win rate of Grade A ${t.symbol} signals?`,
-      a: `Grade A ${t.symbol} signals have closed at ${winRateText}. ${t.win_rate.avg_pnl !== null ? `Average P&L across closed Grade A ${t.symbol} signals is ${t.win_rate.avg_pnl > 0 ? "+" : ""}${t.win_rate.avg_pnl}%.` : ""} All outcomes are publicly auditable at profitbuilders.io/results.`,
+      a: `Grade A ${t.symbol} signals have closed at ${winRateText}. ${t.win_rate.avg_pnl !== null ? `Average P&L across closed Grade A ${t.symbol} signals is ${t.win_rate.avg_pnl > 0 ? "+" : ""}${t.win_rate.avg_pnl}%.` : ""} All outcomes are publicly auditable at profitbuilders.io/methodology.`,
     },
     {
       q: `How do I get real-time ${t.symbol} options flow alerts?`,
@@ -460,7 +460,7 @@ export default async function OptionsFlowTickerPage(
             </div>
 
             <p className="text-[15px] leading-[1.7] text-[#A9B4C6] max-w-3xl mb-5">
-              All {t.symbol} signal outcomes are publicly auditable at <Link href="/methodology" className="pb-link text-white">/results</Link> — wins and losses, with no cherry-picking.
+              All {t.symbol} signal outcomes are publicly auditable at <Link href="/methodology" className="pb-link text-white">/methodology</Link> — wins and losses, with no cherry-picking.
             </p>
             <Link
               href={`/options-flow/${t.symbol}/grade-a`}

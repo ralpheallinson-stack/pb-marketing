@@ -59,7 +59,7 @@ const faqSchema = {
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "Is Barchart Premier worth it for options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Barchart Premier is $29.95/mo (or $199.95/yr) and bundles options flow with futures, equities, charting, and news. It's inexpensive and broad, but the flow tooling is basic. If options flow is your main use case, a focused tool goes deeper; if you want one cheap platform for everything, Barchart is hard to beat."}},
-    {"@type": "Question", "name": "Does Barchart publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology."}},
+    {"@type": "Question", "name": "Does Barchart publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /methodology — currently documented OPRA processing methodology."}},
     {"@type": "Question", "name": "Which is better for serious options flow?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders. Barchart Premier ($29.95/mo) includes options flow, but it's a basic feature inside a general market-data platform — no conviction grading, no documented methodology. Profit Builders ($99/mo) is built specifically for graded institutional options flow with verifiable outcomes."}},
     {"@type": "Question", "name": "Does Profit Builders cover futures or stocks like Barchart does?", "acceptedAnswer": {"@type": "Answer", "text": "No. Profit Builders does options flow specifically. If you need futures + equity coverage, Barchart is the broader platform."}},
     {"@type": "Question", "name": "Can I trial both?", "acceptedAnswer": {"@type": "Answer", "text": "Profit Builders offers a 7-day free trial with full access. Barchart's trial is paid (30 days for $7.99) and converts to monthly billing."}}
@@ -232,7 +232,7 @@ export default function VsPage() {
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does Barchart publish signal outcomes?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /results — currently documented OPRA processing methodology.</p>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No. Barchart provides flow data but doesn't grade signals or publish a documented methodology. Profit Builders publishes every Grade A/B signal at /methodology — currently documented OPRA processing methodology.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Which is better for serious options flow?</h3>

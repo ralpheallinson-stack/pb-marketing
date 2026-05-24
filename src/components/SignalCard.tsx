@@ -192,7 +192,7 @@ export function SignalCard({ signal, index }: { signal: Signal; index: number })
                   href="/methodology"
                   className="inline-flex items-center gap-2 text-[#60a5fa] hover:text-white text-sm font-semibold"
                 >
-                  View on /results →
+                  View on /methodology →
                 </a>
               </div>
             </motion.div>

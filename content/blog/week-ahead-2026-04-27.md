@@ -97,4 +97,4 @@ Understanding how to [read options flow](/blog/how-to-read-options-flow) matters
 
 Three names absorbed over $53M in combined premium last week. TSLA's put-side concentration, NVDA's call-side repeats, and Friday's block activity on both names are all pointing toward a week with directional intent baked in before Monday's open. Add 60-plus earnings reports starting Monday and the setup is dense. The live scanner shows exactly how those positions are being built — size, structure, and repeat patterns in real time.
 
-Every strike, every expiration, every accumulation pattern — tracked at /results. [Start your free 7-day trial](/free-scanner).
+Every strike, every expiration, every accumulation pattern — tracked at /methodology. [Start your free 7-day trial](/free-scanner).

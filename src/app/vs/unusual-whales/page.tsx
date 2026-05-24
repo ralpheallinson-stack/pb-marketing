@@ -68,7 +68,7 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Does Unusual Whales publish a documented methodology?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. Unusual Whales exposes raw flow data but does not publish signal outcomes or win rates. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Unusual Whales exposes raw flow data but does not publish signal outcomes or win rates. Profit Builders publishes its full data methodology at profitbuilders.io/methodology — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -325,7 +325,7 @@ export default function VsUnusualWhales() {
                 <Pro win n="01" title="Conviction grading, not raw dumps"
                   body="Every signal runs through the institutional-flow filter pipeline — closing-position detection, direction classification, delta screening, spread detection, market-maker identification — and emerges tagged Grade A or Grade B. UW shows the raw prints. You decide what they mean. We show you the ones the engine vetted." />
                 <Pro win n="02" title="A publicly documented methodology"
-                  body="Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Unusual Whales does not publish a methodology page describing how its scanner processes flow." />
+                  body="Profit Builders publishes its full data methodology at profitbuilders.io/methodology — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. Unusual Whales does not publish a methodology page describing how its scanner processes flow." />
                 <Pro win n="03" title="Accumulation pattern detection"
                   body="When a single contract gets hit 10+ times in quick succession with aggressive, similar-sized prints — the signature of a large player slicing a position — we surface it as a RAPID badge with full accumulation context. UW shows the individual prints. You spot the pattern." />
                 <Pro win n="04" title="Telegram + Discord, not Discord-only"
@@ -403,7 +403,7 @@ export default function VsUnusualWhales() {
                   For options flow, mostly yes. You trade Congressional trade data (Unusual Whales' strongest differentiator) for conviction grading, a documented methodology, Telegram alerts, and a GEX heatmap. Most traders who aren't specifically tracking Congress find the swap net-positive.
                 </Faq>
                 <Faq q="Does Unusual Whales publish a documented methodology?">
-                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
+                  No. Unusual Whales exposes the raw flow but doesn't publish a methodology describing how it processes flow. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/methodology</Link> — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="Can I use both?">
                   Yes, they complement each other cleanly. Unusual Whales for breadth (Congress, dark pool heatmaps, screener). Profit Builders for filtered, graded, tracked signals. Many active traders run both.

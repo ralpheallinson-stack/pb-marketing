@@ -1,6 +1,6 @@
 ---
 title: "Most Options Flow Is Noise. Here's What Matters."
-description: "99% of options flow is noise. Here's how we filter tens of thousands of prints down to the ~40 that matter — and why every outcome is published at /results."
+description: "99% of options flow is noise. Here's how we filter tens of thousands of prints down to the ~40 that matter — and why every outcome is published at /methodology."
 date: "2026-04-27"
 author: "Ralph"
 read_time: "7"
@@ -62,9 +62,9 @@ The tool's job is to put the right 40 prints in front of you instead of the wron
 
 ## The receipts
 
-Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/results](/results) — **OPRA-grade resolved trades**, public, searchable.
+Because we believe in the filtering, we don't hide what comes out of it. Every signal that clears the gates is logged the moment it fires and published with its outcome at [profitbuilders.io/methodology](/methodology) — **OPRA-grade resolved trades**, public, searchable.
 
-You don't have to take our word for any of this. Spend twenty minutes on `/results`. Sort by ticker. Sort by P&L. Find the cold streaks. Find the hot streaks. Do the math yourself.
+You don't have to take our word for any of this. Spend twenty minutes on `/methodology`. Sort by ticker. Sort by P&L. Find the cold streaks. Find the hot streaks. Do the math yourself.
 
 Grade A is the institutional-data-quality tier of our methodology. That's not a marketing number. That's whatever the data returns when you measure honestly across the live OPRA tape. With asymmetric directional options trades and disciplined sizing, a sub-50% hit rate produces strong positive expectancy when winners run +30% and losers are capped by time decay — but you don't need to take our framing of that, either. The math is on the page.
 
@@ -82,7 +82,7 @@ The product is the filtering. As long as Profit Builders exists, it will:
 
 We don't promise win rates. We don't promise returns. We don't promise the next big move. We promise to keep throwing away the noise — and to keep proving, in public, that the signal we surface is the kind of signal worth seeing.
 
-The receipts are at [profitbuilders.io/results](/results). Spend twenty minutes there. See if the filtering holds.
+The receipts are at [profitbuilders.io/methodology](/methodology). Spend twenty minutes there. See if the filtering holds.
 
 — Ralph
 

@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react"
  * Originally used on comparison pages, homepage, results page, and anywhere we need a
  * compact "this is the evidence" component. Shows Grade A win rate as the
  * hero number, Grade B below for context (the filter actually working is
- * visible when Grade A > Grade B), corpus size, and a link to /results.
+ * visible when Grade A > Grade B), corpus size, and a link to /methodology.
  *
  * Animates bars + numbers on first reveal. Uses IntersectionObserver so it
  * doesn't fire until it's in view.
@@ -21,7 +21,7 @@ type Props = {
   gradeBPct?: number          // default 31.6
   signalCount?: number        // default 174000
   since?: string              // "2024-10" or display string
-  href?: string               // default /results
+  href?: string               // default /methodology
   compact?: boolean           // smaller variant
   live?: boolean              // show pulsing dot; default true
 }
@@ -31,7 +31,7 @@ export default function TrackRecordStamp({
   gradeBPct = 31.6,
   signalCount = 0,
   since = "Oct 2024",
-  href = "/results",
+  href = "/methodology",
   compact = false,
   live = true,
 }: Props) {

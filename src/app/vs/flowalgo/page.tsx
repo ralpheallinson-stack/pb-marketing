@@ -73,7 +73,7 @@ const faqSchema = {
     {
       "@type": "Question",
       "name": "Does FlowAlgo publish a documented methodology?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. FlowAlgo surfaces large block trades and dark pool prints but does not publish a methodology page. Profit Builders publishes its full data methodology at profitbuilders.io/results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
+      "acceptedAnswer": { "@type": "Answer", "text": "No. FlowAlgo surfaces large block trades and dark pool prints but does not publish a methodology page. Profit Builders publishes its full data methodology at profitbuilders.io/methodology — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification." },
     },
     {
       "@type": "Question",
@@ -292,7 +292,7 @@ export default function VsFlowAlgo() {
                 <Pro win n="02" title="Honest trial, no auto-charge trap"
                   body="FlowAlgo's trial costs $37 upfront for 14 days and auto-charges $149 on day 15 unless you cancel. Profit Builders' trial costs nothing for 7 days, the subscription auto-charges $99 on day 8, and cancellation is one click from your dashboard. Same mechanic, one-third the commitment, no surprise price step." />
                 <Pro win n="03" title="A publicly documented methodology"
-                  body="Profit Builders publishes its full data methodology at /results — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. FlowAlgo does not publish a methodology page. If you're about to pay $149/mo for a flow scanner, you should be able to audit how the data is processed first." />
+                  body="Profit Builders publishes its full data methodology at /methodology — sweep detection per CBOE Rule 6.11, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification. FlowAlgo does not publish a methodology page. If you're about to pay $149/mo for a flow scanner, you should be able to audit how the data is processed first." />
                 <Pro win n="04" title="Conviction grading replaces interpretation burden"
                   body="FlowAlgo flags large prints; you decide which ones are real signals. Profit Builders runs every print through nine filters — closing-position detection, direction classification, delta screening, spread detection, market-maker identification, and more — and delivers the survivors tagged Grade A or Grade B. Fewer alerts, each one with an explicit conviction level." />
                 <Pro win n="05" title="Telegram alerts + mobile-first workflow"
@@ -327,7 +327,7 @@ export default function VsFlowAlgo() {
                   FlowAlgo asks for <span className="pb-mono text-white">$37</span> upfront for a 14-day trial, then auto-charges <span className="pb-mono text-white">$149</span> on day 15 unless you cancel. That's a <em className="pb-editorial text-white">4x price step</em> most trialers don't fully register at signup. Profit Builders asks for a card at signup, charges nothing for 7 days, and auto-charges $99 on day 8 — a smaller commitment, clearer pricing, no hidden step-up. Both require cancellation to avoid the charge; only one pretends the trial itself is free when it isn't.
                 </Dive>
                 <Dive id="pricing" heading="Pricing per outcome">
-                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-white">$99</span> vs <span className="pb-mono text-white">$149</span>. The processing matters too. Profit Builders runs CBOE-compliant sweep detection (Rule 6.11), OPRA condition-code parsing, and Black-Scholes-Merton Greeks — all documented at /results. FlowAlgo does not publish a methodology page describing how its scanner processes flow. Both are legitimate business models. Only one lets you audit the data pipeline before you pay.
+                  On a straight monthly basis, Profit Builders is 33% cheaper — <span className="pb-mono text-white">$99</span> vs <span className="pb-mono text-white">$149</span>. The processing matters too. Profit Builders runs CBOE-compliant sweep detection (Rule 6.11), OPRA condition-code parsing, and Black-Scholes-Merton Greeks — all documented at /methodology. FlowAlgo does not publish a methodology page describing how its scanner processes flow. Both are legitimate business models. Only one lets you audit the data pipeline before you pay.
                 </Dive>
                 <Dive id="levels" heading="Dark pool Levels vs conviction grading">
                   FlowAlgo's Levels feature draws support and resistance zones based on dark pool print concentration — a real differentiator if you trade off those levels as primary decision points. Profit Builders takes a different approach: rather than visualize dark pool zones, it grades every print against nine filters and surfaces Grade A signals with the institutional context that explains them. Both strategies are defensible. Levels is visual and discretionary. Grading is rule-based and delegated. Pick the approach that matches how you actually trade.
@@ -360,7 +360,7 @@ export default function VsFlowAlgo() {
                   Nothing is "wrong" with it — it's just not what most people mean by a trial. FlowAlgo's 14-day trial costs $37 upfront, and if you don't cancel before day 14, the subscription auto-charges <span className="pb-mono text-white">$149</span>. That's a <em className="pb-editorial text-white">4x step</em> from the trial price. Profit Builders' trial costs $0, lasts 7 days, and auto-charges $99 — same mechanic, lower numbers, no surprise price escalation.
                 </Faq>
                 <Faq q="Does FlowAlgo publish a documented methodology?">
-                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish a methodology page. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/results</Link> — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
+                  No. FlowAlgo surfaces large block trades and dark pool prints but doesn't publish a methodology page. Profit Builders publishes its full data methodology at <Link href="/methodology" className="pb-link text-white">profitbuilders.io/methodology</Link> — sweep detection, OPRA condition codes, Black-Scholes-Merton Greeks, NBBO aggression classification.
                 </Faq>
                 <Faq q="What does FlowAlgo offer that Profit Builders doesn't?">
                   Three things. Voice alerts that speak activity aloud during market hours. The Levels feature for dark pool support/resistance zones. And a longer public archive of third-party reviews and tutorials because FlowAlgo has been in the space longer. If any of those are load-bearing for your workflow, FlowAlgo still wins that column.

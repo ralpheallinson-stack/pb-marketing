@@ -159,7 +159,7 @@ Answer those six and you have read the print properly — before you have decide
 
 ## How Profit Builders Grades Flow
 
-Profit Builders' filter pipeline scores every sweep and block against data-derived PASS rules — premium size, Vol/OI ratio, delta, DTE, market maker detection, fill aggression, accumulation, and more — to assign Grade A, Grade B, or PASS. Everything below the A/B threshold carries a PASS label and stays visible by default; the "curated grades only" toggle hides PASS for an A/B-only view. Every graded signal is tracked with full resolved-trade outcomes — auditable on [the public outcomes ledger](/results) so you can verify the methodology before you pay.
+Profit Builders' filter pipeline scores every sweep and block against data-derived PASS rules — premium size, Vol/OI ratio, delta, DTE, market maker detection, fill aggression, accumulation, and more — to assign Grade A, Grade B, or PASS. Everything below the A/B threshold carries a PASS label and stays visible by default; the "curated grades only" toggle hides PASS for an A/B-only view. Every graded signal is tracked with full resolved-trade outcomes — auditable on [the public outcomes ledger](/methodology) so you can verify the methodology before you pay.
 
 
 ---

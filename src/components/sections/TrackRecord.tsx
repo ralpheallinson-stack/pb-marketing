@@ -66,7 +66,7 @@ export default function TrackRecord() {
 
             <p className="text-white/55 text-lg leading-relaxed mb-10">
               Every signal we send is logged the moment it fires — ticker, premium,
-              grade, result. We publish everything. Visit /results and see every
+              grade, result. We publish everything. Visit /methodology and see every
               trade, every grade, unedited.
             </p>
 

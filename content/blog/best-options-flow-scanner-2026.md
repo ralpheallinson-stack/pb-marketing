@@ -107,7 +107,7 @@ Yes, we built this. Here's what we did differently after trading on every platfo
 
 **Conviction grading.** Every signal gets a Grade A or B based on data-derived PASS rules — [premium thresholds, position action, delta, Vol/OI ratio](/blog/options-flow-signals-grade-a-b-c), market maker detection, spread identification, DTE windows, and accumulation logic. Grade A carries the highest conviction. Grade B is standard. Noise gets filtered before it hits your screen.
 
-**Documented methodology.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.io/results](/results). Every entry, exit, and resolved-trade outcome is on the page. You can audit every single one. No cherry-picking, no hidden losses.
+**Documented methodology.** This is the one no competitor matches. Every signal we issue is tracked automatically with full P&L outcomes — wins and losses — published at [profitbuilders.io/methodology](/methodology). Every entry, exit, and resolved-trade outcome is on the page. You can audit every single one. No cherry-picking, no hidden losses.
 
 **GEX heatmap.** Gamma exposure visualization by strike and expiry. See where dealers are positioned, identify gamma walls, and find squeeze setups. No other scanner in this price range ships this.
 

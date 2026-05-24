@@ -36,7 +36,7 @@ export default function CommunityPage() {
         </h1>
         <h2 className="text-2xl md:text-3xl font-bold text-[#34D399] leading-tight mb-6">Stop guessing. Trade the tape with other traders.</h2>
         <p className="text-lg text-[#7A8BA8] max-w-2xl mx-auto mb-10">
-          A private Discord and Telegram community of active options traders reading the same institutional flow in real time — with Grade A signal alerts, live setup discussion, and documented data methodology at /results holding the scanner to institutional standards.
+          A private Discord and Telegram community of active options traders reading the same institutional flow in real time — with Grade A signal alerts, live setup discussion, and documented data methodology at /methodology holding the scanner to institutional standards.
         </p>
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <ShimmerButton href="/pricing" className="rounded-full text-base">
