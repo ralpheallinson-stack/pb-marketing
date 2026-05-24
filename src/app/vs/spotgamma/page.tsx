@@ -40,7 +40,7 @@ const articleSchema = {
     "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" },
   },
   "datePublished": "2026-04-25T09:00:00-04:00",
-  "dateModified": "2026-05-23T10:00:00-04:00",
+  "dateModified": "2026-05-24T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -60,8 +60,9 @@ const faqSchema = {
   "mainEntity": [
     {"@type": "Question", "name": "How does SpotGamma differ from Profit Builders?", "acceptedAnswer": {"@type": "Answer", "text": "SpotGamma grades dealer positioning — where market makers will hedge, where gamma walls form. Profit Builders grades whale prints — the actual large bets institutions place. Different reads on the same tape."}},
     {"@type": "Question", "name": "Is SpotGamma worth $299?", "acceptedAnswer": {"@type": "Answer", "text": "If your edge is macro-gamma positioning, yes. SpotGamma Alpha includes HIRO, Equity Hub, and the deepest dealer-flow models in the category. If you also want live whale prints, you'd add another tool."}},
+    {"@type": "Question", "name": "What are SpotGamma's subscription tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Standard $89/mo, Essential $99/mo, and Alpha $299/mo (plus an Institutional tier from ~$1,999). Standard and Essential both include the core dealer-gamma tools (HIRO, Equity Hub); Alpha adds the Synthetic OI Lens and targets intraday traders. This comparison uses Alpha as the top tier and the $89 Standard plan as the entry."}},
     {"@type": "Question", "name": "Does SpotGamma offer a free trial?", "acceptedAnswer": {"@type": "Answer", "text": "No free trial on either Essential or Alpha. Profit Builders offers 7 days free on every tier."}},
-    {"@type": "Question", "name": "Can I get just GEX from Profit Builders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Profit Builders' GEX Heatmap is a $39/mo standalone. That's 60% cheaper than SpotGamma Essential ($99) and covers 220 symbols."}},
+    {"@type": "Question", "name": "Can I get just GEX from Profit Builders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Profit Builders' GEX Heatmap is a $39/mo standalone. That's 56% cheaper than SpotGamma's entry Standard tier ($89) and covers 220 symbols."}},
     {"@type": "Question", "name": "Do they overlap?", "acceptedAnswer": {"@type": "Answer", "text": "On the GEX/dealer-gamma side, yes. On whale-print scanning, only Profit Builders. The Pro Bundle ($129) covers both at less than half of SpotGamma Alpha."}}
   ],
 }
@@ -167,7 +168,7 @@ export default function VsPage() {
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
                 <span className="pb-editorial text-[15px] text-white/70">Entry tier price</span>
-                <span className="pb-editorial text-[14px] text-white/55 text-right">$99/mo (Essential)</span>
+                <span className="pb-editorial text-[14px] text-white/55 text-right">$89/mo (Standard)</span>
                 <span className="pb-editorial text-[14px] text-white text-right">$39/mo (GEX standalone)</span>
               </div>
               <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-4 py-4 border-b pb-hairline items-baseline max-md:grid-cols-[1fr_1fr] max-md:[&>*:first-child]:col-span-2 max-md:[&>*:first-child]:mb-2">
@@ -235,12 +236,16 @@ export default function VsPage() {
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">If your edge is macro-gamma positioning, yes. SpotGamma Alpha includes HIRO, Equity Hub, and the deepest dealer-flow models in the category. If you also want live whale prints, you'd add another tool.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">What are SpotGamma's subscription tiers?</h3>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Standard $89/mo, Essential $99/mo, and Alpha $299/mo (plus an Institutional tier from ~$1,999). Standard and Essential both include the core dealer-gamma tools (HIRO, Equity Hub); Alpha adds the Synthetic OI Lens and targets intraday traders. This comparison uses Alpha as the top tier and the $89 Standard plan as the entry.</p>
+            </div>
+            <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does SpotGamma offer a free trial?</h3>
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">No free trial on either Essential or Alpha. Profit Builders offers 7 days free on every tier.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Can I get just GEX from Profit Builders?</h3>
-              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Yes — Profit Builders' GEX Heatmap is a $39/mo standalone. That's 60% cheaper than SpotGamma Essential ($99) and covers 220 symbols.</p>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Yes — Profit Builders' GEX Heatmap is a $39/mo standalone. That's 56% cheaper than SpotGamma's entry Standard tier ($89) and covers 220 symbols.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Do they overlap?</h3>
