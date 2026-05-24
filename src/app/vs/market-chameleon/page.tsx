@@ -36,7 +36,7 @@ const articleSchema = {
     "logo": { "@type": "ImageObject", "url": "https://profitbuilders.io/images/pb-logo.png" },
   },
   "datePublished": "2026-04-25T09:00:00-04:00",
-  "dateModified": "2026-05-23T10:00:00-04:00",
+  "dateModified": "2026-05-24T10:00:00-04:00",
   "mainEntityOfPage": { "@type": "WebPage", "@id": CANON },
 }
 
@@ -57,6 +57,7 @@ const faqSchema = {
     {"@type": "Question", "name": "Is Market Chameleon real-time?", "acceptedAnswer": {"@type": "Answer", "text": "No. Even at the $99 Total Access tier, market data is 15-minute delayed. For real-time, you'd need a separate data subscription. Profit Builders' alerts hit Discord/Telegram in 1.4 seconds median."}},
     {"@type": "Question", "name": "Does Market Chameleon publish signal outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "No. Market Chameleon is a research platform — historical analytics, volatility studies, screeners. It doesn't issue or grade individual signals. Profit Builders does."}},
     {"@type": "Question", "name": "Are they the same price?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Market Chameleon Total Access and Profit Builders Flow Scanner are both $99/mo. They're not comparable products at that price."}},
+    {"@type": "Question", "name": "Does Market Chameleon have a cheaper plan?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — below the $99 Total Access plan compared here, Market Chameleon has an Options Trader tier at $69/mo, a Stock Trader tier at $39/mo, and a free Starter plan. All are research/analytics toolsets on the same 15-minute-delayed data — none deliver the live options-flow tape Profit Builders ($99/mo) does."}},
     {"@type": "Question", "name": "Should I use both?", "acceptedAnswer": {"@type": "Answer", "text": "Many serious traders do — Market Chameleon for pre-trade research and Profit Builders for live signal during the session. Combined ~$200/mo."}},
     {"@type": "Question", "name": "Which has the bigger learning curve?", "acceptedAnswer": {"@type": "Answer", "text": "Market Chameleon — it's a deep research toolset. Profit Builders surfaces signals already graded; you can be productive within the trial period."}}
   ],
@@ -233,6 +234,10 @@ export default function VsPage() {
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Are they the same price?</h3>
               <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Yes — Market Chameleon Total Access and Profit Builders Flow Scanner are both $99/mo. They're not comparable products at that price.</p>
+            </div>
+            <div className="py-7 border-b pb-hairline">
+              <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Does Market Chameleon have a cheaper plan?</h3>
+              <p className="pb-editorial text-[16px] leading-[1.6] text-white/65 max-w-[760px]">Yes — below the $99 Total Access plan compared here, Market Chameleon has an Options Trader tier at $69/mo, a Stock Trader tier at $39/mo, and a free Starter plan. All are research/analytics toolsets on the same 15-minute-delayed data — none deliver the live options-flow tape Profit Builders ($99/mo) does.</p>
             </div>
             <div className="py-7 border-b pb-hairline">
               <h3 className="pb-editorial text-[20px] md:text-[22px] text-white mb-3 leading-[1.3]">Should I use both?</h3>
