@@ -54,6 +54,26 @@ function lookupLabel<T>(buckets: { value: T; label: string }[], v: T): string {
   return buckets.find(b => b.value === v)?.label ?? String(v)
 }
 
+// ─── Saved-filter preset type — structurally identical to FilterPreset in
+//     scanner/page.tsx (kept inline to avoid cross-file type coupling). Name
+//     is the identity key; the parent's savePreset/deletePreset both index by
+//     name. localStorage hydrates `pb_filter_presets` to this shape.
+export interface FilterPreset {
+  name: string
+  filters: {
+    grade: string
+    type: string
+    optType: string
+    side: string
+    dte: string
+    unusualOnly: boolean
+    noIndex: boolean
+    minPremium: string
+    minContracts: number
+    minVolOi: number
+  }
+}
+
 // ─── Internal presentational helpers ───
 
 type PillVariant = "active" | "neutral" | "count"
@@ -147,6 +167,16 @@ export interface FiltersDialogProps {
   filterExcludeMidpoint: boolean
   setFilterExcludeMidpoint: (v: boolean) => void
 
+  // Saved presets — name is identity key; parent owns localStorage + server sync.
+  // All 6 are OPTIONAL: when omitted (e.g. historical/page.tsx which uses the
+  // dialog without preset support), the Save row + presets list don't render.
+  presets?: FilterPreset[]
+  presetName?: string
+  setPresetName?: (v: string) => void
+  savePreset?: (name: string) => void
+  loadPreset?: (preset: FilterPreset) => void
+  deletePreset?: (name: string) => void
+
   // Footer actions
   activeFilterCount: number
   resetFilters: () => void
@@ -166,6 +196,12 @@ export function FiltersDialog(props: FiltersDialogProps) {
     filterUnusualOnly, setFilterUnusualOnly,
     filterNoIndex, setFilterNoIndex,
     filterExcludeMidpoint, setFilterExcludeMidpoint,
+    presets = [],
+    presetName = "",
+    setPresetName = () => {},
+    savePreset,
+    loadPreset,
+    deletePreset,
     activeFilterCount, resetFilters,
   } = props
 
@@ -316,6 +352,81 @@ export function FiltersDialog(props: FiltersDialogProps) {
                 <Switch checked={filterExcludeMidpoint} onCheckedChange={setFilterExcludeMidpoint} />
               </label>
             </FilterRow>
+
+            {/* ─── Save current as preset + Saved presets list ───
+                Only renders when the parent opts in by passing all three handlers
+                (savePreset/loadPreset/deletePreset). Historical page omits them
+                and gets a dialog without preset UI. */}
+            {savePreset && loadPreset && deletePreset && (
+              <>
+                <div className="mx-4 border-t border-dashed border-zinc-200" />
+                <div className="px-4 py-3.5 bg-white">
+                  <div className="text-[10px] font-bold tracking-[0.08em] uppercase text-stone-500 mb-2">
+                    Save current filters
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Preset name (e.g. Bullish 0DTE)"
+                      value={presetName}
+                      onChange={e => setPresetName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" && presetName.trim()) {
+                          savePreset!(presetName.trim())
+                        }
+                      }}
+                      className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-2 text-[13px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (presetName.trim()) savePreset!(presetName.trim())
+                      }}
+                      disabled={!presetName.trim()}
+                      className="rounded-md bg-zinc-900 px-3.5 py-2 text-[13px] font-medium text-white hover:bg-zinc-700 transition-colors disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+                {presets.length > 0 && (
+                  <>
+                    <div className="mx-4 border-t border-dashed border-zinc-200" />
+                    <div className="px-4 py-3 bg-white">
+                      <div className="text-[10px] font-bold tracking-[0.08em] uppercase text-stone-500 mb-2">
+                        Saved presets ({presets.length})
+                      </div>
+                      <div className="space-y-0.5">
+                        {presets.map(p => (
+                          <div
+                            key={p.name}
+                            className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-zinc-50 transition-colors"
+                          >
+                            <div className="text-[13px] text-zinc-700 truncate flex-1 pr-2">{p.name}</div>
+                            <div className="flex gap-1">
+                              <button
+                                type="button"
+                                onClick={() => loadPreset!(p)}
+                                className="rounded-md px-2.5 py-1 text-[12px] font-medium text-zinc-700 hover:bg-zinc-100 transition-colors"
+                              >
+                                Load
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deletePreset!(p.name)}
+                                className="rounded-md px-2.5 py-1 text-[12px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </ScrollArea>
         </div>
 

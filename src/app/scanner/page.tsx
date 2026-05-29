@@ -535,7 +535,6 @@ export default function ScannerPage() {
     }, 300)
   }, [])
   const [presetName, setPresetName] = useState("")
-  const [showSavePreset, setShowSavePreset] = useState(false)
   const [filterDte, setFilterDte] = useState("")
   const [filterSide, setFilterSide] = useState("")
   const [filterBuySell, setFilterBuySell] = useState("")
@@ -1115,7 +1114,6 @@ export default function ScannerPage() {
     localStorage.setItem("pb_filter_presets", JSON.stringify(updated))
     syncPrefs({ filter_presets: updated })
     setPresetName("")
-    setShowSavePreset(false)
   }
 
   const loadPreset = (preset: FilterPreset) => {
@@ -2450,6 +2448,12 @@ export default function ScannerPage() {
             setFilterNoIndex={setFilterNoIndex}
             filterExcludeMidpoint={filterExcludeMidpoint}
             setFilterExcludeMidpoint={setFilterExcludeMidpoint}
+            presets={presets}
+            presetName={presetName}
+            setPresetName={setPresetName}
+            savePreset={savePreset}
+            loadPreset={loadPreset}
+            deletePreset={deletePreset}
             activeFilterCount={activeFilterCount}
             resetFilters={resetFilters}
           />
