@@ -42,7 +42,7 @@ interface Trade {
   whale: boolean
   badges: { label: string; tier: string }[]
   row_color: 'bullish' | 'bearish'
-  flow_highlight: 'oi_multi' | 'oi_single' | 'late' | null
+  flow_highlight: 'oi_multi' | 'oi_single' | 'none' | null
 }
 
 interface ApiData {
@@ -202,8 +202,6 @@ export default function LiveFlowPreview() {
               ? 'rgba(168,85,247,0.07)'
               : t.flow_highlight === 'oi_single'
               ? 'rgba(234,179,8,0.07)'
-              : t.flow_highlight === 'late'
-              ? 'rgba(251,146,60,0.06)'
               : 'transparent'
 
             return (

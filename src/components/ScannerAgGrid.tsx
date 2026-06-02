@@ -625,7 +625,6 @@ const ROW_CLASS_RULES: RowClassRules<Trade> = {
     const volOi = p.data.vol_oi ?? 0
     return size > oi * 2 || volOi >= 5
   },
-  "cf-row-late": (p) => p.data?.flow_highlight === "late",
   "cf-row-bull": (p) => p.data?.row_color === "bullish",
   "cf-row-bear": (p) => p.data?.row_color === "bearish",
 }
@@ -1004,7 +1003,6 @@ export function ScannerAgGrid({
            border-left overrides AG Grid's row border on tinted rows. */
         .ag-row.cf-row-oi-single { background-color: rgba(234,179,8,0.20); border-left: 3px solid rgba(234,179,8,1.0); }
         .ag-row.cf-row-oi-multi  { background-color: rgba(168,85,247,0.22); border-left: 3px solid rgba(168,85,247,1.0); }
-        .ag-row.cf-row-late      { background-color: rgba(251,146,60,0.10); border-left: 3px solid rgba(251,146,60,0.6); }
 
         .pb-day-separator {
           height: 32px;
@@ -1190,7 +1188,7 @@ export function ScannerAgGrid({
               it. Eliminates content-shift artifact when a tint class toggles
               on/off (non-tinted rows previously had zero left border, so the
               row content jumped right by 3px when a tint appeared). Existing
-              .ag-row.cf-row-oi-* + .cf-row-late rules above keep their
+              .ag-row.cf-row-oi-* rules above keep their
               shorthand border-left: 3px solid colored which paints over
               this transparent default at higher specificity. */
         .ag-root .ag-row {

@@ -68,7 +68,7 @@ export interface Trade {
   adv_multiple?: number | null
   badges?: { label: string; tier: string }[]
   row_color?: 'bullish' | 'bearish'
-  flow_highlight?: 'oi_multi' | 'oi_single' | 'late' | null
+  flow_highlight?: 'oi_multi' | 'oi_single' | 'none' | null
   entry_price?: number | null
 }
 
@@ -76,7 +76,6 @@ function getRowStyle(t: Trade): React.CSSProperties {
   // BlackBox-style OI highlights from backend
   if (t.flow_highlight === 'oi_multi') return { backgroundColor: "rgba(168,85,247,0.22)", borderLeft: "3px solid rgba(168,85,247,1.0)" }
   if (t.flow_highlight === 'oi_single') return { backgroundColor: "rgba(234,179,8,0.20)", borderLeft: "3px solid rgba(234,179,8,1.0)" }
-  if (t.flow_highlight === 'late') return { backgroundColor: "rgba(251,146,60,0.10)", borderLeft: "3px solid rgba(251,146,60,0.6)" }
   return {}
 }
 

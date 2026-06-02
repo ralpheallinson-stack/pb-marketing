@@ -209,7 +209,7 @@ export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
       structure: (r[idx["structure"]] as string | null) ?? null,
       position_action: (r[idx["position_action"]] as string) || "",
       row_color: (r[idx["row_color"]] as "bullish" | "bearish" | undefined) ?? undefined,
-      flow_highlight: (r[idx["flow_highlight"]] as "oi_multi" | "oi_single" | "late" | null) ?? null,
+      flow_highlight: (r[idx["flow_highlight"]] as "oi_multi" | "oi_single" | "none" | null) ?? null,
       delta: (r[idx["delta"]] as number | null) ?? null,
       vol_oi: (r[idx["vol_oi"]] as number | undefined) ?? undefined,
       dte: (r[idx["dte"]] as number | undefined) ?? undefined,
