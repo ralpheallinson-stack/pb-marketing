@@ -88,7 +88,7 @@ export default function ApexPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-medium">Apex</span>
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 tracking-wide">
                 Premium
               </span>
             </div>
@@ -97,18 +97,22 @@ export default function ApexPage() {
             </p>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-stone-400">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Live updating</span>
           </div>
         </div>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-6 text-[11px] text-stone-500 tracking-wider">
+          today · {APEX_PICKS.length} picks
+        </div>
+
+        <div className="mt-2.5 space-y-3">
           {APEX_PICKS.map((pick) => (
             <ApexPickCard key={pick.id} pick={pick} />
           ))}
         </div>
 
-        <div className="mt-6 pt-3 border-t border-stone-800/50 flex justify-between text-[11px] text-stone-500">
+        <div className="mt-6 pt-4 border-t border-stone-800/50 flex justify-between text-[11px] text-stone-500">
           <span>Selected from the 308K-signal dataset</span>
           <span>Picks remain visible until contract expiry</span>
         </div>
@@ -121,11 +125,17 @@ function ApexPickCard({ pick }: { pick: ApexPick }) {
   const urgent = pick.days_to_expiry < 14
 
   return (
-    <div className="bg-stone-900/50 border border-stone-800/50 rounded-lg p-5">
-      <div className="mb-3">
+    <div
+      className={`bg-white p-6 ${
+        pick.is_live
+          ? 'border-l-2 border-l-emerald-500 rounded-r-md'
+          : 'rounded-md'
+      }`}
+    >
+      <div className="mb-3.5">
         {pick.is_live ? (
-          <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 font-medium">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Live · pick since {pick.picked_at_label}</span>
           </div>
         ) : (
@@ -136,12 +146,12 @@ function ApexPickCard({ pick }: { pick: ApexPick }) {
       </div>
 
       <div className="flex justify-between items-baseline gap-3">
-        <div className="text-base font-medium leading-tight">
+        <div className="text-base font-medium text-stone-900 leading-tight">
           {pick.ticker} ${pick.strike} {pick.cp} · Exp {pick.expiry_label}
         </div>
         <div
           className={`text-[11px] font-medium tabular-nums whitespace-nowrap ${
-            urgent ? 'text-amber-400' : 'text-stone-500'
+            urgent ? 'text-amber-600' : 'text-stone-500'
           }`}
         >
           {pick.days_to_expiry} days out
@@ -152,13 +162,15 @@ function ApexPickCard({ pick }: { pick: ApexPick }) {
         Filed {pick.filed_at_label} · {pick.premium_label} · Grade {pick.grade} {pick.flow_type}
       </div>
 
-      <p className="text-sm leading-relaxed mt-3.5 text-stone-200">
+      <p className="text-sm leading-relaxed mt-4 text-stone-800">
         {pick.takeaway}
       </p>
 
       <div className="mt-4">
-        <div className="text-[11px] text-stone-500 mb-2">Why this stands out</div>
-        <ul className="text-sm text-stone-400 space-y-1.5 list-disc list-inside marker:text-stone-600">
+        <div className="text-[11px] text-stone-500 mb-2 tracking-wide">
+          Why this stands out
+        </div>
+        <ul className="text-sm text-stone-700 space-y-1.5 list-disc list-inside marker:text-stone-400">
           {pick.standouts.map((item, i) => (
             <li key={i}>{item}</li>
           ))}
