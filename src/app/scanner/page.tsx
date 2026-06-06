@@ -919,7 +919,7 @@ export default function ScannerPage() {
     if (page !== 0) return
     if (!viewReady) return  // wait until ?view resolves the initial tab
     if (activePage !== "scanner") return  // flow stream only on the flow tab; heatmap/watchlist don't subscribe (avoids 403 retry storm)
-    const feedMode = useFeedEndpoint() && !!topicId
+    const feedMode = (useFeedEndpoint() || useUnifiedEndpoint()) && !!topicId
 
     // Stale-guard reconnect — closes the current ES, refetches the snapshot
     // (forcing the feed-snapshot branch by resetting isFirstLoadRef), then
