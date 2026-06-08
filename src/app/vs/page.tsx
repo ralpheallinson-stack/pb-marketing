@@ -55,9 +55,9 @@ const COMPETITORS = [
   {
     slug: "barchart",
     name: "Barchart",
-    theirPrice: "$199.95/mo",
+    theirPrice: "$29.95/mo",
     ourAngle: "Half the price, focused on flow",
-    tldr: "Barchart Pro bundles flow with futures, equities, charts, and news at $199.95. We do options flow only at $99 with a documented methodology.",
+    tldr: "Barchart Premier bundles flow with futures, equities, charts, and news at $29.95/mo. We do options flow only at $99 with a documented methodology.",
     wins: "Broad market coverage · Futures + equities · News",
     losses: "$100/mo more · No grading · No outcomes log",
   },

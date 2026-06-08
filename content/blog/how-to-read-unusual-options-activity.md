@@ -25,7 +25,7 @@ There are two primary filters to start with:
 
 When daily volume on a specific contract exceeds open interest, something is happening. A **volume-to-OI ratio above 2.0** is generally worth flagging. A ratio above 5.0 demands attention. This means more contracts changed hands today than existed at the open — new positions are being established, not just shuffled.
 
-For example, if $NVDA has a call contract with 500 open interest and you see 3,200 contracts trade in a single session, that is a volume-to-OI ratio of 6.4. That is not normal hedging or rolling activity. Someone is building a position.
+For example, if $NVDA has a call contract with 500 open interest and you see 3,200 contracts trade in a single session, that is a volume-to-OI ratio of 6.4. That is not normal hedging or rolling activity. Someone is building a position. Broad platforms surface this too — [Barchart's unusual-activity scanner](/vs/barchart) flags high Vol/OI names, just without the conviction grading.
 
 Profit Builders tracks volume-to-OI ratios as one of several key metrics in its signal detection pipeline, specifically because this ratio is one of the most reliable early indicators of institutional positioning.
 

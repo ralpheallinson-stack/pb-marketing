@@ -81,6 +81,16 @@ const faqSchema = {
       "name": "What's Cheddar Flow's annual pricing?",
       "acceptedAnswer": { "@type": "Answer", "text": "Cheddar Flow offers Pro features at $75/mo ($900/year) when billed annually — a 25% discount over monthly. Profit Builders is monthly-only at $99/mo. If you're confident enough to commit annually, Cheddar Flow's yearly plan is cheaper than Profit Builders' monthly subscription." },
     },
+    {
+      "@type": "Question",
+      "name": "Is Cheddar Flow worth it in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "At $99/mo Pro (or $75/mo annual) Cheddar Flow is worth it if you like its UI and prefer configuring your own filters. The gap versus Profit Builders at the same $99 is conviction grading and a documented, auditable methodology — Cheddar gates dark pool and AI scoring inside Pro and doesn't publish signal outcomes. If self-configured filtering is your edge, Cheddar holds up; if you want pre-graded signals, the value tilts to Profit Builders." },
+    },
+    {
+      "@type": "Question",
+      "name": "What's the best Cheddar Flow alternative?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Profit Builders is the closest match at the same $99/mo: real-time graded institutional flow, a public OPRA methodology you can audit, native Telegram alerts, and a GEX heatmap — without splitting features across a Standard and Pro tier. Cheddar Flow keeps the edge on UI polish and its annual discount." },
+    },
   ],
 }
 
@@ -316,6 +326,7 @@ export default function VsCheddarFlow() {
                   <a href="#gating" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">The Pro-tier trap</a>
                   <a href="#filters-vs-grades" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Filters vs grades</a>
                   <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#switching" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Switching over</a>
                 </nav>
               </aside>
               <div className="md:col-span-9 space-y-16">
@@ -331,6 +342,15 @@ export default function VsCheddarFlow() {
                 <Dive id="who" heading="Who each platform is actually for">
                   Cheddar Flow suits traders who already have an edge they want to replicate via filter configuration, who value the $75/mo annual discount, and who don't specifically need a documented methodology to make a decision. Profit Builders suits traders who prefer pre-vetted signals over self-configured filters, who want to audit a platform's hit rate before paying, whose workflow includes Telegram, and who'd rather pay $99 and get everything than price-shop between a $85 Standard and $99 Pro just to access two flagship features.
                 </Dive>
+                <Dive id="switching" heading="Switching from Cheddar Flow to Profit Builders">
+                  Cheddar Flow and Profit Builders sit at the same $99 Pro price, so this isn't about saving money &mdash; it's about what the $99 buys. The move is low-friction: run Profit Builders' 7-day free trial during live sessions, route alerts to Discord or Telegram, and track the same tickers you watch in Cheddar. The first thing you'll notice is that you're not configuring filters &mdash; signals arrive already graded A or B. If you've built a Cheddar filter set you trust, keep it; if you'd rather have pre-vetted signals and a methodology you can audit before committing, Profit Builders covers the same job without splitting dark pool and AI scoring across Standard and Pro. Cancelling before the next cycle is one click either way.
+                </Dive>
+                <div className="pl-5 py-5 pr-4" style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.06), rgba(52,211,153,0.01))", borderLeft: "2px solid #34D399" }}>
+                  <div className="pb-mono text-[10px] tracking-[0.2em] text-[#34D399] uppercase mb-3">Grade A example</div>
+                  <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">
+                    What clears the top gate looks like this: a <span className="text-white">$1.2M sweep on short-dated NVDA calls</span>, Vol/OI 3.4&times;, lifted at the ask with no offsetting flow &mdash; tagged Grade A and pushed to Telegram in about a second and a half. Cheddar would show the same print sorted by premium; you'd still classify the conviction yourself. Every Grade A signal's resolved outcome is logged publicly at <Link href="/methodology" className="pb-link text-white">/methodology</Link>.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -363,6 +383,12 @@ export default function VsCheddarFlow() {
                 </Faq>
                 <Faq q="What's Cheddar Flow's annual pricing?">
                   Cheddar Flow Pro is <span className="pb-mono text-white">$75/mo</span> when billed annually — 25% off monthly. Profit Builders is monthly-only at $99. If you're confident enough to commit for a full year and don't need the features Profit Builders adds, Cheddar Flow's annual plan is cheaper than Profit Builders' monthly subscription.
+                </Faq>
+                <Faq q="Is Cheddar Flow worth it in 2026?">
+                  At <span className="pb-mono text-white">$99/mo</span> Pro (or $75/mo annual), Cheddar Flow is worth it if you like its UI and prefer configuring your own filters. The gap versus Profit Builders at the same $99 is conviction grading and a documented, auditable methodology &mdash; Cheddar gates dark pool and AI scoring inside Pro and doesn't publish signal outcomes. If self-configured filtering is your edge, Cheddar holds up; if you want pre-graded signals, the value tilts to Profit Builders.
+                </Faq>
+                <Faq q="What's the best Cheddar Flow alternative?">
+                  Profit Builders is the closest match at the same $99/mo: real-time graded institutional flow, a public OPRA methodology you can audit at <Link href="/methodology" className="pb-link text-white">/methodology</Link>, native Telegram alerts, and a GEX heatmap &mdash; without splitting features across a Standard and Pro tier. Cheddar Flow keeps the edge on UI polish and its annual discount.
                 </Faq>
               </div>
             </div>

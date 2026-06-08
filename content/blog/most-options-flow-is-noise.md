@@ -48,7 +48,7 @@ Prints that clear all of the gates get graded A. Prints that clear most but not 
 
 ## Why real-time matters
 
-A signal that's right but slow is worth nothing. By the time you read about a sweep on Twitter, the strike is already 20% higher. By the time most flow tools batch and serve their output, the alpha has moved.
+A signal that's right but slow is worth nothing. By the time you read about a sweep on Twitter, the strike is already 20% higher. By the time most flow tools batch and serve their output, the alpha has moved. Research libraries like [Market Chameleon](/vs/market-chameleon) run on 15-minute-delayed data — great for studying setups, useless for acting on a live sweep.
 
 Median latency from print on the tape to alert in your Discord or Telegram: **1.4 seconds**. The institutional desk and your phone learn about the same trade at roughly the same time. What you do with that 1.4-second window is up to you. The point is the window exists.
 

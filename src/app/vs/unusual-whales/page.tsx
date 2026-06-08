@@ -85,6 +85,16 @@ const faqSchema = {
       "name": "Who should pick Unusual Whales over Profit Builders?",
       "acceptedAnswer": { "@type": "Answer", "text": "Traders who prioritize Congressional trade tracking, comprehensive dark pool heatmaps, or the cheapest entry tier at $29-50/mo. Advanced traders who prefer interpreting raw flow themselves rather than working from a pre-graded feed." },
     },
+    {
+      "@type": "Question",
+      "name": "Is Unusual Whales worth it in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For the price — $29-50/mo — Unusual Whales is one of the best-value data platforms available: flow, Congressional trades, dark pool, and analytics in one place. What you don't get is conviction grading or a documented signal methodology. If you want the broadest data surface and are happy interpreting raw flow, UW is worth it; if you want graded, pre-vetted options signals, Profit Builders ($99/mo) is built for that specific job." },
+    },
+    {
+      "@type": "Question",
+      "name": "What's the best Unusual Whales alternative for options flow?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For options flow specifically, Profit Builders is the focused alternative: real-time institutional flow graded A/B, a public OPRA methodology you can audit, native Telegram alerts, and a GEX heatmap. Unusual Whales remains the better pick if you want Congressional trade tracking and the widest data coverage for the lowest price." },
+    },
   ],
 }
 
@@ -358,6 +368,7 @@ export default function VsUnusualWhales() {
                   <a href="#alerts" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Alerts & latency</a>
                   <a href="#pricing" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Pricing per outcome</a>
                   <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#switching" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Switching over</a>
                 </nav>
               </aside>
 
@@ -377,6 +388,15 @@ export default function VsUnusualWhales() {
                 <Dive id="who" heading="Who each platform is actually for">
                   Unusual Whales suits active intermediate-to-advanced traders who treat flow as raw input to their own system, value Congressional trade data, and want the broadest market data surface in one place. Profit Builders suits traders who want graded signals with a verifiable win rate, whose workflow includes Telegram, and who want a focused tool rather than a dashboard with twelve tabs. Beginners usually find Profit Builders easier to act on — the interpretation work is upfront in the grade, rather than something they have to do on every alert.
                 </Dive>
+                <Dive id="switching" heading="Switching from Unusual Whales to Profit Builders">
+                  Unusual Whales is cheaper ($29&ndash;50/mo) and broader, so this is rarely all-or-nothing &mdash; most traders keep UW for Congressional trades and dark-pool heatmaps and add Profit Builders for the graded options tape. The trial makes the comparison concrete: run Profit Builders' 7 free days during live sessions, route alerts to Discord or Telegram, and watch how many of UW's raw flow flags would clear conviction grading. Where UW hands you a firehose to interpret, Profit Builders hands you Grade A/B signals with the interpretation already done. If you're an advanced trader who likes working raw flow, keep UW as primary; if you'd rather act on pre-vetted signals with an auditable hit rate, Profit Builders becomes the tool you watch during the session.
+                </Dive>
+                <div className="pl-5 py-5 pr-4" style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.06), rgba(52,211,153,0.01))", borderLeft: "2px solid #34D399" }}>
+                  <div className="pb-mono text-[10px] tracking-[0.2em] text-[#34D399] uppercase mb-3">Grade A example</div>
+                  <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">
+                    What clears the top gate looks like this: a <span className="text-white">$1.2M sweep on short-dated NVDA calls</span>, Vol/OI 3.4&times;, lifted at the ask with no offsetting flow &mdash; tagged Grade A and pushed to Telegram in about a second and a half. Unusual Whales would flag the print among thousands; you'd still rank the conviction yourself. Every Grade A signal's resolved outcome is logged publicly at <Link href="/methodology" className="pb-link text-white">/methodology</Link>.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -413,6 +433,12 @@ export default function VsUnusualWhales() {
                 </Faq>
                 <Faq q="Who should pick Unusual Whales over Profit Builders?">
                   Traders who need Congressional trade data, want the cheapest established tier, or prefer interpreting raw flow themselves over working from a pre-graded feed. All three are legitimate reasons.
+                </Faq>
+                <Faq q="Is Unusual Whales worth it in 2026?">
+                  For the price &mdash; <span className="pb-mono text-white">$29&ndash;50/mo</span> &mdash; Unusual Whales is one of the best-value data platforms available: flow, Congressional trades, dark pool, and analytics in one place. What you don't get is conviction grading or a documented signal methodology. If you want the broadest data surface and are happy interpreting raw flow, UW is worth it; if you want graded, pre-vetted options signals, Profit Builders ($99/mo) is built for that specific job.
+                </Faq>
+                <Faq q="What's the best Unusual Whales alternative for options flow?">
+                  For options flow specifically, Profit Builders is the focused alternative: real-time institutional flow graded A/B, a public OPRA methodology you can audit at <Link href="/methodology" className="pb-link text-white">/methodology</Link>, native Telegram alerts, and a GEX heatmap. Unusual Whales remains the better pick if you want Congressional trade tracking and the widest data coverage for the lowest price.
                 </Faq>
               </div>
             </div>

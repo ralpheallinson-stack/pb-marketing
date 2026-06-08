@@ -85,6 +85,16 @@ const faqSchema = {
       "name": "Which is better for beginners?",
       "acceptedAnswer": { "@type": "Answer", "text": "Profit Builders. FlowAlgo is built for active traders who already interpret raw flow; its $149 price point assumes you know what to do with the data. Profit Builders' conviction grading (Grade A / Grade B) removes the interpretation burden, making the platform accessible earlier in a trader's journey." },
     },
+    {
+      "@type": "Question",
+      "name": "Is FlowAlgo worth it in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It depends on your workflow. At $149/mo FlowAlgo is worth it if voice alerts, the dark-pool Levels overlay, or its block-trade focus are core to how you trade. If you mainly want fast, filtered, conviction-graded signals, you can get that for $99/mo with a documented methodology — so for most traders the value case has narrowed." },
+    },
+    {
+      "@type": "Question",
+      "name": "What's the best FlowAlgo alternative?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Profit Builders is the closest like-for-like at a lower price: real-time institutional flow at $99/mo (vs $149), conviction grading instead of raw prints, a genuine 7-day free trial instead of a $37 paid preview, and a public methodology you can audit. FlowAlgo keeps the edge only on voice alerts and its Levels feature." },
+    },
   ],
 }
 
@@ -320,6 +330,7 @@ export default function VsFlowAlgo() {
                   <a href="#pricing" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Pricing per outcome</a>
                   <a href="#levels" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Levels vs grading</a>
                   <a href="#who" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Who each is for</a>
+                  <a href="#switching" className="block text-[14px] text-[#A9B4C6] hover:text-white transition-colors">Switching over</a>
                 </nav>
               </aside>
               <div className="md:col-span-9 space-y-16">
@@ -335,6 +346,15 @@ export default function VsFlowAlgo() {
                 <Dive id="who" heading="Who each platform is actually for">
                   FlowAlgo suits block-trade-focused traders, audio-workflow traders who rely on voice alerts, and long-time FA users with muscle memory for the UI. Profit Builders suits traders who want graded signals with a verifiable win rate, anyone for whom $600/year of savings matters, traders using Telegram-first alerting, and anyone evaluating a flow tool for the first time who'd rather pay 33% less and skip the $37 preview fee.
                 </Dive>
+                <Dive id="switching" heading="Switching from FlowAlgo to Profit Builders">
+                  Most FlowAlgo users don't rip it out overnight &mdash; they run Profit Builders' 7-day free trial alongside it and compare the same sessions side by side. Point your alerts at Discord or Telegram, filter to Grade A on day one, and watch how many of FlowAlgo's raw prints would have survived the grading filters. If the curated tape gives you the same edge for one-third fewer dollars and no $37 preview fee, cancelling FlowAlgo before its next $149 cycle is a one-click decision. Keep FlowAlgo only if voice alerts or the Levels overlay are genuinely load-bearing for you &mdash; otherwise the graded feed replaces it.
+                </Dive>
+                <div className="pb-callout pl-5 py-5 pr-4">
+                  <div className="pb-mono text-[10px] tracking-[0.2em] text-[#34D399] uppercase mb-3">Grade A example</div>
+                  <p className="text-[16px] leading-[1.7] text-[#A9B4C6]">
+                    What clears the top gate looks like this: a <span className="text-white">$1.2M sweep on short-dated NVDA calls</span>, Vol/OI 3.4&times;, lifted at the ask with no offsetting flow &mdash; tagged Grade A and delivered to Telegram in about a second and a half. FlowAlgo would surface the individual prints; you'd still have to decide it was real. Every Grade A signal's resolved outcome &mdash; win or lose &mdash; is logged publicly at <Link href="/methodology" className="pb-link text-white">/methodology</Link>.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -367,6 +387,12 @@ export default function VsFlowAlgo() {
                 </Faq>
                 <Faq q="Which is better for beginners?">
                   Profit Builders. FlowAlgo's $149 pricing implicitly assumes you already know what to do with raw flow data — its UI is optimized for active interpretation. Profit Builders' conviction grading does the interpretation work up front, which is why beginners find Grade A alerts actionable in a way that raw block trades rarely are.
+                </Faq>
+                <Faq q="Is FlowAlgo worth it in 2026?">
+                  It depends on your workflow. At <span className="pb-mono text-white">$149/mo</span>, FlowAlgo earns its keep if voice alerts, the dark-pool Levels overlay, or its block-trade focus are central to how you trade. If you mainly want fast, filtered, conviction-graded signals, you can get that for <span className="pb-mono text-white">$99/mo</span> with a documented methodology &mdash; so for most traders the value case has narrowed.
+                </Faq>
+                <Faq q="What's the best FlowAlgo alternative?">
+                  Profit Builders is the closest like-for-like at a lower price: real-time institutional flow at $99/mo (vs $149), conviction grading instead of raw prints, a genuine 7-day free trial instead of a $37 paid preview, and a public methodology you can audit at <Link href="/methodology" className="pb-link text-white">/methodology</Link>. FlowAlgo keeps the edge only on voice alerts and its Levels feature.
                 </Faq>
               </div>
             </div>

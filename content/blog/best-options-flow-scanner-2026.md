@@ -54,7 +54,7 @@ Before comparing platforms, these are the five criteria that separate useful sca
 <tr><td>BlackBoxStocks</td><td>$99.97/mo</td><td>Limited</td><td>Community/chat</td><td>Flow + chat room</td></tr>
 <tr><td>Cheddar Flow</td><td>$85–99/mo</td><td>Limited</td><td>Sort-only</td><td>Real-time flow</td></tr>
 <tr><td>Unusual Whales</td><td>$35–48/mo</td><td>Limited</td><td>Community/flags</td><td>Broad data feed</td></tr>
-<tr><td>Barchart</td><td>$39–199.95/mo</td><td>Limited</td><td>None</td><td>Multi-asset data</td></tr>
+<tr><td>Barchart</td><td>$29.95/mo</td><td>30-day free</td><td>None</td><td>Multi-asset data</td></tr>
 <tr><td><strong>Profit Builders</strong></td><td><strong>$99/mo</strong></td><td><strong>7 days</strong></td><td><strong>Grade A/B (public track record)</strong></td><td><strong>OPRA-grade real-time</strong></td></tr>
 </tbody>
 </table>
@@ -111,9 +111,9 @@ The trade-off is depth vs. breadth. Unusual Whales shows you a lot of data but d
 **Best for:** Budget-conscious traders who want broad market data coverage and are comfortable filtering signals themselves.
 **Deeper dive:** [full Profit Builders vs Unusual Whales breakdown](/vs/unusual-whales).
 
-### Barchart — $39-199/month
+### Barchart — $0–29.95/month
 
-[Barchart](/vs/barchart) is the Swiss Army knife of retail trading platforms — quotes, charts, futures, options, news, and scanners in one subscription. Their options flow module sits inside a much broader product. The Pro tier at $199.95/month unlocks the unusual activity scanner, dark pool data, and full options chain tools.
+[Barchart](/vs/barchart) is the Swiss Army knife of retail trading platforms — quotes, charts, futures, options, news, and scanners in one subscription. Their options flow module sits inside a much broader product. The Premier tier at $29.95/month unlocks the unusual activity scanner, dark pool data, and full options chain tools.
 
 The trade-off: Barchart is breadth-first. Options flow is one feature in a 20-year-old platform that does everything. There's no conviction grading on flow and no public signal track record. You get the data; you do the filtering.
 
