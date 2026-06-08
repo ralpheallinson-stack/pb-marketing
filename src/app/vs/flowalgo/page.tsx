@@ -6,23 +6,23 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/flowalgo"
 
 export const metadata: Metadata = {
-  title: { absolute: "FlowAlgo vs Profit Builders · $149 vs $99 in 2026" },
+  title: { absolute: "FlowAlgo Pricing 2026: $149/mo, the $37 Trial Trap, Alternatives" },
   description:
-    "FlowAlgo vs Profit Builders for 2026 options flow. FlowAlgo $149/mo with a $37 auto-charge trial. PB $99/mo, 7-day free trial, documented OPRA methodology.",
+    "FlowAlgo costs $149/month — but the $37 \"trial\" auto-charges to full price. Real pricing, what's included, the auto-renewal catch, and a $99 alternative tested.",
   alternates: { canonical: CANON },
   openGraph: {
-    title: "FlowAlgo vs Profit Builders · Options Flow Comparison",
+    title: "FlowAlgo Pricing 2026: $149/mo, the $37 Trial Trap, Alternatives",
     description:
-      "FlowAlgo $149/mo vs Profit Builders $99/mo. Honest trial vs auto-charge $37 trial. Documented methodology inside.",
+      "FlowAlgo costs $149/month — but the $37 \"trial\" auto-charges to full price. Real pricing, what's included, the auto-renewal catch, and a $99 alternative tested.",
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "FlowAlgo vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FlowAlgo vs Profit Builders · Options Flow Comparison",
+    title: "FlowAlgo Pricing 2026: $149/mo, the $37 Trial Trap, Alternatives",
     description:
-      "$99 vs $149/mo. No trial traps. Verified documented OPRA methodology. Honest comparison inside.",
+      "FlowAlgo costs $149/month — but the $37 \"trial\" auto-charges to full price. Real pricing, what's included, the auto-renewal catch, and a $99 alternative tested.",
   },
 }
 

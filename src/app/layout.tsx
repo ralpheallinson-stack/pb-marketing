@@ -33,15 +33,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Options Flow Scanner | Profit Builders",
+    default: "Options Flow Scanner — Real-Time Institutional Trades | PB",
     template: "%s | Profit Builders",
   },
-  description: "Real-time institutional options flow scanner. CBOE-compliant sweep detection, OPRA condition codes, Black-Scholes Greeks, NBBO aggression classification.",
+  description: "Real-time institutional options flow across all 17 US exchanges. Conviction-graded sweeps and blocks, delivered before the move. $99/mo · 7-day free trial.",
   metadataBase: new URL("https://profitbuilders.io"),
   alternates: { canonical: "https://profitbuilders.io" },
   openGraph: {
-    title: "Options Flow Scanner | Profit Builders",
-    description: "Real-time institutional options flow. OPRA tape · CBOE Rule 6.11 sweeps · BSM Greeks.",
+    title: "Options Flow Scanner — Real-Time Institutional Trades | PB",
+    description: "Real-time institutional options flow across all 17 US exchanges. Conviction-graded sweeps and blocks, delivered before the move. $99/mo · 7-day free trial.",
     type: "website",
     siteName: "Profit Builders",
     url: "https://profitbuilders.io",

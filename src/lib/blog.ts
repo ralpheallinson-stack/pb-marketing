@@ -46,6 +46,11 @@ export interface PostMeta {
   updated?: string
   author: string
   read_time: string
+  /** SEO-only overrides. When set, generateMetadata uses these for the
+   *  <title> / meta description / OG / Twitter WITHOUT changing the on-page
+   *  H1 (post.title) or subtitle (post.description). Tunes SERP CTR copy. */
+  meta_title?: string
+  meta_description?: string
 }
 
 export interface FullPost extends PostMeta {
@@ -89,6 +94,8 @@ function readPostFile(slug: string): { meta: PostMeta; body: string } | null {
       ...(updated ? { updated } : {}),
       author: String(data.author ?? "Profit Builders"),
       read_time: String(data.read_time ?? "5"),
+      ...(data.meta_title ? { meta_title: String(data.meta_title) } : {}),
+      ...(data.meta_description ? { meta_description: String(data.meta_description) } : {}),
     },
     body: content,
   }

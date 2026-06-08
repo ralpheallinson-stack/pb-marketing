@@ -6,23 +6,23 @@ import Footer from "@/components/Footer"
 const CANON = "https://profitbuilders.io/vs/cheddar-flow"
 
 export const metadata: Metadata = {
-  title: { absolute: "Cheddar Flow vs Profit Builders · Same $99, Who Wins?" },
+  title: { absolute: "Cheddar Flow Pricing 2026: $99/mo Plans, What You Don't Get" },
   description:
-    "Cheddar Flow vs Profit Builders for 2026 — both $99/mo Pro. Cheddar Flow gates dark-pool + AI behind Pro. PB includes everything plus documented OPRA methodology.",
+    "Cheddar Flow charges $99/mo for Pro — but gates dark pool prints and AI scoring inside the same tier. Full pricing breakdown plus what an equal-priced rival includes.",
   alternates: { canonical: CANON },
   openGraph: {
-    title: "Cheddar Flow vs Profit Builders · Options Flow Comparison",
+    title: "Cheddar Flow Pricing 2026: $99/mo Plans, What You Don't Get",
     description:
-      "$99 vs $99. Who actually gives you more? Feature gating exposed. Documented methodology inside.",
+      "Cheddar Flow charges $99/mo for Pro — but gates dark pool prints and AI scoring inside the same tier. Full pricing breakdown plus what an equal-priced rival includes.",
     url: CANON,
     type: "article",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Cheddar Flow vs Profit Builders" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cheddar Flow vs Profit Builders · Options Flow Comparison",
+    title: "Cheddar Flow Pricing 2026: $99/mo Plans, What You Don't Get",
     description:
-      "Same $99/mo. Cheddar Flow gates dark pool + AI behind Pro. Profit Builders includes everything with a documented OPRA methodology.",
+      "Cheddar Flow charges $99/mo for Pro — but gates dark pool prints and AI scoring inside the same tier. Full pricing breakdown plus what an equal-priced rival includes.",
   },
 }
 
