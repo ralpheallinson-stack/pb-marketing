@@ -6,6 +6,8 @@ author: "Profit Builders"
 read_time: "9"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 The options Greeks measure how an option's price changes relative to different factors — stock movement, time decay, volatility shifts, and more. For flow traders, understanding the Greeks isn't about running complex models. It's about quickly assessing **what a large institutional order is actually betting on**.
 
 ## Delta: Directional Exposure

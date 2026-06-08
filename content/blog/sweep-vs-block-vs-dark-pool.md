@@ -7,6 +7,8 @@ author: "Profit Builders"
 read_time: "9"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 ## Not All Flow Is Created Equal
 
 If you watch options flow for any length of time, you will notice something: a million-dollar order on one contract can move the underlying stock five points, while another million-dollar order on the same contract barely registers. The difference almost always comes down to **order type**.

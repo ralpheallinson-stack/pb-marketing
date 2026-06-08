@@ -7,7 +7,7 @@ author: "Profit Builders"
 read_time: "3"
 ---
 
-The Profit Builders scanner uses color-coded row highlights to surface trades whose volume relative to existing open interest is doing something out of the ordinary. The system is BlackBox-style: the highlight tells you that a contract's trading volume has exceeded what's already been positioned in it, and whether that exceedance came from a single print or from accumulated activity. Here is what each color means and how to read it.
+The Profit Builders scanner uses color-coded row highlights to surface trades whose volume relative to existing open interest is doing something out of the ordinary. The system is BlackBox-style: the highlight tells you that a contract's trading volume has exceeded what's already been positioned in it, and whether that exceedance came from a single print or from accumulated activity. Here is what each color means and how to read it. New to flow tools? Start with our [full scanner comparison](/blog/best-options-flow-scanner-2026).
 
 ## Yellow — Single-Trade OI Exceedance
 

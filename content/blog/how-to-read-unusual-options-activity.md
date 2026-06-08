@@ -7,9 +7,11 @@ author: "Profit Builders"
 read_time: "10"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 Options flow is one of the few places in the market where you can observe real money making real bets in real time. Every day, billions of dollars move through the options market, and most of it is noise — hedging, rolling, market-making inventory adjustments. But buried in that noise are signals: large, deliberate, and aggressive trades placed by institutions, funds, and informed participants who are positioning ahead of a move.
 
-Learning to read unusual options activity is not about finding a magic indicator. It is about developing a framework for separating conviction from routine. This guide breaks down exactly how to do that.
+Learning to read unusual options activity is not about finding a magic indicator. It is about developing a framework for separating conviction from routine. This guide breaks down exactly how to do that. Start with the [sweep vs block vs dark pool flow](/blog/sweep-vs-block-vs-dark-pool) distinctions, then the filters below.
 
 ## What Counts as "Unusual" Options Activity
 

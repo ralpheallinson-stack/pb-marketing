@@ -25,7 +25,7 @@ If you're brand new to this concept, we wrote a separate primer on it: [What Is 
 
 ## The anatomy of a flow print
 
-Every print on the options tape carries roughly the same structure. Once you can read one, you can read them all.
+Every print on the options tape carries roughly the same structure. Once you can read one, you can read them all. For a worked example, see [how to read sweep and block trades](/blog/how-to-read-sweep-and-block-trades).
 
 **Ticker** — the underlying stock. Most tradeable flow is on liquid names: large-cap tech, financial index ETFs, meme stocks with heavy options activity. Obscure tickers rarely see institutional flow worth following.
 
@@ -45,7 +45,7 @@ Three distinct flow structures carry three distinct meanings. Confusing them is 
 
 **Sweeps** are aggressive multi-venue orders. Imagine a trader who wants 500 calls and doesn't care if they pay the ask at three different exchanges to get filled — that's a sweep. Sweeps say: *someone needs this position before the market moves*. They're often news-reactive or event-driven (pre-earnings, pre-FDA decision, pre-Fed announcement).
 
-**Blocks** are negotiated single fills, typically 500+ contracts traded as one transaction through a broker desk rather than hitting the public tape. A block says: *someone planned this carefully, probably has a thesis, may be one leg of a larger strategy*. Blocks are more often institutional rebalancing or long-dated positioning than speculative reaction.
+**Blocks** are negotiated single fills, typically 500+ contracts traded as one transaction through a broker desk rather than hitting the public tape. A block says: *someone planned this carefully, probably has a thesis, may be one leg of a larger strategy*. Blocks are more often institutional rebalancing or long-dated positioning than speculative reaction. The full [difference between sweeps, blocks, and dark pool prints](/blog/sweep-vs-block-vs-dark-pool) is worth understanding before you trade any of them.
 
 **Accumulation** is a pattern, not a single print. When the same contract gets hit five, ten, or fifteen times over a short window with consistent aggressive sizing, that's an institution building a position by breaking up a large order — often to avoid moving the market against themselves. Accumulation is the strongest directional signal in options flow because it reveals deliberate, sustained conviction. Profit Builders flags these automatically with RAPID badges. [Full explainer here](/blog/what-is-options-accumulation).
 
@@ -120,7 +120,7 @@ Across our institutional-flow research, we've seen every common trap. The top fi
 
 ## Choosing a flow scanner
 
-There are about a dozen options flow scanners on the market in 2026. We wrote detailed honest comparisons against the main ones:
+There are about a dozen options flow scanners on the market in 2026, ranked head-to-head in our [best options flow scanner comparison for 2026](/blog/best-options-flow-scanner-2026). We also wrote detailed honest comparisons against the main ones:
 
 - [Profit Builders vs Unusual Whales](/vs/unusual-whales) — bigger brand, Congress data, no documented methodology
 - [Profit Builders vs FlowAlgo](/vs/flowalgo) — legacy incumbent, 33% more expensive, no published outcomes
@@ -131,6 +131,21 @@ There are about a dozen options flow scanners on the market in 2026. We wrote de
 - [Profit Builders vs SpotGamma](/vs/spotgamma) — different product (gamma regime vs directional flow)
 
 The short version of what to look for: **conviction grading, a documented methodology, reasonable pricing, and mobile-accessible alerts**. Almost nothing else matters. If a scanner dumps raw prints at you with no filtering, no outcome data, and no honest methodology documentation, you're paying for a firehose that costs you money.
+
+## Complete Options Flow Series
+
+The full series, in reading order:
+
+- [What Is Options Flow Trading?](/blog/what-is-options-flow-trading)
+- [How to Read Options Flow](/blog/how-to-read-options-flow)
+- [How to Read Unusual Options Activity](/blog/how-to-read-unusual-options-activity)
+- [Sweeps vs Blocks vs Dark Pool Prints](/blog/sweep-vs-block-vs-dark-pool)
+- [How to Read Sweep and Block Trades](/blog/how-to-read-sweep-and-block-trades)
+- [Options Flow Signals: Grade A/B/C](/blog/options-flow-signals-grade-a-b-c)
+- [What Is Options Accumulation?](/blog/what-is-options-accumulation)
+- [The Vol/OI Ratio, Explained](/blog/vol-oi-ratio-explained)
+- [Options Greeks for Flow Trading](/blog/options-greeks-for-flow-trading)
+- [What Is Gamma Exposure (GEX)?](/blog/what-is-gamma-exposure-gex)
 
 ## What to do next
 

@@ -6,6 +6,8 @@ author: "Profit Builders"
 read_time: "15"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 You're staring at a scanner full of options prints. Hundreds of rows. Green text, red text, premiums flying by. A $2.1M NVDA sweep just hit the tape. Is that bullish? Bearish? Does it matter?
 
 Most traders open a flow scanner for the first time and feel like they're reading a foreign language. The data is there — but knowing what to actually do with it is a different skill entirely.
@@ -16,7 +18,7 @@ This guide breaks it down. Not theory. Not textbook definitions. The actual proc
 
 Every time someone buys or sells an options contract on a U.S. exchange, that transaction hits the tape. Options flow is the real-time stream of those transactions — every sweep, every block, every fill across every exchange.
 
-The raw feed is millions of prints per day. Nobody can process that. The job of a flow scanner is to filter out the noise and surface the prints that carry signal — the ones that suggest an informed trader is taking a directional bet with real money behind it.
+The raw feed is millions of prints per day. Nobody can process that. The job of a flow scanner is to filter out the noise and surface the prints that carry signal — the ones that suggest an informed trader is taking a directional bet with real money behind it. Scanners vary widely in how aggressively they filter — see [how the top flow scanners compare](/blog/best-options-flow-scanner-2026).
 
 When you look at a row in a scanner, you're seeing a snapshot of a single transaction. The columns tell you everything you need to know about that bet.
 

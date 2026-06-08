@@ -7,7 +7,9 @@ author: "Profit Builders"
 read_time: "8"
 ---
 
-Conviction grading is how Profit Builders separates institutional-quality flow from background noise. Every print that crosses the OPRA tape gets one of three labels — **Grade A**, **Grade B**, or **PASS** — based on a deterministic, rules-based scoring pipeline (no models, no black box). This guide walks through the six factors the engine measures, what each grade means, and how to use the labels for position sizing and discipline.
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
+Conviction grading is how Profit Builders separates institutional-quality flow from background noise. Every print that crosses the OPRA tape gets one of three labels — **Grade A**, **Grade B**, or **PASS** — based on a deterministic, rules-based scoring pipeline (no models, no black box). This guide walks through the six factors the engine measures, what each grade means, and how to use the labels for position sizing and discipline. For a side-by-side, see [how this compares to Unusual Whales' flags](/vs/unusual-whales).
 
 > **Updated 2026-05-09:** The default scanner view now shows **all three grades** (A, B, and PASS) so subscribers see the full institutional flow tape with conviction labels attached as metadata, not as a filter. The original "fewer signals, higher quality" experience described later in this post is preserved as a one-click view: toggle **"Curated grades only"** in the filter panel to restrict the table to A/B rows. Either way, the grading methodology below is unchanged.
 
@@ -23,7 +25,7 @@ That is the problem conviction grading solves.
 
 ## Why Grading Matters
 
-Not all flow is created equal. A $2 million sweep on short-dated SPY calls during a pullback tells a fundamentally different story than a $2 million passive fill on deep ITM puts that turns out to be someone closing a hedge. Both show up as large-premium trades. Only one represents an actionable signal.
+Not all flow is created equal. A $2 million sweep on short-dated SPY calls during a pullback tells a fundamentally different story than a $2 million passive fill on deep ITM puts that turns out to be someone closing a hedge. Both show up as large-premium trades. Only one represents an actionable signal. Knowing [which types of flow matter most](/blog/sweep-vs-block-vs-dark-pool) is the first filter.
 
 Without a grading system, traders are left relying on gut instinct and pattern recognition under pressure — exactly the conditions where cognitive biases cause the most damage. You anchor to the biggest number you see. You chase the ticker that just moved. You overtrade because everything looks like a signal when you have no filter.
 

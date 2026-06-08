@@ -6,7 +6,9 @@ author: "Profit Builders"
 read_time: "6"
 ---
 
-One of the most reliable indicators of unusual options activity is the **volume-to-open interest (Vol/OI) ratio**. It's simple to calculate, easy to interpret, and — when used correctly — can flag institutional positioning before the move happens.
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
+One of the most reliable indicators of unusual options activity is the **volume-to-open interest (Vol/OI) ratio**. It's simple to calculate, easy to interpret, and — when used correctly — can flag institutional positioning before the move happens. Pair it with [how to read sweep and block trades](/blog/how-to-read-sweep-and-block-trades) for the full picture.
 
 ## What Is Open Interest?
 

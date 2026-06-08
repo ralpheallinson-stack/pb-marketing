@@ -22,23 +22,27 @@ export async function generateMetadata({
   const post = getPost(slug)
   if (!post) return {}
   const url = `https://profitbuilders.io/blog/${slug}`
+  // SEO copy can diverge from the on-page H1/subtitle via optional frontmatter
+  // overrides (meta_title / meta_description); fall back to visible fields.
+  const metaTitle = post.meta_title ?? post.title
+  const metaDescription = post.meta_description ?? post.description
   return {
-    title: post.title,
-    description: post.description,
+    title: metaTitle,
+    description: metaDescription,
     alternates: { canonical: url, types: { "application/rss+xml": "/rss.xml" } },
     openGraph: {
-      title: post.title,
-      description: post.description,
+      title: metaTitle,
+      description: metaDescription,
       url,
       type: "article",
       publishedTime: post.date,
       authors: ["Profit Builders"],
-      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630, alt: post.title }],
+      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630, alt: metaTitle }],
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
-      description: post.description,
+      title: metaTitle,
+      description: metaDescription,
       images: [`/blog/${slug}/opengraph-image`],
     },
   }
@@ -125,7 +129,7 @@ export default async function BlogPostPage({
       { q: "Are sweeps more bullish than blocks?", a: "Neither execution type is inherently bullish — direction comes from whether it's calls or puts and whether the trade was bought or sold. Sweeps signal urgency and blocks signal patience; that's about conviction and timing, not direction. A bullish sweep is an aggressive call buy at the ask; the same mechanics on puts is bearish." },
     ],
     "best-options-flow-scanner-2026": [
-      { q: "What is the best options flow scanner in 2026?", a: "The top options flow scanners in 2026 include Profit Builders, Unusual Whales, CheddarFlow, FlowAlgo, and BlackBoxStocks. Profit Builders is the only scanner that grades every signal by conviction and publishes a documented methodology of outcomes." },
+      { q: "What is the best options flow scanner in 2026?", a: "There is no single best scanner — it depends on your style. For traders who want graded, high-conviction signals instead of an unfiltered firehose, Profit Builders ($99/mo, 7-day trial) scores every signal Grade A/B and publishes its track record. For raw sweep speed, FlowAlgo ($149/mo). For lowest cost, Unusual Whales ($35–48/mo)." },
       { q: "How much does an options flow scanner cost?", a: "Options flow scanners range from $29 to $199 per month. Profit Builders offers a 7-day free trial with real-time flow, conviction grading, and GEX heatmaps." },
       { q: "What is conviction grading in options flow?", a: "Conviction grading uses automated filters to score each options signal by institutional characteristics — premium size, aggressive fill conditions, volume-to-open-interest ratio, and market maker identification. Grade A signals represent the highest conviction institutional flow." },
       { q: "How much does FlowAlgo cost in 2026?", a: "FlowAlgo is priced at $149/month. It delivers fast raw flow and dark-pool prints but has no conviction grading and no published methodology of signal outcomes. Profit Builders is $99/month with conviction grading, a GEX heatmap, and a public results log — and includes a 7-day free trial." },

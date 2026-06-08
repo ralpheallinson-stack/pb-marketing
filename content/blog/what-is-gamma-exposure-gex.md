@@ -6,6 +6,8 @@ author: "Profit Builders"
 read_time: "12"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 If you've ever watched a stock pin to a specific strike at expiration, bounce perfectly off a round number, or suddenly accelerate through a level with no news — gamma exposure is usually the reason.
 
 Gamma exposure (GEX) is one of the most powerful forces in modern markets, and most retail traders have never heard of it. This guide breaks down what it is, why it matters, and how to use it.

@@ -6,9 +6,11 @@ author: "Profit Builders"
 read_time: "8"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 If you've ever wondered how professional traders seem to know where a stock is headed before the move happens, the answer often comes down to one thing: **options flow**.
 
-Options flow trading is the practice of monitoring large institutional orders in the options market to detect directional bets from hedge funds, banks, and professional desks. These orders — often worth hundreds of thousands or millions of dollars — leave a trail that retail traders can follow.
+Options flow trading is the practice of monitoring large institutional orders in the options market to detect directional bets from hedge funds, banks, and professional desks. These orders — often worth hundreds of thousands or millions of dollars — leave a trail that retail traders can follow. Once you can spot them, the next step is [reading sweep and block trades](/blog/how-to-read-sweep-and-block-trades).
 
 ## Why Options Flow Matters
 

@@ -6,6 +6,8 @@ author: "Profit Builders"
 read_time: "12"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 A single options sweep can mean anything. A hedge. A closing trade. A one-off speculative bet.
 
 But when the same contract gets hit seven times in 53 minutes, totaling $8.3M in call flow — that's not random. That's a position being built.

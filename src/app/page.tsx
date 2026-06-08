@@ -205,6 +205,9 @@ export default function Home() {
           <p className="text-white/30 text-xs mt-3">
             Card required · Cancel anytime before day 7
           </p>
+          <p className="text-white/30 text-xs mt-4">
+            Not sure which tool fits? <a href="/blog/best-options-flow-scanner-2026" className="text-emerald-400/80 hover:text-emerald-300 underline underline-offset-2">compare options flow scanners</a>.
+          </p>
         </div>
       </section>
       <PopularTickers

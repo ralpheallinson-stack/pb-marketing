@@ -7,6 +7,8 @@ author: "Profit Builders"
 read_time: "7"
 ---
 
+*Part of [The Options Flow Guide](/blog/options-flow-guide) — our complete series on reading institutional options flow.*
+
 If you're watching options flow for the first time, two order types will dominate the tape: **sweeps** and **blocks**. Understanding the difference — and knowing how to read them — is the foundation of flow-based trading.
 
 ## Sweep Orders: Urgency on Display
