@@ -395,7 +395,7 @@ export default function ScannerPage() {
   const [flowLocked, setFlowLocked] = useState(false)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [gexSymbol, setGexSymbol] = useState("SPY")
-  const [liveGexSpot, setLiveGexSpot] = useState<number | null>(null)
+  const [liveGexSpot, setLiveGexSpot] = useState<{ symbol: string; spot: number } | null>(null)
   const [gexData, setGexData] = useState<GexSnapshot | null>(null)
   const [gexLoading, setGexLoading] = useState(false)
   const [gexError, setGexError] = useState("")
@@ -692,7 +692,7 @@ export default function ScannerPage() {
           const r = await fetch(`/api/scanner/spot?symbol=${gexSymbol}`)
           if (r.ok) {
             const j = await r.json()
-            if (!cancelled && typeof j.spot === "number") setLiveGexSpot(j.spot)
+            if (!cancelled && typeof j.spot === "number") setLiveGexSpot({ symbol: gexSymbol, spot: j.spot })
           }
         } catch { /* network blip */ }
       }
@@ -701,6 +701,15 @@ export default function ScannerPage() {
     tick()
     return () => { cancelled = true; if (timer) clearTimeout(timer) }
   }, [activePage, canAccessGamma, gexSymbol])
+
+  // Symbol-tagged live-spot guard (mirrors gexReqIdRef's match-identity model):
+  // consume the 2s /api/scanner/spot value ONLY when it belongs to the currently
+  // selected symbol, else null so every consumer falls back to the guarded
+  // heatmap payload's data.spot. Prevents a prior symbol's spot from rendering
+  // during a rapid switch across the header price, %-change, gamma SPOT marker,
+  // and wall distances (all derive from this single value).
+  const liveSpotForSymbol =
+    liveGexSpot && liveGexSpot.symbol === gexSymbol ? liveGexSpot.spot : null
 
   const addToWatchlist = useCallback((input: string) => {
     // Accept single symbol OR comma/space-separated multi (e.g.
@@ -1981,7 +1990,7 @@ export default function ScannerPage() {
         const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
         return `${months[parseInt(p[1]) - 1]} ${p[2]}`
       }
-      const effSpot = liveGexSpot ?? gexData?.spot ?? 0
+      const effSpot = liveSpotForSymbol ?? gexData?.spot ?? 0
       return (
         <>
           {/* Instrument bar */}
@@ -2017,12 +2026,12 @@ export default function ScannerPage() {
           </div>
 
           {/* Hero card (v6 Phase 1) — replaces the old metrics strip */}
-          {gexData && <GexHeroCard data={gexData} liveSpot={liveGexSpot} symbol={gexSymbol} />}
+          {gexData && <GexHeroCard data={gexData} liveSpot={liveSpotForSymbol} symbol={gexSymbol} />}
         </>
       )
     })()}
 
-    {gexData && <GexGammaProfile data={gexData} liveSpot={liveGexSpot} />}
+    {gexData && <GexGammaProfile data={gexData} liveSpot={liveSpotForSymbol} />}
 
     <div className="flex-1 mx-5 mb-2 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
       <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0">
