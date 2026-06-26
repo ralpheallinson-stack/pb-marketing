@@ -577,7 +577,7 @@ const BASE_COLUMN_DEFS: ColDef<Trade>[] = [
     cellStyle: { textAlign: "right" },
   },
   {
-    headerName: "Conds", headerTooltip: "Conditions: WHALE = $10M+, OPENING = new position, MIXED = multi-leg, V/OI = unusual volume.",
+    headerName: "Conds", headerTooltip: "Conditions: WHALE = $10M+, OPENING = new position, MIXED = adjusting (open/close-ambiguous intent), V/OI = unusual volume.",
     field: "badges",
     cellRenderer: CondsCellRenderer,
     valueGetter: (p) => fmtCondsLabels(p.data?.badges),
