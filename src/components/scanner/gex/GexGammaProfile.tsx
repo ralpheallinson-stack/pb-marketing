@@ -22,9 +22,10 @@ interface GexGammaProfileProps {
   data: GexSnapshot;
   liveSpot: number | null;
   embedded?: boolean;
+  legendMode?: "full" | "minimal";
 }
 
-export default function GexGammaProfile({ data, liveSpot, embedded }: GexGammaProfileProps) {
+export default function GexGammaProfile({ data, liveSpot, embedded, legendMode = "full" }: GexGammaProfileProps) {
   const spot = liveSpot ?? data.spot;
   const strikes = [...data.strikes].sort((a, b) => a - b);
 
@@ -79,8 +80,8 @@ export default function GexGammaProfile({ data, liveSpot, embedded }: GexGammaPr
     [
       { color: C.spot, label: "Spot", strike: spotStrike, total: null as number | null, exp: null as string | null },
       { color: C.flip, label: "Gamma Flip", strike: flipStrike, total: null, exp: null },
-      callWall ? { color: C.call, label: "Call Wall", strike: callWall.strike, total: callWall.total, exp: primaryExpiry(callWall.strike) } : null,
-      putWall ? { color: C.put, label: "Put Wall", strike: putWall.strike, total: putWall.total, exp: primaryExpiry(putWall.strike) } : null,
+      legendMode === "minimal" || !callWall ? null : { color: C.call, label: "Call Wall", strike: callWall.strike, total: callWall.total, exp: primaryExpiry(callWall.strike) },
+      legendMode === "minimal" || !putWall ? null : { color: C.put, label: "Put Wall", strike: putWall.strike, total: putWall.total, exp: primaryExpiry(putWall.strike) },
     ].filter(Boolean) as { color: string; label: string; strike: number | null; total: number | null; exp: string | null }[]
   );
 

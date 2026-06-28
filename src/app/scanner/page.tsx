@@ -50,8 +50,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
-import GexHeaderProfile from "@/components/scanner/gex/GexHeaderProfile"
-import GexKeyLevels from "@/components/scanner/gex/GexKeyLevels"
+import GexUnifiedPanel from "@/components/scanner/gex/GexUnifiedPanel"
 import type { GexSnapshot } from "@/components/scanner/gex/gex.types"
 
 import Link from "next/link"
@@ -1992,46 +1991,18 @@ export default function ScannerPage() {
       }
       const effSpot = liveSpotForSymbol ?? gexData?.spot ?? 0
       return (
-        <>
-          {/* Instrument bar */}
-          <div className="flex items-center px-5 py-2.5 gap-3 border-b border-white/[0.06] flex-shrink-0" style={{ background: "#10141B" }}>
-            <div className="flex items-baseline gap-2 min-w-0">
-              <span className="text-[14px] font-semibold text-white tracking-tight truncate">{SYMBOL_NAMES_INLINE[gexSymbol] || gexSymbol}</span>
-              <span className="text-[9px] uppercase tracking-[0.18em] text-white/30 whitespace-nowrap">Gamma Exposure</span>
-            </div>
-            <div className="ml-auto flex items-center gap-1.5">
-              {gexUpdatedAt && (
-                <span className="hidden sm:flex items-center gap-1.5 text-[10px] text-white/40 mr-1 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
-                  Live · {gexUpdatedAt.toLocaleTimeString("en-US", { hour12: false, timeZone: "America/New_York" })} ET
-                </span>
-              )}
-              <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/60 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.08]">Gamma</span>
-              <button
-                onClick={() => setPaletteOpen(true)}
-                className="flex items-center gap-2 text-[11px] text-white/40 hover:text-white px-2.5 py-1 rounded border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] transition-colors"
-                aria-label="Open search"
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
-                </svg>
-                <span className="hidden sm:inline">to search</span>
-                <kbd className="font-mono text-[9px] px-1 py-0.5 rounded bg-black/40 border border-white/[0.08]">S</kbd>
-              </button>
-              <select value={gexSymbol} onChange={e => setGexSymbol(e.target.value)}
-                className="sm:hidden bg-transparent border border-white/[0.1] text-white text-[11px] rounded px-2 py-1 font-semibold cursor-pointer focus:outline-none">
-                {GEX_SYMBOLS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-
-        </>
+        <GexUnifiedPanel
+          data={gexData}
+          liveSpot={liveSpotForSymbol}
+          symbol={gexSymbol}
+          title={SYMBOL_NAMES_INLINE[gexSymbol] || gexSymbol}
+          updatedAt={gexUpdatedAt}
+          symbols={GEX_SYMBOLS}
+          onSymbolChange={setGexSymbol}
+          onSearch={() => setPaletteOpen(true)}
+        />
       )
     })()}
-
-    {gexData && <GexHeaderProfile data={gexData} liveSpot={liveSpotForSymbol} symbol={gexSymbol} />}
-
-    {gexData && <GexKeyLevels data={gexData} liveSpot={liveSpotForSymbol} />}
 
     <div className="flex-1 mx-5 mb-2 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
       <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0">
@@ -2068,6 +2039,20 @@ export default function ScannerPage() {
               // Focus view: spot +/- 13 strikes (~27 rows, v6 density). Toggle shows the full chain.
               const spotIdx = strikes.reduce((bi: number, s: number, i: number) => Math.abs(s - gexData.spot) < Math.abs(strikes[bi] - gexData.spot) ? i : bi, 0)
               const displayStrikes = gexShowAll ? strikes : strikes.slice(Math.max(0, spotIdx - 13), spotIdx + 14)
+              // Option A: the single biggest DISPLAYED cell — max |net_gex| among the shown
+              // strike×expiry cells (EXCLUDES the Total column, which is an aggregate). Recomputed
+              // every render, so it tracks live data refresh / symbol change / "Show all strikes".
+              // Tie-break: first in displayStrikes order then expiration order (strict >).
+              let maxAbsCell = 0
+              let maxCellKey: string | null = null
+              for (const ms of displayStrikes) {
+                const msk = ms === Math.floor(ms) ? String(Math.floor(ms)) : String(ms)
+                const mrow = gexData.matrix[msk] || {}
+                for (const mexp of gexData.expirations) {
+                  const mg = Math.abs(mrow[mexp]?.net_gex ?? 0)
+                  if (mg > maxAbsCell) { maxAbsCell = mg; maxCellKey = `${ms}-${mexp}` }
+                }
+              }
               return displayStrikes.map((strike: number) => {
                 const sk = strike === Math.floor(strike) ? String(Math.floor(strike)) : String(strike)
                 const row = gexData.matrix[sk] || {}
@@ -2100,14 +2085,15 @@ export default function ScannerPage() {
                     // these visually so users know which numbers are real Polygon
                     // greeks vs estimates. Subtle dashed top-border keeps the grid
                     // legible while flagging the cells honestly.
+                    const isMaxCell = gex !== 0 && `${strike}-${exp}` === maxCellKey
                     const isFallback = cell?.has_greeks === false
                     return (
                       <div key={`${strike}-${exp}`}
                         className={`flex items-center justify-center relative rounded-[3px] ${isFallback ? "opacity-75" : ""}`}
-                        style={{ background: mark && gex === 0 ? `${mark.color}14` : bg, minHeight: 22, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
+                        style={{ background: isMaxCell ? "#9b8cff" : (mark && gex === 0 ? `${mark.color}14` : bg), minHeight: 22, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString("en-US")}\nPut OI: ${putOi.toLocaleString("en-US")}`}>
                         {gex !== 0 && (
-                          <span className={`text-[10px] font-mono font-medium ${intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
+                          <span className={`text-[10px] font-mono font-medium ${isMaxCell ? "text-[#15121f] font-semibold" : intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
                             {fmtGex(gex)}
                           </span>
                         )}

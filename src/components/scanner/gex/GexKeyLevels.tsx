@@ -28,16 +28,17 @@ function fmtGex(v: number): string {
 interface GexKeyLevelsProps {
   data: GexSnapshot;
   liveSpot: number | null;
+  integrated?: boolean;
 }
 
 // One centered tile: label (+ optional amber ★) · value · meta. whitespace-nowrap
 // so a tile never breaks mid-value; the parent flex-wrap moves WHOLE tiles to a
 // second row on narrow widths (graceful reflow, no clip/scroll).
-function Tile({ label, star, value, valueColor, meta }: {
-  label: string; star?: boolean; value: string; valueColor?: string; meta: string;
+function Tile({ label, star, value, valueColor, meta, integrated }: {
+  label: string; star?: boolean; value: string; valueColor?: string; meta: string; integrated?: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center text-center whitespace-nowrap rounded-xl border border-white/[0.06] px-5 py-3" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0) 55%), #0B0F14" }}>
+    <div className={integrated ? "flex flex-col items-center justify-center text-center whitespace-nowrap px-3" : "flex flex-col items-center justify-center text-center whitespace-nowrap rounded-xl border border-white/[0.06] px-5 py-3"} style={integrated ? undefined : { background: "linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0) 55%), #0B0F14" }}>
       <span className="text-[9px] uppercase tracking-[0.14em] text-white/40 inline-flex items-center gap-1">
         {star && <span style={{ color: AMBER }}>★</span>}
         {label}
@@ -50,7 +51,7 @@ function Tile({ label, star, value, valueColor, meta }: {
   );
 }
 
-export default function GexKeyLevels({ data, liveSpot }: GexKeyLevelsProps) {
+export default function GexKeyLevels({ data, liveSpot, integrated }: GexKeyLevelsProps) {
   const effSpot = liveSpot ?? data.spot;
   const longGamma = data.total_net_gex >= 0;
 
@@ -70,11 +71,12 @@ export default function GexKeyLevels({ data, liveSpot }: GexKeyLevelsProps) {
   const flipDist = flip != null ? effSpot - flip : null;
 
   return (
-    <div className="mx-5 my-2">
+    <div className={integrated ? "" : "mx-5 my-2"}>
       {/* Centered cluster of boxed card-tiles. flex-wrap → whole cards reflow to a
           2nd row on narrow widths; content-sized (no fixed width), so never clips/scrolls. */}
       <div className="flex flex-wrap items-stretch justify-center gap-3">
         <Tile
+          integrated={integrated}
           label="Gamma Flip"
           value={flip != null ? `$${flip.toFixed(2)}` : "N/A"}
           valueColor={FLIP}
@@ -85,6 +87,7 @@ export default function GexKeyLevels({ data, liveSpot }: GexKeyLevelsProps) {
           }
         />
         <Tile
+          integrated={integrated}
           label="Call Wall"
           star
           value={callWall ? `$${callWall.strike}` : "N/A"}
@@ -92,18 +95,28 @@ export default function GexKeyLevels({ data, liveSpot }: GexKeyLevelsProps) {
           meta={callWall ? `${fmtGex(callWall.total)} · ${Math.abs(callWall.strike - effSpot).toFixed(0)} ${callWall.strike >= effSpot ? "above" : "below"}` : "—"}
         />
         <Tile
+          integrated={integrated}
           label="Put Wall"
           star
           value={putWall ? `$${putWall.strike}` : "N/A"}
           valueColor={RED}
           meta={putWall ? `${fmtGex(putWall.total)} · ${Math.abs(putWall.strike - effSpot).toFixed(0)} ${putWall.strike >= effSpot ? "above" : "below"}` : "—"}
         />
-        <Tile
-          label="Total Net GEX"
-          value={fmtGex(data.total_net_gex)}
-          valueColor={longGamma ? GREEN : RED}
-          meta={`dealers ${longGamma ? "long" : "short"} γ · ${longGamma ? "suppressing" : "amplifying"}`}
-        />
+        {integrated ? (
+          <Tile
+            integrated
+            label="Slope / Γ"
+            value={data.slope_strike != null ? `$${data.slope_strike.toFixed(2)}` : "N/A"}
+            meta={`C ${fmtGex(Math.abs(data.total_call_gex))} · P ${fmtGex(-Math.abs(data.total_put_gex))}`}
+          />
+        ) : (
+          <Tile
+            label="Total Net GEX"
+            value={fmtGex(data.total_net_gex)}
+            valueColor={longGamma ? GREEN : RED}
+            meta={`dealers ${longGamma ? "long" : "short"} γ · ${longGamma ? "suppressing" : "amplifying"}`}
+          />
+        )}
       </div>
     </div>
   );
