@@ -2007,7 +2007,6 @@ export default function ScannerPage() {
     <div className="flex-1 mx-5 mb-2 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
       <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0">
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Net GEX Heatmap</span>
-        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-[0.1em] uppercase border border-amber-500/40 text-amber-400 bg-amber-500/[0.08]">Estimated</span>
         <button onClick={() => setGexShowAll(v => !v)} className="ml-auto text-[10px] text-white/40 hover:text-white border border-white/[0.08] hover:border-white/20 rounded px-2 py-1 transition-colors">
           {gexShowAll ? "Focus ±13" : "Show all strikes"}
         </button>
