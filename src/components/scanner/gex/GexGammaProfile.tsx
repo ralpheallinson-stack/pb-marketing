@@ -21,9 +21,10 @@ function fmtGex(v: number): string {
 interface GexGammaProfileProps {
   data: GexSnapshot;
   liveSpot: number | null;
+  embedded?: boolean;
 }
 
-export default function GexGammaProfile({ data, liveSpot }: GexGammaProfileProps) {
+export default function GexGammaProfile({ data, liveSpot, embedded }: GexGammaProfileProps) {
   const spot = liveSpot ?? data.spot;
   const strikes = [...data.strikes].sort((a, b) => a - b);
 
@@ -84,7 +85,7 @@ export default function GexGammaProfile({ data, liveSpot }: GexGammaProfileProps
   );
 
   return (
-    <div className="mx-5 mb-2 rounded-lg border border-white/[0.06] px-4 py-3" style={{ background: "#0B0F14" }}>
+    <div className={embedded ? "px-5 pb-3 pt-2.5" : "mx-5 mb-2 rounded-lg border border-white/[0.06] px-4 py-3"} style={embedded ? undefined : { background: "#0B0F14" }}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Gamma Profile</span>
         <span className="text-[10px] text-white/30">net γ per strike · all expiries</span>

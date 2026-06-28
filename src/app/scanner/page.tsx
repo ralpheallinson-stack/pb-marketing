@@ -50,8 +50,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts"
 import TrialBanner from "@/components/TrialBanner"
 import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
-import GexHeroCard from "@/components/scanner/gex/GexHeroCard"
-import GexGammaProfile from "@/components/scanner/gex/GexGammaProfile"
+import GexHeaderProfile from "@/components/scanner/gex/GexHeaderProfile"
 import GexKeyLevels from "@/components/scanner/gex/GexKeyLevels"
 import type { GexSnapshot } from "@/components/scanner/gex/gex.types"
 
@@ -2026,13 +2025,11 @@ export default function ScannerPage() {
             </div>
           </div>
 
-          {/* Hero card (v6 Phase 1) — replaces the old metrics strip */}
-          {gexData && <GexHeroCard data={gexData} liveSpot={liveSpotForSymbol} symbol={gexSymbol} />}
         </>
       )
     })()}
 
-    {gexData && <GexGammaProfile data={gexData} liveSpot={liveSpotForSymbol} />}
+    {gexData && <GexHeaderProfile data={gexData} liveSpot={liveSpotForSymbol} symbol={gexSymbol} />}
 
     {gexData && <GexKeyLevels data={gexData} liveSpot={liveSpotForSymbol} />}
 
