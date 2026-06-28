@@ -52,6 +52,7 @@ import CommandPalette from "@/components/CommandPalette"
 import InfoTooltip from "@/components/InfoTooltip"
 import GexHeroCard from "@/components/scanner/gex/GexHeroCard"
 import GexGammaProfile from "@/components/scanner/gex/GexGammaProfile"
+import GexKeyLevels from "@/components/scanner/gex/GexKeyLevels"
 import type { GexSnapshot } from "@/components/scanner/gex/gex.types"
 
 import Link from "next/link"
@@ -2032,6 +2033,8 @@ export default function ScannerPage() {
     })()}
 
     {gexData && <GexGammaProfile data={gexData} liveSpot={liveSpotForSymbol} />}
+
+    {gexData && <GexKeyLevels data={gexData} liveSpot={liveSpotForSymbol} />}
 
     <div className="flex-1 mx-5 mb-2 min-h-0 flex flex-col rounded-lg border border-white/[0.06]" style={{ background: "#0B0F14" }}>
       <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0">
