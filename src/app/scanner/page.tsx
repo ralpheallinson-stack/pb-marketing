@@ -2089,8 +2089,8 @@ export default function ScannerPage() {
                     const isFallback = cell?.has_greeks === false
                     return (
                       <div key={`${strike}-${exp}`}
-                        className={`flex items-center justify-center relative rounded-[3px] ${isFallback ? "opacity-75" : ""}`}
-                        style={{ background: isMaxCell ? "#9b8cff" : (mark && gex === 0 ? `${mark.color}14` : bg), minHeight: 22, ...(isFallback ? { borderTop: "1px dashed rgba(245,130,10,0.35)" } : {}) }}
+                        className={`flex items-center justify-center relative ${isFallback ? "opacity-75" : ""}`}
+                        style={{ background: isMaxCell ? "#9b8cff" : (mark && gex === 0 ? `${mark.color}14` : bg), minHeight: 22, ...(isFallback ? { borderTop: "1px solid rgba(245,130,10,0.18)" } : {}) }}
                         title={`${strike} × ${exp}\nGEX: ${fmtGex(gex)}${isFallback ? " (estimate — no live greeks)" : ""}\nCall OI: ${callOi.toLocaleString("en-US")}\nPut OI: ${putOi.toLocaleString("en-US")}`}>
                         {gex !== 0 && (
                           <span className={`text-[10px] font-mono font-medium ${isMaxCell ? "text-[#15121f] font-semibold" : intensity > 0.35 ? "text-white" : gex > 0 ? "text-[#22C55E]/80" : "text-[#FF605D]/80"}`}>
