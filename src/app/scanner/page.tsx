@@ -619,16 +619,48 @@ export default function ScannerPage() {
   const gexReqIdRef = useRef(0)
   useEffect(() => {
     if (activePage !== "heatmap" || !canAccessGamma) return
-    const reqId = ++gexReqIdRef.current
-    setGexLoading(true); setGexError("")
-    fetch(`/api/scanner/gex-heatmap?symbol=${gexSymbol}`)
-      .then(r => r.json())
-      .then(d => {
-        if (reqId !== gexReqIdRef.current) return  // stale response — newer symbol selected
-        if (d.error) { setGexError(d.error); setGexData(null) } else { setGexData(d); setGexUpdatedAt(new Date()) }
-      })
-      .catch(() => { if (reqId === gexReqIdRef.current) setGexError("Failed to load") })
-      .finally(() => { if (reqId === gexReqIdRef.current) setGexLoading(false) })
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | null = null
+    // Mirror the spot poll: 30s during market hours (the backend only refreshes
+    // the cached surface every ~30s via fastlane / 5min cron, so polling faster
+    // yields no new data), 5min off-hours; pauses on a hidden tab.
+    const isMarketHours = () => {
+      const now = new Date()
+      const et = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }))
+      const day = et.getDay()
+      if (day === 0 || day === 6) return false
+      const mins = et.getHours() * 60 + et.getMinutes()
+      return mins >= 9 * 60 + 30 && mins < 16 * 60
+    }
+    // initial=true shows the loading skeleton (mount / tab / symbol change);
+    // background polls update gexData IN PLACE — no skeleton, no flash, no scroll jump.
+    const load = async (initial: boolean) => {
+      if (cancelled) return
+      const reqId = ++gexReqIdRef.current
+      if (initial) { setGexLoading(true); setGexError("") }
+      try {
+        const r = await fetch(`/api/scanner/gex-heatmap?symbol=${gexSymbol}`)
+        const d = await r.json()
+        if (cancelled || reqId !== gexReqIdRef.current) return  // stale response — newer symbol selected
+        if (d.error) {
+          if (initial) { setGexError(d.error); setGexData(null) }  // background: keep last-good surface
+        } else {
+          setGexError(""); setGexData(d); setGexUpdatedAt(new Date())
+        }
+      } catch {
+        if (!cancelled && reqId === gexReqIdRef.current && initial) setGexError("Failed to load")
+      } finally {
+        if (!cancelled && reqId === gexReqIdRef.current && initial) setGexLoading(false)
+      }
+    }
+    const tick = async () => {
+      if (cancelled) return
+      if (!document.hidden) await load(false)
+      timer = setTimeout(tick, isMarketHours() ? 30000 : 300000)
+    }
+    load(true)  // immediate fetch on mount / tab / symbol change (with skeleton)
+    timer = setTimeout(tick, isMarketHours() ? 30000 : 300000)  // then keep fresh in the background
+    return () => { cancelled = true; if (timer) clearTimeout(timer) }
   }, [activePage, canAccessGamma, gexSymbol])
 
   // Batch live-quote polling for the watchlist tab. One HTTP call per
