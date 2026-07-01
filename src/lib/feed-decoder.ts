@@ -190,6 +190,8 @@ export function rowsToTrades(rows: RawRow[], columns: string[]): Trade[] {
       opt_type: r[idx["opt_type"]] as string,
       aggression: r[idx["side"]] as string | null,
       trade_direction: r[idx["bs"]] as string | null,
+      nbbo_side: (r[idx["nbbo_side"]] as string | null) ?? null,
+      nbbo_verifiable: !!(r[idx["nbbo_verifiable"]] as boolean),
       direction: (r[idx["direction"]] as string) || undefined,
       spot_fmt: r[idx["spot_fmt"]] as string,
       contracts: r[idx["contracts"]] as number,

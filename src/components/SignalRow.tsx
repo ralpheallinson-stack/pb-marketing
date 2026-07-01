@@ -15,6 +15,8 @@ import { badgeClass } from "@/lib/badge-styles"
  */
 
 export interface Trade {
+  nbbo_side?: string | null      // verified aggressor side (BUY/SELL) when confirmed
+  nbbo_verifiable?: boolean      // true = side came from a confirmed NBBO quote
   id: number
   date_time: string
   timestampMs?: number  // ms epoch from backend _sort_time; date_time is a no-year display string and unsafe for new Date()

@@ -274,13 +274,13 @@ function WatchlistDrilldown({ sym, top5, onOpenScanner }: { sym: string; top5: T
             {top5.map(t => {
               const isCall = t.opt_type === "C"
               const a = (t.aggression || "").toUpperCase()
-              const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY" : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL" : (t.bullish ? "BUY" : "SELL")
+              const side = (a === "BUY" || a === "ASK" || a === "ABOVE_ASK") ? "BUY" : (a === "SELL" || a === "BID" || a === "BELOW_BID") ? "SELL" : null
               const tradeTime = t.time || (t.timestampMs ? new Date(t.timestampMs).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : "—")
               const conds = (t.badges || []).slice(0, 3)
               return (
                 <div key={t.id} className="grid items-center py-1.5 text-[11px] border-b border-white/[0.03]" style={{ gridTemplateColumns: "62px 52px 46px 1fr 76px 92px 1.5fr", gap: 8 }}>
                   <div className="font-mono tabular-nums text-[#9CA3AF]">{tradeTime}</div>
-                  <div><span className="font-bold" style={{ color: side === "BUY" ? "#22c55e" : "#FF605D" }}>{side}</span></div>
+                  <div>{side ? <span className="font-bold" style={{ color: side === "BUY" ? "#22c55e" : "#FF605D" }}>{side}</span> : <span className="text-[#3D4D63]">—</span>}</div>
                   <div><span className="font-bold" style={{ color: isCall ? "#22c55e" : "#FF605D" }}>{isCall ? "Call" : "Put"}</span></div>
                   <div className="font-mono tabular-nums text-white truncate">{t.strike_fmt || t.strike}<span className="text-[#6B7280]"> · {t.expiration}</span></div>
                   <div className="font-mono tabular-nums text-right text-[#E7E5E4]">{typeof t.contracts === "number" ? t.contracts.toLocaleString() : t.contracts}</div>

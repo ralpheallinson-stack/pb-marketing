@@ -336,8 +336,15 @@ function BSCellRenderer(params: TradeCellParams) {
   const d = t.trade_direction
   if (!d || d === "NEUTRAL") return <span>—</span>
   const ctx = params.context
+  // Verified = side came from a confirmed NBBO quote; inferred sides are softened
+  // (muted, reusing cf-muted) so a confident arrow does not imply unearned certainty.
+  const verified = !!t.nbbo_verifiable && (t.nbbo_side === "BUY" || t.nbbo_side === "SELL")
   return (
-    <button onClick={() => ctx.setFilterBuySell(d)} className="cf-focus-btn">
+    <button
+      onClick={() => ctx.setFilterBuySell(d)}
+      className={verified ? "cf-focus-btn" : "cf-focus-btn cf-muted"}
+      title={verified ? "Verified from NBBO quote" : "Inferred direction — side not confirmed by a quote"}
+    >
       {d}
     </button>
   )
