@@ -336,16 +336,19 @@ function BSCellRenderer(params: TradeCellParams) {
   const d = t.trade_direction
   if (!d || d === "NEUTRAL") return <span>—</span>
   const ctx = params.context
-  // Verified = side came from a confirmed NBBO quote; inferred sides are softened
-  // (muted, reusing cf-muted) so a confident arrow does not imply unearned certainty.
+  // Verified = side came from a confirmed NBBO quote. Verified rows get a small cyan
+  // check; inferred rows show the same arrow with NO mark (hover tooltip still explains).
+  // Arrows are uniform brightness -- no dimming. Check color is inline (reuses the
+  // existing #48DEFF accent) so the green/red cell cascade cannot swallow it.
   const verified = !!t.nbbo_verifiable && (t.nbbo_side === "BUY" || t.nbbo_side === "SELL")
   return (
     <button
       onClick={() => ctx.setFilterBuySell(d)}
-      className={verified ? "cf-focus-btn" : "cf-focus-btn cf-muted"}
+      className="cf-focus-btn"
       title={verified ? "Verified from NBBO quote" : "Inferred direction — side not confirmed by a quote"}
     >
       {d}
+      {verified ? <span style={{ color: "#48DEFF", marginLeft: 3, fontSize: "0.82em", opacity: 0.85 }}>✓</span> : null}
     </button>
   )
 }
